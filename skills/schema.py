@@ -45,6 +45,14 @@ class ClassLevel(Base):  # type: ignore
         back_populates='class_level',
     )
 
+    def json(self) -> Dict:
+        return {
+            'id': self.id,
+            'created': self.created.isoformat(),
+            'prefix': self.prefix,
+            'school_class_ids': [school_class.id for school_class in self.school_classes],
+        }
+
 
 class SchoolClass(Base):  # type: ignore
     __tablename__ = 'school_class'
@@ -65,6 +73,15 @@ class SchoolClass(Base):  # type: ignore
         back_populates='school_class',
     )
 
+    def json(self) -> Dict:
+        return {
+            'id': self.id,
+            'created': self.created.isoformat(),
+            'class_level_id': self.class_level_id,
+            'suffix': self.suffix,
+            'student_ids': [student.id for student in self.students],
+        }
+
 
 class Student(Base):  # type: ignore
     __tablename__ = 'student'
@@ -78,6 +95,14 @@ class Student(Base):  # type: ignore
         foreign_keys=school_class_id,
         back_populates='students',
     )
+
+    def json(self) -> Dict:
+        return {
+            'id': self.id,
+            'created': self.created.isoformat(),
+            'school_class_id': self.school_class_id,
+            'name': self.name,
+        }
 
 
 class Belt(Base):  # type: ignore

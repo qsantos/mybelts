@@ -8,7 +8,9 @@ from jsonschema import FormatChecker
 from sqlalchemy import and_
 from sqlalchemy.sql.expression import func
 
-from skills.schema import Belt, session_context
+from skills.schema import (
+    Belt, ClassLevel, SchoolClass, Student, session_context,
+)
 
 
 def abort(code: int, message: str) -> NoReturn:  # type: ignore
@@ -23,17 +25,110 @@ api = Api(
     base_url='/api',
 )
 
-belts_ns = api.namespace('belts', path='/')
+class_level_ns = api.namespace('Class Levels', path='/')
+school_class_ns = api.namespace('School Classes', path='/')
+students_ns = api.namespace('Students', path='/')
+belts_ns = api.namespace('Belts', path='/')
+
+
+@class_level_ns.route('/class-levels')
+class ClassLevelsResource(Resource):
+    def get(self) -> Any:
+        with session_context() as session:
+            return {
+                'class_levels': [
+                    class_level.json()
+                    for class_level in session.query(ClassLevel).all()
+                ],
+            }
+
+
+@class_level_ns.route('/class-levels/<int:class_level_id>/')
+class ClassLevelClassesResource(Resource):
+    def get(self, class_level_id: int) -> Any:
+        with session_context() as session:
+            class_level = session.query(ClassLevel).get(class_level_id)
+            if class_level is None:
+                abort(404, f'Class level {class_level_id} not found')
+            return {
+                'class_level': class_level.json(),
+            }
+
+
+@class_level_ns.route('/class-levels/<int:class_level_id>/school_classes')
+class ClassLevelSchoolClassesResource(Resource):
+    def get(self, class_level_id: int) -> Any:
+        with session_context() as session:
+            class_level = session.query(ClassLevel).get(class_level_id)
+            if class_level is None:
+                abort(404, f'Class level {class_level_id} not found')
+            return {
+                'class_level': class_level.json(),
+                'school_classes': [
+                    school_class.json()
+                    for school_class in class_level.school_classes
+                ],
+            }
+
+
+@school_class_ns.route('/school-classes/<int:school_class_id>/')
+class SchoolClassResource(Resource):
+    def get(self, school_class_id: int) -> Any:
+        with session_context() as session:
+            school_class = session.query(SchoolClass).get(school_class_id)
+            if school_class is None:
+                abort(404, f'School class {school_class_id} not found')
+            class_level = school_class.class_level
+            return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
+            }
+
+
+@school_class_ns.route('/school-classes/<int:school_class_id>/students')
+class SchoolClassStudentsResource(Resource):
+    def get(self, school_class_id: int) -> Any:
+        with session_context() as session:
+            school_class = session.query(SchoolClass).get(school_class_id)
+            if school_class is None:
+                abort(404, f'School class {school_class_id} not found')
+            class_level = school_class.class_level
+            return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
+                'students': [
+                    student.json()
+                    for student in school_class.students
+                ],
+            }
+
+
+@students_ns.route('/students/<int:student_id>/')
+class StudentResource(Resource):
+    def get(self, student_id: int) -> Any:
+        with session_context() as session:
+            student = session.query(Student).get(student_id)
+            if student is None:
+                abort(404, f'Student {student_id} not found')
+            school_class = student.school_class
+            class_level = school_class.class_level
+            return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
+                'student': student.json(),
+            }
 
 
 @belts_ns.route('/belts')
 class BeltsResource(Resource):
     def get(self) -> Any:
         with session_context() as session:
-            return [
-                belt.json()
-                for belt in session.query(Belt)
-            ]
+            return {
+                'belts': [
+                    belt.json()
+                    for belt in session.query(Belt)
+                ],
+            }
 
     argparser = reqparse.RequestParser()
     argparser.add_argument('name', location='args', required=True)
@@ -54,7 +149,7 @@ class BeltsResource(Resource):
             }
 
 
-@belts_ns.route('/belts/<int:belt_id>')
+@belts_ns.route('/belts/<int:belt_id>/')
 class BeltResource(Resource):
     def get(self, belt_id: int) -> Any:
         with session_context() as session:
@@ -62,7 +157,9 @@ class BeltResource(Resource):
             if belt is None:
                 abort(404, f'Belt {belt_id} not found')
 
-            return belt.json()
+            return {
+                'belt': belt.json(),
+            }
 
     argparser = reqparse.RequestParser()
     argparser.add_argument('name', location='args', required=True)
@@ -76,7 +173,9 @@ class BeltResource(Resource):
 
             belt.name = request.args['name']
             session.commit()
-            return belt.json()
+            return {
+                'belt': belt.json(),
+            }
 
 
 @belts_ns.route('/belts/<int:belt_id>/rank')
@@ -136,7 +235,9 @@ class BeltRankResource(Resource):
                     belt.rank = new_rank
                     session.commit()
 
-            return belt.json()
+            return {
+                'belt': belt.json(),
+            }
 
 
 def create_app() -> Flask:
