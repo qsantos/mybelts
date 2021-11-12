@@ -1,0 +1,12 @@
+# database
+alembic
+psycopg2-binary
+SQLAlchemy
+
+# API
+Flask==1.1.1  # old version to avoid https://github.com/jarus/flask-testing/issues/143
+flask-restplus
+Werkzeug==v0.16.0  # old version to avoid https://github.com/jarus/flask-testing/issues/143
+
+# misc
+pip-tools  # generate requirements.txt from requirements.in
