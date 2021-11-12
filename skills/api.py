@@ -1,7 +1,7 @@
 from typing import Any, NoReturn
 
 from flask import Blueprint, Flask, request
-from flask_restplus import reqparse  # type: ignore
+from flask_restplus import fields  # type: ignore
 from flask_restplus import Api, Resource
 from flask_restplus import abort as flask_restplus_abort
 from jsonschema import FormatChecker
@@ -130,16 +130,17 @@ class BeltsResource(Resource):
                 ],
             }
 
-    argparser = reqparse.RequestParser()
-    argparser.add_argument('name', location='args', required=True)
+    post_model = api.model('BeltsPost', {
+        'name': fields.String(example='White belt', required=True),
+    })
 
-    @api.expect(argparser)
+    @api.expect(post_model, validate=True)
     def post(self) -> Any:
         with session_context() as session:
             # TODO: store this information somewhere
             max_rank: int = session.query(func.max(Belt.rank)).scalar()  # type: ignore
             belt = Belt(
-                name=request.args['name'],
+                name=request.json['name'],
                 rank=max_rank + 1,
             )
             session.add(belt)
@@ -161,17 +162,18 @@ class BeltResource(Resource):
                 'belt': belt.json(),
             }
 
-    argparser = reqparse.RequestParser()
-    argparser.add_argument('name', location='args', required=True)
+    put_model = api.model('BeltPut', {
+        'name': fields.String(example='White belt', required=True),
+    })
 
-    @api.expect(argparser)
+    @api.expect(put_model, validate=True)
     def put(self, belt_id: int) -> Any:
         with session_context() as session:
             belt = session.query(Belt).get(belt_id)
             if belt is None:
                 abort(404, f'Belt {belt_id} not found')
 
-            belt.name = request.args['name']
+            belt.name = request.json['name']
             session.commit()
             return {
                 'belt': belt.json(),
@@ -180,15 +182,15 @@ class BeltResource(Resource):
 
 @belts_ns.route('/belts/<int:belt_id>/rank')
 class BeltRankResource(Resource):
-    argparser = reqparse.RequestParser()
-    argparser.add_argument('other_belt_id', location='args', type=int, required=False)
-    argparser.add_argument('go_up_n_ranks', location='args', type=int, required=False)
+    patch_model = api.model('BeltRank', {
+        'other_belt_id': fields.Integer(example=42, required=False),
+        'go_up_n_ranks': fields.Integer(example=-2, required=False),
+    })
 
-    @api.expect(argparser)
+    @api.expect(patch_model, validate=True)
     def patch(self, belt_id: int) -> Any:
-        args = BeltRankResource.argparser.parse_args()
-        other_belt_id = args.get('other_belt_id')
-        go_up_n_ranks = args.get('go_up_n_ranks')
+        other_belt_id = request.json.get('other_belt_id')
+        go_up_n_ranks = request.json.get('go_up_n_ranks')
         if other_belt_id is None and go_up_n_ranks is None:
             abort(400, 'Do provide one of other_belt_id, go_up_n_ranks')
         if other_belt_id is not None and go_up_n_ranks is not None:
