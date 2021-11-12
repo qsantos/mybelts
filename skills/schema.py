@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Iterator
+from typing import Dict, Iterator
 
 from sqlalchemy import Column, DateTime, Integer, String, create_engine, func
 from sqlalchemy.exc import SQLAlchemyError
@@ -37,6 +37,14 @@ class Belt(Base):  # type: ignore
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     rank = Column(Integer, nullable=False, index=True)
     name = Column(String, nullable=False, index=True)
+
+    def json(self) -> Dict:
+        return {
+            'id': self.id,
+            'created': self.created.isoformat(),
+            'rank': self.rank,
+            'name': self.name,
+        }
 
     def exchange_ranks(self, other: 'Belt') -> None:
         self.rank, other.rank = other.rank, self.rank

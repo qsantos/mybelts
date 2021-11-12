@@ -22,7 +22,7 @@ class BeltsResource(Resource):
     def get(self) -> Any:
         with session_context() as session:
             return [
-                belt.name
+                belt.json()
                 for belt in session.query(Belt)
             ]
 
