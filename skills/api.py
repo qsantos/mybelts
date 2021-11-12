@@ -16,6 +16,7 @@ api = Api(
 
 belts_ns = api.namespace('belts', path='/')
 
+
 @belts_ns.route('/belts')
 class BeltsResource(Resource):
     def get(self) -> Any:
@@ -24,6 +25,7 @@ class BeltsResource(Resource):
                 belt.name
                 for belt in session.query(Belt)
             ]
+
 
 def create_app() -> Flask:
     app = Flask(__name__)

@@ -8,5 +8,14 @@ Flask==1.1.1  # old version to avoid https://github.com/jarus/flask-testing/issu
 flask-restplus
 Werkzeug==v0.16.0  # old version to avoid https://github.com/jarus/flask-testing/issues/143
 
+# linting
+flake8
+flake8-broken-line
+flake8-commas
+flake8-isort
+flake8-pep3101
+flake8-quotes
+isort
+
 # misc
 pip-tools  # generate requirements.txt from requirements.in

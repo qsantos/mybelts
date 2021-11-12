@@ -14,6 +14,24 @@ click==8.0.3
     # via
     #   flask
     #   pip-tools
+flake8==4.0.1
+    # via
+    #   -r requirements.in
+    #   flake8-broken-line
+    #   flake8-commas
+    #   flake8-isort
+    #   flake8-pep3101
+    #   flake8-quotes
+flake8-broken-line==0.4.0
+    # via -r requirements.in
+flake8-commas==2.1.0
+    # via -r requirements.in
+flake8-isort==4.1.1
+    # via -r requirements.in
+flake8-pep3101==1.3.0
+    # via -r requirements.in
+flake8-quotes==3.3.1
+    # via -r requirements.in
 flask==1.1.1
     # via
     #   -r requirements.in
@@ -22,6 +40,10 @@ flask-restplus==0.13.0
     # via -r requirements.in
 greenlet==1.1.2
     # via sqlalchemy
+isort==5.10.1
+    # via
+    #   -r requirements.in
+    #   flake8-isort
 itsdangerous==2.0.1
     # via flask
 jinja2==3.0.3
@@ -34,12 +56,18 @@ markupsafe==2.0.1
     # via
     #   jinja2
     #   mako
+mccabe==0.6.1
+    # via flake8
 pep517==0.12.0
     # via pip-tools
 pip-tools==6.4.0
     # via -r requirements.in
 psycopg2-binary==2.9.2
     # via -r requirements.in
+pycodestyle==2.8.0
+    # via flake8
+pyflakes==2.4.0
+    # via flake8
 pyrsistent==0.18.0
     # via jsonschema
 pytz==2021.3
@@ -50,6 +78,8 @@ sqlalchemy==1.4.27
     # via
     #   -r requirements.in
     #   alembic
+testfixtures==6.18.3
+    # via flake8-isort
 tomli==1.2.2
     # via pep517
 werkzeug==0.16.0
