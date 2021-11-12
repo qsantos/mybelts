@@ -42,6 +42,20 @@ class ClassLevelsResource(Resource):
                 ],
             }
 
+    post_model = api.model('ClassLevelsPost', {
+        'prefix': fields.String(example='4e', required=True),
+    })
+
+    @api.expect(post_model, validate=True)
+    def post(self) -> Any:
+        with session_context() as session:
+            class_level = ClassLevel(prefix=request.json['prefix'])
+            session.add(class_level)
+            session.commit()
+            return {
+                'class_level': class_level.json(),
+            }
+
 
 @class_level_ns.route('/class-levels/<int:class_level_id>/')
 class ClassLevelClassesResource(Resource):
@@ -68,6 +82,27 @@ class ClassLevelSchoolClassesResource(Resource):
                     school_class.json()
                     for school_class in class_level.school_classes
                 ],
+            }
+
+    post_model = api.model('ClassLevelSchoolClassesPost', {
+        'suffix': fields.String(example='D', required=True),
+    })
+
+    @api.expect(post_model, validate=True)
+    def post(self, class_level_id: int) -> Any:
+        with session_context() as session:
+            class_level = session.query(ClassLevel).get(class_level_id)
+            if class_level is None:
+                abort(404, f'Class level {class_level_id} not found')
+            school_class = SchoolClass(
+                class_level=class_level,
+                suffix=request.json['suffix'],
+            )
+            session.add(school_class)
+            session.commit()
+            return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
             }
 
 
@@ -100,6 +135,29 @@ class SchoolClassStudentsResource(Resource):
                     student.json()
                     for student in school_class.students
                 ],
+            }
+
+    post_model = api.model('SchoolClassStudentsPost', {
+        'name': fields.String(example='John Doe', required=True),
+    })
+
+    @api.expect(post_model, validate=True)
+    def post(self, school_class_id: int) -> Any:
+        with session_context() as session:
+            school_class = session.query(SchoolClass).get(school_class_id)
+            if school_class is None:
+                abort(404, f'School class {school_class_id} not found')
+            class_level = school_class.class_level
+            student = Student(
+                school_class=school_class,
+                name=request.json['name'],
+            )
+            session.add(student)
+            session.commit()
+            return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
+                'student': student.json(),
             }
 
 
