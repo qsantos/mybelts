@@ -16,7 +16,12 @@ flake8-isort
 flake8-pep3101
 flake8-quotes
 isort
+
+# typing
 mypy
+sqlalchemy-stubs
+types-flask
+types-jsonschema
 
 # misc
 pip-tools  # generate requirements.txt from requirements.in

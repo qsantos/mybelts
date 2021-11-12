@@ -59,7 +59,9 @@ markupsafe==2.0.1
 mccabe==0.6.1
     # via flake8
 mypy==0.910
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   sqlalchemy-stubs
 mypy-extensions==0.4.3
     # via mypy
 pep517==0.12.0
@@ -82,14 +84,30 @@ sqlalchemy==1.4.27
     # via
     #   -r requirements.in
     #   alembic
+sqlalchemy-stubs==0.4
+    # via -r requirements.in
 testfixtures==6.18.3
     # via flake8-isort
 toml==0.10.2
     # via mypy
 tomli==1.2.2
     # via pep517
+types-click==7.1.7
+    # via types-flask
+types-flask==1.1.5
+    # via -r requirements.in
+types-jinja2==2.11.8
+    # via types-flask
+types-jsonschema==3.2.1
+    # via -r requirements.in
+types-markupsafe==1.1.8
+    # via types-jinja2
+types-werkzeug==1.0.7
+    # via types-flask
 typing-extensions==3.10.0.2
-    # via mypy
+    # via
+    #   mypy
+    #   sqlalchemy-stubs
 werkzeug==0.16.0
     # via
     #   -r requirements.in

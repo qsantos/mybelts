@@ -1,7 +1,7 @@
 from typing import Any
 
 from flask import Blueprint, Flask
-from flask_restplus import Api, Resource
+from flask_restplus import Api, Resource  # type: ignore
 from jsonschema import FormatChecker
 
 from skills.schema import Belt, session_context
