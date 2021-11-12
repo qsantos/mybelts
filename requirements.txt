@@ -58,6 +58,10 @@ markupsafe==2.0.1
     #   mako
 mccabe==0.6.1
     # via flake8
+mypy==0.910
+    # via -r requirements.in
+mypy-extensions==0.4.3
+    # via mypy
 pep517==0.12.0
     # via pip-tools
 pip-tools==6.4.0
@@ -80,8 +84,12 @@ sqlalchemy==1.4.27
     #   alembic
 testfixtures==6.18.3
     # via flake8-isort
+toml==0.10.2
+    # via mypy
 tomli==1.2.2
     # via pep517
+typing-extensions==3.10.0.2
+    # via mypy
 werkzeug==0.16.0
     # via
     #   -r requirements.in

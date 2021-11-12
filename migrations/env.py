@@ -7,7 +7,7 @@ from sqlalchemy import engine_from_config, pool
 
 config = context.config
 
-fileConfig(config.config_file_name)
+fileConfig(config.config_file_name)  # type: ignore
 
 sys.path.insert(0, os.getcwd())
 

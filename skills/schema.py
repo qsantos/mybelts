@@ -28,7 +28,7 @@ def session_context() -> Iterator[scoped_session]:
         session.rollback()
         raise
     finally:
-        session_factory.remove()  # type: ignore
+        session_factory.remove()
 
 
 class Belt(Base):  # type: ignore
