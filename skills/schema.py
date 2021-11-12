@@ -37,3 +37,6 @@ class Belt(Base):  # type: ignore
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     rank = Column(Integer, nullable=False, index=True)
     name = Column(String, nullable=False, index=True)
+
+    def exchange_ranks(self, other: 'Belt') -> None:
+        self.rank, other.rank = other.rank, self.rank
