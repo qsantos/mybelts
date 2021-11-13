@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, NoReturn, Set, Tuple
+from typing import Any, Dict, List, NoReturn, Set
 
 from flask import Blueprint, Flask, request, url_for
 from flask_restplus import fields  # type: ignore
@@ -206,7 +206,7 @@ class SchoolClassStudentBeltsResource(Resource):
             # collect results
             belts = {}
             skill_domains = {}
-            belts_of_students: Dict[int, List[Tuple[int, int]]] = {}
+            belts_of_students: Dict[int, List[Dict[str, int]]] = {}
             students = {}
             for student, belt, skill_domain in students_belts_skill_domains:
                 students[student.id] = student
@@ -214,7 +214,10 @@ class SchoolClassStudentBeltsResource(Resource):
                 if belt is not None and skill_domain is not None:
                     belts[belt.id] = belt
                     skill_domains[skill_domain.id] = skill_domain
-                    belts_of_student.append((skill_domain.id, belt.id))
+                    belts_of_student.append({
+                        'skill_domain_id': skill_domain.id,
+                        'belt_id': belt.id,
+                    })
 
             return {
                 'class_level': class_level.json(),
