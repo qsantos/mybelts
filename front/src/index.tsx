@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter, Link, Outlet, Route, Routes, useParams } from "react-router-dom";
 import { StrictMode, useEffect, useState } from 'react';
 
+import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -10,6 +11,14 @@ import Table from 'react-bootstrap/Table';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './index.css';
+
+function BreadcrumbItem({ children, href, active }: { children: any, href?: string, active?: boolean }) {
+  if (href) {
+    return <Breadcrumb.Item linkAs={Link} linkProps={{to: href}}>{children}</Breadcrumb.Item>
+  } else {
+    return <Breadcrumb.Item active={active === undefined ? false : active}>{children}</Breadcrumb.Item>
+  }
+}
 
 function Loader() {
     return <Spinner animation="border" role="status">
@@ -25,12 +34,24 @@ function Belts() {
   }, []);
 
   if (belts.length === 0) {
-    return <Loader />;
+    return <>
+        <Breadcrumb>
+          <BreadcrumbItem href="/">Home</BreadcrumbItem>
+          <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
+        </Breadcrumb>
+        <Loader />
+      </>;
   }
 
-  return <ListGroup>
-    {belts.map(belt => <ListGroup.Item key={belt['id']}>{belt['name']}</ListGroup.Item>)}
-  </ListGroup>;
+  return <>
+    <Breadcrumb>
+      <BreadcrumbItem href="/">Home</BreadcrumbItem>
+      <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
+    </Breadcrumb>
+    <ListGroup>
+      {belts.map(belt => <ListGroup.Item key={belt['id']}>{belt['name']}</ListGroup.Item>)}
+    </ListGroup>
+  </>;
 }
 
 function ClassLevels() {
@@ -42,10 +63,20 @@ function ClassLevels() {
   }, []);
 
   if (classLevels.length === 0) {
-    return <Loader />;
+    return <>
+      <Breadcrumb>
+        <BreadcrumbItem href="/">Home</BreadcrumbItem>
+        <BreadcrumbItem active href="/class-levels">Levels</BreadcrumbItem>
+      </Breadcrumb>
+      <Loader />
+    </>;
   }
 
   return <ListGroup>
+    <Breadcrumb>
+      <BreadcrumbItem href="/">Home</BreadcrumbItem>
+      <BreadcrumbItem active href="/class-levels">Levels</BreadcrumbItem>
+    </Breadcrumb>
     {classLevels.map(classLevel =>
       <ListGroup.Item action key={classLevel['id']}>
         <Nav.Link as={Link} to={`${classLevel['id']}`}>
@@ -71,10 +102,22 @@ function ClassLevel() {
   }, [class_level_id]);
 
   if (classLevel === null) {
-    return <Loader />;
+    return <>
+      <Breadcrumb>
+        <BreadcrumbItem href="/">Home</BreadcrumbItem>
+        <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
+        <BreadcrumbItem active href={`/class-levels/${class_level_id}`}>Level ?</BreadcrumbItem>
+      </Breadcrumb>
+      <Loader />
+    </>;
   }
 
   return <>
+    <Breadcrumb>
+      <BreadcrumbItem href="/">Home</BreadcrumbItem>
+      <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
+      <BreadcrumbItem active href={`/class-levels/${classLevel['id']}`}>Level {classLevel['prefix']}</BreadcrumbItem>
+    </Breadcrumb>
     <h3>{classLevel['prefix']}</h3>
     {schoolClasses.length === 0 ? 'No school class' : <ListGroup>
         {schoolClasses.map(schoolClass =>
@@ -105,12 +148,26 @@ function SchoolClass() {
   }, [school_class_id]);
 
   if (classLevel === null || schoolClass === null) {
-    return <Loader />;
+    return <>
+      <Breadcrumb>
+        <BreadcrumbItem href="/">Home</BreadcrumbItem>
+        <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
+        <BreadcrumbItem>Level ?</BreadcrumbItem>
+        <BreadcrumbItem active href="/">Class ?</BreadcrumbItem>
+      </Breadcrumb>
+      <Loader />
+    </>;
   }
 
   return <>
-    <div>{classLevel['prefix']}{schoolClass['suffix']}</div>
-    {students.length === 0 ? '?' : <ListGroup>
+    <Breadcrumb>
+      <BreadcrumbItem href="/">Home</BreadcrumbItem>
+      <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
+      <BreadcrumbItem href={`/class-levels/${classLevel['id']}`}>Level {classLevel['prefix']}</BreadcrumbItem>
+      <BreadcrumbItem active href={`/school-classes/${schoolClass['id']}`}>Class {schoolClass['suffix']}</BreadcrumbItem>
+    </Breadcrumb>
+    <h3>{classLevel['prefix']}{schoolClass['suffix']}</h3>
+    {students.length === 0 ? 'No students' : <ListGroup>
       {students.map(student =>
         <ListGroup.Item action key={student['id']}>{student['name']}</ListGroup.Item>
       )}
@@ -131,7 +188,16 @@ function SchoolClassBelts() {
   }, [school_class_id]);
 
   if (data === null) {
-    return <Loader />;
+    return <>
+      <Breadcrumb>
+        <BreadcrumbItem href="/">Home</BreadcrumbItem>
+        <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
+        <BreadcrumbItem>Level ?</BreadcrumbItem>
+        <BreadcrumbItem href={`/school-class/${school_class_id}`}>Class ?</BreadcrumbItem>
+        <BreadcrumbItem active href={`/school-classes/${school_class_id}/belts`}>Belts</BreadcrumbItem>
+      </Breadcrumb>
+      <Loader />
+    </>;
   }
 
   const { class_level, school_class, belts, skill_domains, student_belts } = data;
@@ -141,6 +207,13 @@ function SchoolClassBelts() {
   const belt_by_id = Object.fromEntries(belts.map(belt => [belt['id'], belt]));
 
   return <>
+    <Breadcrumb>
+      <BreadcrumbItem href="/">Home</BreadcrumbItem>
+      <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
+      <BreadcrumbItem href={`/class-levels/${class_level['id']}`}>Level {class_level['prefix']}</BreadcrumbItem>
+      <BreadcrumbItem active href={`/school-classes/${school_class['id']}`}>Class {school_class['suffix']}</BreadcrumbItem>
+        <BreadcrumbItem active href={`/school-classes/${school_class['id']}/belts`}>Belts</BreadcrumbItem>
+    </Breadcrumb>
     <h3>{class_level['prefix']}{school_class['suffix']}</h3>
     <Table>
       <thead>
