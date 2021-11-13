@@ -465,5 +465,6 @@ class BeltRankResource(Resource):
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config['ERROR_404_HELP'] = False
+    app.config.SWAGGER_UI_DOC_EXPANSION = 'list'
     app.register_blueprint(api_blueprint, url_prefix='/api')
     return app
