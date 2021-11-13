@@ -1,9 +1,10 @@
 from typing import Any, Dict, List, NoReturn, Set, Tuple
 
-from flask import Blueprint, Flask, request
+from flask import Blueprint, Flask, request, url_for
 from flask_restplus import fields  # type: ignore
 from flask_restplus import Api, Resource
 from flask_restplus import abort as flask_restplus_abort
+from flask_restplus.apidoc import apidoc
 from jsonschema import FormatChecker
 from sqlalchemy import and_
 from sqlalchemy.sql.expression import func
@@ -16,6 +17,20 @@ from skills.schema import (
 
 def abort(code: int, message: str) -> NoReturn:  # type: ignore
     flask_restplus_abort(code, message)
+
+
+# fix for location of SwaggerUI not at root
+apidoc.static_url_path = '/api/swaggerui'
+
+
+# fix for location of Swagger through reverse proxy
+@property  # type: ignore
+def specs_url(self: Api) -> str:
+    return url_for(self.endpoint('specs'), _external=False)
+
+
+Api.specs_url = specs_url
+# end of fix
 
 
 api_blueprint = Blueprint('api', __name__)
