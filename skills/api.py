@@ -346,7 +346,7 @@ class SkillDomainsResource(Resource):
             session.add(skill_domain)
             session.commit()
             return {
-                'session_skill': skill_domain.json(),
+                'skill_domain': skill_domain.json(),
             }
 
 
