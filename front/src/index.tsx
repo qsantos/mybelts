@@ -4,10 +4,17 @@ import { StrictMode, useEffect, useState } from 'react';
 
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import Spinner from 'react-bootstrap/Spinner';
 import Table from 'react-bootstrap/Table';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './index.css';
+
+function Loader() {
+    return <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading</span>
+    </Spinner>;
+}
 
 function Belts() {
   const [belts, setBelts] = useState([]);
@@ -16,13 +23,13 @@ function Belts() {
     fetch('/api/belts').then(res => res.json().then(json => setBelts(json.belts)));
   }, []);
 
-  return <>
-    <div>
-      {belts.length === 0 ? 'No belts' : <ul>
-          {belts.map(belt => <li key={belt['id']}>{belt['name']}</li>)}
-      </ul>}
-    </div>
-  </>;
+  if (belts.length === 0) {
+    return <Loader />;
+  }
+
+  return <ul>
+    {belts.map(belt => <li key={belt['id']}>{belt['name']}</li>)}
+  </ul>;
 }
 
 function ClassLevels() {
@@ -33,19 +40,19 @@ function ClassLevels() {
     .then(res => res.json().then(json => setClassLevels(json.class_levels)));
   }, []);
 
-  return <>
-    <div>
-      {classLevels.length === 0 ? 'No class levels' : <ul>
-        {classLevels.map(classLevel =>
-          <li key={classLevel['id']}>
-            <Link to={`${classLevel['id']}`}>
-              {classLevel['prefix']}
-            </Link>
-          </li>
-        )}
-      </ul>}
-    </div>
-  </>;
+  if (classLevels.length === 0) {
+    return <Loader />;
+  }
+
+  return <ul>
+    {classLevels.map(classLevel =>
+      <li key={classLevel['id']}>
+        <Link to={`${classLevel['id']}`}>
+          {classLevel['prefix']}
+        </Link>
+      </li>
+    )}
+  </ul>;
 }
 
 function ClassLevel() {
@@ -62,8 +69,12 @@ function ClassLevel() {
     }));
   }, [class_level_id]);
 
+  if (classLevel === null) {
+    return <Loader />;
+  }
+
   return <>
-    {classLevel === null ? '?' : classLevel['prefix']}
+    <h3>{classLevel['prefix']}</h3>
     {schoolClasses.length === 0 ? 'No school class' : <ul>
         {schoolClasses.map(schoolClass =>
           <li key={schoolClass['id']}>
@@ -92,8 +103,12 @@ function SchoolClass() {
     }));
   }, [school_class_id]);
 
+  if (classLevel === null || schoolClass === null) {
+    return <Loader />;
+  }
+
   return <>
-    <div>{classLevel === null ? '' : classLevel['prefix']}{schoolClass === null ? '' : schoolClass['suffix']}</div>
+    <div>{classLevel['prefix']}{schoolClass['suffix']}</div>
     {students.length === 0 ? '?' : <ul>
       {students.map(student =>
         <li key={student['id']}>{student['name']}</li>
@@ -115,42 +130,42 @@ function SchoolClassBelts() {
   }, [school_class_id]);
 
   if (data === null) {
-    return <>...</>;
-  } else {
-    const { class_level, school_class, belts, skill_domains, student_belts } = data;
-    if (student_belts.length === 0) {
-        return <>No student in this class</>;
-    }
-    const belt_by_id = Object.fromEntries(belts.map(belt => [belt['id'], belt]));
-
-    return <>
-      <h3>{class_level['prefix']}{school_class['suffix']}</h3>
-      <Table>
-        <thead>
-          <tr>
-            <th>Student</th>
-            {skill_domains.map(skill_domain => <th>{skill_domain['name']}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {student_belts.map(({student, belts}) => {
-            const belt_id_by_skill_domain_id = Object.fromEntries(belts.map(([skill_domain_id, belt_id]) => [skill_domain_id, belt_id]));
-            return <tr>
-              <th>{student['name']}</th>
-              {skill_domains.map(skill_domain => {
-                const belt_id = belt_id_by_skill_domain_id[skill_domain['id']];
-                if (belt_id === undefined) {
-                  return <td>-</td>;
-                }
-                const belt = belt_by_id[belt_id];
-                return <td>{belt['name']}</td>;
-              })}
-            </tr>;
-          })}
-        </tbody>
-      </Table>
-    </>;
+    return <Loader />;
   }
+
+  const { class_level, school_class, belts, skill_domains, student_belts } = data;
+  if (student_belts.length === 0) {
+      return <>No student in this class</>;
+  }
+  const belt_by_id = Object.fromEntries(belts.map(belt => [belt['id'], belt]));
+
+  return <>
+    <h3>{class_level['prefix']}{school_class['suffix']}</h3>
+    <Table>
+      <thead>
+        <tr>
+          <th>Student</th>
+          {skill_domains.map(skill_domain => <th>{skill_domain['name']}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {student_belts.map(({student, belts}) => {
+          const belt_id_by_skill_domain_id = Object.fromEntries(belts.map(([skill_domain_id, belt_id]) => [skill_domain_id, belt_id]));
+          return <tr>
+            <th>{student['name']}</th>
+            {skill_domains.map(skill_domain => {
+              const belt_id = belt_id_by_skill_domain_id[skill_domain['id']];
+              if (belt_id === undefined) {
+                return <td>-</td>;
+              }
+              const belt = belt_by_id[belt_id];
+              return <td>{belt['name']}</td>;
+            })}
+          </tr>;
+        })}
+      </tbody>
+    </Table>
+  </>;
 }
 
 function Layout() {
