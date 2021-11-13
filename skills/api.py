@@ -48,8 +48,128 @@ skill_domains_ns = api.namespace('Skill Domains', path='/')
 belts_ns = api.namespace('Belts', path='/')
 
 
+api_model_class_level = api.model('ClassLevel', {
+    'id': fields.Integer(example=42),
+    'created': fields.DateTime(example='2021-11-13T12:34:56Z'),
+    'prefix': fields.String(example='4e'),
+    'school_class_ids': fields.List(fields.Integer(example=42)),
+})
+
+api_model_school_class = api.model('SchoolClass', {
+    'id': fields.Integer(example=42),
+    'created': fields.DateTime(example='2021-11-13T12:34:56Z'),
+    'class_level_id': fields.Integer(example=42),
+    'suffix': fields.String(example='D'),
+    'student_ids': fields.List(fields.Integer(example=42)),
+})
+
+api_model_student = api.model('Student', {
+    'id': fields.Integer(example=42),
+    'created': fields.DateTime(example='2021-11-13T12:34:56Z'),
+    'school_class_id': fields.Integer(example=42),
+    'name': fields.String(example='John Doe'),
+})
+
+api_model_belt = api.model('Belt', {
+    'id': fields.Integer(example=42),
+    'created': fields.DateTime(example='2021-11-13T12:34:56Z'),
+    'rank': fields.Integer(example=5),
+    'name': fields.String(example='White belt'),
+})
+
+api_model_skill_domain = api.model('SkillDomain', {
+    'id': fields.Integer(example=42),
+    'created': fields.DateTime(example='2021-11-13T12:34:56Z'),
+    'name': fields.String(example='Algebra'),
+})
+
+api_model_belt_attempt = api.model('BeltAttempt', {
+    'id': fields.Integer(example=42),
+    'created': fields.DateTime(example='2021-11-13T12:34:56Z'),
+    'student_id': fields.Integer(example=42),
+    'skill_domain_id': fields.Integer(example=42),
+    'belt_id': fields.Integer(example=42),
+    'success': fields.Boolean(example=True),
+})
+
+api_model_class_level_list = api.model('ClassLevelList', {
+    'class_levels': fields.List(fields.Nested(api_model_class_level)),
+})
+
+api_model_class_level_one = api.model('ClassLevelOne', {
+    'class_level': fields.Nested(api_model_class_level),
+})
+
+api_model_school_class_list = api.model('SchoolClassList', {
+    'class_level': fields.Nested(api_model_class_level),
+    'school_classes': fields.List(fields.Nested(api_model_school_class)),
+})
+
+api_model_school_class_one = api.model('SchoolClassOne', {
+    'class_level': fields.Nested(api_model_class_level),
+    'school_class': fields.Nested(api_model_school_class),
+})
+
+api_model_student_list = api.model('StudentList', {
+    'class_level': fields.Nested(api_model_class_level),
+    'school_class': fields.Nested(api_model_school_class),
+    'students': fields.List(fields.Nested(api_model_student)),
+})
+
+api_model_student_one = api.model('StudentOne', {
+    'class_level': fields.Nested(api_model_class_level),
+    'school_class': fields.Nested(api_model_school_class),
+    'student': fields.Nested(api_model_student),
+})
+
+api_model_skill_domain_list = api.model('SkillDomainList', {
+    'skill_domains': fields.List(fields.Nested(api_model_skill_domain)),
+})
+
+api_model_skill_domain_one = api.model('SkillDomainOne', {
+    'skill_domain': fields.Nested(api_model_skill_domain),
+})
+
+api_model_belt_list = api.model('BeltList', {
+    'belts': fields.List(fields.Nested(api_model_belt)),
+})
+
+api_model_belt_one = api.model('BeltOne', {
+    'belts': fields.Nested(api_model_belt),
+})
+
+api_model_belt_attempt_list = api.model('BeltAttemptList', {
+    'student': fields.Nested(api_model_student),
+    'skill_domains': fields.List(fields.Nested(api_model_skill_domain)),
+    'belts': fields.List(fields.Nested(api_model_belt)),
+    'belt_attempts': fields.List(fields.Nested(api_model_belt_attempt)),
+})
+
+api_model_belt_attempt_one = api.model('BeltAttemptOne', {
+    'student': fields.Nested(api_model_student),
+    'skill_domain': fields.Nested(api_model_skill_domain),
+    'belt': fields.Nested(api_model_belt),
+    'belt_attempt': fields.Nested(api_model_belt_attempt),
+})
+
+api_model_school_class_student_belts = api.model('SchoolClassStudentBelts', {
+    'class_level': fields.Nested(api_model_class_level),
+    'school_class': fields.Nested(api_model_school_class),
+    'skill_domains': fields.List(fields.Nested(api_model_skill_domain)),
+    'belts': fields.List(fields.Nested(api_model_belt)),
+    'student_belts': fields.List(fields.Nested(api.model('SchoolClassStudentBeltsStudentBelts', {
+        'student': fields.Nested(api_model_student),
+        'belts': fields.List(fields.Nested(api.model('SchoolClassStudentBeltsBelts', {
+            'skill_domain_id': fields.Integer(example=42),
+            'belt_id': fields.Integer(example=42),
+        }))),
+    }))),
+})
+
+
 @class_level_ns.route('/class-levels')
 class ClassLevelsResource(Resource):
+    @api.marshal_with(api_model_class_level_list)
     def get(self) -> Any:
         with session_context() as session:
             return {
@@ -64,6 +184,7 @@ class ClassLevelsResource(Resource):
     })
 
     @api.expect(post_model, validate=True)
+    @api.marshal_with(api_model_class_level_one)
     def post(self) -> Any:
         with session_context() as session:
             class_level = ClassLevel(prefix=request.json['prefix'])
@@ -76,6 +197,7 @@ class ClassLevelsResource(Resource):
 
 @class_level_ns.route('/class-levels/<int:class_level_id>/')
 class ClassLevelClassesResource(Resource):
+    @api.marshal_with(api_model_class_level_one)
     def get(self, class_level_id: int) -> Any:
         with session_context() as session:
             class_level = session.query(ClassLevel).get(class_level_id)
@@ -88,6 +210,7 @@ class ClassLevelClassesResource(Resource):
 
 @class_level_ns.route('/class-levels/<int:class_level_id>/school-classes')
 class ClassLevelSchoolClassesResource(Resource):
+    @api.marshal_with(api_model_school_class_list)
     def get(self, class_level_id: int) -> Any:
         with session_context() as session:
             class_level = session.query(ClassLevel).get(class_level_id)
@@ -106,6 +229,7 @@ class ClassLevelSchoolClassesResource(Resource):
     })
 
     @api.expect(post_model, validate=True)
+    @api.marshal_with(api_model_school_class_one)
     def post(self, class_level_id: int) -> Any:
         with session_context() as session:
             class_level = session.query(ClassLevel).get(class_level_id)
@@ -125,6 +249,7 @@ class ClassLevelSchoolClassesResource(Resource):
 
 @school_class_ns.route('/school-classes/<int:school_class_id>/')
 class SchoolClassResource(Resource):
+    @api.marshal_with(api_model_student_list)
     def get(self, school_class_id: int) -> Any:
         with session_context() as session:
             school_class = session.query(SchoolClass).get(school_class_id)
@@ -143,6 +268,7 @@ class SchoolClassResource(Resource):
 
 @school_class_ns.route('/school-classes/<int:school_class_id>/students')
 class SchoolClassStudentsResource(Resource):
+    @api.marshal_with(api_model_student_list)
     def get(self, school_class_id: int) -> Any:
         with session_context() as session:
             school_class = session.query(SchoolClass).get(school_class_id)
@@ -163,6 +289,7 @@ class SchoolClassStudentsResource(Resource):
     })
 
     @api.expect(post_model, validate=True)
+    @api.marshal_with(api_model_student_one)
     def post(self, school_class_id: int) -> Any:
         with session_context() as session:
             school_class = session.query(SchoolClass).get(school_class_id)
@@ -184,6 +311,7 @@ class SchoolClassStudentsResource(Resource):
 
 @school_class_ns.route('/school-classes/<int:school_class_id>/student-belts')
 class SchoolClassStudentBeltsResource(Resource):
+    @api.marshal_with(api_model_school_class_student_belts)
     def get(self, school_class_id: int) -> Any:
         with session_context() as session:
             school_class = session.query(SchoolClass).get(school_class_id)
@@ -242,6 +370,7 @@ class SchoolClassStudentBeltsResource(Resource):
 
 @students_ns.route('/students/<int:student_id>/')
 class StudentResource(Resource):
+    @api.marshal_with(api_model_student_one)
     def get(self, student_id: int) -> Any:
         with session_context() as session:
             student = session.query(Student).get(student_id)
@@ -258,6 +387,7 @@ class StudentResource(Resource):
 
 @students_ns.route('/students/<int:student_id>/belt-attempts')
 class StudentBeltAttemptsResource(Resource):
+    @api.marshal_with(api_model_belt_attempt_list)
     def get(self, student_id: int) -> Any:
         with session_context() as session:
             student = session.query(Student).get(student_id)
@@ -292,6 +422,7 @@ class StudentBeltAttemptsResource(Resource):
     })
 
     @api.expect(post_model, validate=True)
+    @api.marshal_with(api_model_belt_attempt_one)
     def post(self, student_id: int) -> Any:
         with session_context() as session:
             student = session.query(Student).get(student_id)
@@ -323,6 +454,7 @@ class StudentBeltAttemptsResource(Resource):
 
 @skill_domains_ns.route('/skill-domains')
 class SkillDomainsResource(Resource):
+    @api.marshal_with(api_model_skill_domain_list)
     def get(self) -> Any:
         with session_context() as session:
             skill_domains = session.query(SkillDomain).all()
@@ -338,6 +470,7 @@ class SkillDomainsResource(Resource):
     })
 
     @api.expect(post_model, validate=True)
+    @api.marshal_with(api_model_skill_domain_one)
     def post(self) -> Any:
         with session_context() as session:
             skill_domain = SkillDomain(
@@ -352,6 +485,7 @@ class SkillDomainsResource(Resource):
 
 @skill_domains_ns.route('/skill-domains/<int:skill_domain_id>/')
 class SkillDomainResource(Resource):
+    @api.marshal_with(api_model_skill_domain_one)
     def get(self, skill_domain_id: int) -> Any:
         with session_context() as session:
             skill_domain = session.query(SkillDomain).get(skill_domain_id)
@@ -364,6 +498,7 @@ class SkillDomainResource(Resource):
 
 @belts_ns.route('/belts')
 class BeltsResource(Resource):
+    @api.marshal_with(api_model_belt_list)
     def get(self) -> Any:
         with session_context() as session:
             return {
@@ -378,6 +513,7 @@ class BeltsResource(Resource):
     })
 
     @api.expect(post_model, validate=True)
+    @api.marshal_with(api_model_belt_one)
     def post(self) -> Any:
         with session_context() as session:
             # TODO: store this information somewhere
@@ -395,6 +531,7 @@ class BeltsResource(Resource):
 
 @belts_ns.route('/belts/<int:belt_id>/')
 class BeltResource(Resource):
+    @api.marshal_with(api_model_belt_one)
     def get(self, belt_id: int) -> Any:
         with session_context() as session:
             belt = session.query(Belt).get(belt_id)
@@ -410,6 +547,7 @@ class BeltResource(Resource):
     })
 
     @api.expect(put_model, validate=True)
+    @api.marshal_with(api_model_belt_one)
     def put(self, belt_id: int) -> Any:
         with session_context() as session:
             belt = session.query(Belt).get(belt_id)
@@ -431,6 +569,7 @@ class BeltRankResource(Resource):
     })
 
     @api.expect(patch_model, validate=True)
+    @api.marshal_with(api_model_belt_one)
     def patch(self, belt_id: int) -> Any:
         other_belt_id = request.json.get('other_belt_id')
         go_up_n_ranks = request.json.get('go_up_n_ranks')
