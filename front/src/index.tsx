@@ -2,6 +2,11 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter, Link, Outlet, Route, Routes, useParams } from "react-router-dom";
 import { StrictMode, useEffect, useState } from 'react';
 
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import Table from 'react-bootstrap/Table';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import './index.css';
 
 function Belts() {
@@ -120,7 +125,7 @@ function SchoolClassBelts() {
 
     return <>
       <h3>{class_level['prefix']}{school_class['suffix']}</h3>
-      <table>
+      <Table>
         <thead>
           <tr>
             <th>Student</th>
@@ -143,17 +148,21 @@ function SchoolClassBelts() {
             </tr>;
           })}
         </tbody>
-      </table>
+      </Table>
     </>;
   }
 }
 
 function Layout() {
   return <>
-    <ul>
-        <li><Link to="/belts">Belts</Link></li>
-        <li><Link to="/class-levels">Class Levels</Link></li>
-    </ul>
+    <Navbar>
+      <Navbar.Brand as={Link} to="/">Skills</Navbar.Brand>
+      <Nav>
+          <Nav.Item><Nav.Link as={Link} to="/">Home</Nav.Link></Nav.Item>
+          <Nav.Item><Nav.Link as={Link} to="/belts">Belts</Nav.Link></Nav.Item>
+          <Nav.Item><Nav.Link as={Link} to="/class-levels">Class Levels</Nav.Link></Nav.Item>
+      </Nav>
+    </Navbar>
     <Outlet />
   </>;
 }
