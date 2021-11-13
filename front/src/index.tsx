@@ -1,10 +1,10 @@
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Link, Outlet, Route, Routes, useParams } from "react-router-dom";
-import { ReactElement, StrictMode, useEffect, useState } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 
 import './index.css';
 
-function Belts(): ReactElement {
+function Belts() {
   const [belts, setBelts] = useState([]);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ function Belts(): ReactElement {
   </>;
 }
 
-function ClassLevels(): ReactElement {
+function ClassLevels() {
   const [classLevels, setClassLevels] = useState([]);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ function ClassLevels(): ReactElement {
   </>;
 }
 
-function ClassLevel(): ReactElement {
+function ClassLevel() {
   const { class_level_id } = useParams();
 
   const [classLevel, setClassLevel] = useState(null);
@@ -71,7 +71,7 @@ function ClassLevel(): ReactElement {
   </>;
 }
 
-function SchoolClass(): ReactElement {
+function SchoolClass() {
   const { school_class_id } = useParams();
 
   const [classLevel, setClassLevel] = useState(null);
