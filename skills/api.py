@@ -4,7 +4,7 @@ from flask import Blueprint, Flask, request, url_for
 from flask_restplus import fields  # type: ignore
 from flask_restplus import Api, Resource
 from flask_restplus import abort as flask_restplus_abort
-from flask_restplus.apidoc import apidoc
+from flask_restplus.apidoc import apidoc  # type: ignore
 from jsonschema import FormatChecker
 from sqlalchemy import and_
 from sqlalchemy.sql.expression import func
@@ -484,6 +484,6 @@ class BeltRankResource(Resource):
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config['ERROR_404_HELP'] = False
-    app.config.SWAGGER_UI_DOC_EXPANSION = 'list'
+    app.config['SWAGGER_UI_DOC_EXPANSION'] = 'list'
     app.register_blueprint(api_blueprint, url_prefix='/api')
     return app
