@@ -172,7 +172,7 @@ function SchoolClass() {
     <h3>{classLevel['prefix']}{schoolClass['suffix']}</h3>
     {students.length === 0 ? 'No students' : <ListGroup>
       {students.map(student =>
-        <ListGroup.Item action key={student['id']}>{student['name']}</ListGroup.Item>
+        <ListGroup.Item key={student['id']}>{student['name']}</ListGroup.Item>
       )}
     </ListGroup>}
   </>;
