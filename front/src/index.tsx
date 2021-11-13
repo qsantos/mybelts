@@ -146,21 +146,21 @@ function SchoolClassBelts() {
       <thead>
         <tr>
           <th>Student</th>
-          {skill_domains.map(skill_domain => <th>{skill_domain['name']}</th>)}
+          {skill_domains.map(skill_domain => <th key={skill_domain['id']}>{skill_domain['name']}</th>)}
         </tr>
       </thead>
       <tbody>
         {student_belts.map(({student, belts}) => {
           const belt_id_by_skill_domain_id = Object.fromEntries(belts.map(([skill_domain_id, belt_id]) => [skill_domain_id, belt_id]));
-          return <tr>
+          return <tr key={student['id']}>
             <th>{student['name']}</th>
             {skill_domains.map(skill_domain => {
               const belt_id = belt_id_by_skill_domain_id[skill_domain['id']];
               if (belt_id === undefined) {
-                return <td>-</td>;
+                return <td key={skill_domain['id']}>-</td>;
               }
               const belt = belt_by_id[belt_id];
-              return <td>{belt['name']}</td>;
+              return <td key={skill_domain['id']}>{belt['name']}</td>;
             })}
           </tr>;
         })}
