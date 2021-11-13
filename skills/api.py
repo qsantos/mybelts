@@ -1,4 +1,4 @@
-from typing import Any, NoReturn
+from typing import Any, NoReturn, Set
 
 from flask import Blueprint, Flask, request
 from flask_restplus import fields  # type: ignore
@@ -9,7 +9,7 @@ from sqlalchemy import and_
 from sqlalchemy.sql.expression import func
 
 from skills.schema import (
-    Belt, ClassLevel, SchoolClass, Student, session_context,
+    Belt, BeltAttempt, ClassLevel, SchoolClass, Student, session_context,
 )
 
 
@@ -174,6 +174,57 @@ class StudentResource(Resource):
                 'class_level': class_level.json(),
                 'school_class': school_class.json(),
                 'student': student.json(),
+            }
+
+
+@students_ns.route('/students/<int:student_id>/belt-attempts')
+class StudentBeltAttemptsResource(Resource):
+    def get(self, student_id: int) -> Any:
+        with session_context() as session:
+            student = session.query(Student).get(student_id)
+            if student is None:
+                abort(404, f'Student {student_id} not found')
+            belts = []
+            belt_ids: Set[int] = set()
+            belt_attempts = []
+            for belt_attempt in student.belt_attempts:
+                belt_attempts.append(belt_attempt)
+                if belt_attempt.belt_id not in belt_ids:
+                    belt = belt_attempt.belt
+                    belt_ids.add(belt.id)
+                    belts.append(belt)
+            return {
+                'student': student.json(),
+                'belts': [belt.json() for belt in belts],
+                'belt_attempts': [belt_attempt.json() for belt_attempt in belt_attempts],
+            }
+
+    post_model = api.model('StudentBeltAttemptsPost', {
+        'belt_id': fields.Integer(example=42, required=True),
+        'success': fields.Boolean(example=True, required=True),
+    })
+
+    @api.expect(post_model, validate=True)
+    def post(self, student_id: int) -> Any:
+        with session_context() as session:
+            student = session.query(Student).get(student_id)
+            if student is None:
+                abort(404, f'Student {student_id} not found')
+            belt_id = request.json['belt_id']
+            belt = session.query(Belt).get(belt_id)
+            if belt is None:
+                abort(404, f'Belt {belt_id} not found')
+            belt_attempt = BeltAttempt(
+                student_id=student_id,
+                belt_id=belt_id,
+                success=request.json['success'],
+            )
+            session.add(belt_attempt)
+            session.commit()
+            return {
+                'student': student.json(),
+                'belt': belt.json(),
+                'belt_attempt': belt_attempt.json(),
             }
 
 
