@@ -97,6 +97,57 @@ function SchoolClass() {
   </>;
 }
 
+function SchoolClassBelts() {
+  const { school_class_id } = useParams();
+
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetch(`/api/school-classes/${school_class_id}/student-belts`)
+    .then(res => res.json().then(json => {
+      setData(json);
+    }));
+  }, [school_class_id]);
+
+  if (data === null) {
+    return <>...</>;
+  } else {
+    const { class_level, school_class, belts, skill_domains, student_belts } = data;
+    if (student_belts.length === 0) {
+        return <>No student in this class</>;
+    }
+    const belt_by_id = Object.fromEntries(belts.map(belt => [belt['id'], belt]));
+
+    return <>
+      <h3>{class_level['prefix']}{school_class['suffix']}</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Student</th>
+            {skill_domains.map(skill_domain => <th>{skill_domain['name']}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {student_belts.map(({student, belts}) => {
+            const belt_id_by_skill_domain_id = Object.fromEntries(belts.map(([skill_domain_id, belt_id]) => [skill_domain_id, belt_id]));
+            return <tr>
+              <th>{student['name']}</th>
+              {skill_domains.map(skill_domain => {
+                const belt_id = belt_id_by_skill_domain_id[skill_domain['id']];
+                if (belt_id === undefined) {
+                  return <td>-</td>;
+                }
+                const belt = belt_by_id[belt_id];
+                return <td>{belt['name']}</td>;
+              })}
+            </tr>;
+          })}
+        </tbody>
+      </table>
+    </>;
+  }
+}
+
 function Layout() {
   return <>
     <ul>
@@ -115,7 +166,10 @@ function App() {
         <Route index element={<ClassLevels />} />
         <Route path=":class_level_id" element={<ClassLevel />} />
       </Route>
-      <Route path="school-classes/:school_class_id" element={<SchoolClass />} />
+      <Route path="school-classes/:school_class_id">
+        <Route index element={<SchoolClass />} />
+        <Route path="belts" element={<SchoolClassBelts />} />
+      </Route>
     </Route>
   </Routes>;
 }
