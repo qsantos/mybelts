@@ -1,4 +1,4 @@
-from typing import Any, NoReturn, Set
+from typing import Any, Dict, List, NoReturn, Set, Tuple
 
 from flask import Blueprint, Flask, request
 from flask_restplus import fields  # type: ignore
@@ -160,6 +160,60 @@ class SchoolClassStudentsResource(Resource):
                 'class_level': class_level.json(),
                 'school_class': school_class.json(),
                 'student': student.json(),
+            }
+
+
+@school_class_ns.route('/school-classes/<int:school_class_id>/student-belts')
+class SchoolClassStudentBeltsResource(Resource):
+    def get(self, school_class_id: int) -> Any:
+        with session_context() as session:
+            school_class = session.query(SchoolClass).get(school_class_id)
+            if school_class is None:
+                abort(404, f'School class {school_class_id} not found')
+            class_level = school_class.class_level
+
+            success_belt_attempts = session.query(BeltAttempt).filter(BeltAttempt.success).subquery()
+            students_belts_skill_domains = (
+                session  # type: ignore
+                .query(Student, Belt, SkillDomain)
+                .select_from(Student)
+                .outerjoin(success_belt_attempts)
+                .outerjoin(Belt)
+                .outerjoin(SkillDomain)
+                .all()
+            )
+
+            # collect results
+            belts = {}
+            skill_domains = {}
+            belts_of_students: Dict[int, List[Tuple[int, int]]] = {}
+            students = {}
+            for student, belt, skill_domain in students_belts_skill_domains:
+                students[student.id] = student
+                belts_of_student = belts_of_students.setdefault(student.id, [])
+                if belt is not None and skill_domain is not None:
+                    belts[belt.id] = belt
+                    skill_domains[skill_domain.id] = skill_domain
+                    belts_of_student.append((skill_domain.id, belt.id))
+
+            return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
+                'belts': [
+                    belt.json()
+                    for belt in belts.values()
+                ],
+                'skill_domains': [
+                    skill_domain.json()
+                    for skill_domain in skill_domains.values()
+                ],
+                'student_belts': [
+                    {
+                        'student': student.json(),
+                        'belts': belts_of_students[student.id],
+                    }
+                    for student in students.values()
+                ],
             }
 
 
