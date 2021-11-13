@@ -155,6 +155,8 @@ function SchoolClass() {
         <BreadcrumbItem>Level ?</BreadcrumbItem>
         <BreadcrumbItem active href="/">Class ?</BreadcrumbItem>
       </Breadcrumb>
+      <Link to="belts">Belts</Link>
+      <br />
       <Loader />
     </>;
   }
@@ -166,6 +168,7 @@ function SchoolClass() {
       <BreadcrumbItem href={`/class-levels/${classLevel['id']}`}>Level {classLevel['prefix']}</BreadcrumbItem>
       <BreadcrumbItem active href={`/school-classes/${schoolClass['id']}`}>Class {schoolClass['suffix']}</BreadcrumbItem>
     </Breadcrumb>
+    <Link to="belts">Belts</Link>
     <h3>{classLevel['prefix']}{schoolClass['suffix']}</h3>
     {students.length === 0 ? 'No students' : <ListGroup>
       {students.map(student =>
@@ -214,7 +217,7 @@ function SchoolClassBelts() {
       <BreadcrumbItem active href={`/school-classes/${school_class['id']}`}>Class {school_class['suffix']}</BreadcrumbItem>
         <BreadcrumbItem active href={`/school-classes/${school_class['id']}/belts`}>Belts</BreadcrumbItem>
     </Breadcrumb>
-    <h3>{class_level['prefix']}{school_class['suffix']}</h3>
+    <h3>{class_level['prefix']}{school_class['suffix']} belts</h3>
     <Table>
       <thead>
         <tr>
