@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter, Link, Outlet, Route, Routes, useParams } from "react-router-dom";
 import { StrictMode, useEffect, useState } from 'react';
 
+import ListGroup from 'react-bootstrap/ListGroup';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Spinner from 'react-bootstrap/Spinner';
@@ -27,9 +28,9 @@ function Belts() {
     return <Loader />;
   }
 
-  return <ul>
-    {belts.map(belt => <li key={belt['id']}>{belt['name']}</li>)}
-  </ul>;
+  return <ListGroup>
+    {belts.map(belt => <ListGroup.Item key={belt['id']}>{belt['name']}</ListGroup.Item>)}
+  </ListGroup>;
 }
 
 function ClassLevels() {
@@ -44,15 +45,15 @@ function ClassLevels() {
     return <Loader />;
   }
 
-  return <ul>
+  return <ListGroup>
     {classLevels.map(classLevel =>
-      <li key={classLevel['id']}>
-        <Link to={`${classLevel['id']}`}>
+      <ListGroup.Item action key={classLevel['id']}>
+        <Nav.Link as={Link} to={`${classLevel['id']}`}>
           {classLevel['prefix']}
-        </Link>
-      </li>
+        </Nav.Link>
+      </ListGroup.Item>
     )}
-  </ul>;
+  </ListGroup>;
 }
 
 function ClassLevel() {
@@ -75,15 +76,15 @@ function ClassLevel() {
 
   return <>
     <h3>{classLevel['prefix']}</h3>
-    {schoolClasses.length === 0 ? 'No school class' : <ul>
+    {schoolClasses.length === 0 ? 'No school class' : <ListGroup>
         {schoolClasses.map(schoolClass =>
-          <li key={schoolClass['id']}>
-            <Link to={`/school-classes/${schoolClass['id']}`}>
+          <ListGroup.Item action key={schoolClass['id']}>
+            <Nav.Link as={Link} to={`/school-classes/${schoolClass['id']}`}>
               {schoolClass['suffix']}
-            </Link>
-          </li>
+            </Nav.Link>
+          </ListGroup.Item>
         )}
-    </ul>}
+    </ListGroup>}
   </>;
 }
 
@@ -109,11 +110,11 @@ function SchoolClass() {
 
   return <>
     <div>{classLevel['prefix']}{schoolClass['suffix']}</div>
-    {students.length === 0 ? '?' : <ul>
+    {students.length === 0 ? '?' : <ListGroup>
       {students.map(student =>
-        <li key={student['id']}>{student['name']}</li>
+        <ListGroup.Item action key={student['id']}>{student['name']}</ListGroup.Item>
       )}
-    </ul>}
+    </ListGroup>}
   </>;
 }
 
