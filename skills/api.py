@@ -86,7 +86,7 @@ class ClassLevelClassesResource(Resource):
             }
 
 
-@class_level_ns.route('/class-levels/<int:class_level_id>/school_classes')
+@class_level_ns.route('/class-levels/<int:class_level_id>/school-classes')
 class ClassLevelSchoolClassesResource(Resource):
     def get(self, class_level_id: int) -> Any:
         with session_context() as session:
