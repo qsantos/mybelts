@@ -134,6 +134,10 @@ class SchoolClassResource(Resource):
             return {
                 'class_level': class_level.json(),
                 'school_class': school_class.json(),
+                'students': [
+                    student.json()
+                    for student in school_class.students
+                ],
             }
 
 
