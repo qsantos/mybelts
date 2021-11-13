@@ -2,7 +2,8 @@ from contextlib import contextmanager
 from typing import Dict, Iterator, List
 
 from sqlalchemy import (
-    Column, DateTime, ForeignKey, Integer, String, create_engine, func,
+    Boolean, Column, DateTime, ForeignKey, Integer, String, create_engine,
+    func,
 )
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import declarative_base
@@ -96,6 +97,12 @@ class Student(Base):  # type: ignore
         back_populates='students',
     )
 
+    belt_attempts: List['BeltAttempt'] = relationship(  # type: ignore
+        'BeltAttempt',
+        foreign_keys='BeltAttempt.student_id',
+        back_populates='student',
+    )
+
     def json(self) -> Dict:
         return {
             'id': self.id,
@@ -112,6 +119,12 @@ class Belt(Base):  # type: ignore
     rank = Column(Integer, nullable=False, index=True)
     name = Column(String, nullable=False, index=True)
 
+    belt_attempts: List['BeltAttempt'] = relationship(  # type: ignore
+        'BeltAttempt',
+        foreign_keys='BeltAttempt.belt_id',
+        back_populates='belt',
+    )
+
     def json(self) -> Dict:
         return {
             'id': self.id,
@@ -122,3 +135,32 @@ class Belt(Base):  # type: ignore
 
     def exchange_ranks(self, other: 'Belt') -> None:
         self.rank, other.rank = other.rank, self.rank
+
+
+class BeltAttempt(Base):  # type: ignore
+    __tablename__ = 'belt_attempt'
+    id = Column(Integer, primary_key=True)
+    created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
+    student_id = Column(Integer, ForeignKey('student.id', ondelete='CASCADE'), nullable=False)
+    belt_id = Column(Integer, ForeignKey('belt.id', ondelete='CASCADE'), nullable=False)
+    success = Column(Boolean, nullable=False)
+
+    student: Student = relationship(  # type: ignore
+        'Student',
+        foreign_keys=student_id,
+        back_populates='belt_attempts',
+    )
+
+    belt: Belt = relationship(  # type: ignore
+        'Belt',
+        foreign_keys=belt_id,
+        back_populates='belt_attempts',
+    )
+
+    def json(self) -> Dict:
+        return {
+            'id': self.id,
+            'created': self.created.isoformat(),
+            'student_id': self.student_id,
+            'belt_id': self.belt_id,
+        }
