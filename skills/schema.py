@@ -191,4 +191,5 @@ class BeltAttempt(Base):  # type: ignore
             'student_id': self.student_id,
             'skill_domain_id': self.skill_domain_id,
             'belt_id': self.belt_id,
+            'success': self.success,
         }
