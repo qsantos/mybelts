@@ -137,17 +137,44 @@ class Belt(Base):  # type: ignore
         self.rank, other.rank = other.rank, self.rank
 
 
+class SkillDomain(Base):  # type: ignore
+    __tablename__ = 'skill_domain'
+    id = Column(Integer, primary_key=True)
+    created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
+    name = Column(String, index=True, nullable=False)
+
+    belt_attempts: List['BeltAttempt'] = relationship(  # type: ignore
+        'BeltAttempt',
+        foreign_keys='BeltAttempt.skill_domain_id',
+        back_populates='skill_domain',
+    )
+
+    def json(self) -> Dict:
+        return {
+            'id': self.id,
+            'created': self.created.isoformat(),
+            'name': self.name,
+        }
+
+
 class BeltAttempt(Base):  # type: ignore
     __tablename__ = 'belt_attempt'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     student_id = Column(Integer, ForeignKey('student.id', ondelete='CASCADE'), nullable=False)
+    skill_domain_id = Column(Integer, ForeignKey('skill_domain.id', ondelete='CASCADE'), nullable=False)
     belt_id = Column(Integer, ForeignKey('belt.id', ondelete='CASCADE'), nullable=False)
-    success = Column(Boolean, nullable=False)
+    success = Column(Boolean, index=True, nullable=False)
 
     student: Student = relationship(  # type: ignore
         'Student',
         foreign_keys=student_id,
+        back_populates='belt_attempts',
+    )
+
+    skill_domain: SkillDomain = relationship(  # type: ignore
+        'SkillDomain',
+        foreign_keys=skill_domain_id,
         back_populates='belt_attempts',
     )
 
@@ -162,5 +189,6 @@ class BeltAttempt(Base):  # type: ignore
             'id': self.id,
             'created': self.created.isoformat(),
             'student_id': self.student_id,
+            'skill_domain_id': self.skill_domain_id,
             'belt_id': self.belt_id,
         }

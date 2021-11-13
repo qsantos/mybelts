@@ -9,7 +9,8 @@ from sqlalchemy import and_
 from sqlalchemy.sql.expression import func
 
 from skills.schema import (
-    Belt, BeltAttempt, ClassLevel, SchoolClass, Student, session_context,
+    Belt, BeltAttempt, ClassLevel, SchoolClass, SkillDomain, Student,
+    session_context,
 )
 
 
@@ -28,6 +29,7 @@ api = Api(
 class_level_ns = api.namespace('Class Levels', path='/')
 school_class_ns = api.namespace('School Classes', path='/')
 students_ns = api.namespace('Students', path='/')
+skill_domains_ns = api.namespace('Skill Domains', path='/')
 belts_ns = api.namespace('Belts', path='/')
 
 
@@ -186,6 +188,8 @@ class StudentBeltAttemptsResource(Resource):
                 abort(404, f'Student {student_id} not found')
             belts = []
             belt_ids: Set[int] = set()
+            skill_domains = []
+            skill_domain_ids: Set[int] = set()
             belt_attempts = []
             for belt_attempt in student.belt_attempts:
                 belt_attempts.append(belt_attempt)
@@ -193,14 +197,20 @@ class StudentBeltAttemptsResource(Resource):
                     belt = belt_attempt.belt
                     belt_ids.add(belt.id)
                     belts.append(belt)
+                if belt_attempt.skill_domain_id not in skill_domain_ids:
+                    skill_domain = belt_attempt.skill_domain
+                    skill_domain_ids.add(skill_domain.id)
+                    skill_domains.append(skill_domain)
             return {
                 'student': student.json(),
                 'belts': [belt.json() for belt in belts],
+                'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
                 'belt_attempts': [belt_attempt.json() for belt_attempt in belt_attempts],
             }
 
     post_model = api.model('StudentBeltAttemptsPost', {
         'belt_id': fields.Integer(example=42, required=True),
+        'skill_domain_id': fields.Integer(example=42, required=True),
         'success': fields.Boolean(example=True, required=True),
     })
 
@@ -214,9 +224,14 @@ class StudentBeltAttemptsResource(Resource):
             belt = session.query(Belt).get(belt_id)
             if belt is None:
                 abort(404, f'Belt {belt_id} not found')
+            skill_domain_id = request.json['skill_domain_id']
+            skill_domain = session.query(SkillDomain).get(skill_domain_id)
+            if skill_domain is None:
+                abort(404, f'Skill domain {skill_domain_id} not found')
             belt_attempt = BeltAttempt(
                 student_id=student_id,
                 belt_id=belt_id,
+                skill_domain_id=skill_domain_id,
                 success=request.json['success'],
             )
             session.add(belt_attempt)
@@ -224,7 +239,49 @@ class StudentBeltAttemptsResource(Resource):
             return {
                 'student': student.json(),
                 'belt': belt.json(),
+                'skill_domain': skill_domain.json(),
                 'belt_attempt': belt_attempt.json(),
+            }
+
+
+@skill_domains_ns.route('/skill-domains')
+class SkillDomainsResource(Resource):
+    def get(self) -> Any:
+        with session_context() as session:
+            skill_domains = session.query(SkillDomain).all()
+            return {
+                'skill_domains': [
+                    skill_domain.json()
+                    for skill_domain in skill_domains
+                ],
+            }
+
+    post_model = api.model('SKillDomainsPost', {
+        'name': fields.String(example='Algebra', required=True),
+    })
+
+    @api.expect(post_model, validate=True)
+    def post(self) -> Any:
+        with session_context() as session:
+            skill_domain = SkillDomain(
+                name=request.json['name'],
+            )
+            session.add(skill_domain)
+            session.commit()
+            return {
+                'session_skill': skill_domain.json(),
+            }
+
+
+@skill_domains_ns.route('/skill-domains/<int:skill_domain_id>/')
+class SkillDomainResource(Resource):
+    def get(self, skill_domain_id: int) -> Any:
+        with session_context() as session:
+            skill_domain = session.query(SkillDomain).get(skill_domain_id)
+            if skill_domain is None:
+                abort(404, f'Skill domain {skill_domain_id} not found')
+            return {
+                'skill_domain': skill_domain.json(),
             }
 
 
