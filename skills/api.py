@@ -199,6 +199,7 @@ class SchoolClassStudentBeltsResource(Resource):
                 .outerjoin(success_belt_attempts)
                 .outerjoin(Belt)
                 .outerjoin(SkillDomain)
+                .filter(Student.school_class_id == school_class_id)
                 .all()
             )
 
