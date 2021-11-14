@@ -1,3 +1,4 @@
+from time import sleep
 from typing import Any, Dict, List, NoReturn, Set
 
 from flask import Blueprint, Flask, request, url_for
@@ -747,4 +748,10 @@ def create_app() -> Flask:
     app.config['ERROR_404_HELP'] = False
     app.config['SWAGGER_UI_DOC_EXPANSION'] = 'list'
     app.register_blueprint(api_blueprint, url_prefix='/api')
+
+    if app.debug:
+        @app.before_request
+        def wait() -> None:
+            sleep(.3)
+
     return app
