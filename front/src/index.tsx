@@ -481,7 +481,7 @@ function SkillDomainsView() {
     }
 
     const { skill_domains } = skillDomainList;
-    const sorted_skill_domains = skill_domains.sort((a, b) => a.name == b.name ? 0 : a.name < b.name ? - 1 : 1);
+    const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
 
     return <>
         <Breadcrumb>
@@ -691,7 +691,7 @@ function ClassLevelsView() {
     }
 
     const { class_levels } = classLevelList;
-    const sorted_class_levels = class_levels.sort((a, b) => a.prefix == b.prefix ? 0 : a.prefix < b.prefix ? -1 : 1);
+    const sorted_class_levels = class_levels.sort((a, b) => a.prefix.localeCompare(b.prefix));
 
     return <>
         <Breadcrumb>
@@ -909,7 +909,7 @@ function ClassLevelView() {
     }
 
     const { class_level, school_classes } = schoolClassList;
-    const sorted_school_classes = school_classes.sort((a, b) => a.suffix == b.suffix ? 0 : a.suffix < b.suffix ? -1 : 1);
+    const sorted_school_classes = school_classes.sort((a, b) => a.suffix.localeCompare(b.suffix));
 
     return <>
         <Breadcrumb>
