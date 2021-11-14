@@ -203,7 +203,8 @@ function BeltsView() {
     const { belts } = beltList;
 
     const sortedBelts = belts.sort((a, b) => (a.rank - b.rank));
-    const consistentRanks = sortedBelts.reduce((previous, belt, index) => {
+    // TODO: handle case where result is false
+    sortedBelts.reduce((previous, belt, index) => {
         if (belt.rank != index + 1) {
             console.error(`Inconsistent ranking of belts ${belt.id}!`);
             return false;
