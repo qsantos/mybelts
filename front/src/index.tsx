@@ -1,10 +1,13 @@
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Link, Outlet, Route, Routes, useParams } from 'react-router-dom';
 import React from 'react';
-import { ReactNode, StrictMode, useEffect, useState } from 'react';
+import { FormEvent, ReactNode, StrictMode, useEffect, useState } from 'react';
 
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
+import Modal from 'react-bootstrap/Modal';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Spinner from 'react-bootstrap/Spinner';
@@ -30,6 +33,8 @@ function Loader() {
 
 function BeltsView() {
     const [beltList, setBeltList] = useState<null | BeltList>(null);
+    const [showCreateBelt, setShowCreateBelt] = useState(false);
+    const [creatingBelt, setCreatingBelt] = useState(false);
 
     useEffect(() => {
         BeltsService.getBeltsResource().then(setBeltList);
@@ -47,11 +52,60 @@ function BeltsView() {
 
     const { belts } = beltList;
 
+    function handleCancel() {
+        setShowCreateBelt(false);
+        setCreatingBelt(false);
+    }
+    function handleSubmit(event: FormEvent) {
+        setCreatingBelt(true);
+        event.preventDefault(); 
+        const target = event.target as typeof event.target & {
+            name: {value: string};
+        };
+        BeltsService.postBeltsResource({
+            name: target.name.value,
+        }).then(({ belt }) => {
+            setShowCreateBelt(false);
+            setCreatingBelt(false);
+            setBeltList({ belts: belts.concat([belt]) });  // TODO: just refresh
+        });
+    }
+
     return <>
         <Breadcrumb>
             <BreadcrumbItem href="/">Home</BreadcrumbItem>
             <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
         </Breadcrumb>
+        <h3>Belts</h3>
+        <Button onClick={() => setShowCreateBelt(true)}>Add</Button>
+        <Modal show={showCreateBelt}>
+            <Form onSubmit={handleSubmit}>
+                <Modal.Header>
+                    <Modal.Title>Add Belt</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group controlId="name">
+                        <Form.Label>Name</Form.Label>
+                        <Form.Control type="text" placeholder="Example: White Belt" />
+                        <Form.Text className="text-muted">
+                            Name for the new belt
+                        </Form.Text>
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCancel}>Cancel</Button>
+                    {creatingBelt
+                        ? <Button disabled type="submit">
+                            <Spinner animation="border" role="status" size="sm">
+                                <span className="visually-hidden">Creating</span>
+                            </Spinner>
+                        </Button>
+                        : <Button type="submit">Add</Button>
+                    }
+                </Modal.Footer>
+            </Form>
+        </Modal>
+        <h4>List of available belts</h4>
         <ListGroup>
             {belts.map(belt => <ListGroup.Item key={belt.id}>{belt.name}</ListGroup.Item>)}
         </ListGroup>
