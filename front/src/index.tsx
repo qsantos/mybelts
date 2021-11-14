@@ -361,6 +361,61 @@ function CreateSkillDomainButton({ createdCallback } : { createdCallback?: (skil
     </>;
 }
 
+function EditSkillDomainButton({ skill_domain, changedCallback } : { skill_domain: SkillDomain, changedCallback?: (changed_skill_domain: SkillDomain) => void }) {
+    const [show, setShow] = useState(false);
+    const [changing, setChanging] = useState(false);
+
+    function handleSubmit(event: FormEvent) {
+        setChanging(true);
+        event.preventDefault();
+        const target = event.target as typeof event.target & {
+            name: {value: string};
+        };
+        SkillDomainsService.putSkillDomainResource(skill_domain.id, {
+            name: target.name.value,
+        }).then(({ skill_domain: changed_skill_domain }) => {
+            setChanging(false);
+            setShow(false);
+            if (changedCallback !== undefined) {
+                changedCallback(changed_skill_domain);
+            }
+        });
+    }
+
+    return <>
+        <OverlayTrigger overlay={<Tooltip>Edit</Tooltip>}>
+            <Button onClick={() => setShow(true)}>✏️</Button>
+        </OverlayTrigger>
+        <Modal show={show}>
+            <Form onSubmit={handleSubmit}>
+                <Modal.Header>
+                    <Modal.Title>Edit Skill Domain</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group controlId="name">
+                        <Form.Label>Name</Form.Label>
+                        <Form.Control type="text" placeholder="Example: Algebra" defaultValue={skill_domain.name} />
+                        <Form.Text className="text-muted">
+                            New name for the skill domain “{skill_domain.name}”
+                        </Form.Text>
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    {changing
+                        ? <Button type="submit" disabled>
+                            <Spinner animation="border" role="status" size="sm">
+                                <span className="visually-hidden">Saving</span>
+                            </Spinner>
+                        </Button>
+                        : <Button type="submit">Save</Button>
+                    }
+                </Modal.Footer>
+            </Form>
+        </Modal>
+    </>;
+}
+
 function DeleteSkillDomainButton({ skill_domain, deletedCallback } : { skill_domain: SkillDomain, deletedCallback?: () => void }) {
     const [show, setShow] = useState(false);
     const [deleting, setDeleting] = useState(false);
@@ -444,6 +499,11 @@ function SkillDomainsView() {
                     <tr key={skill_domain.id}>
                         <td>{skill_domain.name}</td>
                         <td>
+                            <EditSkillDomainButton skill_domain={skill_domain} changedCallback={new_skill_domain => {
+                                skill_domains[index] = new_skill_domain;
+                                setSkillDomainList({ skill_domains: skill_domains });
+                            }} />
+                            {' '}
                             <DeleteSkillDomainButton skill_domain={skill_domain} deletedCallback={() => {
                                 skill_domains.splice(index, 1);
                                 setSkillDomainList({ skill_domains: skill_domains });

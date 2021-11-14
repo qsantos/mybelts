@@ -3,6 +3,7 @@
 /* eslint-disable */
 import type { SkillDomainList } from '../models/SkillDomainList';
 import type { SkillDomainOne } from '../models/SkillDomainOne';
+import type { SkillDomainPut } from '../models/SkillDomainPut';
 import type { SKillDomainsPost } from '../models/SKillDomainsPost';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { request as __request } from '../core/request';
@@ -48,6 +49,20 @@ export class SkillDomainsService {
 
     /**
      * @param skillDomainId
+     * @returns any Success
+     * @throws ApiError
+     */
+    public static deleteSkillDomainResource(
+        skillDomainId: number,
+    ): CancelablePromise<any> {
+        return __request({
+            method: 'DELETE',
+            path: `/skill-domains/${skillDomainId}/`,
+        });
+    }
+
+    /**
+     * @param skillDomainId
      * @param xFields An optional fields mask
      * @returns SkillDomainOne Success
      * @throws ApiError
@@ -67,15 +82,23 @@ export class SkillDomainsService {
 
     /**
      * @param skillDomainId
-     * @returns any Success
+     * @param payload
+     * @param xFields An optional fields mask
+     * @returns SkillDomainOne Success
      * @throws ApiError
      */
-    public static deleteSkillDomainResource(
+    public static putSkillDomainResource(
         skillDomainId: number,
-    ): CancelablePromise<any> {
+        payload: SkillDomainPut,
+        xFields?: string,
+    ): CancelablePromise<SkillDomainOne> {
         return __request({
-            method: 'DELETE',
+            method: 'PUT',
             path: `/skill-domains/${skillDomainId}/`,
+            headers: {
+                'X-Fields': xFields,
+            },
+            body: payload,
         });
     }
 

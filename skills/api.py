@@ -495,6 +495,23 @@ class SkillDomainResource(Resource):
                 'skill_domain': skill_domain.json(),
             }
 
+    put_model = api.model('SkillDomainPut', {
+        'name': fields.String(example='Algebra', required=True),
+    })
+
+    @api.expect(put_model, validate=True)
+    @api.marshal_with(api_model_skill_domain_one)
+    def put(self, skill_domain_id: int) -> Any:
+        with session_context() as session:
+            skill_domain = session.query(SkillDomain).get(skill_domain_id)
+            if skill_domain is None:
+                abort(404, f'Skill domain {skill_domain} not found')
+            skill_domain.name = request.json['name']
+            session.commit()
+            return {
+                'skill_domain': skill_domain.json(),
+            }
+
     def delete(self, skill_domain_id: int) -> Any:
         with session_context() as session:
             skill_domain = session.query(SkillDomain).get(skill_domain_id)
