@@ -264,13 +264,14 @@ function ClassLevelsView() {
     }
 
     const { class_levels } = classLevelList;
+    const sorted_class_levels = class_levels.sort((a, b) => a.prefix == b.prefix ? 0 : a.prefix < b.prefix ? -1 : 1);
 
     return <ListGroup>
         <Breadcrumb>
             <BreadcrumbItem href="/">Home</BreadcrumbItem>
             <BreadcrumbItem active href="/class-levels">Levels</BreadcrumbItem>
         </Breadcrumb>
-        {class_levels.map(class_level =>
+        {sorted_class_levels.map(class_level =>
             <ListGroup.Item action key={class_level.id}>
                 <Nav.Link as={Link} to={`${class_level.id}`}>
                     {class_level.prefix}
@@ -300,6 +301,7 @@ function ClassLevelView() {
     }
 
     const { class_level, school_classes } = schoolClassList;
+    const sorted_school_classes = school_classes.sort((a, b) => a.suffix == b.suffix ? 0 : a.suffix < b.suffix ? -1 : 1);
 
     return <>
         <Breadcrumb>
@@ -309,7 +311,7 @@ function ClassLevelView() {
         </Breadcrumb>
         <h3>{class_level.prefix}</h3>
         {school_classes.length === 0 ? 'No school class' : <ListGroup>
-            {school_classes.map(school_class =>
+            {sorted_school_classes.map(school_class =>
                 <ListGroup.Item action key={school_class.id}>
                     <Nav.Link as={Link} to={`/school-classes/${school_class.id}`}>
                         {school_class.suffix}
