@@ -49,116 +49,116 @@ belts_ns = api.namespace('Belts', path='/')
 
 
 api_model_class_level = api.model('ClassLevel', {
-    'id': fields.Integer(example=42),
-    'created': fields.DateTime(example='2021-11-13T12:34:56Z'),
-    'prefix': fields.String(example='4e'),
-    'school_class_ids': fields.List(fields.Integer(example=42)),
+    'id': fields.Integer(example=42, required=True),
+    'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
+    'prefix': fields.String(example='4e', required=True),
+    'school_class_ids': fields.List(fields.Integer(example=42), required=True),
 })
 
 api_model_school_class = api.model('SchoolClass', {
-    'id': fields.Integer(example=42),
-    'created': fields.DateTime(example='2021-11-13T12:34:56Z'),
-    'class_level_id': fields.Integer(example=42),
-    'suffix': fields.String(example='D'),
-    'student_ids': fields.List(fields.Integer(example=42)),
+    'id': fields.Integer(example=42, required=True),
+    'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
+    'class_level_id': fields.Integer(example=42, required=True),
+    'suffix': fields.String(example='D', required=True),
+    'student_ids': fields.List(fields.Integer(example=42), required=True),
 })
 
 api_model_student = api.model('Student', {
-    'id': fields.Integer(example=42),
-    'created': fields.DateTime(example='2021-11-13T12:34:56Z'),
-    'school_class_id': fields.Integer(example=42),
-    'name': fields.String(example='John Doe'),
+    'id': fields.Integer(example=42, required=True),
+    'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
+    'school_class_id': fields.Integer(example=42, required=True),
+    'name': fields.String(example='John Doe', required=True),
 })
 
 api_model_belt = api.model('Belt', {
-    'id': fields.Integer(example=42),
-    'created': fields.DateTime(example='2021-11-13T12:34:56Z'),
-    'rank': fields.Integer(example=5),
-    'name': fields.String(example='White belt'),
+    'id': fields.Integer(example=42, required=True),
+    'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
+    'rank': fields.Integer(example=5, required=True),
+    'name': fields.String(example='White belt', required=True),
 })
 
 api_model_skill_domain = api.model('SkillDomain', {
-    'id': fields.Integer(example=42),
-    'created': fields.DateTime(example='2021-11-13T12:34:56Z'),
-    'name': fields.String(example='Algebra'),
+    'id': fields.Integer(example=42, required=True),
+    'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
+    'name': fields.String(example='Algebra', required=True),
 })
 
 api_model_belt_attempt = api.model('BeltAttempt', {
-    'id': fields.Integer(example=42),
-    'created': fields.DateTime(example='2021-11-13T12:34:56Z'),
-    'student_id': fields.Integer(example=42),
-    'skill_domain_id': fields.Integer(example=42),
-    'belt_id': fields.Integer(example=42),
-    'success': fields.Boolean(example=True),
+    'id': fields.Integer(example=42, required=True),
+    'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
+    'student_id': fields.Integer(example=42, required=True),
+    'skill_domain_id': fields.Integer(example=42, required=True),
+    'belt_id': fields.Integer(example=42, required=True),
+    'success': fields.Boolean(example=True, required=True),
 })
 
 api_model_class_level_list = api.model('ClassLevelList', {
-    'class_levels': fields.List(fields.Nested(api_model_class_level)),
+    'class_levels': fields.List(fields.Nested(api_model_class_level), required=True),
 })
 
 api_model_class_level_one = api.model('ClassLevelOne', {
-    'class_level': fields.Nested(api_model_class_level),
+    'class_level': fields.Nested(api_model_class_level, required=True),
 })
 
 api_model_school_class_list = api.model('SchoolClassList', {
-    'class_level': fields.Nested(api_model_class_level),
-    'school_classes': fields.List(fields.Nested(api_model_school_class)),
+    'class_level': fields.Nested(api_model_class_level, required=True),
+    'school_classes': fields.List(fields.Nested(api_model_school_class), required=True),
 })
 
 api_model_school_class_one = api.model('SchoolClassOne', {
-    'class_level': fields.Nested(api_model_class_level),
-    'school_class': fields.Nested(api_model_school_class),
+    'class_level': fields.Nested(api_model_class_level, required=True),
+    'school_class': fields.Nested(api_model_school_class, required=True),
 })
 
 api_model_student_list = api.model('StudentList', {
-    'class_level': fields.Nested(api_model_class_level),
-    'school_class': fields.Nested(api_model_school_class),
-    'students': fields.List(fields.Nested(api_model_student)),
+    'class_level': fields.Nested(api_model_class_level, required=True),
+    'school_class': fields.Nested(api_model_school_class, required=True),
+    'students': fields.List(fields.Nested(api_model_student), required=True),
 })
 
 api_model_student_one = api.model('StudentOne', {
-    'class_level': fields.Nested(api_model_class_level),
-    'school_class': fields.Nested(api_model_school_class),
-    'student': fields.Nested(api_model_student),
+    'class_level': fields.Nested(api_model_class_level, required=True),
+    'school_class': fields.Nested(api_model_school_class, required=True),
+    'student': fields.Nested(api_model_student, required=True),
 })
 
 api_model_skill_domain_list = api.model('SkillDomainList', {
-    'skill_domains': fields.List(fields.Nested(api_model_skill_domain)),
+    'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
 })
 
 api_model_skill_domain_one = api.model('SkillDomainOne', {
-    'skill_domain': fields.Nested(api_model_skill_domain),
+    'skill_domain': fields.Nested(api_model_skill_domain, required=True),
 })
 
 api_model_belt_list = api.model('BeltList', {
-    'belts': fields.List(fields.Nested(api_model_belt)),
+    'belts': fields.List(fields.Nested(api_model_belt), required=True),
 })
 
 api_model_belt_one = api.model('BeltOne', {
-    'belts': fields.Nested(api_model_belt),
+    'belts': fields.Nested(api_model_belt, required=True),
 })
 
 api_model_belt_attempt_list = api.model('BeltAttemptList', {
-    'student': fields.Nested(api_model_student),
-    'skill_domains': fields.List(fields.Nested(api_model_skill_domain)),
-    'belts': fields.List(fields.Nested(api_model_belt)),
-    'belt_attempts': fields.List(fields.Nested(api_model_belt_attempt)),
+    'student': fields.Nested(api_model_student, required=True),
+    'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
+    'belts': fields.List(fields.Nested(api_model_belt), required=True),
+    'belt_attempts': fields.List(fields.Nested(api_model_belt_attempt), required=True),
 })
 
 api_model_belt_attempt_one = api.model('BeltAttemptOne', {
-    'student': fields.Nested(api_model_student),
-    'skill_domain': fields.Nested(api_model_skill_domain),
-    'belt': fields.Nested(api_model_belt),
-    'belt_attempt': fields.Nested(api_model_belt_attempt),
+    'student': fields.Nested(api_model_student, required=True),
+    'skill_domain': fields.Nested(api_model_skill_domain, required=True),
+    'belt': fields.Nested(api_model_belt, required=True),
+    'belt_attempt': fields.Nested(api_model_belt_attempt, required=True),
 })
 
 api_model_school_class_student_belts = api.model('SchoolClassStudentBelts', {
-    'class_level': fields.Nested(api_model_class_level),
-    'school_class': fields.Nested(api_model_school_class),
-    'skill_domains': fields.List(fields.Nested(api_model_skill_domain)),
-    'belts': fields.List(fields.Nested(api_model_belt)),
+    'class_level': fields.Nested(api_model_class_level, required=True),
+    'school_class': fields.Nested(api_model_school_class, required=True),
+    'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
+    'belts': fields.List(fields.Nested(api_model_belt), required=True),
     'student_belts': fields.List(fields.Nested(api.model('SchoolClassStudentBeltsStudentBelts', {
-        'student': fields.Nested(api_model_student),
+        'student': fields.Nested(api_model_student, required=True),
         'belts': fields.List(fields.Nested(api.model('SchoolClassStudentBeltsBelts', {
             'skill_domain_id': fields.Integer(example=42),
             'belt_id': fields.Integer(example=42),
