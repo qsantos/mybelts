@@ -301,7 +301,10 @@ function BeltsView() {
                             <DeleteBeltButton belt={belt} deletedCallback={() => {
                                 belts.splice(index, 1);
                                 for (let j = index; j < belts.length; j += 1) {
-                                    belts[j]!.rank -= 1;
+                                    const other_belt = belts[j];
+                                    if (other_belt !== undefined) {  // always true
+                                        other_belt.rank -= 1;
+                                    }
                                 }
                                 setBeltList({ belts: belts });
                             }} />
