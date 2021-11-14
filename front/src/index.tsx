@@ -888,12 +888,19 @@ function DeleteSchoolClassButton({ school_class, deletedCallback } : { school_cl
 }
 
 function ClassLevelView() {
-    const { class_level_id } = useParams();
+    const params = useParams();
+    if (params.class_level_id === undefined) {
+        // should not happen
+        console.error('Attribute class_level_id of <ClassLevelView /> is undefined');
+        return <></>;
+    }
+    const class_level_id = params.class_level_id;
+
     const [schoolClassList, setSchoolClassList] = useState<null | SchoolClassList>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        ClassLevelsService.getClassLevelSchoolClassesResource(parseInt(class_level_id!)).then(setSchoolClassList);
+        ClassLevelsService.getClassLevelSchoolClassesResource(parseInt(class_level_id)).then(setSchoolClassList);
     }, [class_level_id]);
 
     if (schoolClassList === null) {
@@ -1116,11 +1123,18 @@ function DeleteStudentButton({ student, deletedCallback } : { student: Student, 
 }
 
 function SchoolClassView() {
-    const { school_class_id } = useParams();
+    const params = useParams();
+    if (params.school_class_id === undefined) {
+        // should not happen
+        console.error('Attribute school_class_id of <ClassLevelView /> is undefined');
+        return <></>;
+    }
+    const school_class_id = params.school_class_id;
+
     const [studentList, setStudentList] = useState<null | StudentList>(null);
 
     useEffect(() => {
-        SchoolClassesService.getSchoolClassResource(parseInt(school_class_id!)).then(setStudentList);
+        SchoolClassesService.getSchoolClassResource(parseInt(school_class_id)).then(setStudentList);
     }, [school_class_id]);
 
     if (studentList === null) {
@@ -1200,12 +1214,19 @@ function SchoolClassView() {
 }
 
 function SchoolClassBeltsView() {
-    const { school_class_id } = useParams();
+    const params = useParams();
+    if (params.school_class_id === undefined) {
+        // should not happen
+        console.error('Attribute school_class_id of <ClassLevelView /> is undefined');
+        return <></>;
+    }
+    const school_class_id = params.school_class_id;
+
 
     const [schoolClassStudentBelts, setSchoolClassStudentBelts] = useState<null | SchoolClassStudentBelts>(null);
 
     useEffect(() => {
-        SchoolClassesService.getSchoolClassStudentBeltsResource(parseInt(school_class_id!)).then(setSchoolClassStudentBelts);
+        SchoolClassesService.getSchoolClassStudentBeltsResource(parseInt(school_class_id)).then(setSchoolClassStudentBelts);
     }, [school_class_id]);
 
     if (schoolClassStudentBelts === null) {
