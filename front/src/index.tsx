@@ -1253,7 +1253,10 @@ function SchoolClassBeltsView() {
                             if (belt_id === undefined) {
                                 return <td key={skill_domain.id}>-</td>;
                             }
-                            const belt = belt_by_id[belt_id]!;
+                            const belt = belt_by_id[belt_id];
+                            if (belt === undefined) {
+                                return <td key={skill_domain.id}>-</td>;
+                            }
                             return <td key={skill_domain.id}>{belt.name}</td>;
                         })}
                     </tr>;
