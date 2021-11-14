@@ -196,7 +196,7 @@ class ClassLevelsResource(Resource):
 
 
 @class_level_ns.route('/class-levels/<int:class_level_id>/')
-class ClassLevelClassesResource(Resource):
+class ClassLevelResource(Resource):
     @api.marshal_with(api_model_class_level_one)
     def get(self, class_level_id: int) -> Any:
         with session_context() as session:

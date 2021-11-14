@@ -55,7 +55,7 @@ export class ClassLevelsService {
      * @returns ClassLevelOne Success
      * @throws ApiError
      */
-    public static getClassLevelClassesResource(
+    public static getClassLevelResource(
         classLevelId: number,
         xFields?: string,
     ): CancelablePromise<ClassLevelOne> {
