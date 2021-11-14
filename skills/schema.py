@@ -118,6 +118,7 @@ class Belt(Base):  # type: ignore
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     rank = Column(Integer, nullable=False, index=True)
     name = Column(String, nullable=False, index=True)
+    color = Column(String, nullable=False, index=True, server_default='')
 
     belt_attempts: List['BeltAttempt'] = relationship(  # type: ignore
         'BeltAttempt',
@@ -131,6 +132,7 @@ class Belt(Base):  # type: ignore
             'created': self.created.isoformat(),
             'rank': self.rank,
             'name': self.name,
+            'color': self.color,
         }
 
     def exchange_ranks(self, other: 'Belt') -> None:

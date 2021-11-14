@@ -76,6 +76,7 @@ api_model_belt = api.model('Belt', {
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
     'rank': fields.Integer(example=5, required=True),
     'name': fields.String(example='White belt', required=True),
+    'color': fields.String(example='#012345', required=True),
 })
 
 api_model_skill_domain = api.model('SkillDomain', {
@@ -617,6 +618,7 @@ class BeltsResource(Resource):
 
     post_model = api.model('BeltsPost', {
         'name': fields.String(example='White belt', required=True),
+        'color': fields.String(example='#012345', required=False),
     })
 
     @api.expect(post_model, validate=True)
@@ -628,6 +630,7 @@ class BeltsResource(Resource):
             belt = Belt(
                 name=request.json['name'],
                 rank=max_rank + 1,
+                color=request.json.get('color', ''),
             )
             session.add(belt)
             session.commit()
@@ -649,7 +652,8 @@ class BeltResource(Resource):
             }
 
     put_model = api.model('BeltPut', {
-        'name': fields.String(example='White belt', required=True),
+        'name': fields.String(example='White belt', required=False),
+        'color': fields.String(example='#012345', required=False),
     })
 
     @api.expect(put_model, validate=True)
@@ -659,7 +663,12 @@ class BeltResource(Resource):
             belt = session.query(Belt).get(belt_id)
             if belt is None:
                 abort(404, f'Belt {belt_id} not found')
-            belt.name = request.json['name']
+            new_name = request.json.get('name')
+            if new_name is not None:
+                belt.name = new_name
+            new_color = request.json.get('color')
+            if new_color is not None:
+                belt.color = new_color
             session.commit()
             return {
                 'belt': belt.json(),

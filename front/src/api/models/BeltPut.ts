@@ -3,5 +3,6 @@
 /* eslint-disable */
 
 export type BeltPut = {
-    name: string;
+    color?: string;
+    name?: string;
 }

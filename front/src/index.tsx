@@ -147,9 +147,11 @@ function EditBeltButton({ belt, changedCallback } : { belt: Belt, changedCallbac
         event.preventDefault();
         const target = event.target as typeof event.target & {
             name: {value: string};
+            color: {value: string};
         };
         BeltsService.putBeltResource(belt.id, {
             name: target.name.value,
+            color: target.color.value,
         }).then(({ belt: changed_belt }) => {
             setChanging(false);
             setShow(false);
@@ -174,6 +176,13 @@ function EditBeltButton({ belt, changedCallback } : { belt: Belt, changedCallbac
                         <Form.Control type="text" placeholder="Example: Algebra" defaultValue={belt.name} />
                         <Form.Text className="text-muted">
                             New name for the belt “{belt.name}”
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group controlId="color">
+                        <Form.Label>Color</Form.Label>
+                        <Form.Control type="color" defaultValue={belt.color} title="Choose your color" />
+                        <Form.Text className="text-muted">
+                            New color for the belt “{belt.name}”
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
@@ -280,6 +289,7 @@ function BeltsView() {
                 <tr>
                     <th>Rank</th>
                     <th>Name</th>
+                    <th>Color</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -288,6 +298,7 @@ function BeltsView() {
                     <tr key={belt.id}>
                         <td>{belt.rank}</td>
                         <td>{belt.name}</td>
+                        <td><Form.Control type="color" value={belt.color} disabled /></td>
                         <td>
                             <MoveBeltButton buttonContent="↑" direction_name="Up" direction={-1} belt={belt} belts={sorted_belts} setBeltList={setBeltList} />
                             {' '}

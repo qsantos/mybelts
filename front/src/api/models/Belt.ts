@@ -3,6 +3,7 @@
 /* eslint-disable */
 
 export type Belt = {
+    color: string;
     created: string;
     id: number;
     name: string;
