@@ -3,6 +3,7 @@
 /* eslint-disable */
 import type { ClassLevelList } from '../models/ClassLevelList';
 import type { ClassLevelOne } from '../models/ClassLevelOne';
+import type { ClassLevelPut } from '../models/ClassLevelPut';
 import type { ClassLevelSchoolClassesPost } from '../models/ClassLevelSchoolClassesPost';
 import type { ClassLevelsPost } from '../models/ClassLevelsPost';
 import type { SchoolClassList } from '../models/SchoolClassList';
@@ -51,6 +52,20 @@ export class ClassLevelsService {
 
     /**
      * @param classLevelId
+     * @returns any Success
+     * @throws ApiError
+     */
+    public static deleteClassLevelResource(
+        classLevelId: number,
+    ): CancelablePromise<any> {
+        return __request({
+            method: 'DELETE',
+            path: `/class-levels/${classLevelId}/`,
+        });
+    }
+
+    /**
+     * @param classLevelId
      * @param xFields An optional fields mask
      * @returns ClassLevelOne Success
      * @throws ApiError
@@ -65,6 +80,28 @@ export class ClassLevelsService {
             headers: {
                 'X-Fields': xFields,
             },
+        });
+    }
+
+    /**
+     * @param classLevelId
+     * @param payload
+     * @param xFields An optional fields mask
+     * @returns ClassLevelOne Success
+     * @throws ApiError
+     */
+    public static putClassLevelResource(
+        classLevelId: number,
+        payload: ClassLevelPut,
+        xFields?: string,
+    ): CancelablePromise<ClassLevelOne> {
+        return __request({
+            method: 'PUT',
+            path: `/class-levels/${classLevelId}/`,
+            headers: {
+                'X-Fields': xFields,
+            },
+            body: payload,
         });
     }
 

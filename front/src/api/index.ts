@@ -17,6 +17,7 @@ export type { BeltsPost } from './models/BeltsPost';
 export type { ClassLevel } from './models/ClassLevel';
 export type { ClassLevelList } from './models/ClassLevelList';
 export type { ClassLevelOne } from './models/ClassLevelOne';
+export type { ClassLevelPut } from './models/ClassLevelPut';
 export type { ClassLevelSchoolClassesPost } from './models/ClassLevelSchoolClassesPost';
 export type { ClassLevelsPost } from './models/ClassLevelsPost';
 export type { SchoolClass } from './models/SchoolClass';

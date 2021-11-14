@@ -207,6 +207,31 @@ class ClassLevelResource(Resource):
                 'class_level': class_level.json(),
             }
 
+    put_model = api.model('ClassLevelPut', {
+        'prefix': fields.String(example='4e', required=True),
+    })
+
+    @api.expect(put_model, validate=True)
+    @api.marshal_with(api_model_class_level_one)
+    def put(self, class_level_id: int) -> Any:
+        with session_context() as session:
+            class_level = session.query(ClassLevel).get(class_level_id)
+            if class_level is None:
+                abort(404, f'Class level {class_level_id} not found')
+            class_level.prefix = request.json['prefix']
+            session.commit()
+            return {
+                'class_level': class_level.json(),
+            }
+
+    def delete(self, class_level_id: int) -> Any:
+        with session_context() as session:
+            class_level = session.query(ClassLevel).get(class_level_id)
+            if class_level is None:
+                abort(404, f'Class level {class_level_id} not found')
+            session.query(ClassLevel).filter(ClassLevel.id == class_level.id).delete()
+            session.commit()
+
 
 @class_level_ns.route('/class-levels/<int:class_level_id>/school-classes')
 class ClassLevelSchoolClassesResource(Resource):
