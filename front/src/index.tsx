@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Link, Outlet, Route, Routes, useParams } from 'react-router-dom';
 import React from 'react';
-import { StrictMode, useEffect, useState } from 'react';
+import { ReactNode, StrictMode, useEffect, useState } from 'react';
 
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -14,7 +14,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { BeltList, BeltsService, ClassLevelList, ClassLevelsService, SchoolClassList, SchoolClassesService, SchoolClassStudentBelts, StudentList } from './api';
 import './index.css';
 
-function BreadcrumbItem({ children, href, active }: { children: any, href?: string, active?: boolean }) {
+function BreadcrumbItem({ children, href, active }: { children: ReactNode, href?: string, active?: boolean }) {
     if (href) {
         return <Breadcrumb.Item linkAs={Link} linkProps={{to: href}}>{children}</Breadcrumb.Item>;
     } else {
