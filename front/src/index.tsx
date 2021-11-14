@@ -37,12 +37,12 @@ function Loader() {
     </Spinner>;
 }
 
-function CreateBeltButton({ createBeltCallback } : { createBeltCallback?: (belt: Belt) => void }) {
-    const [showCreateBelt, setShowCreateBelt] = useState(false);
-    const [creatingBelt, setCreatingBelt] = useState(false);
+function CreateBeltButton({ createdCallback } : { createdCallback?: (belt: Belt) => void }) {
+    const [show, setShow] = useState(false);
+    const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
-        setCreatingBelt(true);
+        setCreating(true);
         event.preventDefault();
         const target = event.target as typeof event.target & {
             name: {value: string};
@@ -50,17 +50,17 @@ function CreateBeltButton({ createBeltCallback } : { createBeltCallback?: (belt:
         BeltsService.postBeltsResource({
             name: target.name.value,
         }).then(({ belt }) => {
-            setShowCreateBelt(false);
-            setCreatingBelt(false);
-            if (createBeltCallback !== undefined) {
-                createBeltCallback(belt);
+            setShow(false);
+            setCreating(false);
+            if (createdCallback !== undefined) {
+                createdCallback(belt);
             }
         });
     }
 
     return <>
-        <Button onClick={() => setShowCreateBelt(true)}>Add</Button>
-        <Modal show={showCreateBelt}>
+        <Button onClick={() => setShow(true)}>Add</Button>
+        <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
                     <Modal.Title>Add Belt</Modal.Title>
@@ -75,8 +75,8 @@ function CreateBeltButton({ createBeltCallback } : { createBeltCallback?: (belt:
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowCreateBelt(false)}>Cancel</Button>
-                    {creatingBelt
+                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    {creating
                         ? <Button disabled type="submit">
                             <Spinner animation="border" role="status" size="sm">
                                 <span className="visually-hidden">Creating</span>
@@ -144,14 +144,14 @@ interface DeleteBeltButtonProps {
 }
 
 function DeleteBeltButton({ belt, belts, setBeltList } : DeleteBeltButtonProps) {
-    const [showDeleteBelt, setShowDeleteBelt] = useState(false);
-    const [deletingBelt, setDeletingBelt] = useState(false);
+    const [show, setShow] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     function handleDelete() {
-        setDeletingBelt(true);
+        setDeleting(true);
         BeltsService.deleteBeltResource(belt.id).then(() => {
-            setShowDeleteBelt(false);
-            setDeletingBelt(false);
+            setShow(false);
+            setDeleting(false);
             // adjust belt list
             belts.splice(belt.rank - 1, 1);
             for (let index = belt.rank - 1; index < belts.length; index += 1) {
@@ -163,9 +163,9 @@ function DeleteBeltButton({ belt, belts, setBeltList } : DeleteBeltButtonProps) 
 
     return <>
         <OverlayTrigger overlay={<Tooltip>Delete</Tooltip>}>
-            <Button variant="danger" onClick={() => setShowDeleteBelt(true)}>🗑️</Button>
+            <Button variant="danger" onClick={() => setShow(true)}>🗑️</Button>
         </OverlayTrigger>
-        <Modal show={showDeleteBelt}>
+        <Modal show={show}>
             <Modal.Header>
                 <Modal.Title>Delete Belt</Modal.Title>
             </Modal.Header>
@@ -173,8 +173,8 @@ function DeleteBeltButton({ belt, belts, setBeltList } : DeleteBeltButtonProps) 
                 Are you sure you want to delete the belt “{belt.name}”?
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShowDeleteBelt(false)}>Cancel</Button>
-                {deletingBelt
+                <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                {deleting
                     ? <Button disabled variant="danger">
                         <Spinner animation="border" role="status" size="sm">
                             <span className="visually-hidden">Deleting</span>
@@ -207,9 +207,9 @@ function BeltsView() {
 
     const { belts } = beltList;
 
-    const sortedBelts = belts.sort((a, b) => (a.rank - b.rank));
+    const sorted_belts = belts.sort((a, b) => (a.rank - b.rank));
     // TODO: handle case where result is false
-    sortedBelts.reduce((previous, belt, index) => {
+    sorted_belts.reduce((previous, belt, index) => {
         if (belt.rank != index + 1) {
             console.error(`Inconsistent ranking of belts ${belt.id}!`);
             return false;
@@ -223,7 +223,7 @@ function BeltsView() {
             <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
         </Breadcrumb>
         <h3>Belts</h3>
-        <CreateBeltButton createBeltCallback={belt => setBeltList({ belts: belts.concat([belt]) })}/>
+        <CreateBeltButton createdCallback={belt => setBeltList({ belts: belts.concat([belt]) })}/>
         <h4>List of available belts</h4>
         <Table>
             <thead>
@@ -234,16 +234,16 @@ function BeltsView() {
                 </tr>
             </thead>
             <tbody>
-                {sortedBelts.map(belt =>
+                {sorted_belts.map(belt =>
                     <tr key={belt.id}>
                         <td>{belt.rank}</td>
                         <td>{belt.name}</td>
                         <td>
-                            <MoveBeltButton buttonContent="↑" direction_name="Up" direction={-1} belt={belt} belts={sortedBelts} setBeltList={setBeltList} />
+                            <MoveBeltButton buttonContent="↑" direction_name="Up" direction={-1} belt={belt} belts={sorted_belts} setBeltList={setBeltList} />
                             {' '}
-                            <MoveBeltButton buttonContent="↓" direction_name="Down" direction={1} belt={belt} belts={sortedBelts} setBeltList={setBeltList} />
+                            <MoveBeltButton buttonContent="↓" direction_name="Down" direction={1} belt={belt} belts={sorted_belts} setBeltList={setBeltList} />
                             {' '}
-                            <DeleteBeltButton belt={belt} belts={sortedBelts} setBeltList={setBeltList} />
+                            <DeleteBeltButton belt={belt} belts={sorted_belts} setBeltList={setBeltList} />
                         </td>
                     </tr>)}
             </tbody>
@@ -251,12 +251,12 @@ function BeltsView() {
     </>;
 }
 
-function CreateSkillDomainButton({ createSkillDomainCallback } : { createSkillDomainCallback?: (skill_domain: SkillDomain) => void }) {
-    const [showCreateSkillDomain, setShowCreateSkillDomain] = useState(false);
-    const [creatingSkillDomain, setCreatingSkillDomain] = useState(false);
+function CreateSkillDomainButton({ createdCallback } : { createdCallback?: (skill_domain: SkillDomain) => void }) {
+    const [show, setShow] = useState(false);
+    const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
-        setCreatingSkillDomain(true);
+        setCreating(true);
         event.preventDefault();
         const target = event.target as typeof event.target & {
             name: {value: string};
@@ -264,17 +264,17 @@ function CreateSkillDomainButton({ createSkillDomainCallback } : { createSkillDo
         SkillDomainsService.postSkillDomainsResource({
             name: target.name.value,
         }).then(({ skill_domain }) => {
-            setShowCreateSkillDomain(false);
-            setCreatingSkillDomain(false);
-            if (createSkillDomainCallback !== undefined) {
-                createSkillDomainCallback(skill_domain);
+            setShow(false);
+            setCreating(false);
+            if (createdCallback !== undefined) {
+                createdCallback(skill_domain);
             }
         });
     }
 
     return <>
-        <Button onClick={() => setShowCreateSkillDomain(true)}>Add</Button>
-        <Modal show={showCreateSkillDomain}>
+        <Button onClick={() => setShow(true)}>Add</Button>
+        <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
                     <Modal.Title>Add Skill Domain</Modal.Title>
@@ -289,8 +289,8 @@ function CreateSkillDomainButton({ createSkillDomainCallback } : { createSkillDo
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowCreateSkillDomain(false)}>Cancel</Button>
-                    {creatingSkillDomain
+                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    {creating
                         ? <Button disabled type="submit">
                             <Spinner animation="border" role="status" size="sm">
                                 <span className="visually-hidden">Creating</span>
@@ -331,7 +331,7 @@ function SkillDomainsView() {
             <BreadcrumbItem active href="/skill-domains">Skill Domains</BreadcrumbItem>
         </Breadcrumb>
         <h3>Skill Domains</h3>
-        <CreateSkillDomainButton createSkillDomainCallback={skill_domain => setSkillDomainList({ skill_domains: skill_domains.concat([skill_domain]) })}/>
+        <CreateSkillDomainButton createdCallback={skill_domain => setSkillDomainList({ skill_domains: skill_domains.concat([skill_domain]) })}/>
         <h4>List of available skill domains</h4>
         <Table>
             <thead>
