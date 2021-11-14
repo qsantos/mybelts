@@ -37,10 +37,6 @@ function CreateBeltButton({ createBeltCallback } : { createBeltCallback?: (belt:
     const [showCreateBelt, setShowCreateBelt] = useState(false);
     const [creatingBelt, setCreatingBelt] = useState(false);
 
-    function handleCancel() {
-        setShowCreateBelt(false);
-        setCreatingBelt(false);
-    }
     function handleSubmit(event: FormEvent) {
         setCreatingBelt(true);
         event.preventDefault();
@@ -75,7 +71,7 @@ function CreateBeltButton({ createBeltCallback } : { createBeltCallback?: (belt:
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCancel}>Cancel</Button>
+                    <Button variant="secondary" onClick={() => setShowCreateBelt(false)}>Cancel</Button>
                     {creatingBelt
                         ? <Button disabled type="submit">
                             <Spinner animation="border" role="status" size="sm">
