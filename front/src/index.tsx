@@ -272,8 +272,8 @@ function SchoolClassBeltsView() {
                 </tr>
             </thead>
             <tbody>
-                {student_belts.map(({student, belts}) => {
-                    const belt_id_by_skill_domain_id = Object.fromEntries(belts.map(({skill_domain_id, belt_id}) => [skill_domain_id, belt_id]));
+                {student_belts.map(({student, belts: skill_belt_ids}) => {
+                    const belt_id_by_skill_domain_id = Object.fromEntries(skill_belt_ids.map(({skill_domain_id, belt_id}) => [skill_domain_id, belt_id]));
                     return <tr key={student.id}>
                         <th>{student.name}</th>
                         {skill_domains.map(skill_domain => {

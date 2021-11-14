@@ -36,6 +36,9 @@
         "semi": [
             "error",
             "always"
+        ],
+        "no-shadow": [
+            "error"
         ]
     }
 }
