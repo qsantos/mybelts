@@ -16,7 +16,11 @@ import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { Belt, BeltList, BeltsService, ClassLevelList, ClassLevelsService, SchoolClassList, SchoolClassesService, SchoolClassStudentBelts, StudentList } from './api';
+import {
+    Belt, BeltList, BeltsService, ClassLevelList, ClassLevelsService,
+    SchoolClassList, SchoolClassesService, SchoolClassStudentBelts,
+    SkillDomain, SkillDomainList, SkillDomainsService, StudentList,
+} from './api';
 import './index.css';
 
 function BreadcrumbItem({ children, href, active }: { children: ReactNode, href?: string, active?: boolean }) {
@@ -192,6 +196,7 @@ function BeltsView() {
 
     if (beltList === null) {
         return <>
+            <h3>Belts</h3>
             <Breadcrumb>
                 <BreadcrumbItem href="/">Home</BreadcrumbItem>
                 <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
@@ -241,6 +246,107 @@ function BeltsView() {
                             <DeleteBeltButton belt={belt} belts={sortedBelts} setBeltList={setBeltList} />
                         </td>
                     </tr>)}
+            </tbody>
+        </Table>
+    </>;
+}
+
+function CreateSkillDomainButton({ createSkillDomainCallback } : { createSkillDomainCallback?: (skill_domain: SkillDomain) => void }) {
+    const [showCreateSkillDomain, setShowCreateSkillDomain] = useState(false);
+    const [creatingSkillDomain, setCreatingSkillDomain] = useState(false);
+
+    function handleSubmit(event: FormEvent) {
+        setCreatingSkillDomain(true);
+        event.preventDefault();
+        const target = event.target as typeof event.target & {
+            name: {value: string};
+        };
+        SkillDomainsService.postSkillDomainsResource({
+            name: target.name.value,
+        }).then(({ skill_domain }) => {
+            setShowCreateSkillDomain(false);
+            setCreatingSkillDomain(false);
+            if (createSkillDomainCallback !== undefined) {
+                createSkillDomainCallback(skill_domain);
+            }
+        });
+    }
+
+    return <>
+        <Button onClick={() => setShowCreateSkillDomain(true)}>Add</Button>
+        <Modal show={showCreateSkillDomain}>
+            <Form onSubmit={handleSubmit}>
+                <Modal.Header>
+                    <Modal.Title>Add Skill Domain</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group controlId="name">
+                        <Form.Label>Name</Form.Label>
+                        <Form.Control type="text" placeholder="Example: Algebra" />
+                        <Form.Text className="text-muted">
+                            Name for the new skill domain
+                        </Form.Text>
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowCreateSkillDomain(false)}>Cancel</Button>
+                    {creatingSkillDomain
+                        ? <Button disabled type="submit">
+                            <Spinner animation="border" role="status" size="sm">
+                                <span className="visually-hidden">Creating</span>
+                            </Spinner>
+                        </Button>
+                        : <Button type="submit">Add</Button>
+                    }
+                </Modal.Footer>
+            </Form>
+        </Modal>
+    </>;
+}
+
+function SkillDomainsView() {
+    const [skillDomainList, setSkillDomainList] = useState<null | SkillDomainList>(null);
+
+    useEffect(() => {
+        SkillDomainsService.getSkillDomainsResource().then(setSkillDomainList);
+    }, []);
+
+    if (skillDomainList === null) {
+        return <>
+            <Breadcrumb>
+                <BreadcrumbItem href="/">Home</BreadcrumbItem>
+                <BreadcrumbItem active href="/skill-domains">Skill Domains</BreadcrumbItem>
+            </Breadcrumb>
+            <h3>Skill Domains</h3>
+            <Loader />
+        </>;
+    }
+
+    const { skill_domains } = skillDomainList;
+    const sorted_skill_domains = skill_domains.sort((a, b) => a.name == b.name ? 0 : a.name < b.name ? - 1 : 1);
+
+    return <>
+        <Breadcrumb>
+            <BreadcrumbItem href="/">Home</BreadcrumbItem>
+            <BreadcrumbItem active href="/skill-domains">Skill Domains</BreadcrumbItem>
+        </Breadcrumb>
+        <h3>Skill Domains</h3>
+        <CreateSkillDomainButton createSkillDomainCallback={skill_domain => setSkillDomainList({ skill_domains: skill_domains.concat([skill_domain]) })}/>
+        <h4>List of available skill domains</h4>
+        <Table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {sorted_skill_domains.map(skill_domain =>
+                    <tr key={skill_domain.id}>
+                        <td>{skill_domain.name}</td>
+                        <td>TODO</td>
+                    </tr>
+                )}
             </tbody>
         </Table>
     </>;
@@ -433,6 +539,7 @@ function Layout() {
             <Navbar.Brand as={Link} to="/">Skills</Navbar.Brand>
             <Nav>
                 <Nav.Item><Nav.Link as={Link} to="/">Home</Nav.Link></Nav.Item>
+                <Nav.Item><Nav.Link as={Link} to="/skill-domains">Skill Domains</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/belts">Belts</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/class-levels">Class Levels</Nav.Link></Nav.Item>
             </Nav>
@@ -445,6 +552,7 @@ function App() {
     return <Routes>
         <Route path="/" element={<Layout />}>
             <Route path="belts" element={<BeltsView />} />
+            <Route path="skill-domains" element={<SkillDomainsView />} />
             <Route path="class-levels">
                 <Route index element={<ClassLevelsView />} />
                 <Route path=":class_level_id" element={<ClassLevelView />} />
