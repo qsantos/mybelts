@@ -10,6 +10,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import Table from 'react-bootstrap/Table';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import { BeltList, BeltsService, ClassLevelList, ClassLevelsService, SchoolClassList, SchoolClassesService, SchoolClassStudentBelts, StudentList } from './api'
 import './index.css';
 
 function BreadcrumbItem({ children, href, active }: { children: any, href?: string, active?: boolean }) {
@@ -26,14 +27,14 @@ function Loader() {
     </Spinner>;
 }
 
-function Belts() {
-  const [belts, setBelts] = useState([]);
+function BeltsView() {
+  const [beltList, setBeltList] = useState<null | BeltList>(null);
 
   useEffect(() => {
-    fetch('/api/belts').then(res => res.json().then(json => setBelts(json.belts)));
+    BeltsService.getBeltsResource().then(setBeltList);
   }, []);
 
-  if (belts.length === 0) {
+  if (beltList === null) {
     return <>
         <Breadcrumb>
           <BreadcrumbItem href="/">Home</BreadcrumbItem>
@@ -43,26 +44,27 @@ function Belts() {
       </>;
   }
 
+  const { belts } = beltList;
+
   return <>
     <Breadcrumb>
       <BreadcrumbItem href="/">Home</BreadcrumbItem>
       <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
     </Breadcrumb>
     <ListGroup>
-      {belts.map(belt => <ListGroup.Item key={belt['id']}>{belt['name']}</ListGroup.Item>)}
+      {belts.map(belt => <ListGroup.Item key={belt.id}>{belt.name}</ListGroup.Item>)}
     </ListGroup>
   </>;
 }
 
-function ClassLevels() {
-  const [classLevels, setClassLevels] = useState([]);
+function ClassLevelsView() {
+  const [classLevelList, setClassLevelList] = useState<null | ClassLevelList>(null);
 
   useEffect(() => {
-    fetch('/api/class-levels')
-    .then(res => res.json().then(json => setClassLevels(json.class_levels)));
+    ClassLevelsService.getClassLevelsResource().then(setClassLevelList);
   }, []);
 
-  if (classLevels.length === 0) {
+  if (classLevelList === null) {
     return <>
       <Breadcrumb>
         <BreadcrumbItem href="/">Home</BreadcrumbItem>
@@ -72,36 +74,32 @@ function ClassLevels() {
     </>;
   }
 
+  const { class_levels } = classLevelList;
+
   return <ListGroup>
     <Breadcrumb>
       <BreadcrumbItem href="/">Home</BreadcrumbItem>
       <BreadcrumbItem active href="/class-levels">Levels</BreadcrumbItem>
     </Breadcrumb>
-    {classLevels.map(classLevel =>
-      <ListGroup.Item action key={classLevel['id']}>
-        <Nav.Link as={Link} to={`${classLevel['id']}`}>
-          {classLevel['prefix']}
+    {class_levels.map(class_level =>
+      <ListGroup.Item action key={class_level.id}>
+        <Nav.Link as={Link} to={`${class_level.id}`}>
+          {class_level.prefix}
         </Nav.Link>
       </ListGroup.Item>
     )}
   </ListGroup>;
 }
 
-function ClassLevel() {
+function ClassLevelView() {
   const { class_level_id } = useParams();
-
-  const [classLevel, setClassLevel] = useState(null);
-  const [schoolClasses, setSchoolClasses] = useState([]);
+  const [schoolClassList, setSchoolClassList] = useState<null | SchoolClassList>(null);
 
   useEffect(() => {
-    fetch(`/api/class-levels/${class_level_id}/school-classes`)
-    .then(res => res.json().then(json => {
-      setClassLevel(json['class_level']);
-      setSchoolClasses(json['school_classes']);
-    }));
+    ClassLevelsService.getClassLevelSchoolClassesResource(parseInt(class_level_id!)).then(setSchoolClassList);
   }, [class_level_id]);
 
-  if (classLevel === null) {
+  if (schoolClassList === null) {
     return <>
       <Breadcrumb>
         <BreadcrumbItem href="/">Home</BreadcrumbItem>
@@ -112,18 +110,20 @@ function ClassLevel() {
     </>;
   }
 
+  const { class_level, school_classes } = schoolClassList;
+
   return <>
     <Breadcrumb>
       <BreadcrumbItem href="/">Home</BreadcrumbItem>
       <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-      <BreadcrumbItem active href={`/class-levels/${classLevel['id']}`}>Level {classLevel['prefix']}</BreadcrumbItem>
+      <BreadcrumbItem active href={`/class-levels/${class_level.id}`}>Level {class_level.prefix}</BreadcrumbItem>
     </Breadcrumb>
-    <h3>{classLevel['prefix']}</h3>
-    {schoolClasses.length === 0 ? 'No school class' : <ListGroup>
-        {schoolClasses.map(schoolClass =>
-          <ListGroup.Item action key={schoolClass['id']}>
-            <Nav.Link as={Link} to={`/school-classes/${schoolClass['id']}`}>
-              {schoolClass['suffix']}
+    <h3>{class_level.prefix}</h3>
+    {school_classes.length === 0 ? 'No school class' : <ListGroup>
+        {school_classes.map(school_class =>
+          <ListGroup.Item action key={school_class.id}>
+            <Nav.Link as={Link} to={`/school-classes/${school_class.id}`}>
+              {school_class.suffix}
             </Nav.Link>
           </ListGroup.Item>
         )}
@@ -131,23 +131,15 @@ function ClassLevel() {
   </>;
 }
 
-function SchoolClass() {
+function SchoolClassView() {
   const { school_class_id } = useParams();
-
-  const [classLevel, setClassLevel] = useState(null);
-  const [schoolClass, setSchoolClass] = useState(null);
-  const [students, setStudents] = useState([]);
+  const [studentList, setStudentList] = useState<null | StudentList>(null);
 
   useEffect(() => {
-    fetch(`/api/school-classes/${school_class_id}`)
-    .then(res => res.json().then(json => {
-      setClassLevel(json['class_level']);
-      setSchoolClass(json['school_class']);
-      setStudents(json['students']);
-    }));
+    SchoolClassesService.getSchoolClassResource(parseInt(school_class_id!)).then(setStudentList);
   }, [school_class_id]);
 
-  if (classLevel === null || schoolClass === null) {
+  if (studentList === null) {
     return <>
       <Breadcrumb>
         <BreadcrumbItem href="/">Home</BreadcrumbItem>
@@ -161,36 +153,35 @@ function SchoolClass() {
     </>;
   }
 
+  const { class_level, school_class, students } = studentList;
+
   return <>
     <Breadcrumb>
       <BreadcrumbItem href="/">Home</BreadcrumbItem>
       <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-      <BreadcrumbItem href={`/class-levels/${classLevel['id']}`}>Level {classLevel['prefix']}</BreadcrumbItem>
-      <BreadcrumbItem active href={`/school-classes/${schoolClass['id']}`}>Class {schoolClass['suffix']}</BreadcrumbItem>
+      <BreadcrumbItem href={`/class-levels/${class_level.id}`}>Level {class_level.prefix}</BreadcrumbItem>
+      <BreadcrumbItem active href={`/school-classes/${school_class.id}`}>Class {school_class.suffix}</BreadcrumbItem>
     </Breadcrumb>
     <Link to="belts">Belts</Link>
-    <h3>{classLevel['prefix']}{schoolClass['suffix']}</h3>
+    <h3>{class_level.prefix}{school_class.suffix}</h3>
     {students.length === 0 ? 'No students' : <ListGroup>
       {students.map(student =>
-        <ListGroup.Item key={student['id']}>{student['name']}</ListGroup.Item>
+        <ListGroup.Item key={student.id}>{student.name}</ListGroup.Item>
       )}
     </ListGroup>}
   </>;
 }
 
-function SchoolClassBelts() {
+function SchoolClassBeltsView() {
   const { school_class_id } = useParams();
 
-  const [data, setData] = useState(null);
+  const [schoolClassStudentBelts, setSchoolClassStudentBelts] = useState<null | SchoolClassStudentBelts>(null);
 
   useEffect(() => {
-    fetch(`/api/school-classes/${school_class_id}/student-belts`)
-    .then(res => res.json().then(json => {
-      setData(json);
-    }));
+    SchoolClassesService.getSchoolClassStudentBeltsResource(parseInt(school_class_id!)).then(setSchoolClassStudentBelts);
   }, [school_class_id]);
 
-  if (data === null) {
+  if (schoolClassStudentBelts === null) {
     return <>
       <Breadcrumb>
         <BreadcrumbItem href="/">Home</BreadcrumbItem>
@@ -203,40 +194,40 @@ function SchoolClassBelts() {
     </>;
   }
 
-  const { class_level, school_class, belts, skill_domains, student_belts } = data;
+  const { class_level, school_class, belts, skill_domains, student_belts } = schoolClassStudentBelts;
   if (student_belts.length === 0) {
       return <>No student in this class</>;
   }
-  const belt_by_id = Object.fromEntries(belts.map(belt => [belt['id'], belt]));
+  const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
 
   return <>
     <Breadcrumb>
       <BreadcrumbItem href="/">Home</BreadcrumbItem>
       <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-      <BreadcrumbItem href={`/class-levels/${class_level['id']}`}>Level {class_level['prefix']}</BreadcrumbItem>
-      <BreadcrumbItem active href={`/school-classes/${school_class['id']}`}>Class {school_class['suffix']}</BreadcrumbItem>
-        <BreadcrumbItem active href={`/school-classes/${school_class['id']}/belts`}>Belts</BreadcrumbItem>
+      <BreadcrumbItem href={`/class-levels/${class_level.id}`}>Level {class_level.prefix}</BreadcrumbItem>
+      <BreadcrumbItem active href={`/school-classes/${school_class.id}`}>Class {school_class.suffix}</BreadcrumbItem>
+        <BreadcrumbItem active href={`/school-classes/${school_class.id}/belts`}>Belts</BreadcrumbItem>
     </Breadcrumb>
-    <h3>{class_level['prefix']}{school_class['suffix']} belts</h3>
+    <h3>{class_level.prefix}{school_class.suffix} belts</h3>
     <Table>
       <thead>
         <tr>
           <th>Student</th>
-          {skill_domains.map(skill_domain => <th key={skill_domain['id']}>{skill_domain['name']}</th>)}
+          {skill_domains.map(skill_domain => <th key={skill_domain.id}>{skill_domain.name}</th>)}
         </tr>
       </thead>
       <tbody>
         {student_belts.map(({student, belts}) => {
           const belt_id_by_skill_domain_id = Object.fromEntries(belts.map(({skill_domain_id, belt_id}) => [skill_domain_id, belt_id]));
-          return <tr key={student['id']}>
-            <th>{student['name']}</th>
+          return <tr key={student.id}>
+            <th>{student.name}</th>
             {skill_domains.map(skill_domain => {
-              const belt_id = belt_id_by_skill_domain_id[skill_domain['id']];
+              const belt_id = belt_id_by_skill_domain_id[skill_domain.id];
               if (belt_id === undefined) {
-                return <td key={skill_domain['id']}>-</td>;
+                return <td key={skill_domain.id}>-</td>;
               }
-              const belt = belt_by_id[belt_id];
-              return <td key={skill_domain['id']}>{belt['name']}</td>;
+              const belt = belt_by_id[belt_id]!;
+              return <td key={skill_domain.id}>{belt.name}</td>;
             })}
           </tr>;
         })}
@@ -262,14 +253,14 @@ function Layout() {
 function App() {
   return <Routes>
     <Route path="/" element={<Layout />}>
-      <Route path="belts" element={<Belts />} />
+      <Route path="belts" element={<BeltsView />} />
       <Route path="class-levels">
-        <Route index element={<ClassLevels />} />
-        <Route path=":class_level_id" element={<ClassLevel />} />
+        <Route index element={<ClassLevelsView />} />
+        <Route path=":class_level_id" element={<ClassLevelView />} />
       </Route>
       <Route path="school-classes/:school_class_id">
-        <Route index element={<SchoolClass />} />
-        <Route path="belts" element={<SchoolClassBelts />} />
+        <Route index element={<SchoolClassView />} />
+        <Route path="belts" element={<SchoolClassBeltsView />} />
       </Route>
     </Route>
   </Routes>;
