@@ -545,7 +545,6 @@ class BeltResource(Resource):
             belt = session.query(Belt).get(belt_id)
             if belt is None:
                 abort(404, f'Belt {belt_id} not found')
-
             return {
                 'belt': belt.json(),
             }
@@ -561,7 +560,6 @@ class BeltResource(Resource):
             belt = session.query(Belt).get(belt_id)
             if belt is None:
                 abort(404, f'Belt {belt_id} not found')
-
             belt.name = request.json['name']
             session.commit()
             return {

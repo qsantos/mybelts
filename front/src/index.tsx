@@ -137,6 +137,61 @@ function MoveBeltButton({ buttonContent, direction_name, direction, belt, belts,
     </>;
 }
 
+function EditBeltButton({ belt, changedCallback } : { belt: Belt, changedCallback?: (changed_belt: Belt) => void }) {
+    const [show, setShow] = useState(false);
+    const [changing, setChanging] = useState(false);
+
+    function handleSubmit(event: FormEvent) {
+        setChanging(true);
+        event.preventDefault();
+        const target = event.target as typeof event.target & {
+            name: {value: string};
+        };
+        BeltsService.putBeltResource(belt.id, {
+            name: target.name.value,
+        }).then(({ belt: changed_belt }) => {
+            setChanging(false);
+            setShow(false);
+            if (changedCallback !== undefined) {
+                changedCallback(changed_belt);
+            }
+        });
+    }
+
+    return <>
+        <OverlayTrigger overlay={<Tooltip>Edit</Tooltip>}>
+            <Button onClick={() => setShow(true)}>✏️</Button>
+        </OverlayTrigger>
+        <Modal show={show}>
+            <Form onSubmit={handleSubmit}>
+                <Modal.Header>
+                    <Modal.Title>Edit Belt</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group controlId="name">
+                        <Form.Label>Name</Form.Label>
+                        <Form.Control type="text" placeholder="Example: Algebra" defaultValue={belt.name} />
+                        <Form.Text className="text-muted">
+                            New name for the belt “{belt.name}”
+                        </Form.Text>
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    {changing
+                        ? <Button type="submit" disabled>
+                            <Spinner animation="border" role="status" size="sm">
+                                <span className="visually-hidden">Saving</span>
+                            </Spinner>
+                        </Button>
+                        : <Button type="submit">Save</Button>
+                    }
+                </Modal.Footer>
+            </Form>
+        </Modal>
+    </>;
+}
+
 function DeleteBeltButton({ belt, deletedCallback } : { belt: Belt, deletedCallback?: () => void }) {
     const [show, setShow] = useState(false);
     const [deleting, setDeleting] = useState(false);
@@ -233,6 +288,11 @@ function BeltsView() {
                             <MoveBeltButton buttonContent="↑" direction_name="Up" direction={-1} belt={belt} belts={sorted_belts} setBeltList={setBeltList} />
                             {' '}
                             <MoveBeltButton buttonContent="↓" direction_name="Down" direction={1} belt={belt} belts={sorted_belts} setBeltList={setBeltList} />
+                            {' '}
+                            <EditBeltButton belt={belt} changedCallback={new_belt => {
+                                belts[index] = new_belt;
+                                setBeltList({ belts: belts });
+                            }} />
                             {' '}
                             <DeleteBeltButton belt={belt} deletedCallback={() => {
                                 belts.splice(index, 1);
