@@ -37,6 +37,7 @@ export type { Student } from './models/Student';
 export type { StudentBeltAttemptsPost } from './models/StudentBeltAttemptsPost';
 export type { StudentList } from './models/StudentList';
 export type { StudentOne } from './models/StudentOne';
+export type { StudentPut } from './models/StudentPut';
 
 export { BeltsService } from './services/BeltsService';
 export { ClassLevelsService } from './services/ClassLevelsService';

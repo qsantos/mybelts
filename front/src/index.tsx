@@ -6,7 +6,6 @@ import { FormEvent, ReactNode, StrictMode, useEffect, useState } from 'react';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -21,7 +20,7 @@ import {
     ClassLevel, ClassLevelList, ClassLevelsService,
     SchoolClass, SchoolClassList, SchoolClassesService, SchoolClassStudentBelts,
     SkillDomain, SkillDomainList, SkillDomainsService,
-    StudentList,
+    Student, StudentList, StudentsService,
 } from './api';
 import './index.css';
 
@@ -967,6 +966,155 @@ function ClassLevelView() {
     </>;
 }
 
+function CreateStudentButton({ school_class_id, createdCallback } : { school_class_id: number, createdCallback?: (student: Student) => void }) {
+    const [show, setShow] = useState(false);
+    const [creating, setCreating] = useState(false);
+
+    function handleSubmit(event: FormEvent) {
+        setCreating(true);
+        event.preventDefault();
+        const target = event.target as typeof event.target & {
+            name: {value: string};
+        };
+        SchoolClassesService.postSchoolClassStudentsResource(school_class_id, {
+            name: target.name.value,
+        }).then(({ student }) => {
+            setShow(false);
+            setCreating(false);
+            if (createdCallback !== undefined) {
+                createdCallback(student);
+            }
+        });
+    }
+
+    return <>
+        <Button onClick={() => setShow(true)}>Add</Button>
+        <Modal show={show}>
+            <Form onSubmit={handleSubmit}>
+                <Modal.Header>
+                    <Modal.Title>Add Student</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group controlId="name">
+                        <Form.Label>Suffix</Form.Label>
+                        <Form.Control type="text" placeholder="Example: D" />
+                        <Form.Text className="text-muted">
+                            Name for the new student
+                        </Form.Text>
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    {creating
+                        ? <Button disabled type="submit">
+                            <Spinner animation="border" role="status" size="sm">
+                                <span className="visually-hidden">Creating</span>
+                            </Spinner>
+                        </Button>
+                        : <Button type="submit">Add</Button>
+                    }
+                </Modal.Footer>
+            </Form>
+        </Modal>
+    </>;
+}
+
+function EditStudentButton({ student, changedCallback } : { student: Student, changedCallback?: (changed_student: Student) => void }) {
+    const [show, setShow] = useState(false);
+    const [changing, setChanging] = useState(false);
+
+    function handleSubmit(event: FormEvent) {
+        setChanging(true);
+        event.preventDefault();
+        const target = event.target as typeof event.target & {
+            name: {value: string};
+        };
+        StudentsService.putStudentResource(student.id, {
+            name: target.name.value,
+        }).then(({ student: changed_student }) => {
+            setChanging(false);
+            setShow(false);
+            if (changedCallback !== undefined) {
+                changedCallback(changed_student);
+            }
+        });
+    }
+
+    return <>
+        <OverlayTrigger overlay={<Tooltip>Edit</Tooltip>}>
+            <Button onClick={() => setShow(true)}>✏️</Button>
+        </OverlayTrigger>
+        <Modal show={show}>
+            <Form onSubmit={handleSubmit}>
+                <Modal.Header>
+                    <Modal.Title>Edit Student</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group controlId="name">
+                        <Form.Label>Suffix</Form.Label>
+                        <Form.Control type="text" placeholder="Example: John Doe" defaultValue={student.name} />
+                        <Form.Text className="text-muted">
+                            New name for the student “{student.name}”
+                        </Form.Text>
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    {changing
+                        ? <Button type="submit" disabled>
+                            <Spinner animation="border" role="status" size="sm">
+                                <span className="visually-hidden">Saving</span>
+                            </Spinner>
+                        </Button>
+                        : <Button type="submit">Save</Button>
+                    }
+                </Modal.Footer>
+            </Form>
+        </Modal>
+    </>;
+}
+
+function DeleteStudentButton({ student, deletedCallback } : { student: Student, deletedCallback?: () => void }) {
+    const [show, setShow] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+
+    function handleDelete() {
+        setDeleting(true);
+        StudentsService.deleteStudentResource(student.id).then(() => {
+            setShow(false);
+            setDeleting(false);
+            if (deletedCallback !== undefined ){
+                deletedCallback();
+            }
+        });
+    }
+
+    return <>
+        <OverlayTrigger overlay={<Tooltip>Delete</Tooltip>}>
+            <Button variant="danger" onClick={() => setShow(true)}>🗑️</Button>
+        </OverlayTrigger>
+        <Modal show={show}>
+            <Modal.Header>
+                <Modal.Title>Delete Student</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                Are you sure you want to delete the student “{student.name}”?
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                {deleting
+                    ? <Button disabled variant="danger">
+                        <Spinner animation="border" role="status" size="sm">
+                            <span className="visually-hidden">Deleting</span>
+                        </Spinner>
+                    </Button>
+                    : <Button variant="danger" onClick={handleDelete}>Delete</Button>
+                }
+            </Modal.Footer>
+        </Modal>
+    </>;
+}
+
 function SchoolClassView() {
     const { school_class_id } = useParams();
     const [studentList, setStudentList] = useState<null | StudentList>(null);
@@ -990,6 +1138,7 @@ function SchoolClassView() {
     }
 
     const { class_level, school_class, students } = studentList;
+    const sorted_students = students.sort((a, b) => a.name.localeCompare(b.name));
 
     return <>
         <Breadcrumb>
@@ -998,14 +1147,56 @@ function SchoolClassView() {
             <BreadcrumbItem href={`/class-levels/${class_level.id}`}>Level {class_level.prefix}</BreadcrumbItem>
             <BreadcrumbItem active href={`/school-classes/${school_class.id}`}>Class {school_class.suffix}</BreadcrumbItem>
         </Breadcrumb>
+        <h3>Class {class_level.prefix}{school_class.suffix}</h3>
         <Link to="belts">Belts</Link>
-        <h3>{class_level.prefix}{school_class.suffix}</h3>
-        {students.length === 0 ? 'No students' : <ListGroup>
-            {students.map(student =>
-                <ListGroup.Item key={student.id}>{student.name}</ListGroup.Item>
-            )}
-        </ListGroup>}
+        <h4>List of students</h4>
+        <CreateStudentButton school_class_id={school_class.id} createdCallback={student => {
+            students.push(student);
+            setStudentList({
+                class_level: class_level,
+                school_class: school_class,
+                students: students,
+            });
+        }} />
+        <Table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {sorted_students.map((student, index) =>
+                    <tr key={student.id}>
+                        <td>
+                            {student.name}
+                        </td>
+                        <td>
+                            <EditStudentButton student={student} changedCallback={new_student => {
+                                students[index] = new_student;
+                                setStudentList({
+                                    class_level: class_level,
+                                    school_class: school_class,
+                                    students: students,
+                                });
+                            }} />
+                            {' '}
+                            <DeleteStudentButton student={student} deletedCallback={() => {
+                                students.splice(index, 1);
+                                setStudentList({
+                                    class_level: class_level,
+                                    school_class: school_class,
+                                    students: students,
+                                });
+                            }} />
+                        </td>
+                    </tr>
+                )}
+            </tbody>
+        </Table>
     </>;
+
+
 }
 
 function SchoolClassBeltsView() {

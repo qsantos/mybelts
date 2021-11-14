@@ -436,6 +436,35 @@ class StudentResource(Resource):
                 'student': student.json(),
             }
 
+    put_model = api.model('StudentPut', {
+        'name': fields.String(example='John Doe', required=True),
+    })
+
+    @api.expect(put_model, validate=True)
+    @api.marshal_with(api_model_student_one)
+    def put(self, student_id: int) -> Any:
+        with session_context() as session:
+            student = session.query(Student).get(student_id)
+            if student is None:
+                abort(404, f'Student {student_id} not found')
+            student.name = request.json['name']
+            session.commit()
+            school_class = student.school_class
+            class_level = school_class.class_level
+            return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
+                'student': student.json(),
+            }
+
+    def delete(self, student_id: int) -> Any:
+        with session_context() as session:
+            student = session.query(Student).get(student_id)
+            if student is None:
+                abort(404, f'Student {student_id} not found')
+            session.query(Student).filter(Student.id == student.id).delete()
+            session.commit()
+
 
 @students_ns.route('/students/<int:student_id>/belt-attempts')
 class StudentBeltAttemptsResource(Resource):
