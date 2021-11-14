@@ -137,13 +137,7 @@ function MoveBeltButton({ buttonContent, direction_name, direction, belt, belts,
     </>;
 }
 
-interface DeleteBeltButtonProps {
-    belt: Belt;
-    belts: Belt[];
-    setBeltList: (beltList: BeltList) => void;
-}
-
-function DeleteBeltButton({ belt, belts, setBeltList } : DeleteBeltButtonProps) {
+function DeleteBeltButton({ belt, deletedCallback } : { belt: Belt, deletedCallback?: () => void }) {
     const [show, setShow] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
@@ -152,12 +146,9 @@ function DeleteBeltButton({ belt, belts, setBeltList } : DeleteBeltButtonProps) 
         BeltsService.deleteBeltResource(belt.id).then(() => {
             setShow(false);
             setDeleting(false);
-            // adjust belt list
-            belts.splice(belt.rank - 1, 1);
-            for (let index = belt.rank - 1; index < belts.length; index += 1) {
-                belts[index]!.rank -= 1;
+            if (deletedCallback !== undefined ){
+                deletedCallback();
             }
-            setBeltList({ belts: belts });
         });
     }
 
@@ -234,7 +225,7 @@ function BeltsView() {
                 </tr>
             </thead>
             <tbody>
-                {sorted_belts.map(belt =>
+                {sorted_belts.map((belt, index) =>
                     <tr key={belt.id}>
                         <td>{belt.rank}</td>
                         <td>{belt.name}</td>
@@ -243,7 +234,13 @@ function BeltsView() {
                             {' '}
                             <MoveBeltButton buttonContent="↓" direction_name="Down" direction={1} belt={belt} belts={sorted_belts} setBeltList={setBeltList} />
                             {' '}
-                            <DeleteBeltButton belt={belt} belts={sorted_belts} setBeltList={setBeltList} />
+                            <DeleteBeltButton belt={belt} deletedCallback={() => {
+                                belts.splice(index, 1);
+                                for (let j = index; j < belts.length; j += 1) {
+                                    belts[j]!.rank -= 1;
+                                }
+                                setBeltList({ belts: belts });
+                            }} />
                         </td>
                     </tr>)}
             </tbody>
