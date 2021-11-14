@@ -10,11 +10,13 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Modal from 'react-bootstrap/Modal';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
 import Table from 'react-bootstrap/Table';
+import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { BeltList, BeltsService, ClassLevelList, ClassLevelsService, SchoolClassList, SchoolClassesService, SchoolClassStudentBelts, StudentList } from './api';
+import { Belt, BeltList, BeltsService, ClassLevelList, ClassLevelsService, SchoolClassList, SchoolClassesService, SchoolClassStudentBelts, StudentList } from './api';
 import './index.css';
 
 function BreadcrumbItem({ children, href, active }: { children: ReactNode, href?: string, active?: boolean }) {
@@ -31,26 +33,9 @@ function Loader() {
     </Spinner>;
 }
 
-function BeltsView() {
-    const [beltList, setBeltList] = useState<null | BeltList>(null);
+function CreateBeltButton({ createBeltCallback } : { createBeltCallback?: (belt: Belt) => void }) {
     const [showCreateBelt, setShowCreateBelt] = useState(false);
     const [creatingBelt, setCreatingBelt] = useState(false);
-
-    useEffect(() => {
-        BeltsService.getBeltsResource().then(setBeltList);
-    }, []);
-
-    if (beltList === null) {
-        return <>
-            <Breadcrumb>
-                <BreadcrumbItem href="/">Home</BreadcrumbItem>
-                <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
-            </Breadcrumb>
-            <Loader />
-        </>;
-    }
-
-    const { belts } = beltList;
 
     function handleCancel() {
         setShowCreateBelt(false);
@@ -58,7 +43,7 @@ function BeltsView() {
     }
     function handleSubmit(event: FormEvent) {
         setCreatingBelt(true);
-        event.preventDefault(); 
+        event.preventDefault();
         const target = event.target as typeof event.target & {
             name: {value: string};
         };
@@ -67,16 +52,13 @@ function BeltsView() {
         }).then(({ belt }) => {
             setShowCreateBelt(false);
             setCreatingBelt(false);
-            setBeltList({ belts: belts.concat([belt]) });  // TODO: just refresh
+            if (createBeltCallback !== undefined) {
+                createBeltCallback(belt);
+            }
         });
     }
 
     return <>
-        <Breadcrumb>
-            <BreadcrumbItem href="/">Home</BreadcrumbItem>
-            <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
-        </Breadcrumb>
-        <h3>Belts</h3>
         <Button onClick={() => setShowCreateBelt(true)}>Add</Button>
         <Modal show={showCreateBelt}>
             <Form onSubmit={handleSubmit}>
@@ -105,10 +87,117 @@ function BeltsView() {
                 </Modal.Footer>
             </Form>
         </Modal>
+    </>;
+}
+
+interface MoveBeltButtonProps {
+    buttonContent: string;
+    direction_name: string;
+    direction: number;
+    belt: Belt;
+    belts: Belt[];
+    setBeltList: (beltList: BeltList) => void;
+}
+
+function MoveBeltButton({ buttonContent, direction_name, direction, belt, belts, setBeltList } : MoveBeltButtonProps) {
+    const [moving, setMoving] = useState(false);
+
+    function handleMove() {
+        setMoving(true);
+        BeltsService.patchBeltRankResource(belt.id, {
+            go_up_n_ranks: direction,
+        }).then(() => {
+            setMoving(false);
+            const other_belt = belts[belt.rank + direction - 1];
+            if (other_belt === undefined) {
+                console.error('Failed to find other belt');
+                return;
+            }
+            // adjust belt list
+            [belt.rank, other_belt.rank] = [other_belt.rank, belt.rank];
+            belts[belt.rank - 1] = belt;
+            belts[other_belt.rank - 1] = other_belt;
+            setBeltList({ belts: belts });
+        });
+    }
+
+    return <>
+        <OverlayTrigger overlay={<Tooltip>Move {direction_name}</Tooltip>}>
+            {moving
+                ? <Button disabled>
+                    <Spinner animation="border" role="status" size="sm">
+                        <span className="visually-hidden">Moving {direction_name}</span>
+                    </Spinner>
+                </Button>
+                : <Button disabled={belt.rank + direction <= 0 || belt.rank + direction > belts.length} onClick={handleMove}>
+                    {buttonContent}
+                </Button>
+            }
+        </OverlayTrigger>
+    </>;
+}
+
+function BeltsView() {
+    const [beltList, setBeltList] = useState<null | BeltList>(null);
+
+    useEffect(() => {
+        BeltsService.getBeltsResource().then(setBeltList);
+    }, []);
+
+    if (beltList === null) {
+        return <>
+            <Breadcrumb>
+                <BreadcrumbItem href="/">Home</BreadcrumbItem>
+                <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
+            </Breadcrumb>
+            <Loader />
+        </>;
+    }
+
+    const { belts } = beltList;
+
+    const sortedBelts = belts.sort((a, b) => (a.rank - b.rank));
+    const consistentRanks = sortedBelts.reduce((previous, belt, index) => {
+        if (belt.rank != index + 1) {
+            console.error(`Inconsistent ranking of belts ${belt.id}!`);
+            return false;
+        }
+        return previous;
+    }, true);
+
+    return <>
+        <Breadcrumb>
+            <BreadcrumbItem href="/">Home</BreadcrumbItem>
+            <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
+        </Breadcrumb>
+        <h3>Belts</h3>
+        <CreateBeltButton createBeltCallback={belt => setBeltList({ belts: belts.concat([belt]) })}/>
         <h4>List of available belts</h4>
-        <ListGroup>
-            {belts.map(belt => <ListGroup.Item key={belt.id}>{belt.name}</ListGroup.Item>)}
-        </ListGroup>
+        <Table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {sortedBelts.map((belt, index) =>
+                    <tr key={belt.id}>
+                        <td>{belt.rank}</td>
+                        <td>{belt.name}</td>
+                        <td>
+                            <MoveBeltButton buttonContent="↑" direction_name="Up" direction={-1} belt={belt} belts={sortedBelts} setBeltList={setBeltList} />
+                            {' '}
+                            <MoveBeltButton buttonContent="↓" direction_name="Down" direction={1} belt={belt} belts={sortedBelts} setBeltList={setBeltList} />
+                            {' '}
+                            <OverlayTrigger overlay={<Tooltip>Delete</Tooltip>}>
+                                <Button variant="danger">🗑️</Button>
+                            </OverlayTrigger>
+                        </td>
+                    </tr>)}
+            </tbody>
+        </Table>
     </>;
 }
 
