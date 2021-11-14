@@ -560,6 +560,20 @@ class BeltResource(Resource):
                 'belt': belt.json(),
             }
 
+    def delete(self, belt_id: int) -> Any:
+        with session_context() as session:
+            belt = session.query(Belt).get(belt_id)
+            if belt is None:
+                abort(404, f'Belt {belt_id} not found')
+            (
+                session
+                .query(Belt)
+                .filter(Belt.rank > belt.rank)
+                .update({Belt.rank: Belt.rank - 1})
+            )
+            session.query(Belt).filter(Belt.id == belt.id).delete()
+            session.commit()
+
 
 @belts_ns.route('/belts/<int:belt_id>/rank')
 class BeltRankResource(Resource):

@@ -133,6 +133,56 @@ function MoveBeltButton({ buttonContent, direction_name, direction, belt, belts,
     </>;
 }
 
+interface DeleteBeltButtonProps {
+    belt: Belt;
+    belts: Belt[];
+    setBeltList: (beltList: BeltList) => void;
+}
+
+function DeleteBeltButton({ belt, belts, setBeltList } : DeleteBeltButtonProps) {
+    const [showDeleteBelt, setShowDeleteBelt] = useState(false);
+    const [deletingBelt, setDeletingBelt] = useState(false);
+
+    function handleDelete() {
+        setDeletingBelt(true);
+        BeltsService.deleteBeltResource(belt.id).then(() => {
+            setShowDeleteBelt(false);
+            setDeletingBelt(false);
+            // adjust belt list
+            belts.splice(belt.rank - 1, 1);
+            for (let index = belt.rank - 1; index < belts.length; index += 1) {
+                belts[index]!.rank -= 1;
+            }
+            setBeltList({ belts: belts });
+        });
+    }
+
+    return <>
+        <OverlayTrigger overlay={<Tooltip>Delete</Tooltip>}>
+            <Button variant="danger" onClick={() => setShowDeleteBelt(true)}>🗑️</Button>
+        </OverlayTrigger>
+        <Modal show={showDeleteBelt}>
+            <Modal.Header>
+                <Modal.Title>Delete Belt</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                Are you sure you want to delete the belt “{belt.name}”?
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShowDeleteBelt(false)}>Cancel</Button>
+                {deletingBelt
+                    ? <Button disabled variant="danger">
+                        <Spinner animation="border" role="status" size="sm">
+                            <span className="visually-hidden">Deleting</span>
+                        </Spinner>
+                    </Button>
+                    : <Button variant="danger" onClick={handleDelete}>Delete</Button>
+                }
+            </Modal.Footer>
+        </Modal>
+    </>;
+}
+
 function BeltsView() {
     const [beltList, setBeltList] = useState<null | BeltList>(null);
 
@@ -178,7 +228,7 @@ function BeltsView() {
                 </tr>
             </thead>
             <tbody>
-                {sortedBelts.map((belt, index) =>
+                {sortedBelts.map(belt =>
                     <tr key={belt.id}>
                         <td>{belt.rank}</td>
                         <td>{belt.name}</td>
@@ -187,9 +237,7 @@ function BeltsView() {
                             {' '}
                             <MoveBeltButton buttonContent="↓" direction_name="Down" direction={1} belt={belt} belts={sortedBelts} setBeltList={setBeltList} />
                             {' '}
-                            <OverlayTrigger overlay={<Tooltip>Delete</Tooltip>}>
-                                <Button variant="danger">🗑️</Button>
-                            </OverlayTrigger>
+                            <DeleteBeltButton belt={belt} belts={sortedBelts} setBeltList={setBeltList} />
                         </td>
                     </tr>)}
             </tbody>
