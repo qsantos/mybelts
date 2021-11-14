@@ -919,7 +919,7 @@ function ClassLevelView() {
         </Breadcrumb>
         <h3>Class level: {class_level.prefix}</h3>
         <h4>List of classes</h4>
-        <CreateSchoolClassButton class_level_id={parseInt(class_level_id!)} createdCallback={school_class => {
+        <CreateSchoolClassButton class_level_id={class_level.id} createdCallback={school_class => {
             school_classes.push(school_class);
             setSchoolClassList({
                 class_level: class_level,
