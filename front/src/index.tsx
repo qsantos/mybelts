@@ -269,7 +269,10 @@ function BeltsView() {
             <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
         </Breadcrumb>
         <h3>Belts</h3>
-        <CreateBeltButton createdCallback={belt => setBeltList({ belts: belts.concat([belt]) })}/>
+        <CreateBeltButton createdCallback={belt => {
+            belts.push(belt);
+            setBeltList({ belts: belts });
+        }}/>
         <h4>List of available belts</h4>
         <Table>
             <thead>
@@ -485,7 +488,10 @@ function SkillDomainsView() {
             <BreadcrumbItem active href="/skill-domains">Skill Domains</BreadcrumbItem>
         </Breadcrumb>
         <h3>Skill Domains</h3>
-        <CreateSkillDomainButton createdCallback={skill_domain => setSkillDomainList({ skill_domains: skill_domains.concat([skill_domain]) })}/>
+        <CreateSkillDomainButton createdCallback={skill_domain => {
+            skill_domains.push(skill_domain);
+            setSkillDomainList({ skill_domains: skill_domains });
+        }}/>
         <h4>List of available skill domains</h4>
         <Table>
             <thead>
