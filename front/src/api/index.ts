@@ -23,6 +23,7 @@ export type { ClassLevelsPost } from './models/ClassLevelsPost';
 export type { SchoolClass } from './models/SchoolClass';
 export type { SchoolClassList } from './models/SchoolClassList';
 export type { SchoolClassOne } from './models/SchoolClassOne';
+export type { SchoolClassPut } from './models/SchoolClassPut';
 export type { SchoolClassStudentBelts } from './models/SchoolClassStudentBelts';
 export type { SchoolClassStudentBeltsBelts } from './models/SchoolClassStudentBeltsBelts';
 export type { SchoolClassStudentBeltsStudentBelts } from './models/SchoolClassStudentBeltsStudentBelts';

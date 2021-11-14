@@ -290,6 +290,33 @@ class SchoolClassResource(Resource):
                 ],
             }
 
+    put_model = api.model('SchoolClassPut', {
+        'suffix': fields.String(example='4e', required=True),
+    })
+
+    @api.expect(put_model, validate=True)
+    @api.marshal_with(api_model_school_class_one)
+    def put(self, school_class_id: int) -> Any:
+        with session_context() as session:
+            school_class = session.query(SchoolClass).get(school_class_id)
+            if school_class is None:
+                abort(404, f'School class {school_class_id} not found')
+            school_class.suffix = request.json['suffix']
+            session.commit()
+            class_level = school_class.class_level
+            return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
+            }
+
+    def delete(self, school_class_id: int) -> Any:
+        with session_context() as session:
+            school_class = session.query(SchoolClass).get(school_class_id)
+            if school_class is None:
+                abort(404, f'School class {school_class_id} not found')
+            session.query(SchoolClass).filter(SchoolClass.id == school_class.id).delete()
+            session.commit()
+
 
 @school_class_ns.route('/school-classes/<int:school_class_id>/students')
 class SchoolClassStudentsResource(Resource):

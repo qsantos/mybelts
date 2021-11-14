@@ -19,7 +19,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {
     Belt, BeltList, BeltsService,
     ClassLevel, ClassLevelList, ClassLevelsService,
-    SchoolClassList, SchoolClassesService, SchoolClassStudentBelts,
+    SchoolClass, SchoolClassList, SchoolClassesService, SchoolClassStudentBelts,
     SkillDomain, SkillDomainList, SkillDomainsService,
     StudentList,
 } from './api';
@@ -739,9 +739,159 @@ function ClassLevelsView() {
     </>;
 }
 
+function CreateSchoolClassButton({ class_level_id, createdCallback } : { class_level_id: number, createdCallback?: (school_class: SchoolClass) => void }) {
+    const [show, setShow] = useState(false);
+    const [creating, setCreating] = useState(false);
+
+    function handleSubmit(event: FormEvent) {
+        setCreating(true);
+        event.preventDefault();
+        const target = event.target as typeof event.target & {
+            suffix: {value: string};
+        };
+        ClassLevelsService.postClassLevelSchoolClassesResource(class_level_id, {
+            suffix: target.suffix.value,
+        }).then(({ school_class }) => {
+            setShow(false);
+            setCreating(false);
+            if (createdCallback !== undefined) {
+                createdCallback(school_class);
+            }
+        });
+    }
+
+    return <>
+        <Button onClick={() => setShow(true)}>Add</Button>
+        <Modal show={show}>
+            <Form onSubmit={handleSubmit}>
+                <Modal.Header>
+                    <Modal.Title>Add Class</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group controlId="suffix">
+                        <Form.Label>Suffix</Form.Label>
+                        <Form.Control type="text" placeholder="Example: D" />
+                        <Form.Text className="text-muted">
+                            Suffix for the new class
+                        </Form.Text>
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    {creating
+                        ? <Button disabled type="submit">
+                            <Spinner animation="border" role="status" size="sm">
+                                <span className="visually-hidden">Creating</span>
+                            </Spinner>
+                        </Button>
+                        : <Button type="submit">Add</Button>
+                    }
+                </Modal.Footer>
+            </Form>
+        </Modal>
+    </>;
+}
+
+function EditSchoolClassButton({ school_class, changedCallback } : { school_class: SchoolClass, changedCallback?: (changed_school_class: SchoolClass) => void }) {
+    const [show, setShow] = useState(false);
+    const [changing, setChanging] = useState(false);
+
+    function handleSubmit(event: FormEvent) {
+        setChanging(true);
+        event.preventDefault();
+        const target = event.target as typeof event.target & {
+            suffix: {value: string};
+        };
+        SchoolClassesService.putSchoolClassResource(school_class.id, {
+            suffix: target.suffix.value,
+        }).then(({ school_class: changed_school_class }) => {
+            setChanging(false);
+            setShow(false);
+            if (changedCallback !== undefined) {
+                changedCallback(changed_school_class);
+            }
+        });
+    }
+
+    return <>
+        <OverlayTrigger overlay={<Tooltip>Edit</Tooltip>}>
+            <Button onClick={() => setShow(true)}>✏️</Button>
+        </OverlayTrigger>
+        <Modal show={show}>
+            <Form onSubmit={handleSubmit}>
+                <Modal.Header>
+                    <Modal.Title>Edit Class</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group controlId="suffix">
+                        <Form.Label>Suffix</Form.Label>
+                        <Form.Control type="text" placeholder="Example: D" defaultValue={school_class.suffix} />
+                        <Form.Text className="text-muted">
+                            New suffix for the class “{school_class.suffix}”
+                        </Form.Text>
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    {changing
+                        ? <Button type="submit" disabled>
+                            <Spinner animation="border" role="status" size="sm">
+                                <span className="visually-hidden">Saving</span>
+                            </Spinner>
+                        </Button>
+                        : <Button type="submit">Save</Button>
+                    }
+                </Modal.Footer>
+            </Form>
+        </Modal>
+    </>;
+}
+
+function DeleteSchoolClassButton({ school_class, deletedCallback } : { school_class: SchoolClass, deletedCallback?: () => void }) {
+    const [show, setShow] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+
+    function handleDelete() {
+        setDeleting(true);
+        SchoolClassesService.deleteSchoolClassResource(school_class.id).then(() => {
+            setShow(false);
+            setDeleting(false);
+            if (deletedCallback !== undefined ){
+                deletedCallback();
+            }
+        });
+    }
+
+    return <>
+        <OverlayTrigger overlay={<Tooltip>Delete</Tooltip>}>
+            <Button variant="danger" onClick={() => setShow(true)}>🗑️</Button>
+        </OverlayTrigger>
+        <Modal show={show}>
+            <Modal.Header>
+                <Modal.Title>Delete Class</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                Are you sure you want to delete the class “{school_class.suffix}”?
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                {deleting
+                    ? <Button disabled variant="danger">
+                        <Spinner animation="border" role="status" size="sm">
+                            <span className="visually-hidden">Deleting</span>
+                        </Spinner>
+                    </Button>
+                    : <Button variant="danger" onClick={handleDelete}>Delete</Button>
+                }
+            </Modal.Footer>
+        </Modal>
+    </>;
+}
+
 function ClassLevelView() {
     const { class_level_id } = useParams();
     const [schoolClassList, setSchoolClassList] = useState<null | SchoolClassList>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         ClassLevelsService.getClassLevelSchoolClassesResource(parseInt(class_level_id!)).then(setSchoolClassList);
@@ -767,16 +917,53 @@ function ClassLevelView() {
             <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
             <BreadcrumbItem active href={`/class-levels/${class_level.id}`}>Level {class_level.prefix}</BreadcrumbItem>
         </Breadcrumb>
-        <h3>{class_level.prefix}</h3>
-        {school_classes.length === 0 ? 'No school class' : <ListGroup>
-            {sorted_school_classes.map(school_class =>
-                <ListGroup.Item action key={school_class.id}>
-                    <Nav.Link as={Link} to={`/school-classes/${school_class.id}`}>
-                        {school_class.suffix}
-                    </Nav.Link>
-                </ListGroup.Item>
-            )}
-        </ListGroup>}
+        <h3>Class level: {class_level.prefix}</h3>
+        <h4>List of classes</h4>
+        <CreateSchoolClassButton class_level_id={parseInt(class_level_id!)} createdCallback={school_class => {
+            school_classes.push(school_class);
+            setSchoolClassList({
+                class_level: class_level,
+                school_classes: school_classes,
+            });
+        }} />
+        <Table>
+            <thead>
+                <tr>
+                    <th>Suffix</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {sorted_school_classes.map((school_class, index) =>
+                    <tr key={school_class.id}>
+                        <td>
+                            <Nav.Link as={Link} to={`/school-classes/${school_class.id}`}>
+                                {school_class.suffix}
+                            </Nav.Link>
+                        </td>
+                        <td>
+                            <Button onClick={() => navigate(`/school-classes/${school_class.id}`)}>🔍</Button>
+                            {' '}
+                            <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
+                                school_classes[index] = new_school_class;
+                                setSchoolClassList({
+                                    class_level: class_level,
+                                    school_classes: school_classes,
+                                });
+                            }} />
+                            {' '}
+                            <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => {
+                                school_classes.splice(index, 1);
+                                setSchoolClassList({
+                                    class_level: class_level,
+                                    school_classes: school_classes,
+                                });
+                            }} />
+                        </td>
+                    </tr>
+                )}
+            </tbody>
+        </Table>
     </>;
 }
 
