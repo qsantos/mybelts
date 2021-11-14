@@ -301,6 +301,48 @@ function CreateSkillDomainButton({ createdCallback } : { createdCallback?: (skil
     </>;
 }
 
+function DeleteSkillDomainButton({ skill_domain, deletedCallback } : { skill_domain: SkillDomain, deletedCallback?: () => void }) {
+    const [show, setShow] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+
+    function handleDelete() {
+        setDeleting(true);
+        SkillDomainsService.deleteSkillDomainResource(skill_domain.id).then(() => {
+            setShow(false);
+            setDeleting(false);
+            if (deletedCallback !== undefined ){
+                deletedCallback();
+            }
+        });
+    }
+
+    return <>
+        <OverlayTrigger overlay={<Tooltip>Delete</Tooltip>}>
+            <Button variant="danger" onClick={() => setShow(true)}>🗑️</Button>
+        </OverlayTrigger>
+        <Modal show={show}>
+            <Modal.Header>
+                <Modal.Title>Delete Skill Domain</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                Are you sure you want to delete the skill domain “{skill_domain.name}”?
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                {deleting
+                    ? <Button disabled variant="danger">
+                        <Spinner animation="border" role="status" size="sm">
+                            <span className="visually-hidden">Deleting</span>
+                        </Spinner>
+                    </Button>
+                    : <Button variant="danger" onClick={handleDelete}>Delete</Button>
+                }
+            </Modal.Footer>
+        </Modal>
+    </>;
+}
+
+
 function SkillDomainsView() {
     const [skillDomainList, setSkillDomainList] = useState<null | SkillDomainList>(null);
 
@@ -338,10 +380,15 @@ function SkillDomainsView() {
                 </tr>
             </thead>
             <tbody>
-                {sorted_skill_domains.map(skill_domain =>
+                {sorted_skill_domains.map((skill_domain, index) =>
                     <tr key={skill_domain.id}>
                         <td>{skill_domain.name}</td>
-                        <td>TODO</td>
+                        <td>
+                            <DeleteSkillDomainButton skill_domain={skill_domain} deletedCallback={() => {
+                                skill_domains.splice(index, 1);
+                                setSkillDomainList({ skill_domains: skill_domains });
+                            }} />
+                        </td>
                     </tr>
                 )}
             </tbody>

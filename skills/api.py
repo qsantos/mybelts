@@ -495,6 +495,14 @@ class SkillDomainResource(Resource):
                 'skill_domain': skill_domain.json(),
             }
 
+    def delete(self, skill_domain_id: int) -> Any:
+        with session_context() as session:
+            skill_domain = session.query(SkillDomain).get(skill_domain_id)
+            if skill_domain is None:
+                abort(404, f'Skill domain {skill_domain_id} not found')
+            session.query(SkillDomain).filter(SkillDomain.id == skill_domain.id).delete()
+            session.commit()
+
 
 @belts_ns.route('/belts')
 class BeltsResource(Resource):

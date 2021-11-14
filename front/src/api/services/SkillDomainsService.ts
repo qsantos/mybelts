@@ -65,4 +65,18 @@ export class SkillDomainsService {
         });
     }
 
+    /**
+     * @param skillDomainId
+     * @returns any Success
+     * @throws ApiError
+     */
+    public static deleteSkillDomainResource(
+        skillDomainId: number,
+    ): CancelablePromise<any> {
+        return __request({
+            method: 'DELETE',
+            path: `/skill-domains/${skillDomainId}/`,
+        });
+    }
+
 }
