@@ -5,5 +5,5 @@
 import type { Belt } from './Belt';
 
 export type BeltOne = {
-    belts: Belt;
+    belt: Belt;
 }

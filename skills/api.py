@@ -135,7 +135,7 @@ api_model_belt_list = api.model('BeltList', {
 })
 
 api_model_belt_one = api.model('BeltOne', {
-    'belts': fields.Nested(api_model_belt, required=True),
+    'belt': fields.Nested(api_model_belt, required=True),
 })
 
 api_model_belt_attempt_list = api.model('BeltAttemptList', {
