@@ -474,19 +474,28 @@ class StudentBeltAttemptsResource(Resource):
             student = session.query(Student).get(student_id)
             if student is None:
                 abort(404, f'Student {student_id} not found')
+
+            things = (
+                session  # type: ignore
+                .query(BeltAttempt, SkillDomain, Belt)
+                .select_from(BeltAttempt)
+                .outerjoin(SkillDomain)
+                .outerjoin(Belt)
+                .filter(BeltAttempt.student_id == student.id)
+                .all()
+            )
+
             belts = []
             belt_ids: Set[int] = set()
             skill_domains = []
             skill_domain_ids: Set[int] = set()
             belt_attempts = []
-            for belt_attempt in student.belt_attempts:
+            for belt_attempt, belt, skill_domain in things:
                 belt_attempts.append(belt_attempt)
-                if belt_attempt.belt_id not in belt_ids:
-                    belt = belt_attempt.belt
+                if belt.id not in belt_ids:
                     belt_ids.add(belt.id)
                     belts.append(belt)
-                if belt_attempt.skill_domain_id not in skill_domain_ids:
-                    skill_domain = belt_attempt.skill_domain
+                if skill_domain.id not in skill_domain_ids:
                     skill_domain_ids.add(skill_domain.id)
                     skill_domains.append(skill_domain)
             return {
