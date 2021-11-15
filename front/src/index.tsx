@@ -938,6 +938,11 @@ function ClassLevelView() {
             <BreadcrumbItem active href={`/class-levels/${class_level.id}`}>Level {class_level.prefix}</BreadcrumbItem>
         </Breadcrumb>
         <h3>Class level: {class_level.prefix}</h3>
+        <EditClassLevelButton class_level={class_level} changedCallback={new_class_level => {
+            setSchoolClassList({ class_level: new_class_level, school_classes: school_classes });
+        }} />
+        {' '}
+        <DeleteClassLevelButton class_level={class_level} deletedCallback={() => navigate('/class-levels')} />
         <h4>List of classes</h4>
         <CreateSchoolClassButton class_level_id={class_level.id} createdCallback={school_class => {
             school_classes.push(school_class);
@@ -1146,6 +1151,7 @@ function SchoolClassView() {
     const school_class_id = params.school_class_id;
 
     const [studentList, setStudentList] = useState<null | StudentList>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         SchoolClassesService.getSchoolClassResource(parseInt(school_class_id)).then(setStudentList);
@@ -1176,6 +1182,11 @@ function SchoolClassView() {
             <BreadcrumbItem active href={`/school-classes/${school_class.id}`}>Class {school_class.suffix}</BreadcrumbItem>
         </Breadcrumb>
         <h3>Class {class_level.prefix}{school_class.suffix}</h3>
+        <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
+            setStudentList({ class_level: class_level, school_class: new_school_class, students: students });
+        }} />
+        {' '}
+        <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => navigate(`/class-levels/${class_level.id}`)} />
         <Link to="belts">Belts</Link>
         <h4>List of students</h4>
         <CreateStudentButton school_class_id={school_class.id} createdCallback={student => {
