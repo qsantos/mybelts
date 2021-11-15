@@ -140,6 +140,8 @@ api_model_belt_one = api.model('BeltOne', {
 })
 
 api_model_belt_attempt_list = api.model('BeltAttemptList', {
+    'class_level': fields.Nested(api_model_class_level, required=True),
+    'school_class': fields.Nested(api_model_school_class, required=True),
     'student': fields.Nested(api_model_student, required=True),
     'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
     'belts': fields.List(fields.Nested(api_model_belt), required=True),
@@ -147,6 +149,8 @@ api_model_belt_attempt_list = api.model('BeltAttemptList', {
 })
 
 api_model_belt_attempt_one = api.model('BeltAttemptOne', {
+    'class_level': fields.Nested(api_model_class_level, required=True),
+    'school_class': fields.Nested(api_model_school_class, required=True),
     'student': fields.Nested(api_model_student, required=True),
     'skill_domain': fields.Nested(api_model_skill_domain, required=True),
     'belt': fields.Nested(api_model_belt, required=True),
@@ -499,7 +503,11 @@ class StudentBeltAttemptsResource(Resource):
                 if skill_domain.id not in skill_domain_ids:
                     skill_domain_ids.add(skill_domain.id)
                     skill_domains.append(skill_domain)
+            school_class = student.school_class
+            class_level = school_class.class_level
             return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
                 'student': student.json(),
                 'belts': [belt.json() for belt in belts],
                 'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
@@ -535,7 +543,11 @@ class StudentBeltAttemptsResource(Resource):
             )
             session.add(belt_attempt)
             session.commit()
+            school_class = student.school_class
+            class_level = school_class.class_level
             return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
                 'student': student.json(),
                 'belt': belt.json(),
                 'skill_domain': skill_domain.json(),
