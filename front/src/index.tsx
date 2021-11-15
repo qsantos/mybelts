@@ -20,7 +20,8 @@ import {
     ClassLevel, ClassLevelList, ClassLevelsService,
     SchoolClass, SchoolClassList, SchoolClassesService, SchoolClassStudentBelts,
     SkillDomain, SkillDomainList, SkillDomainsService,
-    Student, StudentList, StudentOne, StudentsService,
+    Student, StudentList, StudentsService,
+    BeltAttemptList,
 } from './api';
 import './index.css';
 
@@ -1252,14 +1253,18 @@ function StudentView() {
     }
     const student_id = params.student_id;
 
-    const [studentOne, setStudentOne] = useState<null | StudentOne>(null);
+    const [beltList, setBeltList] = useState<null | BeltList>(null);
+    const [skillDomainList, setSkillDomainList] = useState<null | SkillDomainList>(null);
+    const [beltAttemptList, setBeltAttemptList] = useState<null | BeltAttemptList>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        StudentsService.getStudentResource(parseInt(student_id)).then(setStudentOne);
+        BeltsService.getBeltsResource().then(setBeltList);
+        SkillDomainsService.getSkillDomainsResource().then(setSkillDomainList);
+        StudentsService.getStudentBeltAttemptsResource(parseInt(student_id)).then(setBeltAttemptList);
     }, [student_id]);
 
-    if (studentOne === null) {
+    if (beltList === null || skillDomainList === null || beltAttemptList === null) {
         return <>
             <Breadcrumb>
                 <BreadcrumbItem href="/">Home</BreadcrumbItem>
@@ -1274,7 +1279,12 @@ function StudentView() {
         </>;
     }
 
-    const { class_level, school_class, student } = studentOne;
+    const { skill_domains } = skillDomainList;
+    const { belts } = beltList;
+    const { class_level, school_class, student, belt_attempts } = beltAttemptList;
+
+    const skill_domain_by_id = Object.fromEntries(skill_domains.map(skill_domain => [skill_domain.id, skill_domain]));
+    const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
 
     return <>
         <Breadcrumb>
@@ -1286,10 +1296,40 @@ function StudentView() {
         </Breadcrumb>
         <h3>Student {student.name}</h3>
         <EditStudentButton student={student} changedCallback={new_student => {
-            setStudentOne({ class_level: class_level, school_class: school_class, student: new_student });
+            setBeltAttemptList({
+                class_level: class_level,
+                school_class: school_class,
+                student: new_student,
+                skill_domains: [],
+                belts: [],
+                belt_attempts: belt_attempts,
+            });
         }} />
         {' '}
         <DeleteStudentButton student={student} deletedCallback={() => navigate(`/school-classes/${school_class.id}`)} />
+        <h4>List of belt attempts:</h4>
+        <Table>
+            <thead>
+                <tr>
+                    <th>Skill domain</th>
+                    <th>Belt</th>
+                    <th>Passed?</th>
+                </tr>
+            </thead>
+            <tbody>
+                {belt_attempts.map(belt_attempt => {
+                    const skill_domain = skill_domain_by_id[belt_attempt.skill_domain_id];
+                    const belt = belt_by_id[belt_attempt.belt_id];
+                    return <>
+                        <tr key={belt_attempt.id}>
+                            <td>{skill_domain === undefined ? `Unknown skill domain ${belt_attempt.skill_domain_id}` : skill_domain.name}</td>
+                            <td>{belt === undefined ? `Unknown belt ${belt_attempt.belt_id}` : belt.name}</td>
+                            <td>{belt_attempt.success ? '✅' : '❌'}</td>
+                        </tr>
+                    </>;
+                })}
+            </tbody>
+        </Table>
     </>;
 }
 
