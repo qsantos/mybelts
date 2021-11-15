@@ -1237,8 +1237,6 @@ function SchoolClassView() {
             </tbody>
         </Table>
     </>;
-
-
 }
 
 function SchoolClassBeltsView() {
@@ -1249,7 +1247,6 @@ function SchoolClassBeltsView() {
         return <></>;
     }
     const school_class_id = params.school_class_id;
-
 
     const [schoolClassStudentBelts, setSchoolClassStudentBelts] = useState<null | SchoolClassStudentBelts>(null);
 
