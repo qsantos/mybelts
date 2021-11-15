@@ -20,7 +20,7 @@ import {
     ClassLevel, ClassLevelList, ClassLevelsService,
     SchoolClass, SchoolClassList, SchoolClassesService, SchoolClassStudentBelts,
     SkillDomain, SkillDomainList, SkillDomainsService,
-    Student, StudentList, StudentsService,
+    Student, StudentList, StudentOne, StudentsService,
 } from './api';
 import './index.css';
 
@@ -1211,9 +1211,13 @@ function SchoolClassView() {
                 {sorted_students.map((student, index) =>
                     <tr key={student.id}>
                         <td>
-                            {student.name}
+                            <Nav.Link as={Link} to={`/students/${student.id}`}>
+                                {student.name}
+                            </Nav.Link>
                         </td>
                         <td>
+                            <Button onClick={() => navigate(`/students/${student.id}`)}>🔍</Button>
+                            {' '}
                             <EditStudentButton student={student} changedCallback={new_student => {
                                 students[index] = new_student;
                                 setStudentList({
@@ -1236,6 +1240,56 @@ function SchoolClassView() {
                 )}
             </tbody>
         </Table>
+    </>;
+}
+
+function StudentView() {
+    const params = useParams();
+    if (params.student_id === undefined) {
+        // should not happen
+        console.error('Attribute student_id of <StudentView /> is undefined');
+        return <></>;
+    }
+    const student_id = params.student_id;
+
+    const [studentOne, setStudentOne] = useState<null | StudentOne>(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        StudentsService.getStudentResource(parseInt(student_id)).then(setStudentOne);
+    }, [student_id]);
+
+    if (studentOne === null) {
+        return <>
+            <Breadcrumb>
+                <BreadcrumbItem href="/">Home</BreadcrumbItem>
+                <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
+                <BreadcrumbItem>Level ?</BreadcrumbItem>
+                <BreadcrumbItem active href="/">Class ?</BreadcrumbItem>
+                <BreadcrumbItem active href={`/student/${student_id}`}>Student ?</BreadcrumbItem>
+            </Breadcrumb>
+            <Link to="belts">Belts</Link>
+            <br />
+            <Loader />
+        </>;
+    }
+
+    const { class_level, school_class, student } = studentOne;
+
+    return <>
+        <Breadcrumb>
+            <BreadcrumbItem href="/">Home</BreadcrumbItem>
+            <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
+            <BreadcrumbItem href={`/class-levels/${class_level.id}`}>Level {class_level.prefix}</BreadcrumbItem>
+            <BreadcrumbItem active href={`/school-classes/${school_class.id}`}>Class {school_class.suffix}</BreadcrumbItem>
+            <BreadcrumbItem active href={`/student/${student.id}`}>Student {student.name}</BreadcrumbItem>
+        </Breadcrumb>
+        <h3>Student {student.name}</h3>
+        <EditStudentButton student={student} changedCallback={new_student => {
+            setStudentOne({ class_level: class_level, school_class: school_class, student: new_student });
+        }} />
+        {' '}
+        <DeleteStudentButton student={student} deletedCallback={() => navigate(`/school-classes/${school_class.id}`)} />
     </>;
 }
 
@@ -1337,6 +1391,7 @@ function App() {
                 <Route index element={<SchoolClassView />} />
                 <Route path="belts" element={<SchoolClassBeltsView />} />
             </Route>
+            <Route path="students/:student_id" element={<StudentView />} />
         </Route>
     </Routes>;
 }
