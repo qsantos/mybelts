@@ -53,7 +53,6 @@ api_model_class_level = api.model('ClassLevel', {
     'id': fields.Integer(example=42, required=True),
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
     'prefix': fields.String(example='4e', required=True),
-    'school_class_ids': fields.List(fields.Integer(example=42), required=True),
 })
 
 api_model_school_class = api.model('SchoolClass', {
@@ -61,7 +60,6 @@ api_model_school_class = api.model('SchoolClass', {
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
     'class_level_id': fields.Integer(example=42, required=True),
     'suffix': fields.String(example='D', required=True),
-    'student_ids': fields.List(fields.Integer(example=42), required=True),
 })
 
 api_model_student = api.model('Student', {

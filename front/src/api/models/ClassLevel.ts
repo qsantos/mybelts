@@ -6,5 +6,4 @@ export type ClassLevel = {
     created: string;
     id: number;
     prefix: string;
-    school_class_ids: Array<number>;
 }

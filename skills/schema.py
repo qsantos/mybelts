@@ -51,7 +51,6 @@ class ClassLevel(Base):  # type: ignore
             'id': self.id,
             'created': self.created.isoformat(),
             'prefix': self.prefix,
-            'school_class_ids': [school_class.id for school_class in self.school_classes],
         }
 
 
@@ -80,7 +79,6 @@ class SchoolClass(Base):  # type: ignore
             'created': self.created.isoformat(),
             'class_level_id': self.class_level_id,
             'suffix': self.suffix,
-            'student_ids': [student.id for student in self.students],
         }
 
 
