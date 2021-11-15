@@ -1182,12 +1182,15 @@ function SchoolClassView() {
             <BreadcrumbItem active href={`/school-classes/${school_class.id}`}>Class {school_class.suffix}</BreadcrumbItem>
         </Breadcrumb>
         <h3>Class {class_level.prefix}{school_class.suffix}</h3>
+        <OverlayTrigger overlay={<Tooltip>Belts</Tooltip>}>
+            <Button onClick={() => navigate('belts')}>🥋</Button>
+        </OverlayTrigger>
+        {' '}
         <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
             setStudentList({ class_level: class_level, school_class: new_school_class, students: students });
         }} />
         {' '}
         <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => navigate(`/class-levels/${class_level.id}`)} />
-        <Link to="belts">Belts</Link>
         <h4>List of students</h4>
         <CreateStudentButton school_class_id={school_class.id} createdCallback={student => {
             students.push(student);
