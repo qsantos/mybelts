@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter, Link, Outlet, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import React from 'react';
 import { FormEvent, ReactNode, StrictMode, useEffect, useState } from 'react';
+import Select from 'react-select';
 
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import Button from 'react-bootstrap/Button';
@@ -21,7 +22,7 @@ import {
     SchoolClass, SchoolClassList, SchoolClassesService, SchoolClassStudentBelts,
     SkillDomain, SkillDomainList, SkillDomainsService,
     Student, StudentList, StudentsService,
-    BeltAttemptList,
+    BeltAttempt, BeltAttemptList, BeltAttemptsService
 } from './api';
 import './index.css';
 
@@ -1244,6 +1245,255 @@ function SchoolClassView() {
     </>;
 }
 
+interface CreateBeltAttemptButtonProps {
+    student: Student;
+    skill_domains: SkillDomain[];
+    belts: Belt[];
+    createdCallback?: (belt_attmept: BeltAttempt) => void;
+}
+
+function CreateBeltAttemptButton({ student, skill_domains, belts, createdCallback } : CreateBeltAttemptButtonProps) {
+    const [show, setShow] = useState(false);
+    const [creating, setCreating] = useState(false);
+
+    function handleSubmit(event: FormEvent) {
+        setCreating(true);
+        event.preventDefault();
+        const target = event.target as typeof event.target & {
+            skill_domain: {value: string};
+            belt: {value: string};
+            success: {value: string};
+        };
+        StudentsService.postStudentBeltAttemptsResource(student.id, {
+            skill_domain_id: parseInt(target.skill_domain.value),
+            belt_id: parseInt(target.belt.value),
+            success: target.success.value == 'on',
+        }).then(({ belt_attempt }) => {
+            setShow(false);
+            setCreating(false);
+            if (createdCallback !== undefined) {
+                createdCallback(belt_attempt);
+            }
+        });
+    }
+
+    const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
+    const sorted_belts = belts.sort((a, b) => a.rank - b.rank);
+
+    const skill_domain_options = sorted_skill_domains.map(skill_domain => ({
+        value: skill_domain.id,
+        label: skill_domain.name,
+    }));
+
+    const belt_options = sorted_belts.map(belt => ({
+        value: belt.id,
+        label: belt.name,
+    }));
+
+    return <>
+        <Button onClick={() => setShow(true)}>Add</Button>
+        <Modal show={show}>
+            <Form onSubmit={handleSubmit}>
+                <Modal.Header>
+                    <Modal.Title>Add Belt Attempt for {student.name}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group controlId="skill_domain">
+                        <Form.Label>Skill domain</Form.Label>
+                        <Select id="skill_domain" name="skill_domain" options={skill_domain_options} />
+                        <Form.Text className="text-muted">
+                            What skill domain was tested?
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group controlId="belt">
+                        <Form.Label>Belt</Form.Label>
+                        <Select id="belt" name="belt" options={belt_options} />
+                        <Form.Text className="text-muted">
+                            What belt did the student attempt?
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group controlId="success">
+                        <Form.Check label="Passed" />
+                        <Form.Text className="text-muted">
+                            Did the student pass?
+                        </Form.Text>
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    {creating
+                        ? <Button disabled type="submit">
+                            <Spinner animation="border" role="status" size="sm">
+                                <span className="visually-hidden">Creating</span>
+                            </Spinner>
+                        </Button>
+                        : <Button type="submit">Add</Button>
+                    }
+                </Modal.Footer>
+            </Form>
+        </Modal>
+    </>;
+}
+
+interface EditBeltAttemptButtonProps {
+    belt_attempt: BeltAttempt;
+    student: Student,
+    skill_domains: SkillDomain[];
+    belts: Belt[];
+    changedCallback?: (changed_belt_attempt: BeltAttempt) => void;
+}
+
+function EditBeltAttemptButton({ belt_attempt, student, skill_domains, belts, changedCallback } : EditBeltAttemptButtonProps) {
+    const [show, setShow] = useState(false);
+    const [changing, setChanging] = useState(false);
+
+    function handleSubmit(event: FormEvent) {
+        setChanging(true);
+        event.preventDefault();
+        const target = event.target as typeof event.target & {
+            skill_domain: {value: string};
+            belt: {value: string};
+            success: {value: string};
+        };
+        BeltAttemptsService.putBeltAttemptsResource(belt_attempt.id, {
+            skill_domain_id: parseInt(target.skill_domain.value),
+            belt_id: parseInt(target.belt.value),
+            success: target.success.value == 'on',
+        }).then(({ belt_attempt: changed_belt_attempt }) => {
+            setChanging(false);
+            setShow(false);
+            if (changedCallback !== undefined) {
+                changedCallback(changed_belt_attempt);
+            }
+        });
+    }
+
+    const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
+    const sorted_belts = belts.sort((a, b) => a.rank - b.rank);
+
+    const skill_domain_options = sorted_skill_domains.map(skill_domain => ({
+        value: skill_domain.id,
+        label: skill_domain.name,
+    }));
+
+    const belt_options = sorted_belts.map(belt => ({
+        value: belt.id,
+        label: belt.name,
+    }));
+
+    const skill_domain_by_id = Object.fromEntries(skill_domains.map(skill_domain => [skill_domain.id, skill_domain]));
+    const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
+
+    return <>
+        <OverlayTrigger overlay={<Tooltip>Edit</Tooltip>}>
+            <Button onClick={() => setShow(true)}>✏️</Button>
+        </OverlayTrigger>
+        <Modal show={show}>
+            <Form onSubmit={handleSubmit}>
+                <Modal.Header>
+                    <Modal.Title>Add Belt Attempt for {student.name}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group controlId="skill_domain">
+                        <Form.Label>Skill domain</Form.Label>
+                        <Select
+                            id="skill_domain"
+                            name="skill_domain"
+                            options={skill_domain_options}
+                            defaultValue={{
+                                value: belt_attempt.skill_domain_id,
+                                label: skill_domain_by_id[belt_attempt.skill_domain_id]!.name,
+                            }}
+                        />
+                        <Form.Text className="text-muted">
+                            What skill domain was tested?
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group controlId="belt">
+                        <Form.Label>Belt</Form.Label>
+                        <Select
+                            id="belt"
+                            name="belt"
+                            options={belt_options}
+                            defaultValue={{
+                                value: belt_attempt.belt_id,
+                                label: belt_by_id[belt_attempt.belt_id]!.name,
+                            }}
+                        />
+                        <Form.Text className="text-muted">
+                            What belt did the student attempt?
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group controlId="success">
+                        <Form.Check label="Passed" />
+                        <Form.Text className="text-muted">
+                            Did the student pass?
+                        </Form.Text>
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    {changing
+                        ? <Button type="submit" disabled>
+                            <Spinner animation="border" role="status" size="sm">
+                                <span className="visually-hidden">Saving</span>
+                            </Spinner>
+                        </Button>
+                        : <Button type="submit">Save</Button>
+                    }
+                </Modal.Footer>
+            </Form>
+        </Modal>
+    </>;
+}
+
+interface DeleteBeltAttemptButtonProps {
+    student: Student;
+    belt_attempt: BeltAttempt;
+    deletedCallback?: () => void;
+}
+
+function DeleteBeltAttemptButton({ student, belt_attempt, deletedCallback } : DeleteBeltAttemptButtonProps) {
+    const [show, setShow] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+
+    function handleDelete() {
+        setDeleting(true);
+        BeltAttemptsService.deleteBeltAttemptsResource(belt_attempt.id).then(() => {
+            setShow(false);
+            setDeleting(false);
+            if (deletedCallback !== undefined ){
+                deletedCallback();
+            }
+        });
+    }
+
+    return <>
+        <OverlayTrigger overlay={<Tooltip>Delete</Tooltip>}>
+            <Button variant="danger" onClick={() => setShow(true)}>🗑️</Button>
+        </OverlayTrigger>
+        <Modal show={show}>
+            <Modal.Header>
+                <Modal.Title>Delete Belt Attempt of {student.name}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                Are you sure you want to delete the belt attempt?
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                {deleting
+                    ? <Button disabled variant="danger">
+                        <Spinner animation="border" role="status" size="sm">
+                            <span className="visually-hidden">Deleting</span>
+                        </Spinner>
+                    </Button>
+                    : <Button variant="danger" onClick={handleDelete}>Delete</Button>
+                }
+            </Modal.Footer>
+        </Modal>
+    </>;
+}
+
 function StudentView() {
     const params = useParams();
     if (params.student_id === undefined) {
@@ -1308,25 +1558,60 @@ function StudentView() {
         {' '}
         <DeleteStudentButton student={student} deletedCallback={() => navigate(`/school-classes/${school_class.id}`)} />
         <h4>List of belt attempts:</h4>
+        <CreateBeltAttemptButton student={student} skill_domains={skill_domains} belts={belts} createdCallback={belt_attempt => {
+            belt_attempts.push(belt_attempt);
+            setBeltAttemptList({
+                class_level: class_level,
+                school_class: school_class,
+                student: student,
+                skill_domains: [],
+                belts: [],
+                belt_attempts: belt_attempts,
+            });
+        }} />
         <Table>
             <thead>
                 <tr>
                     <th>Skill domain</th>
                     <th>Belt</th>
                     <th>Passed?</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                {belt_attempts.map(belt_attempt => {
+                {belt_attempts.map((belt_attempt, index) => {
                     const skill_domain = skill_domain_by_id[belt_attempt.skill_domain_id];
                     const belt = belt_by_id[belt_attempt.belt_id];
-                    return <>
-                        <tr key={belt_attempt.id}>
-                            <td>{skill_domain === undefined ? `Unknown skill domain ${belt_attempt.skill_domain_id}` : skill_domain.name}</td>
-                            <td>{belt === undefined ? `Unknown belt ${belt_attempt.belt_id}` : belt.name}</td>
-                            <td>{belt_attempt.success ? '✅' : '❌'}</td>
-                        </tr>
-                    </>;
+                    return <tr key={belt_attempt.id}>
+                        <td>{skill_domain === undefined ? `Unknown skill domain ${belt_attempt.skill_domain_id}` : skill_domain.name}</td>
+                        <td>{belt === undefined ? `Unknown belt ${belt_attempt.belt_id}` : belt.name}</td>
+                        <td>{belt_attempt.success ? '✅' : '❌'}</td>
+                        <td>
+                            <EditBeltAttemptButton belt_attempt={belt_attempt} student={student} skill_domains={skill_domains} belts={belts} changedCallback={new_belt_attempt => {
+                                belt_attempts[index] = new_belt_attempt;
+                                setBeltAttemptList({
+                                    class_level: class_level,
+                                    school_class: school_class,
+                                    student: student,
+                                    skill_domains: [],
+                                    belts: [],
+                                    belt_attempts: belt_attempts,
+                                });
+                            }} />
+                            {' '}
+                            <DeleteBeltAttemptButton belt_attempt={belt_attempt} student={student} deletedCallback={() => {
+                                belt_attempts.splice(index, 1);
+                                setBeltAttemptList({
+                                    class_level: class_level,
+                                    school_class: school_class,
+                                    student: student,
+                                    skill_domains: [],
+                                    belts: [],
+                                    belt_attempts: belt_attempts,
+                                });
+                            }} />
+                        </td>
+                    </tr>;
                 })}
             </tbody>
         </Table>

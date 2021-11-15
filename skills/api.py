@@ -48,6 +48,7 @@ school_class_ns = api.namespace('School Classes', path='/')
 students_ns = api.namespace('Students', path='/')
 skill_domains_ns = api.namespace('Skill Domains', path='/')
 belts_ns = api.namespace('Belts', path='/')
+belt_attempts_ns = api.namespace('Belt Attempts', path='/')
 
 
 api_model_class_level = api.model('ClassLevel', {
@@ -770,6 +771,66 @@ class BeltRankResource(Resource):
             return {
                 'belt': belt.json(),
             }
+
+
+@belt_attempts_ns.route('/belt-attempts/<int:belt_attempt_id>')
+class BeltAttemptsResource(Resource):
+    put_model = api.model('BeltAttemptPut', {
+        'student_id': fields.Integer(example=42, required=False),
+        'belt_id': fields.Integer(example=42, required=False),
+        'skill_domain_id': fields.Integer(example=42, required=False),
+        'success': fields.Boolean(example=True, required=False),
+    })
+
+    @api.expect(put_model, validate=True)
+    @api.marshal_with(api_model_belt_attempt_one)
+    def put(self, belt_attempt_id: int) -> Any:
+        with session_context() as session:
+            belt_attempt = session.query(BeltAttempt).get(belt_attempt_id)
+            if belt_attempt is None:
+                abort(404, f'Belt attempt {belt_attempt_id} not found')
+            student_id = request.json.get('student_id')
+            if student_id is not None:
+                student = session.query(Student).get(student_id)
+                if student is None:
+                    abort(404, f'Student {student_id} not found')
+                belt_attempt.student_id = student.id
+            else:
+                student = belt_attempt.student
+            belt_id = request.json.get('belt_id')
+            if belt_id is not None:
+                belt = session.query(Belt).get(belt_id)
+                if belt is None:
+                    abort(404, f'Belt {belt_id} not found')
+                belt_attempt.belt_id = belt.id
+            else:
+                belt = belt_attempt.belt
+            skill_domain_id = request.json.get('skill_domain_id')
+            if skill_domain_id is not None:
+                skill_domain = session.query(SkillDomain).get(skill_domain_id)
+                if skill_domain is None:
+                    abort(404, f'Skill domain {skill_domain_id} not found')
+                belt_attempt.skill_domain_id = skill_domain.id
+            else:
+                skill_domain = belt_attempt.skill_domain
+            session.commit()
+            school_class = student.school_class
+            class_level = school_class.class_level
+            return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
+                'student': student.json(),
+                'belt': belt.json(),
+                'belt_attempt': belt_attempt.json(),
+            }
+
+    def delete(self, belt_attempt_id: int) -> Any:
+        with session_context() as session:
+            belt_attempt = session.query(BeltAttempt).get(belt_attempt_id)
+            if belt_attempt is None:
+                abort(404, f'Belt attempt {belt_attempt_id} not found')
+            session.query(BeltAttempt).filter(BeltAttempt.id == belt_attempt.id).delete()
+            session.commit()
 
 
 def create_app() -> Flask:
