@@ -1271,9 +1271,6 @@ function SchoolClassBeltsView() {
     }
 
     const { class_level, school_class, belts, skill_domains, student_belts } = schoolClassStudentBelts;
-    if (student_belts.length === 0) {
-        return <>No student in this class</>;
-    }
     const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
 
     return <>
