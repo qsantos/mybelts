@@ -1,3 +1,4 @@
+import logging
 from time import sleep
 from typing import Any, Dict, List, NoReturn, Set
 
@@ -766,6 +767,9 @@ def create_app() -> Flask:
     app.register_blueprint(api_blueprint, url_prefix='/api')
 
     if app.debug:
+        logging.basicConfig()
+        logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
         @app.before_request
         def wait() -> None:
             sleep(.3)
