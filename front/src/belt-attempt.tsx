@@ -32,13 +32,13 @@ export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): R
             skill_domain: {value: string};
             belt: {value: string};
             date: {value: string};
-            success: {value: string};
+            success: {checked: boolean};
         };
         StudentsService.postStudentBeltAttemptsResource(student.id, {
             skill_domain_id: parseInt(target.skill_domain.value),
             belt_id: parseInt(target.belt.value),
             date: target.date.value,
-            success: target.success.value == 'on',
+            success: target.success.checked,
         }).then(({ belt_attempt }) => {
             setShow(false);
             setCreating(false);
@@ -133,13 +133,13 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
             skill_domain: {value: string};
             belt: {value: string};
             date: {value: string};
-            success: {value: string};
+            success: {checked: boolean};
         };
         BeltAttemptsService.putBeltAttemptsResource(belt_attempt.id, {
             skill_domain_id: parseInt(target.skill_domain.value),
             belt_id: parseInt(target.belt.value),
             date: target.date.value,
-            success: target.success.value == 'on',
+            success: target.success.checked,
         }).then(({ belt_attempt: changed_belt_attempt }) => {
             setChanging(false);
             setShow(false);
