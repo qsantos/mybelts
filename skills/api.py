@@ -813,6 +813,9 @@ class BeltAttemptsResource(Resource):
                 belt_attempt.skill_domain_id = skill_domain.id
             else:
                 skill_domain = belt_attempt.skill_domain
+            success = request.json.get('success')
+            if success is not None:
+                belt_attempt.success = success
             session.commit()
             school_class = student.school_class
             class_level = school_class.class_level
