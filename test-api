@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from typing import List
+
 import requests  # type: ignore
 from alembic import command
 from alembic.config import Config
@@ -186,7 +188,7 @@ def add_skill_domains() -> None:
     print('Tested resource /skill-domains')
 
 
-def add_class_levels() -> None:
+def add_class_levels() -> List[int]:
     print('Testing resource /class-levels')
 
     class_level_prefixes = [
@@ -232,13 +234,66 @@ def add_class_levels() -> None:
         assert j['class_level']['prefix'] == class_level_prefix
 
     print('Tested resource /class-levels')
+    return ids
+
+
+def add_school_classes(class_level_ids: List[int]) -> None:
+    print('Testing resource /school-classes')
+    assert len(class_level_ids) == 4
+    l3, l4, l5, l6 = class_level_ids
+
+    school_class_levels = [l3, l4, l6, l6, l6]
+    school_class_suffixes = ['1', 'X', '3', '4', 'ZZZ']
+
+    # add school classes
+    ids = []
+    for class_level_id, school_class_suffix in zip(school_class_levels, school_class_suffixes):
+        res = requests.post(
+            API_URL + f'/class-levels/{class_level_id}/school-classes',
+            json={'suffix': school_class_suffix},
+        )
+        res.raise_for_status()
+        j = res.json()
+        print(j)
+        assert j['class_level']['id'] == class_level_id
+        assert j['school_class']['suffix'] == school_class_suffix
+        ids.append(j['school_class']['id'])
+
+    # rename school class
+    school_class_suffixes[1] = '5'
+    res = requests.put(API_URL + f'/school-classes/{ids[1]}', json={'suffix': school_class_suffixes[1]})
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['class_level']['id'] == school_class_levels[1]
+    assert j['school_class']['suffix'] == school_class_suffixes[1]
+
+    # delete school class
+    res = requests.delete(API_URL + f'/school-classes/{ids[4]}')
+    res.raise_for_status()
+    res = requests.get(API_URL + f'/school-classes/{ids[4]}')
+    assert res.status_code == 404
+    ids.pop()
+    school_class_levels.pop()
+    school_class_suffixes.pop()
+
+    # check final state
+    for i, school_class_suffix in reversed(list(enumerate(school_class_suffixes))):
+        res = requests.get(API_URL + f'/school-classes/{ids[i]}')
+        res.raise_for_status()
+        j = res.json()
+        print(j)
+        assert j['school_class']['suffix'] == school_class_suffix
+
+    print('Tested resource /school-classes')
 
 
 def main() -> None:
     reset()
     add_belts()
     add_skill_domains()
-    add_class_levels()
+    class_level_ids = add_class_levels()
+    add_school_classes(class_level_ids)
 
 
 if __name__ == '__main__':
