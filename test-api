@@ -7,14 +7,6 @@ from skills.schema import Base
 
 API_URL = 'http://127.0.0.1/api'
 
-skill_domains = [
-    {'name': 'Algebra'},
-    {'name': 'Arithmetic'},
-    {'name': 'Calculus'},
-    {'name': 'Geometry'},
-    {'name': 'Logic'},
-]
-
 
 def reset() -> None:
     print('Reseting database')
@@ -38,6 +30,7 @@ def add_belts() -> None:
         'Blue belt',
         'Brown belt',
         'Black belt',
+        'Transparent belt',
     ]
 
     # add belts
@@ -70,6 +63,14 @@ def add_belts() -> None:
     assert j['belt']['id'] == ids[1]
     assert j['belt']['name'] == belt_names[1]
     assert j['belt']['rank'] == 2
+
+    # delete belt
+    res = requests.delete(API_URL + f'/belts/{ids[-1]}')
+    res.raise_for_status()
+    res = requests.get(API_URL + f'/belts/{ids[-1]}')
+    assert res.status_code == 404
+    belt_names.pop()
+    ids.pop()
 
     # exchange rank with another belt
     res = requests.patch(API_URL + f'/belts/{ids[1]}/rank', json={'other_belt_id': ids[2]})
@@ -135,9 +136,60 @@ def add_belts() -> None:
     print('Tested /belts resource')
 
 
+def add_skill_domains() -> None:
+    print('Testing resource /skill-domains')
+
+    skill_domain_names = [
+        'Algebra',
+        'arithmetic',
+        'Calculus',
+        'Geometry',
+        'Logic',
+        'History',
+    ]
+
+    # add skill domains
+    ids = []
+    for skill_domain_name in skill_domain_names:
+        res = requests.post(API_URL + '/skill-domains', json={'name': skill_domain_name})
+        res.raise_for_status()
+        j = res.json()
+        print(j)
+        assert j['skill_domain']['name'] == skill_domain_name
+        ids.append(j['skill_domain']['id'])
+
+    # rename skill domain
+    skill_domain_names[1] = 'Arithmetic'
+    res = requests.put(API_URL + f'/skill-domains/{ids[1]}', json={'name': skill_domain_names[1]})
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['skill_domain']['name'] == skill_domain_names[1]
+
+    # delete skill domain
+    skill_domain_names[1] = 'Arithmetic'
+    res = requests.delete(API_URL + f'/skill-domains/{ids[-1]}')
+    res.raise_for_status()
+    res = requests.get(API_URL + f'/skill-domains/{ids[-1]}')
+    assert res.status_code == 404
+    ids.pop()
+    skill_domain_names.pop()
+
+    # check final state
+    for i, skill_domain_name in reversed(list(enumerate(skill_domain_names))):
+        res = requests.get(API_URL + f'/skill-domains/{ids[i]}')
+        res.raise_for_status()
+        j = res.json()
+        print(j)
+        assert j['skill_domain']['name'] == skill_domain_name
+
+    print('Tested resource /skill-domains')
+
+
 def main() -> None:
     reset()
     add_belts()
+    add_skill_domains()
 
 
 if __name__ == '__main__':
