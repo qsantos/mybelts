@@ -529,6 +529,7 @@ function StudentView() {
                 <tr>
                     <th>Skill domain</th>
                     <th>Belt</th>
+                    <th>Date</th>
                     <th>Passed?</th>
                     <th>Actions</th>
                 </tr>
@@ -541,6 +542,7 @@ function StudentView() {
                         <td>{skill_domain === undefined ? `Unknown skill domain ${belt_attempt.skill_domain_id}` : skill_domain.name}</td>
                         <td>{belt === undefined ? `Unknown belt ${belt_attempt.belt_id}` : belt.name}</td>
                         <td>{belt_attempt.success ? '✅' : '❌'}</td>
+                        <td>{belt_attempt.date}</td>
                         <td>
                             <EditBeltAttemptButton belt_attempt={belt_attempt} student={student} skill_domains={skill_domains} belts={belts} changedCallback={new_belt_attempt => {
                                 belt_attempts[index] = new_belt_attempt;
