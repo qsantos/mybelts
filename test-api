@@ -186,10 +186,59 @@ def add_skill_domains() -> None:
     print('Tested resource /skill-domains')
 
 
+def add_class_levels() -> None:
+    print('Testing resource /class-levels')
+
+    class_level_prefixes = [
+        '3e',
+        '4E',
+        '5e',
+        '6e',
+        '7e',
+    ]
+
+    # add class levels
+    ids = []
+    for class_level_prefix in class_level_prefixes:
+        res = requests.post(API_URL + '/class-levels', json={'prefix': class_level_prefix})
+        res.raise_for_status()
+        j = res.json()
+        print(j)
+        assert j['class_level']['prefix'] == class_level_prefix
+        ids.append(j['class_level']['id'])
+
+    # rename class level
+    class_level_prefixes[1] = '4e'
+    res = requests.put(API_URL + f'/class-levels/{ids[1]}', json={'prefix': class_level_prefixes[1]})
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['class_level']['prefix'] == class_level_prefixes[1]
+
+    # delete class level
+    res = requests.delete(API_URL + f'/class-levels/{ids[4]}')
+    res.raise_for_status()
+    res = requests.get(API_URL + f'/class-levels/{ids[4]}')
+    assert res.status_code == 404
+    ids.pop()
+    class_level_prefixes.pop()
+
+    # check final state
+    for i, class_level_prefix in reversed(list(enumerate(class_level_prefixes))):
+        res = requests.get(API_URL + f'/class-levels/{ids[i]}')
+        res.raise_for_status()
+        j = res.json()
+        print(j)
+        assert j['class_level']['prefix'] == class_level_prefix
+
+    print('Tested resource /class-levels')
+
+
 def main() -> None:
     reset()
     add_belts()
     add_skill_domains()
+    add_class_levels()
 
 
 if __name__ == '__main__':
