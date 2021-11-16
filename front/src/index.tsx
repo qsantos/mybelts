@@ -488,6 +488,7 @@ function StudentView() {
     const { belts } = beltList;
     const { class_level, school_class, student, belt_attempts } = beltAttemptList;
 
+    const sorted_belt_attempts = belt_attempts.sort((a, b) => b.date.localeCompare(a.date));
     const skill_domain_by_id = Object.fromEntries(skill_domains.map(skill_domain => [skill_domain.id, skill_domain]));
     const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
 
@@ -535,7 +536,7 @@ function StudentView() {
                 </tr>
             </thead>
             <tbody>
-                {belt_attempts.map((belt_attempt, index) => {
+                {sorted_belt_attempts.map((belt_attempt, index) => {
                     const skill_domain = skill_domain_by_id[belt_attempt.skill_domain_id];
                     const belt = belt_by_id[belt_attempt.belt_id];
                     return <tr key={belt_attempt.id}>
