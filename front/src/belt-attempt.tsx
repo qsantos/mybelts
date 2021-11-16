@@ -31,11 +31,13 @@ export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): R
         const target = event.target as typeof event.target & {
             skill_domain: {value: string};
             belt: {value: string};
+            date: {value: string};
             success: {value: string};
         };
         StudentsService.postStudentBeltAttemptsResource(student.id, {
             skill_domain_id: parseInt(target.skill_domain.value),
             belt_id: parseInt(target.belt.value),
+            date: target.date.value,
             success: target.success.value == 'on',
         }).then(({ belt_attempt }) => {
             setShow(false);
@@ -77,6 +79,13 @@ export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): R
                     <Form.Group controlId="belt">
                         <Form.Label>Belt</Form.Label>
                         <Select id="belt" name="belt" options={belt_options} />
+                        <Form.Text className="text-muted">
+                            What belt did the student attempt?
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group controlId="date">
+                        <Form.Label>Date</Form.Label>
+                        <Form.Control type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
                         <Form.Text className="text-muted">
                             What belt did the student attempt?
                         </Form.Text>
@@ -123,11 +132,13 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
         const target = event.target as typeof event.target & {
             skill_domain: {value: string};
             belt: {value: string};
+            date: {value: string};
             success: {value: string};
         };
         BeltAttemptsService.putBeltAttemptsResource(belt_attempt.id, {
             skill_domain_id: parseInt(target.skill_domain.value),
             belt_id: parseInt(target.belt.value),
+            date: target.date.value,
             success: target.success.value == 'on',
         }).then(({ belt_attempt: changed_belt_attempt }) => {
             setChanging(false);
@@ -190,6 +201,13 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
                                 label: belt_by_id[belt_attempt.belt_id]!.name,
                             }}
                         />
+                        <Form.Text className="text-muted">
+                            What belt did the student attempt?
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group controlId="date">
+                        <Form.Label>Date</Form.Label>
+                        <Form.Control type="date" defaultValue={belt_attempt.date} />
                         <Form.Text className="text-muted">
                             What belt did the student attempt?
                         </Form.Text>

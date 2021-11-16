@@ -2,8 +2,8 @@ from contextlib import contextmanager
 from typing import Dict, Iterator, List
 
 from sqlalchemy import (
-    Boolean, Column, DateTime, ForeignKey, Integer, String, create_engine,
-    func,
+    Boolean, Column, Date, DateTime, ForeignKey, Integer, String,
+    create_engine, func,
 )
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import declarative_base
@@ -164,6 +164,7 @@ class BeltAttempt(Base):  # type: ignore
     student_id = Column(Integer, ForeignKey('student.id', ondelete='CASCADE'), nullable=False)
     skill_domain_id = Column(Integer, ForeignKey('skill_domain.id', ondelete='CASCADE'), nullable=False)
     belt_id = Column(Integer, ForeignKey('belt.id', ondelete='CASCADE'), nullable=False)
+    date = Column(Date, nullable=False, index=True, server_default=func.current_date())
     success = Column(Boolean, index=True, nullable=False)
 
     student: Student = relationship(  # type: ignore
@@ -191,5 +192,6 @@ class BeltAttempt(Base):  # type: ignore
             'student_id': self.student_id,
             'skill_domain_id': self.skill_domain_id,
             'belt_id': self.belt_id,
+            'date': self.date.isoformat(),
             'success': self.success,
         }

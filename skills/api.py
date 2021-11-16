@@ -1,4 +1,5 @@
 import logging
+from datetime import date
 from time import sleep
 from typing import Any, Dict, List, NoReturn, Set
 
@@ -91,6 +92,7 @@ api_model_belt_attempt = api.model('BeltAttempt', {
     'student_id': fields.Integer(example=42, required=True),
     'skill_domain_id': fields.Integer(example=42, required=True),
     'belt_id': fields.Integer(example=42, required=True),
+    'date': fields.Date(example='2021-11-13', required=True),
     'success': fields.Boolean(example=True, required=True),
 })
 
@@ -518,6 +520,7 @@ class StudentBeltAttemptsResource(Resource):
     post_model = api.model('StudentBeltAttemptsPost', {
         'belt_id': fields.Integer(example=42, required=True),
         'skill_domain_id': fields.Integer(example=42, required=True),
+        'date': fields.Date(example='2021-11-13', required=True),
         'success': fields.Boolean(example=True, required=True),
     })
 
@@ -536,10 +539,16 @@ class StudentBeltAttemptsResource(Resource):
             skill_domain = session.query(SkillDomain).get(skill_domain_id)
             if skill_domain is None:
                 abort(404, f'Skill domain {skill_domain_id} not found')
+            date_string = request.json['date']
+            try:
+                date_value = date.fromisoformat(date_string)
+            except ValueError:
+                abort(400, f'Invalid date {date_string}')
             belt_attempt = BeltAttempt(
                 student_id=student_id,
                 belt_id=belt_id,
                 skill_domain_id=skill_domain_id,
+                date=date_value,
                 success=request.json['success'],
             )
             session.add(belt_attempt)
@@ -779,6 +788,7 @@ class BeltAttemptsResource(Resource):
         'student_id': fields.Integer(example=42, required=False),
         'belt_id': fields.Integer(example=42, required=False),
         'skill_domain_id': fields.Integer(example=42, required=False),
+        'date': fields.Date(example='2021-11-13', required=True),
         'success': fields.Boolean(example=True, required=False),
     })
 
@@ -813,6 +823,13 @@ class BeltAttemptsResource(Resource):
                 belt_attempt.skill_domain_id = skill_domain.id
             else:
                 skill_domain = belt_attempt.skill_domain
+            date_string = request.json.get('date')
+            if date_string is not None:
+                try:
+                    date_value = date.fromisoformat(date_string)
+                except ValueError:
+                    abort(400, f'Invalid date {date_string}')
+                belt_attempt.date = date_value
             success = request.json.get('success')
             if success is not None:
                 belt_attempt.success = success
