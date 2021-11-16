@@ -657,6 +657,9 @@ class BeltsResource(Resource):
         with session_context() as session:
             # TODO: store this information somewhere
             max_rank: int = session.query(func.max(Belt.rank)).scalar()  # type: ignore
+            # no belt in database
+            if max_rank is None:
+                max_rank = 0
             belt = Belt(
                 name=request.json['name'],
                 rank=max_rank + 1,
