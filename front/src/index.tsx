@@ -83,7 +83,7 @@ function BeltsView() {
         <h3>Belts</h3>
         <CreateBeltButton createdCallback={belt => {
             belts.push(belt);
-            setBeltList({ belts: belts });
+            setBeltList({ ...beltList, belts });
         }}/>
         <h4>List of available belts</h4>
         <Table>
@@ -108,7 +108,7 @@ function BeltsView() {
                             {' '}
                             <EditBeltButton belt={belt} changedCallback={new_belt => {
                                 belts[index] = new_belt;
-                                setBeltList({ belts: belts });
+                                setBeltList({ ...beltList, belts });
                             }} />
                             {' '}
                             <DeleteBeltButton belt={belt} deletedCallback={() => {
@@ -119,7 +119,7 @@ function BeltsView() {
                                         other_belt.rank -= 1;
                                     }
                                 }
-                                setBeltList({ belts: belts });
+                                setBeltList({ ...beltList, belts });
                             }} />
                         </td>
                     </tr>)}
@@ -157,7 +157,7 @@ function SkillDomainsView() {
         <h3>Skill Domains</h3>
         <CreateSkillDomainButton createdCallback={skill_domain => {
             skill_domains.push(skill_domain);
-            setSkillDomainList({ skill_domains: skill_domains });
+            setSkillDomainList({ ...skillDomainList, skill_domains });
         }}/>
         <h4>List of available skill domains</h4>
         <Table>
@@ -174,12 +174,12 @@ function SkillDomainsView() {
                         <td>
                             <EditSkillDomainButton skill_domain={skill_domain} changedCallback={new_skill_domain => {
                                 skill_domains[index] = new_skill_domain;
-                                setSkillDomainList({ skill_domains: skill_domains });
+                                setSkillDomainList({ ...skillDomainList, skill_domains });
                             }} />
                             {' '}
                             <DeleteSkillDomainButton skill_domain={skill_domain} deletedCallback={() => {
                                 skill_domains.splice(index, 1);
-                                setSkillDomainList({ skill_domains: skill_domains });
+                                setSkillDomainList({ ...skillDomainList, skill_domains });
                             }} />
                         </td>
                     </tr>
@@ -219,7 +219,7 @@ function ClassLevelsView() {
         <h3>List of available class levels</h3>
         <CreateClassLevelButton createdCallback={class_level => {
             class_levels.push(class_level);
-            setClassLevelList({ class_levels: class_levels });
+            setClassLevelList({ ...classLevelList, class_levels });
         }} />
         <Table>
             <thead>
@@ -241,12 +241,12 @@ function ClassLevelsView() {
                             {' '}
                             <EditClassLevelButton class_level={class_level} changedCallback={new_class_level => {
                                 class_levels[index] = new_class_level;
-                                setClassLevelList({ class_levels: class_levels });
+                                setClassLevelList({ ...classLevelList, class_levels });
                             }} />
                             {' '}
                             <DeleteClassLevelButton class_level={class_level} deletedCallback={() => {
                                 class_levels.splice(index, 1);
-                                setClassLevelList({ class_levels: class_levels });
+                                setClassLevelList({ ...classLevelList, class_levels });
                             }} />
                         </td>
                     </tr>
@@ -294,17 +294,14 @@ function ClassLevelView() {
         </Breadcrumb>
         <h3>Class level: {class_level.prefix}</h3>
         <EditClassLevelButton class_level={class_level} changedCallback={new_class_level => {
-            setSchoolClassList({ class_level: new_class_level, school_classes: school_classes });
+            setSchoolClassList({ ...schoolClassList, class_level: new_class_level });
         }} />
         {' '}
         <DeleteClassLevelButton class_level={class_level} deletedCallback={() => navigate('/class-levels')} />
         <h4>List of classes</h4>
         <CreateSchoolClassButton class_level_id={class_level.id} createdCallback={school_class => {
             school_classes.push(school_class);
-            setSchoolClassList({
-                class_level: class_level,
-                school_classes: school_classes,
-            });
+            setSchoolClassList({ ...schoolClassList, school_classes });
         }} />
         <Table>
             <thead>
@@ -326,18 +323,12 @@ function ClassLevelView() {
                             {' '}
                             <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
                                 school_classes[index] = new_school_class;
-                                setSchoolClassList({
-                                    class_level: class_level,
-                                    school_classes: school_classes,
-                                });
+                                setSchoolClassList({ ...schoolClassList, school_classes });
                             }} />
                             {' '}
                             <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => {
                                 school_classes.splice(index, 1);
-                                setSchoolClassList({
-                                    class_level: class_level,
-                                    school_classes: school_classes,
-                                });
+                                setSchoolClassList({ ...schoolClassList, school_classes });
                             }} />
                         </td>
                     </tr>
@@ -393,18 +384,14 @@ function SchoolClassView() {
         </OverlayTrigger>
         {' '}
         <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
-            setStudentList({ class_level: class_level, school_class: new_school_class, students: students });
+            setStudentList({ ...studentList, school_class: new_school_class });
         }} />
         {' '}
         <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => navigate(`/class-levels/${class_level.id}`)} />
         <h4>List of students</h4>
         <CreateStudentButton school_class_id={school_class.id} createdCallback={student => {
             students.push(student);
-            setStudentList({
-                class_level: class_level,
-                school_class: school_class,
-                students: students,
-            });
+            setStudentList({ ...studentList, students });
         }} />
         <Table>
             <thead>
@@ -426,20 +413,12 @@ function SchoolClassView() {
                             {' '}
                             <EditStudentButton student={student} changedCallback={new_student => {
                                 students[index] = new_student;
-                                setStudentList({
-                                    class_level: class_level,
-                                    school_class: school_class,
-                                    students: students,
-                                });
+                                setStudentList({ ...studentList, students });
                             }} />
                             {' '}
                             <DeleteStudentButton student={student} deletedCallback={() => {
                                 students.splice(index, 1);
-                                setStudentList({
-                                    class_level: class_level,
-                                    school_class: school_class,
-                                    students: students,
-                                });
+                                setStudentList({ ...studentList, students });
                             }} />
                         </td>
                     </tr>
@@ -502,28 +481,14 @@ function StudentView() {
         </Breadcrumb>
         <h3>Student {student.name}</h3>
         <EditStudentButton student={student} changedCallback={new_student => {
-            setBeltAttemptList({
-                class_level: class_level,
-                school_class: school_class,
-                student: new_student,
-                skill_domains: [],
-                belts: [],
-                belt_attempts: belt_attempts,
-            });
+            setBeltAttemptList({ ...beltAttemptList, student: new_student });
         }} />
         {' '}
         <DeleteStudentButton student={student} deletedCallback={() => navigate(`/school-classes/${school_class.id}`)} />
         <h4>List of belt attempts:</h4>
         <CreateBeltAttemptButton student={student} skill_domains={skill_domains} belts={belts} createdCallback={belt_attempt => {
             belt_attempts.push(belt_attempt);
-            setBeltAttemptList({
-                class_level: class_level,
-                school_class: school_class,
-                student: student,
-                skill_domains: [],
-                belts: [],
-                belt_attempts: belt_attempts,
-            });
+            setBeltAttemptList({ ...beltAttemptList, belt_attempts });
         }} />
         <Table>
             <thead>
@@ -547,26 +512,12 @@ function StudentView() {
                         <td>
                             <EditBeltAttemptButton belt_attempt={belt_attempt} student={student} skill_domains={skill_domains} belts={belts} changedCallback={new_belt_attempt => {
                                 belt_attempts[index] = new_belt_attempt;
-                                setBeltAttemptList({
-                                    class_level: class_level,
-                                    school_class: school_class,
-                                    student: student,
-                                    skill_domains: [],
-                                    belts: [],
-                                    belt_attempts: belt_attempts,
-                                });
+                                setBeltAttemptList({ ...beltAttemptList, belt_attempts });
                             }} />
                             {' '}
                             <DeleteBeltAttemptButton belt_attempt={belt_attempt} student={student} deletedCallback={() => {
                                 belt_attempts.splice(index, 1);
-                                setBeltAttemptList({
-                                    class_level: class_level,
-                                    school_class: school_class,
-                                    student: student,
-                                    skill_domains: [],
-                                    belts: [],
-                                    belt_attempts: belt_attempts,
-                                });
+                                setBeltAttemptList({ ...beltAttemptList, belt_attempts });
                             }} />
                         </td>
                     </tr>;
