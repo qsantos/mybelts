@@ -213,7 +213,7 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="success">
-                        <Form.Check label="Passed" />
+                        <Form.Check label="Passed" defaultChecked={belt_attempt.success} />
                         <Form.Text className="text-muted">
                             Did the student pass?
                         </Form.Text>
