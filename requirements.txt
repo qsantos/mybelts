@@ -18,6 +18,8 @@ click==8.0.3
     # via
     #   flask
     #   pip-tools
+coverage==6.1.2
+    # via -r requirements.in
 flake8==4.0.1
     # via
     #   -r requirements.in
