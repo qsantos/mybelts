@@ -58,7 +58,7 @@ export class BeltsService {
     ): CancelablePromise<any> {
         return __request({
             method: 'DELETE',
-            path: `/belts/${beltId}/`,
+            path: `/belts/${beltId}`,
         });
     }
 
@@ -74,7 +74,7 @@ export class BeltsService {
     ): CancelablePromise<BeltOne> {
         return __request({
             method: 'GET',
-            path: `/belts/${beltId}/`,
+            path: `/belts/${beltId}`,
             headers: {
                 'X-Fields': xFields,
             },
@@ -95,7 +95,7 @@ export class BeltsService {
     ): CancelablePromise<BeltOne> {
         return __request({
             method: 'PUT',
-            path: `/belts/${beltId}/`,
+            path: `/belts/${beltId}`,
             headers: {
                 'X-Fields': xFields,
             },

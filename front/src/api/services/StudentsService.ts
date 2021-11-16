@@ -21,7 +21,7 @@ export class StudentsService {
     ): CancelablePromise<any> {
         return __request({
             method: 'DELETE',
-            path: `/students/${studentId}/`,
+            path: `/students/${studentId}`,
         });
     }
 
@@ -37,7 +37,7 @@ export class StudentsService {
     ): CancelablePromise<StudentOne> {
         return __request({
             method: 'GET',
-            path: `/students/${studentId}/`,
+            path: `/students/${studentId}`,
             headers: {
                 'X-Fields': xFields,
             },
@@ -58,7 +58,7 @@ export class StudentsService {
     ): CancelablePromise<StudentOne> {
         return __request({
             method: 'PUT',
-            path: `/students/${studentId}/`,
+            path: `/students/${studentId}`,
             headers: {
                 'X-Fields': xFields,
             },

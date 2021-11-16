@@ -60,7 +60,7 @@ export class ClassLevelsService {
     ): CancelablePromise<any> {
         return __request({
             method: 'DELETE',
-            path: `/class-levels/${classLevelId}/`,
+            path: `/class-levels/${classLevelId}`,
         });
     }
 
@@ -76,7 +76,7 @@ export class ClassLevelsService {
     ): CancelablePromise<ClassLevelOne> {
         return __request({
             method: 'GET',
-            path: `/class-levels/${classLevelId}/`,
+            path: `/class-levels/${classLevelId}`,
             headers: {
                 'X-Fields': xFields,
             },
@@ -97,7 +97,7 @@ export class ClassLevelsService {
     ): CancelablePromise<ClassLevelOne> {
         return __request({
             method: 'PUT',
-            path: `/class-levels/${classLevelId}/`,
+            path: `/class-levels/${classLevelId}`,
             headers: {
                 'X-Fields': xFields,
             },

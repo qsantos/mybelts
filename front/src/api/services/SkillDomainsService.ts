@@ -57,7 +57,7 @@ export class SkillDomainsService {
     ): CancelablePromise<any> {
         return __request({
             method: 'DELETE',
-            path: `/skill-domains/${skillDomainId}/`,
+            path: `/skill-domains/${skillDomainId}`,
         });
     }
 
@@ -73,7 +73,7 @@ export class SkillDomainsService {
     ): CancelablePromise<SkillDomainOne> {
         return __request({
             method: 'GET',
-            path: `/skill-domains/${skillDomainId}/`,
+            path: `/skill-domains/${skillDomainId}`,
             headers: {
                 'X-Fields': xFields,
             },
@@ -94,7 +94,7 @@ export class SkillDomainsService {
     ): CancelablePromise<SkillDomainOne> {
         return __request({
             method: 'PUT',
-            path: `/skill-domains/${skillDomainId}/`,
+            path: `/skill-domains/${skillDomainId}`,
             headers: {
                 'X-Fields': xFields,
             },

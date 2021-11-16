@@ -203,7 +203,7 @@ class ClassLevelsResource(Resource):
             }
 
 
-@class_level_ns.route('/class-levels/<int:class_level_id>/')
+@class_level_ns.route('/class-levels/<int:class_level_id>')
 class ClassLevelResource(Resource):
     @api.marshal_with(api_model_class_level_one)
     def get(self, class_level_id: int) -> Any:
@@ -280,7 +280,7 @@ class ClassLevelSchoolClassesResource(Resource):
             }
 
 
-@school_class_ns.route('/school-classes/<int:school_class_id>/')
+@school_class_ns.route('/school-classes/<int:school_class_id>')
 class SchoolClassResource(Resource):
     @api.marshal_with(api_model_student_list)
     def get(self, school_class_id: int) -> Any:
@@ -428,7 +428,7 @@ class SchoolClassStudentBeltsResource(Resource):
             }
 
 
-@students_ns.route('/students/<int:student_id>/')
+@students_ns.route('/students/<int:student_id>')
 class StudentResource(Resource):
     @api.marshal_with(api_model_student_one)
     def get(self, student_id: int) -> Any:
@@ -596,7 +596,7 @@ class SkillDomainsResource(Resource):
             }
 
 
-@skill_domains_ns.route('/skill-domains/<int:skill_domain_id>/')
+@skill_domains_ns.route('/skill-domains/<int:skill_domain_id>')
 class SkillDomainResource(Resource):
     @api.marshal_with(api_model_skill_domain_one)
     def get(self, skill_domain_id: int) -> Any:
@@ -669,7 +669,7 @@ class BeltsResource(Resource):
             }
 
 
-@belts_ns.route('/belts/<int:belt_id>/')
+@belts_ns.route('/belts/<int:belt_id>')
 class BeltResource(Resource):
     @api.marshal_with(api_model_belt_one)
     def get(self, belt_id: int) -> Any:

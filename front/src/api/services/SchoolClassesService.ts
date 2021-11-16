@@ -22,7 +22,7 @@ export class SchoolClassesService {
     ): CancelablePromise<any> {
         return __request({
             method: 'DELETE',
-            path: `/school-classes/${schoolClassId}/`,
+            path: `/school-classes/${schoolClassId}`,
         });
     }
 
@@ -38,7 +38,7 @@ export class SchoolClassesService {
     ): CancelablePromise<StudentList> {
         return __request({
             method: 'GET',
-            path: `/school-classes/${schoolClassId}/`,
+            path: `/school-classes/${schoolClassId}`,
             headers: {
                 'X-Fields': xFields,
             },
@@ -59,7 +59,7 @@ export class SchoolClassesService {
     ): CancelablePromise<SchoolClassOne> {
         return __request({
             method: 'PUT',
-            path: `/school-classes/${schoolClassId}/`,
+            path: `/school-classes/${schoolClassId}`,
             headers: {
                 'X-Fields': xFields,
             },
