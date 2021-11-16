@@ -25,3 +25,4 @@ types-jsonschema
 
 # misc
 pip-tools  # generate requirements.txt from requirements.in
+requests  # for API testing

@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+import requests  # type: ignore
+from alembic import command
+from alembic.config import Config
+
+from skills.schema import Base
+
+API_URL = 'http://127.0.0.1/api'
+
+skill_domains = [
+    {'name': 'Algebra'},
+    {'name': 'Arithmetic'},
+    {'name': 'Calculus'},
+    {'name': 'Geometry'},
+    {'name': 'Logic'},
+]
+
+
+def reset() -> None:
+    print('Reseting database')
+    Base.metadata.drop_all()
+    command.stamp(Config('./alembic.ini'), 'base')
+    command.upgrade(Config('./alembic.ini'), 'head')
+    res = requests.get(API_URL + '/belts')
+    res.raise_for_status()
+    assert res.json() == {'belts': []}
+    print('Database reset')
+
+
+def add_belts() -> None:
+    belt_names = [
+        'White belt',
+        'White belt',
+        'Orange belt',
+        'Green belt',
+        'Blue belt',
+        'Brown belt',
+        'Black belt',
+    ]
+
+    # add belts
+    ids = []
+    for belt_name in belt_names:
+        res = requests.post(API_URL + '/belts', json={'name': belt_name})
+        res.raise_for_status()
+        j = res.json()
+        print(j)
+        assert j['belt']['name'] == belt_name
+        ids.append(j['belt']['id'])
+    assert len(ids) == len(belt_names)
+
+    # rename belt
+    belt_names[1] = 'Yellow belt'
+    res = requests.put(API_URL + f'/belts/{ids[1]}', json={'name': belt_names[1]})
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['belt']['id'] == ids[1]
+    assert j['belt']['name'] == belt_names[1]
+
+    # change belt's color
+    res = requests.put(API_URL + f'/belts/{ids[1]}', json={'color': 'yellow'})
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['belt']['id'] == ids[1]
+    assert j['belt']['name'] == belt_names[1]
+
+    # check final state
+    for i, belt_name in reversed(list(enumerate(belt_names))):
+        res = requests.get(API_URL + f'/belts/{ids[i]}')
+        res.raise_for_status()
+        j = res.json()
+        print(j)
+        assert j['belt']['name'] == belt_name
+        assert j['belt']['rank'] == i + 1
+
+
+def main() -> None:
+    reset()
+    add_belts()
+
+
+if __name__ == '__main__':
+    main()
