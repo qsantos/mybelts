@@ -726,18 +726,18 @@ class BeltResource(Resource):
 class BeltRankResource(Resource):
     patch_model = api.model('BeltRank', {
         'other_belt_id': fields.Integer(example=42, required=False),
-        'go_up_n_ranks': fields.Integer(example=-2, required=False),
+        'increase_by': fields.Integer(example=-2, required=False),
     })
 
     @api.expect(patch_model, validate=True)
     @api.marshal_with(api_model_belt_one)
     def patch(self, belt_id: int) -> Any:
         other_belt_id = request.json.get('other_belt_id')
-        go_up_n_ranks = request.json.get('go_up_n_ranks')
-        if other_belt_id is None and go_up_n_ranks is None:
-            abort(400, 'Do provide one of other_belt_id, go_up_n_ranks')
-        if other_belt_id is not None and go_up_n_ranks is not None:
-            abort(400, 'Only provide one of other_belt_id, go_up_n_ranks')
+        increase_by = request.json.get('increase_by')
+        if other_belt_id is None and increase_by is None:
+            abort(400, 'Do provide one of other_belt_id, increase_by')
+        if other_belt_id is not None and increase_by is not None:
+            abort(400, 'Only provide one of other_belt_id, increase_by')
 
         with session_context() as session:
             belt = session.query(Belt).get(belt_id)
@@ -751,11 +751,11 @@ class BeltRankResource(Resource):
                 belt.exchange_ranks(other_belt)
                 session.commit()
             else:
-                assert go_up_n_ranks is not None
-                new_rank = belt.rank + go_up_n_ranks
-                if go_up_n_ranks < 0:
+                assert increase_by is not None
+                new_rank = belt.rank + increase_by
+                if increase_by < 0:
                     if new_rank < 1:
-                        abort(400, f'Cannot move belt {belt_id} by {-go_up_n_ranks} ranks downwards')
+                        abort(400, f"Cannot decrease belt's rank {belt_id} by {-increase_by}")
                     (
                         session
                         .query(Belt)
@@ -764,13 +764,13 @@ class BeltRankResource(Resource):
                     )
                     belt.rank = new_rank
                     session.commit()
-                elif go_up_n_ranks == 0:
+                elif increase_by == 0:
                     pass
                 else:
                     # TODO: store this information somewhere
                     max_rank: int = session.query(func.max(Belt.rank)).scalar()  # type: ignore
                     if new_rank > max_rank:
-                        abort(400, f'Cannot move belt {belt_id} by {go_up_n_ranks} ranks upwards')
+                        abort(400, f"Cannot increase belt'rank {belt_id} by {increase_by}")
                     (
                         session
                         .query(Belt)

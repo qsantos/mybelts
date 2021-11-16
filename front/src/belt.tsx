@@ -87,7 +87,7 @@ export function MoveBeltButton(props : MoveBeltButtonProps): ReactElement {
     function handleMove() {
         setMoving(true);
         BeltsService.patchBeltRankResource(belt.id, {
-            go_up_n_ranks: direction,
+            increase_by: direction,
         }).then(() => {
             setMoving(false);
             const other_belt = belts[belt.rank + direction - 1];

@@ -3,6 +3,6 @@
 /* eslint-disable */
 
 export type BeltRank = {
-    go_up_n_ranks?: number;
+    increase_by?: number;
     other_belt_id?: number;
 }
