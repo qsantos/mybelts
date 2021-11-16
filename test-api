@@ -24,10 +24,12 @@ def reset() -> None:
     res = requests.get(API_URL + '/belts')
     res.raise_for_status()
     assert res.json() == {'belts': []}
-    print('Database reset')
+    print('Reset Database')
 
 
 def add_belts() -> None:
+    print('Testing /belts resource')
+
     belt_names = [
         'White belt',
         'White belt',
@@ -40,12 +42,13 @@ def add_belts() -> None:
 
     # add belts
     ids = []
-    for belt_name in belt_names:
+    for i, belt_name in enumerate(belt_names):
         res = requests.post(API_URL + '/belts', json={'name': belt_name})
         res.raise_for_status()
         j = res.json()
         print(j)
         assert j['belt']['name'] == belt_name
+        assert j['belt']['rank'] == i + 1
         ids.append(j['belt']['id'])
     assert len(ids) == len(belt_names)
 
@@ -57,6 +60,7 @@ def add_belts() -> None:
     print(j)
     assert j['belt']['id'] == ids[1]
     assert j['belt']['name'] == belt_names[1]
+    assert j['belt']['rank'] == 2
 
     # change belt's color
     res = requests.put(API_URL + f'/belts/{ids[1]}', json={'color': 'yellow'})
@@ -65,6 +69,59 @@ def add_belts() -> None:
     print(j)
     assert j['belt']['id'] == ids[1]
     assert j['belt']['name'] == belt_names[1]
+    assert j['belt']['rank'] == 2
+
+    # exchange rank with another belt
+    res = requests.patch(API_URL + f'/belts/{ids[1]}/rank', json={'other_belt_id': ids[2]})
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['belt']['id'] == ids[1]
+    assert j['belt']['name'] == belt_names[1]
+    assert j['belt']['rank'] == 3
+
+    # check rank of other belt
+    res = requests.get(API_URL + f'/belts/{ids[2]}')
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['belt']['id'] == ids[2]
+    assert j['belt']['name'] == belt_names[2]
+    assert j['belt']['rank'] == 2
+
+    # increase rank by 2
+    res = requests.patch(API_URL + f'/belts/{ids[1]}/rank', json={'increase_by': 2})
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['belt']['id'] == ids[1]
+    assert j['belt']['name'] == belt_names[1]
+    assert j['belt']['rank'] == 5
+
+    # check rank of the other two belts
+    res = requests.get(API_URL + f'/belts/{ids[3]}')
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['belt']['id'] == ids[3]
+    assert j['belt']['name'] == belt_names[3]
+    assert j['belt']['rank'] == 3
+    res = requests.get(API_URL + f'/belts/{ids[4]}')
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['belt']['id'] == ids[4]
+    assert j['belt']['name'] == belt_names[4]
+    assert j['belt']['rank'] == 4
+
+    # move back to initial position
+    res = requests.patch(API_URL + f'/belts/{ids[1]}/rank', json={'increase_by': -3})
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['belt']['id'] == ids[1]
+    assert j['belt']['name'] == belt_names[1]
+    assert j['belt']['rank'] == 2
 
     # check final state
     for i, belt_name in reversed(list(enumerate(belt_names))):
@@ -74,6 +131,8 @@ def add_belts() -> None:
         print(j)
         assert j['belt']['name'] == belt_name
         assert j['belt']['rank'] == i + 1
+
+    print('Tested /belts resource')
 
 
 def main() -> None:
