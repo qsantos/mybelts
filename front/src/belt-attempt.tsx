@@ -10,7 +10,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { Belt, SkillDomain, Student, StudentsService, BeltAttempt, BeltAttemptsService } from './api';
+import { Belt, SkillDomain, Student, BeltAttempt, BeltAttemptsService } from './api';
 import './index.css';
 
 interface CreateBeltAttemptButtonProps {
@@ -34,7 +34,8 @@ export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): R
             date: {value: string};
             success: {checked: boolean};
         };
-        StudentsService.postStudentBeltAttemptsResource(student.id, {
+        BeltAttemptsService.postBeltAttemptsResource({
+            student_id: student.id,
             skill_domain_id: parseInt(target.skill_domain.value),
             belt_id: parseInt(target.belt.value),
             date: target.date.value,
@@ -135,7 +136,7 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
             date: {value: string};
             success: {checked: boolean};
         };
-        BeltAttemptsService.putBeltAttemptsResource(belt_attempt.id, {
+        BeltAttemptsService.putBeltAttemptResource(belt_attempt.id, {
             skill_domain_id: parseInt(target.skill_domain.value),
             belt_id: parseInt(target.belt.value),
             date: target.date.value,
@@ -248,7 +249,7 @@ export function DeleteBeltAttemptButton(props : DeleteBeltAttemptButtonProps): R
 
     function handleDelete() {
         setDeleting(true);
-        BeltAttemptsService.deleteBeltAttemptsResource(belt_attempt.id).then(() => {
+        BeltAttemptsService.deleteBeltAttemptResource(belt_attempt.id).then(() => {
             setShow(false);
             setDeleting(false);
             if (deletedCallback !== undefined ){

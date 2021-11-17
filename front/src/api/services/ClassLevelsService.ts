@@ -4,10 +4,8 @@
 import type { ClassLevelList } from '../models/ClassLevelList';
 import type { ClassLevelOne } from '../models/ClassLevelOne';
 import type { ClassLevelPut } from '../models/ClassLevelPut';
-import type { ClassLevelSchoolClassesPost } from '../models/ClassLevelSchoolClassesPost';
 import type { ClassLevelsPost } from '../models/ClassLevelsPost';
 import type { SchoolClassList } from '../models/SchoolClassList';
-import type { SchoolClassOne } from '../models/SchoolClassOne';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { request as __request } from '../core/request';
 
@@ -121,28 +119,6 @@ export class ClassLevelsService {
             headers: {
                 'X-Fields': xFields,
             },
-        });
-    }
-
-    /**
-     * @param classLevelId
-     * @param payload
-     * @param xFields An optional fields mask
-     * @returns SchoolClassOne Success
-     * @throws ApiError
-     */
-    public static postClassLevelSchoolClassesResource(
-        classLevelId: number,
-        payload: ClassLevelSchoolClassesPost,
-        xFields?: string,
-    ): CancelablePromise<SchoolClassOne> {
-        return __request({
-            method: 'POST',
-            path: `/class-levels/${classLevelId}/school-classes`,
-            headers: {
-                'X-Fields': xFields,
-            },
-            body: payload,
         });
     }
 

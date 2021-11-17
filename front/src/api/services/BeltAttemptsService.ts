@@ -3,17 +3,38 @@
 /* eslint-disable */
 import type { BeltAttemptOne } from '../models/BeltAttemptOne';
 import type { BeltAttemptPut } from '../models/BeltAttemptPut';
+import type { BeltAttemptsPost } from '../models/BeltAttemptsPost';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { request as __request } from '../core/request';
 
 export class BeltAttemptsService {
 
     /**
+     * @param payload
+     * @param xFields An optional fields mask
+     * @returns BeltAttemptOne Success
+     * @throws ApiError
+     */
+    public static postBeltAttemptsResource(
+        payload: BeltAttemptsPost,
+        xFields?: string,
+    ): CancelablePromise<BeltAttemptOne> {
+        return __request({
+            method: 'POST',
+            path: `/belt-attempts`,
+            headers: {
+                'X-Fields': xFields,
+            },
+            body: payload,
+        });
+    }
+
+    /**
      * @param beltAttemptId
      * @returns any Success
      * @throws ApiError
      */
-    public static deleteBeltAttemptsResource(
+    public static deleteBeltAttemptResource(
         beltAttemptId: number,
     ): CancelablePromise<any> {
         return __request({
@@ -28,7 +49,7 @@ export class BeltAttemptsService {
      * @returns BeltAttemptOne Success
      * @throws ApiError
      */
-    public static getBeltAttemptsResource(
+    public static getBeltAttemptResource(
         beltAttemptId: number,
         xFields?: string,
     ): CancelablePromise<BeltAttemptOne> {
@@ -48,7 +69,7 @@ export class BeltAttemptsService {
      * @returns BeltAttemptOne Success
      * @throws ApiError
      */
-    public static putBeltAttemptsResource(
+    public static putBeltAttemptResource(
         beltAttemptId: number,
         payload: BeltAttemptPut,
         xFields?: string,

@@ -9,7 +9,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { ClassLevel, ClassLevelsService, } from './api';
+import { ClassLevel, ClassLevelsService } from './api';
 import './index.css';
 
 interface CreateClassLevelButtonProps

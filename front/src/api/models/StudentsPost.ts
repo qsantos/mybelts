@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type SchoolClassStudentsPost = {
+export type StudentsPost = {
     name: string;
+    school_class_id: number;
 }

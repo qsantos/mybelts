@@ -308,10 +308,10 @@ def add_school_classes(class_level_ids: List[int]) -> List[int]:
     # add school classes
     ids = []
     for class_level_id, school_class_suffix in zip(school_class_levels, school_class_suffixes):
-        res = requests.post(
-            API_URL + f'/class-levels/{class_level_id}/school-classes',
-            json={'suffix': school_class_suffix},
-        )
+        res = requests.post(API_URL + '/school-classes', json={
+            'class_level_id': class_level_id,
+            'suffix': school_class_suffix,
+        })
         res.raise_for_status()
         j = res.json()
         print(j)
@@ -368,7 +368,8 @@ def add_students(school_class_ids: List[int]) -> List[int]:
     # add students
     ids = []
     for school_class_id, student_name in zip(student_classes, student_names):
-        res = requests.post(API_URL + f'/school-classes/{school_class_id}/students', json={
+        res = requests.post(API_URL + '/students', json={
+            'school_class_id': school_class_id,
             'name': student_name,
         })
         res.raise_for_status()
@@ -427,7 +428,8 @@ def add_belt_attempts(skill_domain_ids: List[int], belt_ids: List[int], student_
     # add belt attempts
     ids = []
     for skill_domain_id, belt_id, student_id, date, success in belt_attempt_info:
-        res = requests.post(API_URL + f'/students/{student_id}/belt-attempts', json={
+        res = requests.post(API_URL + '/belt-attempts', json={
+            'student_id': student_id,
             'skill_domain_id': skill_domain_id,
             'belt_id': belt_id,
             'date': date,

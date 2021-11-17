@@ -353,14 +353,19 @@ class ClassLevelSchoolClassesResource(Resource):
                 ],
             }
 
-    post_model = api.model('ClassLevelSchoolClassesPost', {
+
+@school_class_ns.route('/school-classes')
+class SchoolClassesResource(Resource):
+    post_model = api.model('SchoolClassesPost', {
+        'class_level_id': fields.Integer(example=42, required=True),
         'suffix': fields.String(example='D', required=True),
     })
 
     @api.expect(post_model, validate=True)
     @api.marshal_with(api_model_school_class_one)
-    def post(self, class_level_id: int) -> Any:
+    def post(self) -> Any:
         with session_context() as session:
+            class_level_id = request.json['class_level_id']
             class_level = session.query(ClassLevel).get(class_level_id)
             if class_level is None:
                 abort(404, f'Class level {class_level_id} not found')
@@ -440,30 +445,6 @@ class SchoolClassStudentsResource(Resource):
                 ],
             }
 
-    post_model = api.model('SchoolClassStudentsPost', {
-        'name': fields.String(example='John Doe', required=True),
-    })
-
-    @api.expect(post_model, validate=True)
-    @api.marshal_with(api_model_student_one)
-    def post(self, school_class_id: int) -> Any:
-        with session_context() as session:
-            school_class = session.query(SchoolClass).get(school_class_id)
-            if school_class is None:
-                abort(404, f'School class {school_class_id} not found')
-            class_level = school_class.class_level
-            student = Student(
-                school_class=school_class,
-                name=request.json['name'],
-            )
-            session.add(student)
-            session.commit()
-            return {
-                'class_level': class_level.json(),
-                'school_class': school_class.json(),
-                'student': student.json(),
-            }
-
 
 @school_class_ns.route('/school-classes/<int:school_class_id>/student-belts')
 class SchoolClassStudentBeltsResource(Resource):
@@ -521,6 +502,35 @@ class SchoolClassStudentBeltsResource(Resource):
                     }
                     for student in students.values()
                 ],
+            }
+
+
+@students_ns.route('/students')
+class StudentsResource(Resource):
+    post_model = api.model('StudentsPost', {
+        'school_class_id': fields.Integer(example=42, required=True),
+        'name': fields.String(example='John Doe', required=True),
+    })
+
+    @api.expect(post_model, validate=True)
+    @api.marshal_with(api_model_student_one)
+    def post(self) -> Any:
+        with session_context() as session:
+            school_class_id = request.json['school_class_id']
+            school_class = session.query(SchoolClass).get(school_class_id)
+            if school_class is None:
+                abort(404, f'School class {school_class_id} not found')
+            class_level = school_class.class_level
+            student = Student(
+                school_class=school_class,
+                name=request.json['name'],
+            )
+            session.add(student)
+            session.commit()
+            return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
+                'student': student.json(),
             }
 
 
@@ -611,53 +621,6 @@ class StudentBeltAttemptsResource(Resource):
                 'belts': [belt.json() for belt in belts],
                 'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
                 'belt_attempts': [belt_attempt.json() for belt_attempt in belt_attempts],
-            }
-
-    post_model = api.model('StudentBeltAttemptsPost', {
-        'belt_id': fields.Integer(example=42, required=True),
-        'skill_domain_id': fields.Integer(example=42, required=True),
-        'date': fields.Date(example='2021-11-13', required=True),
-        'success': fields.Boolean(example=True, required=True),
-    })
-
-    @api.expect(post_model, validate=True)
-    @api.marshal_with(api_model_belt_attempt_one)
-    def post(self, student_id: int) -> Any:
-        with session_context() as session:
-            student = session.query(Student).get(student_id)
-            if student is None:
-                abort(404, f'Student {student_id} not found')
-            belt_id = request.json['belt_id']
-            belt = session.query(Belt).get(belt_id)
-            if belt is None:
-                abort(404, f'Belt {belt_id} not found')
-            skill_domain_id = request.json['skill_domain_id']
-            skill_domain = session.query(SkillDomain).get(skill_domain_id)
-            if skill_domain is None:
-                abort(404, f'Skill domain {skill_domain_id} not found')
-            date_string = request.json['date']
-            try:
-                date_value = date.fromisoformat(date_string)
-            except ValueError:
-                abort(400, f'Invalid date {date_string}')
-            belt_attempt = BeltAttempt(
-                student_id=student_id,
-                belt_id=belt_id,
-                skill_domain_id=skill_domain_id,
-                date=date_value,
-                success=request.json['success'],
-            )
-            session.add(belt_attempt)
-            session.commit()
-            school_class = student.school_class
-            class_level = school_class.class_level
-            return {
-                'class_level': class_level.json(),
-                'school_class': school_class.json(),
-                'student': student.json(),
-                'belt': belt.json(),
-                'skill_domain': skill_domain.json(),
-                'belt_attempt': belt_attempt.json(),
             }
 
 
@@ -881,8 +844,60 @@ class BeltRankResource(Resource):
             }
 
 
-@belt_attempts_ns.route('/belt-attempts/<int:belt_attempt_id>')
+@belt_attempts_ns.route('/belt-attempts')
 class BeltAttemptsResource(Resource):
+    post_model = api.model('BeltAttemptsPost', {
+        'student_id': fields.Integer(example=42, required=True),
+        'belt_id': fields.Integer(example=42, required=True),
+        'skill_domain_id': fields.Integer(example=42, required=True),
+        'date': fields.Date(example='2021-11-13', required=True),
+        'success': fields.Boolean(example=True, required=True),
+    })
+
+    @api.expect(post_model, validate=True)
+    @api.marshal_with(api_model_belt_attempt_one)
+    def post(self) -> Any:
+        with session_context() as session:
+            student_id = request.json['student_id']
+            student = session.query(Student).get(student_id)
+            if student is None:
+                abort(404, f'Student {student_id} not found')
+            belt_id = request.json['belt_id']
+            belt = session.query(Belt).get(belt_id)
+            if belt is None:
+                abort(404, f'Belt {belt_id} not found')
+            skill_domain_id = request.json['skill_domain_id']
+            skill_domain = session.query(SkillDomain).get(skill_domain_id)
+            if skill_domain is None:
+                abort(404, f'Skill domain {skill_domain_id} not found')
+            date_string = request.json['date']
+            try:
+                date_value = date.fromisoformat(date_string)
+            except ValueError:
+                abort(400, f'Invalid date {date_string}')
+            belt_attempt = BeltAttempt(
+                student_id=student_id,
+                belt_id=belt_id,
+                skill_domain_id=skill_domain_id,
+                date=date_value,
+                success=request.json['success'],
+            )
+            session.add(belt_attempt)
+            session.commit()
+            school_class = student.school_class
+            class_level = school_class.class_level
+            return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
+                'student': student.json(),
+                'belt': belt.json(),
+                'skill_domain': skill_domain.json(),
+                'belt_attempt': belt_attempt.json(),
+            }
+
+
+@belt_attempts_ns.route('/belt-attempts/<int:belt_attempt_id>')
+class BeltAttemptResource(Resource):
     @api.marshal_with(api_model_belt_attempt_one)
     def get(self, belt_attempt_id: int) -> Any:
         with session_context() as session:

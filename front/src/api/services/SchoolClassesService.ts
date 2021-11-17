@@ -1,16 +1,35 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { SchoolClassesPost } from '../models/SchoolClassesPost';
 import type { SchoolClassOne } from '../models/SchoolClassOne';
 import type { SchoolClassPut } from '../models/SchoolClassPut';
 import type { SchoolClassStudentBelts } from '../models/SchoolClassStudentBelts';
-import type { SchoolClassStudentsPost } from '../models/SchoolClassStudentsPost';
 import type { StudentList } from '../models/StudentList';
-import type { StudentOne } from '../models/StudentOne';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { request as __request } from '../core/request';
 
 export class SchoolClassesService {
+
+    /**
+     * @param payload
+     * @param xFields An optional fields mask
+     * @returns SchoolClassOne Success
+     * @throws ApiError
+     */
+    public static postSchoolClassesResource(
+        payload: SchoolClassesPost,
+        xFields?: string,
+    ): CancelablePromise<SchoolClassOne> {
+        return __request({
+            method: 'POST',
+            path: `/school-classes`,
+            headers: {
+                'X-Fields': xFields,
+            },
+            body: payload,
+        });
+    }
 
     /**
      * @param schoolClassId
@@ -102,28 +121,6 @@ export class SchoolClassesService {
             headers: {
                 'X-Fields': xFields,
             },
-        });
-    }
-
-    /**
-     * @param schoolClassId
-     * @param payload
-     * @param xFields An optional fields mask
-     * @returns StudentOne Success
-     * @throws ApiError
-     */
-    public static postSchoolClassStudentsResource(
-        schoolClassId: number,
-        payload: SchoolClassStudentsPost,
-        xFields?: string,
-    ): CancelablePromise<StudentOne> {
-        return __request({
-            method: 'POST',
-            path: `/school-classes/${schoolClassId}/students`,
-            headers: {
-                'X-Fields': xFields,
-            },
-            body: payload,
         });
     }
 

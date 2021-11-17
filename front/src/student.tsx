@@ -9,7 +9,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { SchoolClassesService, Student, StudentsService, } from './api';
+import { Student, StudentsService } from './api';
 import './index.css';
 
 interface CreateStudentButtonProps {
@@ -28,7 +28,8 @@ export function CreateStudentButton(props : CreateStudentButtonProps): ReactElem
         const target = event.target as typeof event.target & {
             name: {value: string};
         };
-        SchoolClassesService.postSchoolClassStudentsResource(school_class_id, {
+        StudentsService.postStudentsResource({
+            school_class_id: school_class_id,
             name: target.name.value,
         }).then(({ student }) => {
             setShow(false);

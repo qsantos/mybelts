@@ -9,7 +9,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { ClassLevelsService, SchoolClass, SchoolClassesService, } from './api';
+import { SchoolClass, SchoolClassesService } from './api';
 import './index.css';
 
 interface CreateSchoolClassButtonProps
@@ -29,7 +29,8 @@ export function CreateSchoolClassButton(props : CreateSchoolClassButtonProps): R
         const target = event.target as typeof event.target & {
             suffix: {value: string};
         };
-        ClassLevelsService.postClassLevelSchoolClassesResource(class_level_id, {
+        SchoolClassesService.postSchoolClassesResource({
+            class_level_id: class_level_id,
             suffix: target.suffix.value,
         }).then(({ school_class }) => {
             setShow(false);

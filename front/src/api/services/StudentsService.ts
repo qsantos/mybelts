@@ -2,14 +2,33 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { BeltAttemptList } from '../models/BeltAttemptList';
-import type { BeltAttemptOne } from '../models/BeltAttemptOne';
-import type { StudentBeltAttemptsPost } from '../models/StudentBeltAttemptsPost';
 import type { StudentOne } from '../models/StudentOne';
 import type { StudentPut } from '../models/StudentPut';
+import type { StudentsPost } from '../models/StudentsPost';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { request as __request } from '../core/request';
 
 export class StudentsService {
+
+    /**
+     * @param payload
+     * @param xFields An optional fields mask
+     * @returns StudentOne Success
+     * @throws ApiError
+     */
+    public static postStudentsResource(
+        payload: StudentsPost,
+        xFields?: string,
+    ): CancelablePromise<StudentOne> {
+        return __request({
+            method: 'POST',
+            path: `/students`,
+            headers: {
+                'X-Fields': xFields,
+            },
+            body: payload,
+        });
+    }
 
     /**
      * @param studentId
@@ -82,28 +101,6 @@ export class StudentsService {
             headers: {
                 'X-Fields': xFields,
             },
-        });
-    }
-
-    /**
-     * @param studentId
-     * @param payload
-     * @param xFields An optional fields mask
-     * @returns BeltAttemptOne Success
-     * @throws ApiError
-     */
-    public static postStudentBeltAttemptsResource(
-        studentId: number,
-        payload: StudentBeltAttemptsPost,
-        xFields?: string,
-    ): CancelablePromise<BeltAttemptOne> {
-        return __request({
-            method: 'POST',
-            path: `/students/${studentId}/belt-attempts`,
-            headers: {
-                'X-Fields': xFields,
-            },
-            body: payload,
         });
     }
 
