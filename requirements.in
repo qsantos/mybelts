@@ -2,6 +2,8 @@
 alembic
 psycopg2-binary
 SQLAlchemy
+sqlalchemy-utils
+passlib
 
 # API
 Flask==1.1.1  # old version to avoid https://github.com/jarus/flask-testing/issues/143

@@ -8,6 +8,7 @@ from sqlalchemy import (
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker
+from sqlalchemy_utils.types.password import PasswordType  # type: ignore
 
 from skills.config import POSTGRES_URI
 
@@ -32,6 +33,23 @@ def session_context() -> Iterator[scoped_session]:
         raise
     finally:
         session_factory.remove()  # type: ignore
+
+
+class User(Base):  # type: ignore
+    __tablename__ = 'user'
+    id = Column(Integer, primary_key=True)
+    created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
+    name = Column(String, nullable=False, index=True, unique=True)
+    password = Column(PasswordType(schemes=['pbkdf2_sha512']), nullable=False)
+    is_admin = Column(Boolean, nullable=False, index=True, default=False)
+
+    def json(self) -> Dict:
+        return {
+            'id': self.id,
+            'created': self.created,
+            'name': self.name,
+            'is_admin': self.is_admin,
+        }
 
 
 class ClassLevel(Base):  # type: ignore
