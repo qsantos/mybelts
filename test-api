@@ -237,7 +237,7 @@ def add_class_levels() -> List[int]:
     return ids
 
 
-def add_school_classes(class_level_ids: List[int]) -> None:
+def add_school_classes(class_level_ids: List[int]) -> List[int]:
     print('Testing resource /school-classes')
     assert len(class_level_ids) == 4
     l3, l4, l5, l6 = class_level_ids
@@ -286,6 +286,66 @@ def add_school_classes(class_level_ids: List[int]) -> None:
         assert j['school_class']['suffix'] == school_class_suffix
 
     print('Tested resource /school-classes')
+    return ids
+
+
+def add_students(school_class_ids: List[int]) -> None:
+    print('Testing resource /students')
+    a, b, c, d = school_class_ids
+    student_classes = [a, a, a, a, b, b, b, c, c]
+    student_names = [
+        'Alice Wonderland',
+        'Bob Dylan',
+        'Charlie Brown',
+        'Dave Ramsay',
+        'Eve V',
+        'Faythe Runner',
+        'Grace Hopper',
+        'Henri Ford',
+        'Judy Hopps',
+    ]
+
+    # add students
+    ids = []
+    for school_class_id, student_name in zip(student_classes, student_names):
+        res = requests.post(API_URL + f'/school-classes/{school_class_id}/students', json={
+            'name': student_name,
+        })
+        res.raise_for_status()
+        j = res.json()
+        print(j)
+        assert j['school_class']['id'] == school_class_id
+        assert j['student']['name'] == student_name
+        ids.append(j['student']['id'])
+
+    # rename student
+    student_names[1] = 'Bob Marley'
+    res = requests.put(API_URL + f'/students/{ids[1]}', json={'name': student_names[1]})
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['school_class']['id'] == student_classes[1]
+    assert j['student']['name'] == student_names[1]
+
+    # delete student
+    res = requests.delete(API_URL + f'/students/{ids[4]}')
+    res.raise_for_status()
+    res = requests.get(API_URL + f'/students/{ids[4]}')
+    assert res.status_code == 404
+    ids.pop(4)
+    student_classes.pop(4)
+    student_names.pop(4)
+
+    # check final state
+    for id, school_class_id, student_name in reversed(list(zip(ids, student_classes, student_names))):
+        res = requests.get(API_URL + f'/students/{id}')
+        res.raise_for_status()
+        j = res.json()
+        print(j)
+        assert j['school_class']['id'] == school_class_id
+        assert j['student']['name'] == student_name
+
+    print('Tested resource /students')
 
 
 def main() -> None:
@@ -293,7 +353,8 @@ def main() -> None:
     add_belts()
     add_skill_domains()
     class_level_ids = add_class_levels()
-    add_school_classes(class_level_ids)
+    school_class_ids = add_school_classes(class_level_ids)
+    add_students(school_class_ids)
 
 
 if __name__ == '__main__':
