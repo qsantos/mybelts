@@ -843,6 +843,7 @@ class BeltAttemptsResource(Resource):
                 'class_level': class_level.json(),
                 'school_class': school_class.json(),
                 'student': student.json(),
+                'skill_domain': skill_domain.json(),
                 'belt': belt.json(),
                 'belt_attempt': belt_attempt.json(),
             }
