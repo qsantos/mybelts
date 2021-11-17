@@ -21,6 +21,64 @@ def reset() -> None:
     print('Reset Database')
 
 
+def add_users() -> None:
+    print('Testing /users resource')
+
+    # add first user
+    res = requests.post(API_URL + '/users', json={
+        'name': 'me',
+        'password': 'me',
+        'is_admin': True,
+    })
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['user']['name'] == 'me'
+    assert j['user']['is_admin']
+    user_id1 = j['user']['id']
+
+    # add second user
+    res = requests.post(API_URL + '/users', json={
+        'name': 'tartempion',
+        'password': 'correct horse battery staple',
+        'is_admin': True,
+    })
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['user']['name'] == 'tartempion'
+    assert j['user']['is_admin']
+    user_id2 = j['user']['id']
+
+    # update second user
+    res = requests.put(API_URL + f'/users/{user_id2}', json={
+        'is_admin': False,
+    })
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['user']['id'] == user_id2
+    assert j['user']['name'] == 'tartempion'
+    assert not j['user']['is_admin']
+
+    # delete second user
+    res = requests.delete(API_URL + f'/users/{user_id2}')
+    res.raise_for_status()
+    res = requests.get(API_URL + f'/users/{user_id2}')
+    assert res.status_code == 404
+
+    # check final state
+    res = requests.get(API_URL + f'/users/{user_id1}')
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['user']['id'] == user_id1
+    assert j['user']['name'] == 'me'
+    assert j['user']['is_admin']
+
+    print('Tested /users resource')
+
+
 def add_belts() -> List[int]:
     print('Testing /belts resource')
 
@@ -429,6 +487,7 @@ def add_belt_attempts(skill_domain_ids: List[int], belt_ids: List[int], student_
 
 def main() -> None:
     reset()
+    add_users()
     belt_ids = add_belts()
     skill_domain_ids = add_skill_domains()
     class_level_ids = add_class_levels()
