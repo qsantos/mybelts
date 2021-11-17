@@ -24,6 +24,25 @@ export class BeltAttemptsService {
 
     /**
      * @param beltAttemptId
+     * @param xFields An optional fields mask
+     * @returns BeltAttemptOne Success
+     * @throws ApiError
+     */
+    public static getBeltAttemptsResource(
+        beltAttemptId: number,
+        xFields?: string,
+    ): CancelablePromise<BeltAttemptOne> {
+        return __request({
+            method: 'GET',
+            path: `/belt-attempts/${beltAttemptId}`,
+            headers: {
+                'X-Fields': xFields,
+            },
+        });
+    }
+
+    /**
+     * @param beltAttemptId
      * @param payload
      * @param xFields An optional fields mask
      * @returns BeltAttemptOne Success

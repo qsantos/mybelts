@@ -39,6 +39,11 @@ export type { StudentBeltAttemptsPost } from './models/StudentBeltAttemptsPost';
 export type { StudentList } from './models/StudentList';
 export type { StudentOne } from './models/StudentOne';
 export type { StudentPut } from './models/StudentPut';
+export type { User } from './models/User';
+export type { UserList } from './models/UserList';
+export type { UserOne } from './models/UserOne';
+export type { UserPut } from './models/UserPut';
+export type { UsersPost } from './models/UsersPost';
 
 export { BeltAttemptsService } from './services/BeltAttemptsService';
 export { BeltsService } from './services/BeltsService';
@@ -46,3 +51,4 @@ export { ClassLevelsService } from './services/ClassLevelsService';
 export { SchoolClassesService } from './services/SchoolClassesService';
 export { SkillDomainsService } from './services/SkillDomainsService';
 export { StudentsService } from './services/StudentsService';
+export { UsersService } from './services/UsersService';

@@ -15,6 +15,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import {
+    UserList, UsersService,
     BeltList, BeltsService,
     ClassLevelList, ClassLevelsService,
     SchoolClassList, SchoolClassesService, SchoolClassStudentBelts,
@@ -24,6 +25,7 @@ import {
 } from './api';
 import './index.css';
 
+import { CreateUserButton, EditUserButton, DeleteUserButton } from './user';
 import { CreateSkillDomainButton, EditSkillDomainButton, DeleteSkillDomainButton } from './skill-domain';
 import { CreateBeltButton, EditBeltButton, DeleteBeltButton, MoveBeltButton } from './belt';
 import { CreateClassLevelButton, EditClassLevelButton, DeleteClassLevelButton } from './class-level';
@@ -43,6 +45,69 @@ function Loader() {
     return <Spinner animation="border" role="status">
         <span className="visually-hidden">Loading</span>
     </Spinner>;
+}
+
+function UsersView() {
+    const [userList, setUserList] = useState<null | UserList>(null);
+
+    useEffect(() => {
+        UsersService.getUsersResource().then(setUserList);
+    }, []);
+
+    if (userList === null) {
+        return <>
+            <h3>Users</h3>
+            <Breadcrumb>
+                <BreadcrumbItem href="/">Home</BreadcrumbItem>
+                <BreadcrumbItem active href="/users">Users</BreadcrumbItem>
+            </Breadcrumb>
+            <Loader />
+        </>;
+    }
+
+    const { users } = userList;
+
+    const sorted_users = users.sort((a, b) => a.name.localeCompare(b.name));
+
+    return <>
+        <Breadcrumb>
+            <BreadcrumbItem href="/">Home</BreadcrumbItem>
+            <BreadcrumbItem active href="/users">Users</BreadcrumbItem>
+        </Breadcrumb>
+        <h3>Users</h3>
+        <CreateUserButton createdCallback={user => {
+            users.push(user);
+            setUserList({ ...userList, users });
+        }}/>
+        <h4>List of available users</h4>
+        <Table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Is Admin?</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {sorted_users.map((user, index) =>
+                    <tr key={user.id}>
+                        <td>{user.name}</td>
+                        <td>{user.is_admin ? '✅' : '❌'}</td>
+                        <td>
+                            <EditUserButton user={user} changedCallback={new_user => {
+                                users[index] = new_user;
+                                setUserList({ ...userList, users });
+                            }} />
+                            {' '}
+                            <DeleteUserButton user={user} deletedCallback={() => {
+                                users.splice(index, 1);
+                                setUserList({ ...userList, users });
+                            }} />
+                        </td>
+                    </tr>)}
+            </tbody>
+        </Table>
+    </>;
 }
 
 function BeltsView() {
@@ -603,6 +668,7 @@ function Layout() {
             <Navbar.Brand as={Link} to="/">Skills</Navbar.Brand>
             <Nav>
                 <Nav.Item><Nav.Link as={Link} to="/">Home</Nav.Link></Nav.Item>
+                <Nav.Item><Nav.Link as={Link} to="/users">Users</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/skill-domains">Skill Domains</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/belts">Belts</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/class-levels">Class Levels</Nav.Link></Nav.Item>
@@ -615,6 +681,7 @@ function Layout() {
 function App() {
     return <Routes>
         <Route path="/" element={<Layout />}>
+            <Route path="users" element={<UsersView />} />
             <Route path="belts" element={<BeltsView />} />
             <Route path="skill-domains" element={<SkillDomainsView />} />
             <Route path="class-levels">
