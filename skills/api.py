@@ -13,7 +13,7 @@ from sqlalchemy import and_
 from sqlalchemy.sql.expression import func
 
 from skills.schema import (
-    Belt, BeltAttempt, ClassLevel, SchoolClass, SkillDomain, Student,
+    Belt, BeltAttempt, ClassLevel, SchoolClass, SkillDomain, Student, User,
     session_context,
 )
 
@@ -44,6 +44,7 @@ api = Api(
     base_url='/api',
 )
 
+users_ns = api.namespace('Users', path='/')
 class_level_ns = api.namespace('Class Levels', path='/')
 school_class_ns = api.namespace('School Classes', path='/')
 students_ns = api.namespace('Students', path='/')
@@ -51,6 +52,13 @@ skill_domains_ns = api.namespace('Skill Domains', path='/')
 belts_ns = api.namespace('Belts', path='/')
 belt_attempts_ns = api.namespace('Belt Attempts', path='/')
 
+
+api_model_user = api.model('User', {
+    'id': fields.Integer(example=42, required=True),
+    'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
+    'name': fields.String(example='tartempion', required=True),
+    'is_admin': fields.Boolean(example=False, required=True),
+})
 
 api_model_class_level = api.model('ClassLevel', {
     'id': fields.Integer(example=42, required=True),
@@ -94,6 +102,14 @@ api_model_belt_attempt = api.model('BeltAttempt', {
     'belt_id': fields.Integer(example=42, required=True),
     'date': fields.Date(example='2021-11-13', required=True),
     'success': fields.Boolean(example=True, required=True),
+})
+
+api_model_user_list = api.model('UserList', {
+    'users': fields.List(fields.Nested(api_model_user), required=True),
+})
+
+api_model_user_one = api.model('UserOne', {
+    'user': fields.Nested(api_model_user, required=True),
 })
 
 api_model_class_level_list = api.model('ClassLevelList', {
@@ -173,6 +189,86 @@ api_model_school_class_student_belts = api.model('SchoolClassStudentBelts', {
         })), required=True),
     })), required=True),
 })
+
+
+@users_ns.route('/users')
+class UsersResource(Resource):
+    @api.marshal_with(api_model_user_list)
+    def get(self) -> Any:
+        with session_context() as session:
+            users = session.query(User).all()
+            return {
+                'users': [user.json() for user in users],
+            }
+
+    post_model = api.model('UsersPost', {
+        'name': fields.String(example='tartempion', required=True),
+        'password': fields.String(example='correct horse battery staple', required=True),
+        'is_admin': fields.Boolean(example=False, required=True),
+    })
+
+    @api.expect(post_model, validate=True)
+    @api.marshal_with(api_model_user_one)
+    def post(self) -> Any:
+        with session_context() as session:
+            user = User(
+                name=request.json['name'],
+                password=request.json['password'],
+                is_admin=request.json['is_admin'],
+            )
+            session.add(user)
+            session.commit()
+            return {
+                'user': user.json(),
+            }
+
+
+@users_ns.route('/users/<int:user_id>')
+class UserResource(Resource):
+    @api.marshal_with(api_model_user_one)
+    def get(self, user_id: int) -> Any:
+        with session_context() as session:
+            user = session.query(User).get(user_id)
+            if user is None:
+                abort(404, f'User {user_id} not found')
+            return {
+                'user': user.json(),
+            }
+
+    put_model = api.model('UserPut', {
+        'name': fields.String(example='tartempion', required=False),
+        'password': fields.String(example='correct horse battery staple', required=False),
+        'is_admin': fields.Boolean(example=False, required=False),
+    })
+
+    @api.expect(put_model, validate=True)
+    @api.marshal_with(api_model_user_one)
+    def put(self, user_id: int) -> Any:
+        with session_context() as session:
+            user = session.query(User).get(user_id)
+            if user is None:
+                abort(404, f'User {user_id} not found')
+            name = request.json.get('name')
+            if name is not None:
+                user.name = name
+            password = request.json.get('password')
+            if password is not None:
+                user.password = password
+            is_admin = request.json.get('is_admin')
+            if is_admin is not None:
+                user.is_admin = is_admin
+            session.commit()
+            return {
+                'user': user.json(),
+            }
+
+    def delete(self, user_id: int) -> Any:
+        with session_context() as session:
+            user = session.query(User).get(user_id)
+            if user is None:
+                abort(404, f'User {user_id} not found')
+            session.query(User).filter(User.id == user_id).delete()
+            session.commit()
 
 
 @class_level_ns.route('/class-levels')
