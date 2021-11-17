@@ -787,6 +787,26 @@ class BeltRankResource(Resource):
 
 @belt_attempts_ns.route('/belt-attempts/<int:belt_attempt_id>')
 class BeltAttemptsResource(Resource):
+    @api.marshal_with(api_model_belt_attempt_one)
+    def get(self, belt_attempt_id: int) -> Any:
+        with session_context() as session:
+            belt_attempt = session.query(BeltAttempt).get(belt_attempt_id)
+            if belt_attempt is None:
+                abort(404, f'Belt attempt {belt_attempt_id} not found')
+            skill_domain = belt_attempt.skill_domain
+            belt = belt_attempt.belt
+            student = belt_attempt.student
+            school_class = student.school_class
+            class_level = school_class.class_level
+            return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
+                'student': student.json(),
+                'skill_domain': skill_domain.json(),
+                'belt': belt.json(),
+                'belt_attempt': belt_attempt.json(),
+            }
+
     put_model = api.model('BeltAttemptPut', {
         'student_id': fields.Integer(example=42, required=False),
         'belt_id': fields.Integer(example=42, required=False),
