@@ -15,6 +15,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import {
+    OpenAPI,
     UserList, UsersService,
     BeltList, BeltsService,
     ClassLevelList, ClassLevelsService,
@@ -25,6 +26,7 @@ import {
 } from './api';
 import './index.css';
 
+import { LoginButton, LogoutButton } from './auth';
 import { CreateUserButton, EditUserButton, DeleteUserButton } from './user';
 import { CreateSkillDomainButton, EditSkillDomainButton, DeleteSkillDomainButton } from './skill-domain';
 import { CreateBeltButton, EditBeltButton, DeleteBeltButton, MoveBeltButton } from './belt';
@@ -663,18 +665,25 @@ function SchoolClassBeltsView() {
 }
 
 function Layout() {
+    const [token, setToken] = useState<undefined | string>(undefined);
+    OpenAPI.TOKEN = token;
+
     return <>
         <Navbar>
             <Navbar.Brand as={Link} to="/">Skills</Navbar.Brand>
-            <Nav>
+            <Nav className="me-auto">
                 <Nav.Item><Nav.Link as={Link} to="/">Home</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/users">Users</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/skill-domains">Skill Domains</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/belts">Belts</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/class-levels">Class Levels</Nav.Link></Nav.Item>
             </Nav>
+            {token
+                ? <LogoutButton className="me-2" loggedOutCallback={() => setToken(undefined)}/>
+                : <LoginButton className="me-2" loggedInCallback={setToken}/>
+            }
         </Navbar>
-        <Outlet />
+        {token && <Outlet />}
     </>;
 }
 

@@ -21,6 +21,7 @@ export type { ClassLevelList } from './models/ClassLevelList';
 export type { ClassLevelOne } from './models/ClassLevelOne';
 export type { ClassLevelPut } from './models/ClassLevelPut';
 export type { ClassLevelsPost } from './models/ClassLevelsPost';
+export type { LoginPost } from './models/LoginPost';
 export type { SchoolClass } from './models/SchoolClass';
 export type { SchoolClassesPost } from './models/SchoolClassesPost';
 export type { SchoolClassList } from './models/SchoolClassList';
