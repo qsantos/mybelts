@@ -84,6 +84,8 @@ pycodestyle==2.8.0
     # via flake8
 pyflakes==2.4.0
     # via flake8
+pyjwt==2.3.0
+    # via -r requirements.in
 pyrsistent==0.18.0
     # via jsonschema
 pytz==2021.3

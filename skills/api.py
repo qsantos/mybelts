@@ -1,8 +1,9 @@
 import logging
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 from time import sleep
 from typing import Any, Dict, List, NoReturn, Set
 
+import jwt
 from flask import Blueprint, Flask, request, url_for
 from flask_restplus import fields  # type: ignore
 from flask_restplus import Api, Resource
@@ -10,8 +11,10 @@ from flask_restplus import abort as flask_restplus_abort
 from flask_restplus.apidoc import apidoc  # type: ignore
 from jsonschema import FormatChecker
 from sqlalchemy import and_
+from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
+from skills.config import SECRET
 from skills.schema import (
     Belt, BeltAttempt, ClassLevel, SchoolClass, SkillDomain, Student, User,
     session_context,
@@ -35,13 +38,21 @@ def specs_url(self: Api) -> str:
 Api.specs_url = specs_url
 # end of fix
 
-
 api_blueprint = Blueprint('api', __name__)
 api = Api(
     api_blueprint,
     title='Skills API',
     format_checker=FormatChecker(),
     base_url='/api',
+    authorizations={
+        'apikey': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization',
+            'description': 'The JWT preceded by "Bearer "',
+        },
+    },
+    security='apikey',
 )
 
 users_ns = api.namespace('Users', path='/')
@@ -191,11 +202,64 @@ api_model_school_class_student_belts = api.model('SchoolClassStudentBelts', {
 })
 
 
+@users_ns.route('/login')
+@api.doc(security=None)
+class LoginResource(Resource):
+    post_model = api.model('LoginPost', {
+        'name': fields.String(example='tartempion', required=True),
+        'password': fields.String(example='correct horse battery stable', required=True),
+    })
+
+    @api.expect(post_model, validate=True)
+    def post(self) -> Any:
+        with session_context() as session:
+            user = session.query(User).filter(User.name == request.json['name']).one_or_none()
+            if user is None or user.password != request.json['password']:
+                abort(401, 'Invalid credentials')
+            payload = {
+                'user_id': user.id,
+                'exp': (datetime.now(timezone.utc) + timedelta(hours=1)).timestamp(),
+            }
+            return {
+                'payload': payload,
+                'token': jwt.encode(payload, SECRET, algorithm='HS256'),
+            }
+
+
+def authenticate(session: Session) -> User:
+    # fetch token
+    authorization = request.headers.get('Authorization')
+    if authorization is None:
+        abort(401, 'Missing Authorization header')
+    if not authorization.startswith('Bearer '):
+        abort(401, 'Authorization header malformed')
+    token = authorization[len('Bearer '):]
+    # check token
+    try:
+        payload = jwt.decode(token, SECRET, algorithms=['HS256'], options={'require': ['exp', 'user_id']})
+    except jwt.exceptions.DecodeError:
+        abort(401, 'Token is malformed')
+    except jwt.exceptions.MissingRequiredClaimError as e:
+        abort(401, str(e))
+    except jwt.exceptions.ExpiredSignatureError:
+        abort(401, 'Token has expired')
+    except jwt.exceptions.InvalidTokenError:
+        abort(401, 'Token invalid')
+    # fetch user
+    user_id = payload.get('user_id')
+    assert user_id is not None
+    user = session.query(User).get(user_id)
+    if user is None:
+        abort(401, f'User {user_id} not found')
+    return user
+
+
 @users_ns.route('/users')
 class UsersResource(Resource):
     @api.marshal_with(api_model_user_list)
     def get(self) -> Any:
         with session_context() as session:
+            authenticate(session)
             users = session.query(User).all()
             return {
                 'users': [user.json() for user in users],
@@ -211,6 +275,7 @@ class UsersResource(Resource):
     @api.marshal_with(api_model_user_one)
     def post(self) -> Any:
         with session_context() as session:
+            authenticate(session)
             user = User(
                 name=request.json['name'],
                 password=request.json['password'],
@@ -228,6 +293,7 @@ class UserResource(Resource):
     @api.marshal_with(api_model_user_one)
     def get(self, user_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             user = session.query(User).get(user_id)
             if user is None:
                 abort(404, f'User {user_id} not found')
@@ -245,6 +311,7 @@ class UserResource(Resource):
     @api.marshal_with(api_model_user_one)
     def put(self, user_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             user = session.query(User).get(user_id)
             if user is None:
                 abort(404, f'User {user_id} not found')
@@ -264,6 +331,7 @@ class UserResource(Resource):
 
     def delete(self, user_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             user = session.query(User).get(user_id)
             if user is None:
                 abort(404, f'User {user_id} not found')
@@ -276,6 +344,7 @@ class ClassLevelsResource(Resource):
     @api.marshal_with(api_model_class_level_list)
     def get(self) -> Any:
         with session_context() as session:
+            authenticate(session)
             return {
                 'class_levels': [
                     class_level.json()
@@ -291,6 +360,7 @@ class ClassLevelsResource(Resource):
     @api.marshal_with(api_model_class_level_one)
     def post(self) -> Any:
         with session_context() as session:
+            authenticate(session)
             class_level = ClassLevel(prefix=request.json['prefix'])
             session.add(class_level)
             session.commit()
@@ -304,6 +374,7 @@ class ClassLevelResource(Resource):
     @api.marshal_with(api_model_class_level_one)
     def get(self, class_level_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             class_level = session.query(ClassLevel).get(class_level_id)
             if class_level is None:
                 abort(404, f'Class level {class_level_id} not found')
@@ -319,6 +390,7 @@ class ClassLevelResource(Resource):
     @api.marshal_with(api_model_class_level_one)
     def put(self, class_level_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             class_level = session.query(ClassLevel).get(class_level_id)
             if class_level is None:
                 abort(404, f'Class level {class_level_id} not found')
@@ -330,6 +402,7 @@ class ClassLevelResource(Resource):
 
     def delete(self, class_level_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             class_level = session.query(ClassLevel).get(class_level_id)
             if class_level is None:
                 abort(404, f'Class level {class_level_id} not found')
@@ -342,6 +415,7 @@ class ClassLevelSchoolClassesResource(Resource):
     @api.marshal_with(api_model_school_class_list)
     def get(self, class_level_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             class_level = session.query(ClassLevel).get(class_level_id)
             if class_level is None:
                 abort(404, f'Class level {class_level_id} not found')
@@ -365,6 +439,7 @@ class SchoolClassesResource(Resource):
     @api.marshal_with(api_model_school_class_one)
     def post(self) -> Any:
         with session_context() as session:
+            authenticate(session)
             class_level_id = request.json['class_level_id']
             class_level = session.query(ClassLevel).get(class_level_id)
             if class_level is None:
@@ -386,6 +461,7 @@ class SchoolClassResource(Resource):
     @api.marshal_with(api_model_student_list)
     def get(self, school_class_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
@@ -407,6 +483,7 @@ class SchoolClassResource(Resource):
     @api.marshal_with(api_model_school_class_one)
     def put(self, school_class_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
@@ -420,6 +497,7 @@ class SchoolClassResource(Resource):
 
     def delete(self, school_class_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
@@ -432,6 +510,7 @@ class SchoolClassStudentsResource(Resource):
     @api.marshal_with(api_model_student_list)
     def get(self, school_class_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
@@ -451,6 +530,7 @@ class SchoolClassStudentBeltsResource(Resource):
     @api.marshal_with(api_model_school_class_student_belts)
     def get(self, school_class_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
@@ -516,6 +596,7 @@ class StudentsResource(Resource):
     @api.marshal_with(api_model_student_one)
     def post(self) -> Any:
         with session_context() as session:
+            authenticate(session)
             school_class_id = request.json['school_class_id']
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
@@ -539,6 +620,7 @@ class StudentResource(Resource):
     @api.marshal_with(api_model_student_one)
     def get(self, student_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             student = session.query(Student).get(student_id)
             if student is None:
                 abort(404, f'Student {student_id} not found')
@@ -558,6 +640,7 @@ class StudentResource(Resource):
     @api.marshal_with(api_model_student_one)
     def put(self, student_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             student = session.query(Student).get(student_id)
             if student is None:
                 abort(404, f'Student {student_id} not found')
@@ -573,6 +656,7 @@ class StudentResource(Resource):
 
     def delete(self, student_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             student = session.query(Student).get(student_id)
             if student is None:
                 abort(404, f'Student {student_id} not found')
@@ -585,6 +669,7 @@ class StudentBeltAttemptsResource(Resource):
     @api.marshal_with(api_model_belt_attempt_list)
     def get(self, student_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             student = session.query(Student).get(student_id)
             if student is None:
                 abort(404, f'Student {student_id} not found')
@@ -629,6 +714,7 @@ class SkillDomainsResource(Resource):
     @api.marshal_with(api_model_skill_domain_list)
     def get(self) -> Any:
         with session_context() as session:
+            authenticate(session)
             skill_domains = session.query(SkillDomain).all()
             return {
                 'skill_domains': [
@@ -645,6 +731,7 @@ class SkillDomainsResource(Resource):
     @api.marshal_with(api_model_skill_domain_one)
     def post(self) -> Any:
         with session_context() as session:
+            authenticate(session)
             skill_domain = SkillDomain(
                 name=request.json['name'],
             )
@@ -660,6 +747,7 @@ class SkillDomainResource(Resource):
     @api.marshal_with(api_model_skill_domain_one)
     def get(self, skill_domain_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             skill_domain = session.query(SkillDomain).get(skill_domain_id)
             if skill_domain is None:
                 abort(404, f'Skill domain {skill_domain_id} not found')
@@ -675,6 +763,7 @@ class SkillDomainResource(Resource):
     @api.marshal_with(api_model_skill_domain_one)
     def put(self, skill_domain_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             skill_domain = session.query(SkillDomain).get(skill_domain_id)
             if skill_domain is None:
                 abort(404, f'Skill domain {skill_domain} not found')
@@ -686,6 +775,7 @@ class SkillDomainResource(Resource):
 
     def delete(self, skill_domain_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             skill_domain = session.query(SkillDomain).get(skill_domain_id)
             if skill_domain is None:
                 abort(404, f'Skill domain {skill_domain_id} not found')
@@ -698,6 +788,7 @@ class BeltsResource(Resource):
     @api.marshal_with(api_model_belt_list)
     def get(self) -> Any:
         with session_context() as session:
+            authenticate(session)
             return {
                 'belts': [
                     belt.json()
@@ -714,6 +805,7 @@ class BeltsResource(Resource):
     @api.marshal_with(api_model_belt_one)
     def post(self) -> Any:
         with session_context() as session:
+            authenticate(session)
             # TODO: store this information somewhere
             max_rank: int = session.query(func.max(Belt.rank)).scalar()  # type: ignore
             # no belt in database
@@ -736,6 +828,7 @@ class BeltResource(Resource):
     @api.marshal_with(api_model_belt_one)
     def get(self, belt_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             belt = session.query(Belt).get(belt_id)
             if belt is None:
                 abort(404, f'Belt {belt_id} not found')
@@ -752,6 +845,7 @@ class BeltResource(Resource):
     @api.marshal_with(api_model_belt_one)
     def put(self, belt_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             belt = session.query(Belt).get(belt_id)
             if belt is None:
                 abort(404, f'Belt {belt_id} not found')
@@ -768,6 +862,7 @@ class BeltResource(Resource):
 
     def delete(self, belt_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             belt = session.query(Belt).get(belt_id)
             if belt is None:
                 abort(404, f'Belt {belt_id} not found')
@@ -799,6 +894,7 @@ class BeltRankResource(Resource):
             abort(400, 'Only provide one of other_belt_id, increase_by')
 
         with session_context() as session:
+            authenticate(session)
             belt = session.query(Belt).get(belt_id)
             if belt is None:
                 abort(404, f'Belt {belt_id} not found')
@@ -858,6 +954,7 @@ class BeltAttemptsResource(Resource):
     @api.marshal_with(api_model_belt_attempt_one)
     def post(self) -> Any:
         with session_context() as session:
+            authenticate(session)
             student_id = request.json['student_id']
             student = session.query(Student).get(student_id)
             if student is None:
@@ -901,6 +998,7 @@ class BeltAttemptResource(Resource):
     @api.marshal_with(api_model_belt_attempt_one)
     def get(self, belt_attempt_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             belt_attempt = session.query(BeltAttempt).get(belt_attempt_id)
             if belt_attempt is None:
                 abort(404, f'Belt attempt {belt_attempt_id} not found')
@@ -930,6 +1028,7 @@ class BeltAttemptResource(Resource):
     @api.marshal_with(api_model_belt_attempt_one)
     def put(self, belt_attempt_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             belt_attempt = session.query(BeltAttempt).get(belt_attempt_id)
             if belt_attempt is None:
                 abort(404, f'Belt attempt {belt_attempt_id} not found')
@@ -981,6 +1080,7 @@ class BeltAttemptResource(Resource):
 
     def delete(self, belt_attempt_id: int) -> Any:
         with session_context() as session:
+            authenticate(session)
             belt_attempt = session.query(BeltAttempt).get(belt_attempt_id)
             if belt_attempt is None:
                 abort(404, f'Belt attempt {belt_attempt_id} not found')
