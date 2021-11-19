@@ -58,11 +58,11 @@ function UsersView() {
 
     if (userList === null) {
         return <>
-            <h3>Users</h3>
             <Breadcrumb>
                 <BreadcrumbItem href="/">Home</BreadcrumbItem>
                 <BreadcrumbItem active href="/users">Users</BreadcrumbItem>
             </Breadcrumb>
+            <h3>Users</h3>
             <Loader />
         </>;
     }
@@ -121,11 +121,11 @@ function BeltsView() {
 
     if (beltList === null) {
         return <>
-            <h3>Belts</h3>
             <Breadcrumb>
                 <BreadcrumbItem href="/">Home</BreadcrumbItem>
                 <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
             </Breadcrumb>
+            <h3>Belts</h3>
             <Loader />
         </>;
     }
@@ -270,6 +270,7 @@ function ClassLevelsView() {
                 <BreadcrumbItem href="/">Home</BreadcrumbItem>
                 <BreadcrumbItem active href="/class-levels">Levels</BreadcrumbItem>
             </Breadcrumb>
+            <h3>Class Levels</h3>
             <Loader />
         </>;
     }
@@ -346,6 +347,7 @@ function ClassLevelView() {
                 <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
                 <BreadcrumbItem active href={`/class-levels/${class_level_id}`}>Level ?</BreadcrumbItem>
             </Breadcrumb>
+            <h3>Class level: ?</h3>
             <Loader />
         </>;
     }
@@ -429,8 +431,11 @@ function SchoolClassView() {
                 <BreadcrumbItem>Level ?</BreadcrumbItem>
                 <BreadcrumbItem active href="/">Class ?</BreadcrumbItem>
             </Breadcrumb>
-            <Link to="belts">Belts</Link>
-            <br />
+            <h3>Class: ?</h3>
+            <OverlayTrigger overlay={<Tooltip>Belts</Tooltip>}>
+                <Button onClick={() => navigate('belts')}>🥋</Button>
+            </OverlayTrigger>
+            {' '}
             <Loader />
         </>;
     }
@@ -445,7 +450,7 @@ function SchoolClassView() {
             <BreadcrumbItem href={`/class-levels/${class_level.id}`}>Level {class_level.prefix}</BreadcrumbItem>
             <BreadcrumbItem active href={`/school-classes/${school_class.id}`}>Class {school_class.suffix}</BreadcrumbItem>
         </Breadcrumb>
-        <h3>Class {class_level.prefix}{school_class.suffix}</h3>
+        <h3>Class: {class_level.prefix}{school_class.suffix}</h3>
         <OverlayTrigger overlay={<Tooltip>Belts</Tooltip>}>
             <Button onClick={() => navigate('belts')}>🥋</Button>
         </OverlayTrigger>
@@ -524,8 +529,7 @@ function StudentView() {
                 <BreadcrumbItem active href="/">Class ?</BreadcrumbItem>
                 <BreadcrumbItem active href={`/student/${student_id}`}>Student ?</BreadcrumbItem>
             </Breadcrumb>
-            <Link to="belts">Belts</Link>
-            <br />
+            <h3>Student: ?</h3>
             <Loader />
         </>;
     }
@@ -546,7 +550,7 @@ function StudentView() {
             <BreadcrumbItem active href={`/school-classes/${school_class.id}`}>Class {school_class.suffix}</BreadcrumbItem>
             <BreadcrumbItem active href={`/student/${student.id}`}>Student {student.name}</BreadcrumbItem>
         </Breadcrumb>
-        <h3>Student {student.name}</h3>
+        <h3>Student: {student.name}</h3>
         <EditStudentButton student={student} changedCallback={new_student => {
             setBeltAttemptList({ ...beltAttemptList, student: new_student });
         }} />
@@ -618,6 +622,7 @@ function SchoolClassBeltsView() {
                 <BreadcrumbItem href={`/school-class/${school_class_id}`}>Class ?</BreadcrumbItem>
                 <BreadcrumbItem active href={`/school-classes/${school_class_id}/belts`}>Belts</BreadcrumbItem>
             </Breadcrumb>
+            <h3>Belts of class: ?</h3>
             <Loader />
         </>;
     }
@@ -633,7 +638,7 @@ function SchoolClassBeltsView() {
             <BreadcrumbItem active href={`/school-classes/${school_class.id}`}>Class {school_class.suffix}</BreadcrumbItem>
             <BreadcrumbItem active href={`/school-classes/${school_class.id}/belts`}>Belts</BreadcrumbItem>
         </Breadcrumb>
-        <h3>{class_level.prefix}{school_class.suffix} belts</h3>
+        <h3>Belts of class: {class_level.prefix}{school_class.suffix}</h3>
         <Table>
             <thead>
                 <tr>
