@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
 
+import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -20,6 +21,7 @@ interface CreateStudentButtonProps {
 export function CreateStudentButton(props : CreateStudentButtonProps): ReactElement {
     const { school_class_id, createdCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -37,6 +39,9 @@ export function CreateStudentButton(props : CreateStudentButtonProps): ReactElem
             if (createdCallback !== undefined) {
                 createdCallback(student);
             }
+        }).catch(error => {
+            setCreating(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -48,6 +53,7 @@ export function CreateStudentButton(props : CreateStudentButtonProps): ReactElem
                     <Modal.Title>Add Student</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
                         <Form.Label>Suffix</Form.Label>
                         <Form.Control type="text" placeholder="Example: D" />
@@ -81,6 +87,7 @@ interface EditStudentButtonProps
 export function EditStudentButton(props : EditStudentButtonProps): ReactElement {
     const { student, changedCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [changing, setChanging] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -97,6 +104,9 @@ export function EditStudentButton(props : EditStudentButtonProps): ReactElement 
             if (changedCallback !== undefined) {
                 changedCallback(changed_student);
             }
+        }).catch(error => {
+            setChanging(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -110,6 +120,7 @@ export function EditStudentButton(props : EditStudentButtonProps): ReactElement 
                     <Modal.Title>Edit Student</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
                         <Form.Label>Suffix</Form.Label>
                         <Form.Control type="text" placeholder="Example: John Doe" defaultValue={student.name} />
@@ -143,6 +154,7 @@ interface DeleteStudentButtonProps
 export function DeleteStudentButton(props : DeleteStudentButtonProps): ReactElement {
     const { student, deletedCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
     function handleDelete() {
@@ -153,6 +165,9 @@ export function DeleteStudentButton(props : DeleteStudentButtonProps): ReactElem
             if (deletedCallback !== undefined ){
                 deletedCallback();
             }
+        }).catch(error => {
+            setDeleting(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -165,6 +180,7 @@ export function DeleteStudentButton(props : DeleteStudentButtonProps): ReactElem
                 <Modal.Title>Delete Student</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                 Are you sure you want to delete the student “{student.name}”?
             </Modal.Body>
             <Modal.Footer>

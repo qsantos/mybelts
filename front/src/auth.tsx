@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
 
+import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -16,6 +17,7 @@ interface LoginButtonProps {
 export function LoginButton(props: LoginButtonProps): ReactElement {
     const { className, loggedInCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [loggingIn, setLoggingIn] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -31,6 +33,9 @@ export function LoginButton(props: LoginButtonProps): ReactElement {
         }).then(({ token }) => {
             setLoggingIn(false);
             loggedInCallback(token);
+        }).catch(error => {
+            setLoggingIn(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -41,6 +46,7 @@ export function LoginButton(props: LoginButtonProps): ReactElement {
                     <Modal.Title>Log In</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
                         <Form.Label>User Name</Form.Label>
                         <Form.Control type="text" placeholder="Example: tartempion" />

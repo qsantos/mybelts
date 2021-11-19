@@ -2,6 +2,7 @@ import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
 import Select from 'react-select';
 
+import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -23,6 +24,7 @@ interface CreateBeltAttemptButtonProps {
 export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): ReactElement {
     const { student, skill_domains, belts, createdCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -46,6 +48,9 @@ export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): R
             if (createdCallback !== undefined) {
                 createdCallback(belt_attempt);
             }
+        }).catch(error => {
+            setCreating(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -70,6 +75,7 @@ export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): R
                     <Modal.Title>Add Belt Attempt for {student.name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="skill_domain">
                         <Form.Label>Skill domain</Form.Label>
                         <Select id="skill_domain" name="skill_domain" options={skill_domain_options} />
@@ -125,6 +131,7 @@ interface EditBeltAttemptButtonProps {
 export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): ReactElement {
     const { belt_attempt, student, skill_domains, belts, changedCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [changing, setChanging] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -147,6 +154,9 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
             if (changedCallback !== undefined) {
                 changedCallback(changed_belt_attempt);
             }
+        }).catch(error => {
+            setChanging(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -176,6 +186,7 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
                     <Modal.Title>Add Belt Attempt for {student.name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="skill_domain">
                         <Form.Label>Skill domain</Form.Label>
                         <Select
@@ -245,6 +256,7 @@ interface DeleteBeltAttemptButtonProps {
 export function DeleteBeltAttemptButton(props : DeleteBeltAttemptButtonProps): ReactElement {
     const { student, belt_attempt, deletedCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
     function handleDelete() {
@@ -255,6 +267,9 @@ export function DeleteBeltAttemptButton(props : DeleteBeltAttemptButtonProps): R
             if (deletedCallback !== undefined ){
                 deletedCallback();
             }
+        }).catch(error => {
+            setDeleting(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -267,6 +282,7 @@ export function DeleteBeltAttemptButton(props : DeleteBeltAttemptButtonProps): R
                 <Modal.Title>Delete Belt Attempt of {student.name}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                 Are you sure you want to delete the belt attempt?
             </Modal.Body>
             <Modal.Footer>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
 
+import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -21,6 +22,7 @@ interface CreateSchoolClassButtonProps
 export function CreateSchoolClassButton(props : CreateSchoolClassButtonProps): ReactElement {
     const { class_level_id, createdCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -38,6 +40,9 @@ export function CreateSchoolClassButton(props : CreateSchoolClassButtonProps): R
             if (createdCallback !== undefined) {
                 createdCallback(school_class);
             }
+        }).catch(error => {
+            setCreating(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -49,6 +54,7 @@ export function CreateSchoolClassButton(props : CreateSchoolClassButtonProps): R
                     <Modal.Title>Add Class</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="suffix">
                         <Form.Label>Suffix</Form.Label>
                         <Form.Control type="text" placeholder="Example: D" />
@@ -82,6 +88,7 @@ interface EditSchoolClassButtonProps
 export function EditSchoolClassButton(props : EditSchoolClassButtonProps): ReactElement {
     const { school_class, changedCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [changing, setChanging] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -98,6 +105,9 @@ export function EditSchoolClassButton(props : EditSchoolClassButtonProps): React
             if (changedCallback !== undefined) {
                 changedCallback(changed_school_class);
             }
+        }).catch(error => {
+            setChanging(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -111,6 +121,7 @@ export function EditSchoolClassButton(props : EditSchoolClassButtonProps): React
                     <Modal.Title>Edit Class</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="suffix">
                         <Form.Label>Suffix</Form.Label>
                         <Form.Control type="text" placeholder="Example: D" defaultValue={school_class.suffix} />
@@ -144,6 +155,7 @@ interface DeleteSchoolClassButtonProps
 export function DeleteSchoolClassButton(props : DeleteSchoolClassButtonProps): ReactElement {
     const { school_class, deletedCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
     function handleDelete() {
@@ -154,6 +166,9 @@ export function DeleteSchoolClassButton(props : DeleteSchoolClassButtonProps): R
             if (deletedCallback !== undefined ){
                 deletedCallback();
             }
+        }).catch(error => {
+            setDeleting(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -166,6 +181,7 @@ export function DeleteSchoolClassButton(props : DeleteSchoolClassButtonProps): R
                 <Modal.Title>Delete Class</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                 Are you sure you want to delete the class “{school_class.suffix}”?
             </Modal.Body>
             <Modal.Footer>

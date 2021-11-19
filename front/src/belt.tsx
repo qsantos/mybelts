@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
 
+import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -20,6 +21,7 @@ interface CreateBeltButtonProps
 export function CreateBeltButton(props : CreateBeltButtonProps): ReactElement {
     const { createdCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -36,6 +38,9 @@ export function CreateBeltButton(props : CreateBeltButtonProps): ReactElement {
             if (createdCallback !== undefined) {
                 createdCallback(belt);
             }
+        }).catch(error => {
+            setCreating(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -47,6 +52,7 @@ export function CreateBeltButton(props : CreateBeltButtonProps): ReactElement {
                     <Modal.Title>Add Belt</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
                         <Form.Label>Name</Form.Label>
                         <Form.Control type="text" placeholder="Example: White Belt" />
@@ -78,10 +84,11 @@ interface MoveBeltButtonProps {
     belt: Belt;
     belts: Belt[];
     setBeltList: (beltList: BeltList) => void;
+    setErrorMessage: (errorMessage: string) => void;
 }
 
 export function MoveBeltButton(props : MoveBeltButtonProps): ReactElement {
-    const { buttonContent, direction_name, direction, belt, belts, setBeltList } = props;
+    const { buttonContent, direction_name, direction, belt, belts, setBeltList, setErrorMessage } = props;
     const [moving, setMoving] = useState(false);
 
     function handleMove() {
@@ -100,6 +107,9 @@ export function MoveBeltButton(props : MoveBeltButtonProps): ReactElement {
             belts[belt.rank - 1] = belt;
             belts[other_belt.rank - 1] = other_belt;
             setBeltList({ belts: belts });
+        }).catch(error => {
+            setMoving(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -128,6 +138,7 @@ interface EditBeltButtonProps
 export function EditBeltButton(props : EditBeltButtonProps): ReactElement {
     const { belt, changedCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [changing, setChanging] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -146,6 +157,9 @@ export function EditBeltButton(props : EditBeltButtonProps): ReactElement {
             if (changedCallback !== undefined) {
                 changedCallback(changed_belt);
             }
+        }).catch(error => {
+            setChanging(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -159,6 +173,7 @@ export function EditBeltButton(props : EditBeltButtonProps): ReactElement {
                     <Modal.Title>Edit Belt</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
                         <Form.Label>Name</Form.Label>
                         <Form.Control type="text" placeholder="Example: Algebra" defaultValue={belt.name} />
@@ -199,6 +214,7 @@ interface DeleteBeltButtonProps
 export function DeleteBeltButton(props : DeleteBeltButtonProps): ReactElement {
     const { belt, deletedCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
     function handleDelete() {
@@ -209,6 +225,9 @@ export function DeleteBeltButton(props : DeleteBeltButtonProps): ReactElement {
             if (deletedCallback !== undefined ){
                 deletedCallback();
             }
+        }).catch(error => {
+            setDeleting(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -221,6 +240,7 @@ export function DeleteBeltButton(props : DeleteBeltButtonProps): ReactElement {
                 <Modal.Title>Delete Belt</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                 Are you sure you want to delete the belt “{belt.name}”?
             </Modal.Body>
             <Modal.Footer>

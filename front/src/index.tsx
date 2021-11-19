@@ -158,6 +158,7 @@ function BeltsView() {
             <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
         </Breadcrumb>
         <h3>Belts</h3>
+        {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
         <CreateBeltButton createdCallback={belt => {
             belts.push(belt);
             setBeltList({ ...beltList, belts });
@@ -179,9 +180,9 @@ function BeltsView() {
                         <td>{belt.name}</td>
                         <td><Form.Control type="color" value={belt.color} disabled /></td>
                         <td>
-                            <MoveBeltButton buttonContent="↑" direction_name="Up" direction={-1} belt={belt} belts={sorted_belts} setBeltList={setBeltList} />
+                            <MoveBeltButton buttonContent="↑" direction_name="Up" direction={-1} belt={belt} belts={sorted_belts} setBeltList={setBeltList} setErrorMessage={setErrorMessage} />
                             {' '}
-                            <MoveBeltButton buttonContent="↓" direction_name="Down" direction={1} belt={belt} belts={sorted_belts} setBeltList={setBeltList} />
+                            <MoveBeltButton buttonContent="↓" direction_name="Down" direction={1} belt={belt} belts={sorted_belts} setBeltList={setBeltList} setErrorMessage={setErrorMessage} />
                             {' '}
                             <EditBeltButton belt={belt} changedCallback={new_belt => {
                                 belts[index] = new_belt;

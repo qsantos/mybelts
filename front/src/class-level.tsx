@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
 
+import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -20,6 +21,7 @@ interface CreateClassLevelButtonProps
 export function CreateClassLevelButton(props : CreateClassLevelButtonProps): ReactElement {
     const { createdCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -36,6 +38,9 @@ export function CreateClassLevelButton(props : CreateClassLevelButtonProps): Rea
             if (createdCallback !== undefined) {
                 createdCallback(class_level);
             }
+        }).catch(error => {
+            setCreating(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -47,6 +52,7 @@ export function CreateClassLevelButton(props : CreateClassLevelButtonProps): Rea
                     <Modal.Title>Add Class Level</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="prefix">
                         <Form.Label>Prefix</Form.Label>
                         <Form.Control type="text" placeholder="Example: 4e" />
@@ -80,6 +86,7 @@ interface EditClassLevelButtonProps
 export function EditClassLevelButton(props : EditClassLevelButtonProps): ReactElement {
     const { class_level, changedCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [changing, setChanging] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -96,6 +103,9 @@ export function EditClassLevelButton(props : EditClassLevelButtonProps): ReactEl
             if (changedCallback !== undefined) {
                 changedCallback(changed_class_level);
             }
+        }).catch(error => {
+            setChanging(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -109,6 +119,7 @@ export function EditClassLevelButton(props : EditClassLevelButtonProps): ReactEl
                     <Modal.Title>Edit Class Level</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="prefix">
                         <Form.Label>Prefix</Form.Label>
                         <Form.Control type="text" placeholder="Example: 4e" defaultValue={class_level.prefix} />
@@ -142,6 +153,7 @@ interface DeleteClassLevelButtonProps
 export function DeleteClassLevelButton(props : DeleteClassLevelButtonProps): ReactElement {
     const { class_level, deletedCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
     function handleDelete() {
@@ -152,6 +164,9 @@ export function DeleteClassLevelButton(props : DeleteClassLevelButtonProps): Rea
             if (deletedCallback !== undefined ){
                 deletedCallback();
             }
+        }).catch(error => {
+            setDeleting(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -164,6 +179,7 @@ export function DeleteClassLevelButton(props : DeleteClassLevelButtonProps): Rea
                 <Modal.Title>Delete Class Level</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                 Are you sure you want to delete the class level “{class_level.prefix}”?
             </Modal.Body>
             <Modal.Footer>

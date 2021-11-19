@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
 
+import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -20,6 +21,7 @@ interface CreateSkillDomainButtonProps
 export function CreateSkillDomainButton(props : CreateSkillDomainButtonProps): ReactElement {
     const { createdCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -36,6 +38,9 @@ export function CreateSkillDomainButton(props : CreateSkillDomainButtonProps): R
             if (createdCallback !== undefined) {
                 createdCallback(skill_domain);
             }
+        }).catch(error => {
+            setCreating(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -47,6 +52,7 @@ export function CreateSkillDomainButton(props : CreateSkillDomainButtonProps): R
                     <Modal.Title>Add Skill Domain</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
                         <Form.Label>Name</Form.Label>
                         <Form.Control type="text" placeholder="Example: Algebra" />
@@ -80,6 +86,7 @@ interface EditSkillDomainButtonProps
 export function EditSkillDomainButton(props : EditSkillDomainButtonProps): ReactElement {
     const { skill_domain, changedCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [changing, setChanging] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -96,6 +103,9 @@ export function EditSkillDomainButton(props : EditSkillDomainButtonProps): React
             if (changedCallback !== undefined) {
                 changedCallback(changed_skill_domain);
             }
+        }).catch(error => {
+            setChanging(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -109,6 +119,7 @@ export function EditSkillDomainButton(props : EditSkillDomainButtonProps): React
                     <Modal.Title>Edit Skill Domain</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
                         <Form.Label>Name</Form.Label>
                         <Form.Control type="text" placeholder="Example: Algebra" defaultValue={skill_domain.name} />
@@ -142,6 +153,7 @@ interface DeleteSkillDomainButtonProps
 export function DeleteSkillDomainButton(props : DeleteSkillDomainButtonProps): ReactElement {
     const { skill_domain, deletedCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
     function handleDelete() {
@@ -152,6 +164,9 @@ export function DeleteSkillDomainButton(props : DeleteSkillDomainButtonProps): R
             if (deletedCallback !== undefined ){
                 deletedCallback();
             }
+        }).catch(error => {
+            setDeleting(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -164,6 +179,7 @@ export function DeleteSkillDomainButton(props : DeleteSkillDomainButtonProps): R
                 <Modal.Title>Delete Skill Domain</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                 Are you sure you want to delete the skill domain “{skill_domain.name}”?
             </Modal.Body>
             <Modal.Footer>

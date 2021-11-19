@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
 
+import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
@@ -20,6 +21,7 @@ interface CreateUserButtonProps
 export function CreateUserButton(props : CreateUserButtonProps): ReactElement {
     const { createdCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -40,6 +42,9 @@ export function CreateUserButton(props : CreateUserButtonProps): ReactElement {
             if (createdCallback !== undefined) {
                 createdCallback(user);
             }
+        }).catch(error => {
+            setCreating(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -51,6 +56,7 @@ export function CreateUserButton(props : CreateUserButtonProps): ReactElement {
                     <Modal.Title>Add User</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
                         <Form.Label>Name</Form.Label>
                         <Form.Control type="text" placeholder="Example: tartempion" />
@@ -97,6 +103,7 @@ interface EditUserButtonProps
 export function EditUserButton(props : EditUserButtonProps): ReactElement {
     const { user, changedCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [changing, setChanging] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -117,6 +124,9 @@ export function EditUserButton(props : EditUserButtonProps): ReactElement {
             if (changedCallback !== undefined) {
                 changedCallback(changed_user);
             }
+        }).catch(error => {
+            setChanging(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -130,6 +140,7 @@ export function EditUserButton(props : EditUserButtonProps): ReactElement {
                     <Modal.Title>Edit User</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
                         <Form.Label>Name</Form.Label>
                         <Form.Control type="text" placeholder="Example: tartempion" defaultValue={user.name} />
@@ -176,6 +187,7 @@ interface DeleteUserButtonProps
 export function DeleteUserButton(props : DeleteUserButtonProps): ReactElement {
     const { user, deletedCallback } = props;
     const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
     function handleDelete() {
@@ -186,6 +198,9 @@ export function DeleteUserButton(props : DeleteUserButtonProps): ReactElement {
             if (deletedCallback !== undefined ){
                 deletedCallback();
             }
+        }).catch(error => {
+            setDeleting(false);
+            setErrorMessage(error.body.message);
         });
     }
 
@@ -198,6 +213,7 @@ export function DeleteUserButton(props : DeleteUserButtonProps): ReactElement {
                 <Modal.Title>Delete User</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                 Are you sure you want to delete the user “{user.name}”?
             </Modal.Body>
             <Modal.Footer>
