@@ -4,7 +4,7 @@ from time import sleep
 from typing import Any, Dict, List, NoReturn, Set
 
 import jwt
-from flask import Blueprint, Flask, request, url_for
+from flask import Blueprint, Flask, Response, request, url_for
 from flask_restplus import fields  # type: ignore
 from flask_restplus import Api, Resource
 from flask_restplus import abort as flask_restplus_abort
@@ -18,8 +18,8 @@ from sqlalchemy.sql.expression import func
 
 from skills.config import SECRET
 from skills.schema import (
-    Belt, BeltAttempt, ClassLevel, SchoolClass, SkillDomain, Student, User,
-    session_context,
+    Belt, BeltAttempt, ClassLevel, HTTPRequest, SchoolClass, SkillDomain,
+    Student, User, session_context,
 )
 
 
@@ -1120,5 +1120,24 @@ def create_app() -> Flask:
         @app.before_request
         def wait() -> None:
             sleep(.3)
+
+        @app.after_request
+        def save_http_request(response: Response) -> Response:
+            with session_context() as session:
+                http_request_response = HTTPRequest(
+                    request_remote_addr=request.remote_addr,
+                    request_method=request.method,
+                    request_url=request.url,
+                    request_path=request.path,
+                    request_headers=dict(request.headers),
+                    request_body=request.data,
+                    response_status_code=response.status_code,
+                    response_status=response.status,
+                    response_headers=dict(response.headers),
+                    response_body=response.data,
+                )
+                session.add(http_request_response)
+                session.commit()
+            return response
 
     return app

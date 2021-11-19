@@ -2,9 +2,10 @@ from contextlib import contextmanager
 from typing import Dict, Iterator, List
 
 from sqlalchemy import (
-    Boolean, Column, Date, DateTime, ForeignKey, Integer, String,
+    Boolean, Column, Date, DateTime, ForeignKey, Integer, LargeBinary, String,
     create_engine, func,
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker
@@ -33,6 +34,22 @@ def session_context() -> Iterator[scoped_session]:
         raise
     finally:
         session_factory.remove()  # type: ignore
+
+
+class HTTPRequest(Base):  # type: ignore
+    __tablename__ = 'http_request'
+    id = Column(Integer, primary_key=True)
+    created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
+    request_remote_addr = Column(String, nullable=False, index=True)
+    request_method = Column(String, nullable=False, index=True)
+    request_url = Column(String, nullable=False, index=True)
+    request_path = Column(String, nullable=False, index=True)
+    request_headers = Column(JSONB, nullable=False, index=True)
+    request_body = Column(LargeBinary)
+    response_status_code = Column(Integer, nullable=False, index=True)
+    response_status = Column(String, nullable=False, index=True)
+    response_headers = Column(JSONB, nullable=False, index=True)
+    response_body = Column(LargeBinary)
 
 
 class User(Base):  # type: ignore
