@@ -3,6 +3,7 @@ import { BrowserRouter, Link, Outlet, Route, Routes, useNavigate, useParams } fr
 import React from 'react';
 import { ReactNode, StrictMode, useEffect, useState } from 'react';
 
+import Alert from 'react-bootstrap/Alert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -50,10 +51,14 @@ function Loader() {
 }
 
 function UsersView() {
+    const [errorMessage, setErrorMessage] = useState('');
     const [userList, setUserList] = useState<null | UserList>(null);
 
     useEffect(() => {
-        UsersService.getUsersResource().then(setUserList);
+        UsersService
+            .getUsersResource()
+            .then(setUserList)
+            .catch(error => { setErrorMessage(error.body.message); });
     }, []);
 
     if (userList === null) {
@@ -63,7 +68,7 @@ function UsersView() {
                 <BreadcrumbItem active href="/users">Users</BreadcrumbItem>
             </Breadcrumb>
             <h3>Users</h3>
-            <Loader />
+            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
@@ -77,6 +82,7 @@ function UsersView() {
             <BreadcrumbItem active href="/users">Users</BreadcrumbItem>
         </Breadcrumb>
         <h3>Users</h3>
+        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
         <CreateUserButton createdCallback={user => {
             users.push(user);
             setUserList({ ...userList, users });
@@ -113,10 +119,14 @@ function UsersView() {
 }
 
 function BeltsView() {
+    const [errorMessage, setErrorMessage] = useState('');
     const [beltList, setBeltList] = useState<null | BeltList>(null);
 
     useEffect(() => {
-        BeltsService.getBeltsResource().then(setBeltList);
+        BeltsService
+            .getBeltsResource()
+            .then(setBeltList)
+            .catch(error => { setErrorMessage(error.body.message); });
     }, []);
 
     if (beltList === null) {
@@ -126,7 +136,7 @@ function BeltsView() {
                 <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
             </Breadcrumb>
             <h3>Belts</h3>
-            <Loader />
+            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
@@ -196,10 +206,14 @@ function BeltsView() {
 }
 
 function SkillDomainsView() {
+    const [errorMessage, setErrorMessage] = useState('');
     const [skillDomainList, setSkillDomainList] = useState<null | SkillDomainList>(null);
 
     useEffect(() => {
-        SkillDomainsService.getSkillDomainsResource().then(setSkillDomainList);
+        SkillDomainsService
+            .getSkillDomainsResource()
+            .then(setSkillDomainList)
+            .catch(error => { setErrorMessage(error.body.message); });
     }, []);
 
     if (skillDomainList === null) {
@@ -209,7 +223,7 @@ function SkillDomainsView() {
                 <BreadcrumbItem active href="/skill-domains">Skill Domains</BreadcrumbItem>
             </Breadcrumb>
             <h3>Skill Domains</h3>
-            <Loader />
+            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
@@ -257,11 +271,15 @@ function SkillDomainsView() {
 }
 
 function ClassLevelsView() {
+    const [errorMessage, setErrorMessage] = useState('');
     const [classLevelList, setClassLevelList] = useState<null | ClassLevelList>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        ClassLevelsService.getClassLevelsResource().then(setClassLevelList);
+        ClassLevelsService
+            .getClassLevelsResource()
+            .then(setClassLevelList)
+            .catch(error => { setErrorMessage(error.body.message); });
     }, []);
 
     if (classLevelList === null) {
@@ -271,7 +289,7 @@ function ClassLevelsView() {
                 <BreadcrumbItem active href="/class-levels">Levels</BreadcrumbItem>
             </Breadcrumb>
             <h3>Class Levels</h3>
-            <Loader />
+            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
@@ -333,11 +351,15 @@ function ClassLevelView() {
     }
     const class_level_id = params.class_level_id;
 
+    const [errorMessage, setErrorMessage] = useState('');
     const [schoolClassList, setSchoolClassList] = useState<null | SchoolClassList>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        ClassLevelsService.getClassLevelSchoolClassesResource(parseInt(class_level_id)).then(setSchoolClassList);
+        ClassLevelsService
+            .getClassLevelSchoolClassesResource(parseInt(class_level_id))
+            .then(setSchoolClassList)
+            .catch(error => { setErrorMessage(error.body.message); });
     }, [class_level_id]);
 
     if (schoolClassList === null) {
@@ -348,7 +370,7 @@ function ClassLevelView() {
                 <BreadcrumbItem active href={`/class-levels/${class_level_id}`}>Level ?</BreadcrumbItem>
             </Breadcrumb>
             <h3>Class level: ?</h3>
-            <Loader />
+            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
@@ -416,11 +438,15 @@ function SchoolClassView() {
     }
     const school_class_id = params.school_class_id;
 
+    const [errorMessage, setErrorMessage] = useState('');
     const [studentList, setStudentList] = useState<null | StudentList>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        SchoolClassesService.getSchoolClassResource(parseInt(school_class_id)).then(setStudentList);
+        SchoolClassesService
+            .getSchoolClassResource(parseInt(school_class_id))
+            .then(setStudentList)
+            .catch(error => { setErrorMessage(error.body.message); });
     }, [school_class_id]);
 
     if (studentList === null) {
@@ -436,7 +462,7 @@ function SchoolClassView() {
                 <Button onClick={() => navigate('belts')}>🥋</Button>
             </OverlayTrigger>
             {' '}
-            <Loader />
+            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
@@ -509,15 +535,25 @@ function StudentView() {
     }
     const student_id = params.student_id;
 
+    const [errorMessage, setErrorMessage] = useState('');
     const [beltList, setBeltList] = useState<null | BeltList>(null);
     const [skillDomainList, setSkillDomainList] = useState<null | SkillDomainList>(null);
     const [beltAttemptList, setBeltAttemptList] = useState<null | BeltAttemptList>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        BeltsService.getBeltsResource().then(setBeltList);
-        SkillDomainsService.getSkillDomainsResource().then(setSkillDomainList);
-        StudentsService.getStudentBeltAttemptsResource(parseInt(student_id)).then(setBeltAttemptList);
+        BeltsService
+            .getBeltsResource()
+            .then(setBeltList)
+            .catch(error => { setErrorMessage(error.body.message); });
+        SkillDomainsService
+            .getSkillDomainsResource()
+            .then(setSkillDomainList)
+            .catch(error => { setErrorMessage(error.body.message); });
+        StudentsService
+            .getStudentBeltAttemptsResource(parseInt(student_id))
+            .then(setBeltAttemptList)
+            .catch(error => { setErrorMessage(error.body.message); });
     }, [student_id]);
 
     if (beltList === null || skillDomainList === null || beltAttemptList === null) {
@@ -530,7 +566,7 @@ function StudentView() {
                 <BreadcrumbItem active href={`/student/${student_id}`}>Student ?</BreadcrumbItem>
             </Breadcrumb>
             <h3>Student: ?</h3>
-            <Loader />
+            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
@@ -607,10 +643,14 @@ function SchoolClassBeltsView() {
     }
     const school_class_id = params.school_class_id;
 
+    const [errorMessage, setErrorMessage] = useState('');
     const [schoolClassStudentBelts, setSchoolClassStudentBelts] = useState<null | SchoolClassStudentBelts>(null);
 
     useEffect(() => {
-        SchoolClassesService.getSchoolClassStudentBeltsResource(parseInt(school_class_id)).then(setSchoolClassStudentBelts);
+        SchoolClassesService
+            .getSchoolClassStudentBeltsResource(parseInt(school_class_id))
+            .then(setSchoolClassStudentBelts)
+            .catch(error => { setErrorMessage(error.body.message); });
     }, [school_class_id]);
 
     if (schoolClassStudentBelts === null) {
@@ -623,7 +663,7 @@ function SchoolClassBeltsView() {
                 <BreadcrumbItem active href={`/school-classes/${school_class_id}/belts`}>Belts</BreadcrumbItem>
             </Breadcrumb>
             <h3>Belts of class: ?</h3>
-            <Loader />
+            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
