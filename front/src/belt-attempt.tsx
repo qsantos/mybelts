@@ -121,16 +121,23 @@ export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): R
     </>;
 }
 
+interface Option {
+    value: number;
+    label: string;
+}
+
 interface EditBeltAttemptButtonProps {
     belt_attempt: BeltAttempt;
     student: Student,
-    skill_domains: SkillDomain[];
-    belts: Belt[];
+    skill_domain: SkillDomain;
+    belt: Belt;
+    skill_domain_options: Option[];
+    belt_options: Option[];
     changedCallback?: (changed_belt_attempt: BeltAttempt) => void;
 }
 
 export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): ReactElement {
-    const { belt_attempt, student, skill_domains, belts, changedCallback } = props;
+    const { belt_attempt, student, skill_domain, belt, skill_domain_options, belt_options, changedCallback } = props;
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState(false);
     const [changing, setChanging] = useState(false);
@@ -161,22 +168,6 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
         });
     }
 
-    const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
-    const sorted_belts = belts.sort((a, b) => a.rank - b.rank);
-
-    const skill_domain_options = sorted_skill_domains.map(skill_domain => ({
-        value: skill_domain.id,
-        label: skill_domain.name,
-    }));
-
-    const belt_options = sorted_belts.map(belt => ({
-        value: belt.id,
-        label: belt.name,
-    }));
-
-    const skill_domain_by_id = Object.fromEntries(skill_domains.map(skill_domain => [skill_domain.id, skill_domain]));
-    const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
-
     return <>
         <OverlayTrigger overlay={<Tooltip>Edit</Tooltip>}>
             <Button onClick={() => setShow(true)}>✏️</Button>
@@ -196,7 +187,7 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
                             options={skill_domain_options}
                             defaultValue={{
                                 value: belt_attempt.skill_domain_id,
-                                label: skill_domain_by_id[belt_attempt.skill_domain_id]!.name,
+                                label: skill_domain.name,
                             }}
                         />
                         <Form.Text className="text-muted">
@@ -211,7 +202,7 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
                             options={belt_options}
                             defaultValue={{
                                 value: belt_attempt.belt_id,
-                                label: belt_by_id[belt_attempt.belt_id]!.name,
+                                label: belt.name,
                             }}
                         />
                         <Form.Text className="text-muted">
@@ -312,8 +303,22 @@ interface BeltAttemptListingProps {
 export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement {
     const { skill_domains, belts, student, belt_attempts, setBeltAttempts } = props;
 
-    const skill_domain_by_id = Object.fromEntries(skill_domains.map(skill_domain => [skill_domain.id, skill_domain]));
-    const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
+    const skill_domain_by_id = Object.fromEntries(
+        skill_domains.map(skill_domain => [skill_domain.id, skill_domain])
+    );
+    const belt_by_id = Object.fromEntries(
+        belts.map(belt => [belt.id, belt])
+    );
+
+    const skill_domain_options = skill_domains.map(skill_domain => ({
+        value: skill_domain.id,
+        label: skill_domain.name,
+    }));
+
+    const belt_options = belts.map(belt => ({
+        value: belt.id,
+        label: belt.name,
+    }));
 
     return <>
         <Table>
@@ -328,18 +333,38 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
             </thead>
             <tbody>
                 {belt_attempts.map((belt_attempt, index) => {
-                    const skill_domain = skill_domain_by_id[belt_attempt.skill_domain_id];
-                    const belt = belt_by_id[belt_attempt.belt_id];
+                    const skill_domain_id = belt_attempt.skill_domain_id;
+                    const belt_id = belt_attempt.belt_id;
+                    const skill_domain = skill_domain_by_id[skill_domain_id];
+                    const belt = belt_by_id[belt_id];
+                    if (skill_domain === undefined) {
+                        // should not happen
+                        console.error(`skill_domain ${skill_domain_id} not found for belt_attempt ${belt_attempt.id}`);
+                        return <></>;
+                    }
+                    if (belt === undefined) {
+                        // should not happen
+                        console.error(`belt ${belt_id} not found for belt_attempt ${belt_attempt.id}`);
+                        return <></>;
+                    }
                     return <tr key={belt_attempt.id}>
-                        <td>{skill_domain === undefined ? `Unknown skill domain ${belt_attempt.skill_domain_id}` : skill_domain.name}</td>
-                        <td>{belt === undefined ? `Unknown belt ${belt_attempt.belt_id}` : belt.name}</td>
+                        <td>{skill_domain.name}</td>
+                        <td>{belt.name}</td>
                         <td>{belt_attempt.success ? '✅' : '❌'}</td>
                         <td>{belt_attempt.date}</td>
                         <td>
-                            <EditBeltAttemptButton belt_attempt={belt_attempt} student={student} skill_domains={skill_domains} belts={belts} changedCallback={new_belt_attempt => {
-                                belt_attempts[index] = new_belt_attempt;
-                                setBeltAttempts(belt_attempts);
-                            }} />
+                            <EditBeltAttemptButton
+                                belt_attempt={belt_attempt}
+                                student={student}
+                                skill_domain={skill_domain}
+                                belt={belt}
+                                skill_domain_options={skill_domain_options}
+                                belt_options={belt_options}
+                                changedCallback={new_belt_attempt => {
+                                    belt_attempts[index] = new_belt_attempt;
+                                    setBeltAttempts(belt_attempts);
+                                }}
+                            />
                             {' '}
                             <DeleteBeltAttemptButton belt_attempt={belt_attempt} student={student} deletedCallback={() => {
                                 belt_attempts.splice(index, 1);
