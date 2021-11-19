@@ -288,6 +288,17 @@ class UsersResource(Resource):
             }
 
 
+@users_ns.route('/users/me')
+class UsersMeResource(Resource):
+    @api.marshal_with(api_model_user_one)
+    def get(self) -> Any:
+        with session_context() as session:
+            user = authenticate(session)
+            return {
+                'user': user.json(),
+            }
+
+
 @users_ns.route('/users/<int:user_id>')
 class UserResource(Resource):
     @api.marshal_with(api_model_user_one)
