@@ -10,7 +10,6 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
-import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -33,7 +32,7 @@ import { CreateBeltButton, BeltListing } from './belt';
 import { CreateClassLevelButton, EditClassLevelButton, DeleteClassLevelButton, ClassLevelListing } from './class-level';
 import { CreateSchoolClassButton, EditSchoolClassButton, DeleteSchoolClassButton, SchoolClassListing } from './school-class';
 import { CreateStudentButton, EditStudentButton, DeleteStudentButton, StudentListing } from './student';
-import { CreateBeltAttemptButton, BeltAttemptListing } from './belt-attempt';
+import { CreateBeltAttemptButton, BeltAttemptListing, BeltAttemptGrid,  } from './belt-attempt';
 
 function BreadcrumbItem({ children, href, active }: { children: ReactNode, href?: string, active?: boolean }) {
     if (href) {
@@ -475,7 +474,6 @@ function SchoolClassBeltsView() {
     }
 
     const { class_level, school_class, belts, skill_domains, student_belts } = schoolClassStudentBelts;
-    const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
 
     return <>
         <Breadcrumb>
@@ -486,33 +484,11 @@ function SchoolClassBeltsView() {
             <BreadcrumbItem active href={`/school-classes/${school_class.id}/belts`}>Belts</BreadcrumbItem>
         </Breadcrumb>
         <h3>Belts of class: {class_level.prefix}{school_class.suffix}</h3>
-        <Table>
-            <thead>
-                <tr>
-                    <th>Student</th>
-                    {skill_domains.map(skill_domain => <th key={skill_domain.id}>{skill_domain.name}</th>)}
-                </tr>
-            </thead>
-            <tbody>
-                {student_belts.map(({student, belts: skill_belt_ids}) => {
-                    const belt_id_by_skill_domain_id = Object.fromEntries(skill_belt_ids.map(({skill_domain_id, belt_id}) => [skill_domain_id, belt_id]));
-                    return <tr key={student.id}>
-                        <th>{student.name}</th>
-                        {skill_domains.map(skill_domain => {
-                            const belt_id = belt_id_by_skill_domain_id[skill_domain.id];
-                            if (belt_id === undefined) {
-                                return <td key={skill_domain.id}>-</td>;
-                            }
-                            const belt = belt_by_id[belt_id];
-                            if (belt === undefined) {
-                                return <td key={skill_domain.id}>-</td>;
-                            }
-                            return <td key={skill_domain.id}>{belt.name}</td>;
-                        })}
-                    </tr>;
-                })}
-            </tbody>
-        </Table>
+        <BeltAttemptGrid
+            skill_domains={skill_domains}
+            belts={belts}
+            student_belts={student_belts}
+        />
     </>;
 }
 

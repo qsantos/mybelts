@@ -12,7 +12,7 @@ import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { Belt, SkillDomain, Student, BeltAttempt, BeltAttemptsService } from './api';
+import { Belt, SkillDomain, Student, BeltAttempt, BeltAttemptsService, SchoolClassStudentBeltsStudentBelts } from './api';
 import './index.css';
 
 interface CreateBeltAttemptButtonProps {
@@ -346,6 +346,53 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
                                 setBeltAttempts(belt_attempts);
                             }} />
                         </td>
+                    </tr>;
+                })}
+            </tbody>
+        </Table>
+    </>;
+}
+
+
+interface BeltAttemptGridProps {
+    skill_domains: SkillDomain[];
+    belts: Belt[];
+    student_belts: SchoolClassStudentBeltsStudentBelts[],
+}
+
+export function BeltAttemptGrid(props: BeltAttemptGridProps): ReactElement {
+    const { skill_domains, belts, student_belts } = props;
+
+    const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
+
+    return <>
+        <Table>
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    {skill_domains.map(skill_domain => <th key={skill_domain.id}>{skill_domain.name}</th>)}
+                </tr>
+            </thead>
+            <tbody>
+                {student_belts.map(({student, belts: skill_belt_ids}) => {
+                    const belt_id_by_skill_domain_id = Object.fromEntries(
+                        skill_belt_ids.map(
+                            ({skill_domain_id, belt_id}) => [skill_domain_id, belt_id]
+                        )
+                    );
+                    return <tr key={student.id}>
+                        <th>{student.name}</th>
+                        {skill_domains.map(skill_domain => {
+                            const belt_id = belt_id_by_skill_domain_id[skill_domain.id];
+                            if (belt_id === undefined) {
+                                return <td key={skill_domain.id}>-</td>;
+                            }
+                            const belt = belt_by_id[belt_id];
+                            if (belt === undefined) {
+                                return <td key={skill_domain.id}>-</td>;
+                            }
+                            return <td key={skill_domain.id}>{belt.name}</td>;
+                        })}
                     </tr>;
                 })}
             </tbody>
