@@ -10,7 +10,9 @@ from flask_restplus import Api, Resource
 from flask_restplus import abort as flask_restplus_abort
 from flask_restplus.apidoc import apidoc  # type: ignore
 from jsonschema import FormatChecker
+from psycopg2.errors import UniqueViolation  # type: ignore
 from sqlalchemy import and_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
@@ -282,7 +284,13 @@ class UsersResource(Resource):
                 is_admin=request.json['is_admin'],
             )
             session.add(user)
-            session.commit()
+            try:
+                session.commit()
+            except IntegrityError as e:
+                if isinstance(e.orig, UniqueViolation):
+                    abort(409, f'User with name "{request.json["name"]}" already exists')
+                else:
+                    raise
             return {
                 'user': user.json(),
             }
