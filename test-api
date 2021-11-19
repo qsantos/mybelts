@@ -5,9 +5,11 @@ import requests  # type: ignore
 from alembic import command
 from alembic.config import Config
 
-from skills.schema import Base
+from skills.schema import Base, User, session_context
 
 API_URL = 'http://127.0.0.1/api'
+
+requests = requests.session()
 
 
 def reset() -> None:
@@ -15,10 +17,41 @@ def reset() -> None:
     Base.metadata.drop_all()
     command.stamp(Config('./alembic.ini'), 'base')
     command.upgrade(Config('./alembic.ini'), 'head')
-    res = requests.get(API_URL + '/belts')
-    res.raise_for_status()
-    assert res.json() == {'belts': []}
     print('Reset Database')
+
+
+def add_admin() -> None:
+    print('Testing /login')
+
+    # create admin user
+    with session_context() as session:
+        user = User(
+            name='root',
+            password='root',
+            is_admin=True,
+        )
+        session.add(user)
+        session.commit()
+
+    # check authentication is required
+    res = requests.get(API_URL + '/belts')
+    assert res.status_code == 401
+
+    # test logging in
+    res = requests.post(API_URL + '/login', json={'name': 'root', 'password': 'root'})
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    requests.headers.update({'Authorization': 'Bearer ' + j['token']})
+
+    # check authentication succeeds
+    res = requests.get(API_URL + '/belts')
+    j = res.json()
+    print(j)
+    res.raise_for_status()
+    assert j == {'belts': []}
+
+    print('Tested /login')
 
 
 def add_users() -> None:
@@ -489,6 +522,7 @@ def add_belt_attempts(skill_domain_ids: List[int], belt_ids: List[int], student_
 
 def main() -> None:
     reset()
+    add_admin()
     add_users()
     belt_ids = add_belts()
     skill_domain_ids = add_skill_domains()
