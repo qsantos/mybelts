@@ -8,6 +8,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
+import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -297,5 +298,57 @@ export function DeleteBeltAttemptButton(props : DeleteBeltAttemptButtonProps): R
                 }
             </Modal.Footer>
         </Modal>
+    </>;
+}
+
+interface BeltAttemptListingProps {
+    skill_domains: SkillDomain[];
+    belts: Belt[];
+    student: Student;
+    belt_attempts: BeltAttempt[];
+    setBeltAttempts: (belt_attempts: BeltAttempt[]) => void;
+}
+
+export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement {
+    const { skill_domains, belts, student, belt_attempts, setBeltAttempts } = props;
+
+    const skill_domain_by_id = Object.fromEntries(skill_domains.map(skill_domain => [skill_domain.id, skill_domain]));
+    const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
+
+    return <>
+        <Table>
+            <thead>
+                <tr>
+                    <th>Skill domain</th>
+                    <th>Belt</th>
+                    <th>Date</th>
+                    <th>Passed?</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {belt_attempts.map((belt_attempt, index) => {
+                    const skill_domain = skill_domain_by_id[belt_attempt.skill_domain_id];
+                    const belt = belt_by_id[belt_attempt.belt_id];
+                    return <tr key={belt_attempt.id}>
+                        <td>{skill_domain === undefined ? `Unknown skill domain ${belt_attempt.skill_domain_id}` : skill_domain.name}</td>
+                        <td>{belt === undefined ? `Unknown belt ${belt_attempt.belt_id}` : belt.name}</td>
+                        <td>{belt_attempt.success ? '✅' : '❌'}</td>
+                        <td>{belt_attempt.date}</td>
+                        <td>
+                            <EditBeltAttemptButton belt_attempt={belt_attempt} student={student} skill_domains={skill_domains} belts={belts} changedCallback={new_belt_attempt => {
+                                belt_attempts[index] = new_belt_attempt;
+                                setBeltAttempts(belt_attempts);
+                            }} />
+                            {' '}
+                            <DeleteBeltAttemptButton belt_attempt={belt_attempt} student={student} deletedCallback={() => {
+                                belt_attempts.splice(index, 1);
+                                setBeltAttempts(belt_attempts);
+                            }} />
+                        </td>
+                    </tr>;
+                })}
+            </tbody>
+        </Table>
     </>;
 }

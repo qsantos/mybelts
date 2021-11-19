@@ -7,10 +7,11 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
+import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import { Belt, BeltList, BeltsService } from './api';
+import { Belt, BeltsService } from './api';
 import './index.css';
 
 interface CreateBeltButtonProps
@@ -83,12 +84,12 @@ interface MoveBeltButtonProps {
     direction: number;
     belt: Belt;
     belts: Belt[];
-    setBeltList: (beltList: BeltList) => void;
+    setBelts: (belts: Belt[]) => void;
     setErrorMessage: (errorMessage: string) => void;
 }
 
 export function MoveBeltButton(props : MoveBeltButtonProps): ReactElement {
-    const { buttonContent, direction_name, direction, belt, belts, setBeltList, setErrorMessage } = props;
+    const { buttonContent, direction_name, direction, belt, belts, setBelts, setErrorMessage } = props;
     const [moving, setMoving] = useState(false);
 
     function handleMove() {
@@ -106,7 +107,7 @@ export function MoveBeltButton(props : MoveBeltButtonProps): ReactElement {
             [belt.rank, other_belt.rank] = [other_belt.rank, belt.rank];
             belts[belt.rank - 1] = belt;
             belts[other_belt.rank - 1] = other_belt;
-            setBeltList({ belts: belts });
+            setBelts(belts);
         }).catch(error => {
             setMoving(false);
             setErrorMessage(error.body.message);
@@ -255,5 +256,56 @@ export function DeleteBeltButton(props : DeleteBeltButtonProps): ReactElement {
                 }
             </Modal.Footer>
         </Modal>
+    </>;
+}
+
+interface BeltListingProps {
+    belts: Belt[];
+    setBelts: (belts: Belt[]) => void;
+    setErrorMessage: (errorMessage: string) => void;
+}
+
+export function BeltListing(props: BeltListingProps): ReactElement {
+    const { belts, setBelts, setErrorMessage } = props;
+    return <>
+        <Table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Color</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {belts.map((belt, index) =>
+                    <tr key={belt.id}>
+                        <td>{belt.rank}</td>
+                        <td>{belt.name}</td>
+                        <td><Form.Control type="color" value={belt.color} disabled /></td>
+                        <td>
+                            <MoveBeltButton buttonContent="↑" direction_name="Up" direction={-1} belt={belt} belts={belts} setBelts={setBelts} setErrorMessage={setErrorMessage} />
+                            {' '}
+                            <MoveBeltButton buttonContent="↓" direction_name="Down" direction={1} belt={belt} belts={belts} setBelts={setBelts} setErrorMessage={setErrorMessage} />
+                            {' '}
+                            <EditBeltButton belt={belt} changedCallback={new_belt => {
+                                belts[index] = new_belt;
+                                setBelts(belts);
+                            }} />
+                            {' '}
+                            <DeleteBeltButton belt={belt} deletedCallback={() => {
+                                belts.splice(index, 1);
+                                for (let j = index; j < belts.length; j += 1) {
+                                    const other_belt = belts[j];
+                                    if (other_belt !== undefined) {  // always true
+                                        other_belt.rank -= 1;
+                                    }
+                                }
+                                setBelts(belts);
+                            }} />
+                        </td>
+                    </tr>)}
+            </tbody>
+        </Table>
     </>;
 }

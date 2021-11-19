@@ -6,7 +6,6 @@ import { ReactNode, StrictMode, useEffect, useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
@@ -28,13 +27,13 @@ import {
 import './index.css';
 
 import { LoginButton, LogoutButton } from './auth';
-import { CreateUserButton, EditUserButton, DeleteUserButton } from './user';
-import { CreateSkillDomainButton, EditSkillDomainButton, DeleteSkillDomainButton } from './skill-domain';
-import { CreateBeltButton, EditBeltButton, DeleteBeltButton, MoveBeltButton } from './belt';
-import { CreateClassLevelButton, EditClassLevelButton, DeleteClassLevelButton } from './class-level';
-import { CreateSchoolClassButton, EditSchoolClassButton, DeleteSchoolClassButton } from './school-class';
-import { CreateStudentButton, EditStudentButton, DeleteStudentButton } from './student';
-import { CreateBeltAttemptButton, EditBeltAttemptButton, DeleteBeltAttemptButton } from './belt-attempt';
+import { CreateUserButton, UserListing } from './user';
+import { CreateSkillDomainButton, SkillDomainListing } from './skill-domain';
+import { CreateBeltButton, BeltListing } from './belt';
+import { CreateClassLevelButton, EditClassLevelButton, DeleteClassLevelButton, ClassLevelListing } from './class-level';
+import { CreateSchoolClassButton, EditSchoolClassButton, DeleteSchoolClassButton, SchoolClassListing } from './school-class';
+import { CreateStudentButton, EditStudentButton, DeleteStudentButton, StudentListing } from './student';
+import { CreateBeltAttemptButton, BeltAttemptListing } from './belt-attempt';
 
 function BreadcrumbItem({ children, href, active }: { children: ReactNode, href?: string, active?: boolean }) {
     if (href) {
@@ -88,33 +87,10 @@ function UsersView() {
             setUserList({ ...userList, users });
         }}/>
         <h4>List of available users</h4>
-        <Table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Is Admin?</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {sorted_users.map((user, index) =>
-                    <tr key={user.id}>
-                        <td>{user.name}</td>
-                        <td>{user.is_admin ? '✅' : '❌'}</td>
-                        <td>
-                            <EditUserButton user={user} changedCallback={new_user => {
-                                users[index] = new_user;
-                                setUserList({ ...userList, users });
-                            }} />
-                            {' '}
-                            <DeleteUserButton user={user} deletedCallback={() => {
-                                users.splice(index, 1);
-                                setUserList({ ...userList, users });
-                            }} />
-                        </td>
-                    </tr>)}
-            </tbody>
-        </Table>
+        <UserListing
+            users={sorted_users}
+            setUsers={new_users => setUserList({ ...userList, users: new_users })}
+        />
     </>;
 }
 
@@ -164,45 +140,11 @@ function BeltsView() {
             setBeltList({ ...beltList, belts });
         }}/>
         <h4>List of available belts</h4>
-        <Table>
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Name</th>
-                    <th>Color</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {sorted_belts.map((belt, index) =>
-                    <tr key={belt.id}>
-                        <td>{belt.rank}</td>
-                        <td>{belt.name}</td>
-                        <td><Form.Control type="color" value={belt.color} disabled /></td>
-                        <td>
-                            <MoveBeltButton buttonContent="↑" direction_name="Up" direction={-1} belt={belt} belts={sorted_belts} setBeltList={setBeltList} setErrorMessage={setErrorMessage} />
-                            {' '}
-                            <MoveBeltButton buttonContent="↓" direction_name="Down" direction={1} belt={belt} belts={sorted_belts} setBeltList={setBeltList} setErrorMessage={setErrorMessage} />
-                            {' '}
-                            <EditBeltButton belt={belt} changedCallback={new_belt => {
-                                belts[index] = new_belt;
-                                setBeltList({ ...beltList, belts });
-                            }} />
-                            {' '}
-                            <DeleteBeltButton belt={belt} deletedCallback={() => {
-                                belts.splice(index, 1);
-                                for (let j = index; j < belts.length; j += 1) {
-                                    const other_belt = belts[j];
-                                    if (other_belt !== undefined) {  // always true
-                                        other_belt.rank -= 1;
-                                    }
-                                }
-                                setBeltList({ ...beltList, belts });
-                            }} />
-                        </td>
-                    </tr>)}
-            </tbody>
-        </Table>
+        <BeltListing
+            belts={sorted_belts}
+            setBelts={new_belts => setBeltList({ ...beltList, belts: new_belts })}
+            setErrorMessage={setErrorMessage}
+        />
     </>;
 }
 
@@ -242,39 +184,16 @@ function SkillDomainsView() {
             setSkillDomainList({ ...skillDomainList, skill_domains });
         }}/>
         <h4>List of available skill domains</h4>
-        <Table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {sorted_skill_domains.map((skill_domain, index) =>
-                    <tr key={skill_domain.id}>
-                        <td>{skill_domain.name}</td>
-                        <td>
-                            <EditSkillDomainButton skill_domain={skill_domain} changedCallback={new_skill_domain => {
-                                skill_domains[index] = new_skill_domain;
-                                setSkillDomainList({ ...skillDomainList, skill_domains });
-                            }} />
-                            {' '}
-                            <DeleteSkillDomainButton skill_domain={skill_domain} deletedCallback={() => {
-                                skill_domains.splice(index, 1);
-                                setSkillDomainList({ ...skillDomainList, skill_domains });
-                            }} />
-                        </td>
-                    </tr>
-                )}
-            </tbody>
-        </Table>
+        <SkillDomainListing
+            skill_domains={sorted_skill_domains}
+            setSkillDomains={new_skill_domains => setSkillDomainList({ ...skillDomainList, skill_domains: new_skill_domains })}
+        />
     </>;
 }
 
 function ClassLevelsView() {
     const [errorMessage, setErrorMessage] = useState('');
     const [classLevelList, setClassLevelList] = useState<null | ClassLevelList>(null);
-    const navigate = useNavigate();
 
     useEffect(() => {
         ClassLevelsService
@@ -308,38 +227,10 @@ function ClassLevelsView() {
             class_levels.push(class_level);
             setClassLevelList({ ...classLevelList, class_levels });
         }} />
-        <Table>
-            <thead>
-                <tr>
-                    <th>Prefix</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {sorted_class_levels.map((class_level, index) =>
-                    <tr key={class_level.id}>
-                        <td>
-                            <Nav.Link as={Link} to={`${class_level.id}`}>
-                                {class_level.prefix}
-                            </Nav.Link>
-                        </td>
-                        <td>
-                            <Button onClick={() => navigate(`${class_level.id}`)}>🔍</Button>
-                            {' '}
-                            <EditClassLevelButton class_level={class_level} changedCallback={new_class_level => {
-                                class_levels[index] = new_class_level;
-                                setClassLevelList({ ...classLevelList, class_levels });
-                            }} />
-                            {' '}
-                            <DeleteClassLevelButton class_level={class_level} deletedCallback={() => {
-                                class_levels.splice(index, 1);
-                                setClassLevelList({ ...classLevelList, class_levels });
-                            }} />
-                        </td>
-                    </tr>
-                )}
-            </tbody>
-        </Table>
+        <ClassLevelListing
+            class_levels={sorted_class_levels}
+            setClassLevels={new_class_levels => setClassLevelList({ ...classLevelList, class_levels: new_class_levels })}
+        />
     </>;
 }
 
@@ -395,38 +286,10 @@ function ClassLevelView() {
             school_classes.push(school_class);
             setSchoolClassList({ ...schoolClassList, school_classes });
         }} />
-        <Table>
-            <thead>
-                <tr>
-                    <th>Suffix</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {sorted_school_classes.map((school_class, index) =>
-                    <tr key={school_class.id}>
-                        <td>
-                            <Nav.Link as={Link} to={`/school-classes/${school_class.id}`}>
-                                {school_class.suffix}
-                            </Nav.Link>
-                        </td>
-                        <td>
-                            <Button onClick={() => navigate(`/school-classes/${school_class.id}`)}>🔍</Button>
-                            {' '}
-                            <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
-                                school_classes[index] = new_school_class;
-                                setSchoolClassList({ ...schoolClassList, school_classes });
-                            }} />
-                            {' '}
-                            <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => {
-                                school_classes.splice(index, 1);
-                                setSchoolClassList({ ...schoolClassList, school_classes });
-                            }} />
-                        </td>
-                    </tr>
-                )}
-            </tbody>
-        </Table>
+        <SchoolClassListing
+            school_classes={sorted_school_classes}
+            setSchoolClasses={new_school_classes => setSchoolClassList({ ...schoolClassList, school_classes: new_school_classes })}
+        />
     </>;
 }
 
@@ -492,38 +355,10 @@ function SchoolClassView() {
             students.push(student);
             setStudentList({ ...studentList, students });
         }} />
-        <Table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {sorted_students.map((student, index) =>
-                    <tr key={student.id}>
-                        <td>
-                            <Nav.Link as={Link} to={`/students/${student.id}`}>
-                                {student.name}
-                            </Nav.Link>
-                        </td>
-                        <td>
-                            <Button onClick={() => navigate(`/students/${student.id}`)}>🔍</Button>
-                            {' '}
-                            <EditStudentButton student={student} changedCallback={new_student => {
-                                students[index] = new_student;
-                                setStudentList({ ...studentList, students });
-                            }} />
-                            {' '}
-                            <DeleteStudentButton student={student} deletedCallback={() => {
-                                students.splice(index, 1);
-                                setStudentList({ ...studentList, students });
-                            }} />
-                        </td>
-                    </tr>
-                )}
-            </tbody>
-        </Table>
+        <StudentListing
+            students={sorted_students}
+            setStudents={new_students => setStudentList({ ...studentList, students: new_students })}
+        />
     </>;
 }
 
@@ -576,8 +411,6 @@ function StudentView() {
     const { class_level, school_class, student, belt_attempts } = beltAttemptList;
 
     const sorted_belt_attempts = belt_attempts.sort((a, b) => b.date.localeCompare(a.date));
-    const skill_domain_by_id = Object.fromEntries(skill_domains.map(skill_domain => [skill_domain.id, skill_domain]));
-    const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
 
     return <>
         <Breadcrumb>
@@ -598,40 +431,13 @@ function StudentView() {
             belt_attempts.push(belt_attempt);
             setBeltAttemptList({ ...beltAttemptList, belt_attempts });
         }} />
-        <Table>
-            <thead>
-                <tr>
-                    <th>Skill domain</th>
-                    <th>Belt</th>
-                    <th>Date</th>
-                    <th>Passed?</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {sorted_belt_attempts.map((belt_attempt, index) => {
-                    const skill_domain = skill_domain_by_id[belt_attempt.skill_domain_id];
-                    const belt = belt_by_id[belt_attempt.belt_id];
-                    return <tr key={belt_attempt.id}>
-                        <td>{skill_domain === undefined ? `Unknown skill domain ${belt_attempt.skill_domain_id}` : skill_domain.name}</td>
-                        <td>{belt === undefined ? `Unknown belt ${belt_attempt.belt_id}` : belt.name}</td>
-                        <td>{belt_attempt.success ? '✅' : '❌'}</td>
-                        <td>{belt_attempt.date}</td>
-                        <td>
-                            <EditBeltAttemptButton belt_attempt={belt_attempt} student={student} skill_domains={skill_domains} belts={belts} changedCallback={new_belt_attempt => {
-                                belt_attempts[index] = new_belt_attempt;
-                                setBeltAttemptList({ ...beltAttemptList, belt_attempts });
-                            }} />
-                            {' '}
-                            <DeleteBeltAttemptButton belt_attempt={belt_attempt} student={student} deletedCallback={() => {
-                                belt_attempts.splice(index, 1);
-                                setBeltAttemptList({ ...beltAttemptList, belt_attempts });
-                            }} />
-                        </td>
-                    </tr>;
-                })}
-            </tbody>
-        </Table>
+        <BeltAttemptListing
+            skill_domains={skill_domains}
+            belts={belts}
+            student={student}
+            belt_attempts={sorted_belt_attempts}
+            setBeltAttempts={new_belt_attempts => setBeltAttemptList({ ...beltAttemptList, belt_attempts: new_belt_attempts })}
+        />
     </>;
 }
 

@@ -7,6 +7,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
+import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -228,5 +229,43 @@ export function DeleteUserButton(props : DeleteUserButtonProps): ReactElement {
                 }
             </Modal.Footer>
         </Modal>
+    </>;
+}
+
+interface UserListingProps {
+    users: User[];
+    setUsers: (users: User[]) => void;
+}
+
+export function UserListing(props: UserListingProps): ReactElement {
+    const { users, setUsers } = props;
+    return <>
+        <Table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Is Admin?</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {users.map((user, index) =>
+                    <tr key={user.id}>
+                        <td>{user.name}</td>
+                        <td>{user.is_admin ? '✅' : '❌'}</td>
+                        <td>
+                            <EditUserButton user={user} changedCallback={new_user => {
+                                users[index] = new_user;
+                                setUsers(users);
+                            }} />
+                            {' '}
+                            <DeleteUserButton user={user} deletedCallback={() => {
+                                users.splice(index, 1);
+                                setUsers(users);
+                            }} />
+                        </td>
+                    </tr>)}
+            </tbody>
+        </Table>
     </>;
 }

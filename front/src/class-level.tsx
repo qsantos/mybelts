@@ -1,12 +1,15 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import Nav from 'react-bootstrap/Nav';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
+import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -194,5 +197,49 @@ export function DeleteClassLevelButton(props : DeleteClassLevelButtonProps): Rea
                 }
             </Modal.Footer>
         </Modal>
+    </>;
+}
+
+interface ClassLevelListingProps {
+    class_levels: ClassLevel[];
+    setClassLevels: (class_levels: ClassLevel[]) => void;
+}
+
+export function ClassLevelListing(props: ClassLevelListingProps): ReactElement {
+    const { class_levels, setClassLevels } = props;
+    const navigate = useNavigate();
+    return <>
+        <Table>
+            <thead>
+                <tr>
+                    <th>Prefix</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {class_levels.map((class_level, index) =>
+                    <tr key={class_level.id}>
+                        <td>
+                            <Nav.Link as={Link} to={`${class_level.id}`}>
+                                {class_level.prefix}
+                            </Nav.Link>
+                        </td>
+                        <td>
+                            <Button onClick={() => navigate(`${class_level.id}`)}>🔍</Button>
+                            {' '}
+                            <EditClassLevelButton class_level={class_level} changedCallback={new_class_level => {
+                                class_levels[index] = new_class_level;
+                                setClassLevels(class_levels);
+                            }} />
+                            {' '}
+                            <DeleteClassLevelButton class_level={class_level} deletedCallback={() => {
+                                class_levels.splice(index, 1);
+                                setClassLevels(class_levels);
+                            }} />
+                        </td>
+                    </tr>
+                )}
+            </tbody>
+        </Table>
     </>;
 }

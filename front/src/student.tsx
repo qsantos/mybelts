@@ -1,13 +1,16 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import Nav from 'react-bootstrap/Nav';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
 import Tooltip from 'react-bootstrap/Tooltip';
+import Table from 'react-bootstrap/Table';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { Student, StudentsService } from './api';
@@ -195,5 +198,49 @@ export function DeleteStudentButton(props : DeleteStudentButtonProps): ReactElem
                 }
             </Modal.Footer>
         </Modal>
+    </>;
+}
+
+interface StudentListingProps {
+    students: Student[];
+    setStudents: (students: Student[]) => void;
+}
+
+export function StudentListing(props: StudentListingProps): ReactElement {
+    const { students, setStudents } = props;
+    const navigate = useNavigate();
+    return <>
+        <Table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {students.map((student, index) =>
+                    <tr key={student.id}>
+                        <td>
+                            <Nav.Link as={Link} to={`/students/${student.id}`}>
+                                {student.name}
+                            </Nav.Link>
+                        </td>
+                        <td>
+                            <Button onClick={() => navigate(`/students/${student.id}`)}>🔍</Button>
+                            {' '}
+                            <EditStudentButton student={student} changedCallback={new_student => {
+                                students[index] = new_student;
+                                setStudents(students);
+                            }} />
+                            {' '}
+                            <DeleteStudentButton student={student} deletedCallback={() => {
+                                students.splice(index, 1);
+                                setStudents(students);
+                            }} />
+                        </td>
+                    </tr>
+                )}
+            </tbody>
+        </Table>
     </>;
 }

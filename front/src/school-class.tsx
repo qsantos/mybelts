@@ -1,12 +1,15 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import Nav from 'react-bootstrap/Nav';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
+import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -196,5 +199,49 @@ export function DeleteSchoolClassButton(props : DeleteSchoolClassButtonProps): R
                 }
             </Modal.Footer>
         </Modal>
+    </>;
+}
+
+interface SchoolClassListingProps {
+    school_classes: SchoolClass[];
+    setSchoolClasses: (school_classes: SchoolClass[]) => void;
+}
+
+export function SchoolClassListing(props: SchoolClassListingProps): ReactElement {
+    const { school_classes, setSchoolClasses } = props;
+    const navigate = useNavigate();
+    return <>
+        <Table>
+            <thead>
+                <tr>
+                    <th>Suffix</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {school_classes.map((school_class, index) =>
+                    <tr key={school_class.id}>
+                        <td>
+                            <Nav.Link as={Link} to={`/school-classes/${school_class.id}`}>
+                                {school_class.suffix}
+                            </Nav.Link>
+                        </td>
+                        <td>
+                            <Button onClick={() => navigate(`/school-classes/${school_class.id}`)}>🔍</Button>
+                            {' '}
+                            <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
+                                school_classes[index] = new_school_class;
+                                setSchoolClasses(school_classes);
+                            }} />
+                            {' '}
+                            <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => {
+                                school_classes.splice(index, 1);
+                                setSchoolClasses(school_classes);
+                            }} />
+                        </td>
+                    </tr>
+                )}
+            </tbody>
+        </Table>
     </>;
 }

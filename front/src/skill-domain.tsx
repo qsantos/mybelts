@@ -7,6 +7,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
+import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -194,5 +195,42 @@ export function DeleteSkillDomainButton(props : DeleteSkillDomainButtonProps): R
                 }
             </Modal.Footer>
         </Modal>
+    </>;
+}
+
+interface SkillDomainListingProps {
+    skill_domains: SkillDomain[];
+    setSkillDomains: (skill_domains: SkillDomain[]) => void;
+}
+
+export function SkillDomainListing(props: SkillDomainListingProps): ReactElement {
+    const { skill_domains, setSkillDomains } = props;
+    return <>
+        <Table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {skill_domains.map((skill_domain, index) =>
+                    <tr key={skill_domain.id}>
+                        <td>{skill_domain.name}</td>
+                        <td>
+                            <EditSkillDomainButton skill_domain={skill_domain} changedCallback={new_skill_domain => {
+                                skill_domains[index] = new_skill_domain;
+                                setSkillDomains(skill_domains);
+                            }} />
+                            {' '}
+                            <DeleteSkillDomainButton skill_domain={skill_domain} deletedCallback={() => {
+                                skill_domains.splice(index, 1);
+                                setSkillDomains(skill_domains);
+                            }} />
+                        </td>
+                    </tr>
+                )}
+            </tbody>
+        </Table>
     </>;
 }
