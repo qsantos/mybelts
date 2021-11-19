@@ -1,18 +1,42 @@
 #!/usr/bin/env python3
+from multiprocessing import Process
+from time import sleep
 from typing import List
 
 import requests  # type: ignore
+from requests.exceptions import ConnectionError
 from alembic import command
 from alembic.config import Config
 
+from skills.api import create_app
 from skills.schema import Base, User, session_context
 
-API_URL = 'http://127.0.0.1/api'
+API_PORT = 5001
+API_URL = f'http://127.0.0.1:{API_PORT}/api'
 
 requests = requests.session()
 
+def run_api() -> None:
+    app = create_app()
+    app.run(port=API_PORT)
 
-def reset() -> None:
+
+def start_api() -> None:
+    # start Flask in a separate process
+    Process(target=run_api, daemon=True).start()
+    # wait until the API is ready
+    while True:
+        try:
+            res = requests.get(API_URL)
+        except ConnectionError:
+            pass
+        else:
+            if res.status_code == 200:
+                break
+        sleep(1)
+
+
+def reset_database() -> None:
     print('Reseting database')
     Base.metadata.drop_all()
     command.stamp(Config('./alembic.ini'), 'base')
@@ -521,7 +545,8 @@ def add_belt_attempts(skill_domain_ids: List[int], belt_ids: List[int], student_
 
 
 def main() -> None:
-    reset()
+    start_api()
+    reset_database()
     add_admin()
     add_users()
     belt_ids = add_belts()

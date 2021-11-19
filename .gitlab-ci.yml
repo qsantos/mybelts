@@ -1,0 +1,19 @@
+---
+image: "python:3.9"
+
+test-api:
+  only:
+    - merge_requests
+    - branches
+  interruptible: true
+  services:
+    - postgres
+  variables:
+    POSTGRES_USER: skills
+    POSTGRES_PASSWORD: skills
+    POSTGRES_DB: skills
+  script:
+    - pip install -r requirements.txt
+    - flake8 .
+    - mypy .
+    - PGHOST=postgres ./test-api
