@@ -493,8 +493,15 @@ function SchoolClassBeltsView() {
 }
 
 function Layout() {
-    const [token, setToken] = useState<undefined | string>(undefined);
-    OpenAPI.TOKEN = token;
+    const saved_token = localStorage.getItem('token');
+    const [token, setToken] = useState<null | string>(saved_token);
+    if (token === null) {
+        OpenAPI.TOKEN = undefined;
+        localStorage.removeItem('token');
+    } else {
+        OpenAPI.TOKEN = token;
+        localStorage.setItem('token', token);
+    }
 
     return <>
         <Navbar>
@@ -507,7 +514,7 @@ function Layout() {
                 <Nav.Item><Nav.Link as={Link} to="/class-levels">Class Levels</Nav.Link></Nav.Item>
             </Nav>
             {token
-                ? <LogoutButton className="me-2" loggedOutCallback={() => setToken(undefined)}/>
+                ? <LogoutButton className="me-2" loggedOutCallback={() => setToken(null)}/>
                 : <LoginButton className="me-2" loggedInCallback={setToken}/>
             }
         </Navbar>
