@@ -1,11 +1,13 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
 import Select from 'react-select';
+import { Link } from 'react-router-dom';
 
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import Nav from 'react-bootstrap/Nav';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
 import Table from 'react-bootstrap/Table';
@@ -407,7 +409,11 @@ export function BeltAttemptGrid(props: BeltAttemptGridProps): ReactElement {
                         )
                     );
                     return <tr key={student.id}>
-                        <th>{student.name}</th>
+                        <th>
+                            <Nav.Link as={Link} to={`/students/${student.id}`}>
+                                {student.name}
+                            </Nav.Link>
+                        </th>
                         {skill_domains.map(skill_domain => {
                             const belt_id = belt_id_by_skill_domain_id[skill_domain.id];
                             if (belt_id === undefined) {
