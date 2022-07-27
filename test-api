@@ -163,6 +163,8 @@ def add_belts() -> List[int]:
         '#dc8add'  # deleted later
     ]
 
+    assert len(belt_names) == len(belt_colors)
+
     # add belts
     ids = []
     for i, (belt_name, belt_color) in enumerate(zip(belt_names, belt_colors)):
@@ -375,6 +377,7 @@ def add_school_classes(class_level_ids: List[int]) -> List[int]:
 
     school_class_levels = [l3, l4, l6, l6, l6]
     school_class_suffixes = ['1', 'X', '3', '4', 'ZZZ']
+    assert len(school_class_levels) == len(school_class_suffixes)
 
     # add school classes
     ids = []
@@ -423,7 +426,7 @@ def add_school_classes(class_level_ids: List[int]) -> List[int]:
 def add_students(school_class_ids: List[int]) -> List[int]:
     print('Testing resource /students')
     a, b, c, d = school_class_ids
-    student_classes = [a, a, a, a, b, b, b, c, c]
+    student_classes = [a, a, a, a, a, a, b, b, b, c, c]
     student_names = [
         'Alice Wonderland',
         'Bob Dylan',
@@ -434,7 +437,10 @@ def add_students(school_class_ids: List[int]) -> List[int]:
         'Grace Hopper',
         'Henri Ford',
         'Judy Hopps',
+        'Ken Thompson',
+        'Tycho Brahe',
     ]
+    assert len(student_classes) == len(student_names)
 
     # add students
     ids = []
