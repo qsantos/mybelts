@@ -13,6 +13,20 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { Belt, BeltsService } from './api';
 import './index.css';
+import { ReactComponent as BeltImage } from './belt.svg';
+
+interface BeltIconProps {
+    belt: Belt;
+}
+
+export function BeltIcon(props: BeltIconProps): ReactElement {
+    const belt = props.belt;
+    return <>
+        <OverlayTrigger overlay={<Tooltip>{belt.name}</Tooltip>}>
+            <BeltImage height={40} fill={belt.color} />
+        </OverlayTrigger>
+    </>;
+}
 
 interface CreateBeltButtonProps
 {
@@ -282,7 +296,7 @@ export function BeltListing(props: BeltListingProps): ReactElement {
                     <tr key={belt.id}>
                         <td>{belt.rank}</td>
                         <td>{belt.name}</td>
-                        <td><Form.Control type="color" value={belt.color} disabled /></td>
+                        <td><BeltIcon belt={belt} /></td>
                         <td>
                             <MoveBeltButton buttonContent="↑" direction_name="Up" direction={-1} belt={belt} belts={belts} setBelts={setBelts} setErrorMessage={setErrorMessage} />
                             {' '}

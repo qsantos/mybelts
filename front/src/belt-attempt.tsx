@@ -13,6 +13,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { Belt, SkillDomain, Student, BeltAttempt, BeltAttemptsService, SchoolClassStudentBeltsStudentBelts } from './api';
+import { BeltIcon } from './belt';
 import './index.css';
 
 interface CreateBeltAttemptButtonProps {
@@ -349,7 +350,7 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
                     }
                     return <tr key={belt_attempt.id}>
                         <td>{skill_domain.name}</td>
-                        <td>{belt.name}</td>
+                        <td><BeltIcon belt={belt} /></td>
                         <td>{belt_attempt.success ? '✅' : '❌'}</td>
                         <td>{belt_attempt.date}</td>
                         <td>
@@ -416,7 +417,11 @@ export function BeltAttemptGrid(props: BeltAttemptGridProps): ReactElement {
                             if (belt === undefined) {
                                 return <td key={skill_domain.id}>-</td>;
                             }
-                            return <td key={skill_domain.id}>{belt.name}</td>;
+                            return <>
+                                <td key={skill_domain.id}>
+                                    <BeltIcon belt={belt} />
+                                </td>
+                            </>;
                         })}
                     </tr>;
                 })}
