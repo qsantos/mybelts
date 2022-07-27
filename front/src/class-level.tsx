@@ -225,7 +225,9 @@ export function ClassLevelListing(props: ClassLevelListingProps): ReactElement {
                             </Nav.Link>
                         </td>
                         <td>
-                            <Button onClick={() => navigate(`${class_level.id}`)}>🔍</Button>
+                            <OverlayTrigger overlay={<Tooltip>View</Tooltip>}>
+                                <Button onClick={() => navigate(`${class_level.id}`)}>🔍</Button>
+                            </OverlayTrigger>
                             {' '}
                             <EditClassLevelButton class_level={class_level} changedCallback={new_class_level => {
                                 class_levels[index] = new_class_level;

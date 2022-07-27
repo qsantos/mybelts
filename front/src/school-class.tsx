@@ -227,7 +227,9 @@ export function SchoolClassListing(props: SchoolClassListingProps): ReactElement
                             </Nav.Link>
                         </td>
                         <td>
-                            <Button onClick={() => navigate(`/school-classes/${school_class.id}`)}>🔍</Button>
+                            <OverlayTrigger overlay={<Tooltip>View</Tooltip>}>
+                                <Button onClick={() => navigate(`/school-classes/${school_class.id}`)}>🔍</Button>
+                            </OverlayTrigger>
                             {' '}
                             <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
                                 school_classes[index] = new_school_class;

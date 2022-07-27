@@ -226,7 +226,9 @@ export function StudentListing(props: StudentListingProps): ReactElement {
                             </Nav.Link>
                         </td>
                         <td>
-                            <Button onClick={() => navigate(`/students/${student.id}`)}>🔍</Button>
+                            <OverlayTrigger overlay={<Tooltip>View</Tooltip>}>
+                                <Button onClick={() => navigate(`/students/${student.id}`)}>🔍</Button>
+                            </OverlayTrigger>
                             {' '}
                             <EditStudentButton student={student} changedCallback={new_student => {
                                 students[index] = new_student;
