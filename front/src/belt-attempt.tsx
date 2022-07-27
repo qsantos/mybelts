@@ -351,8 +351,8 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
                     return <tr key={belt_attempt.id}>
                         <td>{skill_domain.name}</td>
                         <td><BeltIcon belt={belt} /></td>
-                        <td>{belt_attempt.success ? '✅' : '❌'}</td>
                         <td>{belt_attempt.date}</td>
+                        <td>{belt_attempt.success ? '✅' : '❌'}</td>
                         <td>
                             <EditBeltAttemptButton
                                 belt_attempt={belt_attempt}
