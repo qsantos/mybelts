@@ -321,9 +321,9 @@ class UserResource(Resource):
             }
 
     put_model = api.model('UserPut', {
-        'name': fields.String(example='tartempion', required=False),
-        'password': fields.String(example='correct horse battery staple', required=False),
-        'is_admin': fields.Boolean(example=False, required=False),
+        'name': fields.String(example='tartempion'),
+        'password': fields.String(example='correct horse battery staple'),
+        'is_admin': fields.Boolean(example=False),
     })
 
     @api.expect(put_model, validate=True)
@@ -402,7 +402,7 @@ class ClassLevelResource(Resource):
             }
 
     put_model = api.model('ClassLevelPut', {
-        'prefix': fields.String(example='4e', required=True),
+        'prefix': fields.String(example='4e'),
     })
 
     @api.expect(put_model, validate=True)
@@ -413,7 +413,9 @@ class ClassLevelResource(Resource):
             class_level = session.query(ClassLevel).get(class_level_id)
             if class_level is None:
                 abort(404, f'Class level {class_level_id} not found')
-            class_level.prefix = request.json['prefix']
+            prefix = request.json.get('prefix')
+            if prefix is not None:
+                class_level.prefix = prefix
             session.commit()
             return {
                 'class_level': class_level.json(),
@@ -495,7 +497,7 @@ class SchoolClassResource(Resource):
             }
 
     put_model = api.model('SchoolClassPut', {
-        'suffix': fields.String(example='4e', required=True),
+        'suffix': fields.String(example='4e'),
     })
 
     @api.expect(put_model, validate=True)
@@ -506,7 +508,9 @@ class SchoolClassResource(Resource):
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
-            school_class.suffix = request.json['suffix']
+            suffix = request.json.get('suffix')
+            if suffix is not None:
+                school_class.suffix = suffix
             session.commit()
             class_level = school_class.class_level
             return {
@@ -652,7 +656,7 @@ class StudentResource(Resource):
             }
 
     put_model = api.model('StudentPut', {
-        'name': fields.String(example='John Doe', required=True),
+        'name': fields.String(example='John Doe'),
     })
 
     @api.expect(put_model, validate=True)
@@ -663,7 +667,9 @@ class StudentResource(Resource):
             student = session.query(Student).get(student_id)
             if student is None:
                 abort(404, f'Student {student_id} not found')
-            student.name = request.json['name']
+            name = request.json.get('name')
+            if name is not None:
+                student.name = name
             session.commit()
             school_class = student.school_class
             class_level = school_class.class_level
@@ -775,7 +781,7 @@ class SkillDomainResource(Resource):
             }
 
     put_model = api.model('SkillDomainPut', {
-        'name': fields.String(example='Algebra', required=True),
+        'name': fields.String(example='Algebra'),
     })
 
     @api.expect(put_model, validate=True)
@@ -786,7 +792,9 @@ class SkillDomainResource(Resource):
             skill_domain = session.query(SkillDomain).get(skill_domain_id)
             if skill_domain is None:
                 abort(404, f'Skill domain {skill_domain} not found')
-            skill_domain.name = request.json['name']
+            name = request.json.get('name')
+            if name is not None:
+                skill_domain.name = name
             session.commit()
             return {
                 'skill_domain': skill_domain.json(),
@@ -856,8 +864,8 @@ class BeltResource(Resource):
             }
 
     put_model = api.model('BeltPut', {
-        'name': fields.String(example='White belt', required=False),
-        'color': fields.String(example='#012345', required=False),
+        'name': fields.String(example='White belt'),
+        'color': fields.String(example='#012345'),
     })
 
     @api.expect(put_model, validate=True)
@@ -868,12 +876,12 @@ class BeltResource(Resource):
             belt = session.query(Belt).get(belt_id)
             if belt is None:
                 abort(404, f'Belt {belt_id} not found')
-            new_name = request.json.get('name')
-            if new_name is not None:
-                belt.name = new_name
-            new_color = request.json.get('color')
-            if new_color is not None:
-                belt.color = new_color
+            name = request.json.get('name')
+            if name is not None:
+                belt.name = name
+            color = request.json.get('color')
+            if color is not None:
+                belt.color = color
             session.commit()
             return {
                 'belt': belt.json(),
@@ -926,32 +934,32 @@ class BeltRankResource(Resource):
                 session.commit()
             else:
                 assert increase_by is not None
-                new_rank = belt.rank + increase_by
+                rank = belt.rank + increase_by
                 if increase_by < 0:
-                    if new_rank < 1:
+                    if rank < 1:
                         abort(400, f"Cannot decrease belt's rank {belt_id} by {-increase_by}")
                     (
                         session
                         .query(Belt)
-                        .filter(and_(new_rank <= Belt.rank, Belt.rank < belt.rank))
+                        .filter(and_(rank <= Belt.rank, Belt.rank < belt.rank))
                         .update({Belt.rank: Belt.rank + 1})
                     )
-                    belt.rank = new_rank
+                    belt.rank = rank
                     session.commit()
                 elif increase_by == 0:
                     pass
                 else:
                     # TODO: store this information somewhere
                     max_rank: int = session.query(func.max(Belt.rank)).scalar()  # type: ignore
-                    if new_rank > max_rank:
+                    if rank > max_rank:
                         abort(400, f"Cannot increase belt'rank {belt_id} by {increase_by}")
                     (
                         session
                         .query(Belt)
-                        .filter(and_(belt.rank < Belt.rank, Belt.rank <= new_rank))
+                        .filter(and_(belt.rank < Belt.rank, Belt.rank <= rank))
                         .update({Belt.rank: Belt.rank - 1})
                     )
-                    belt.rank = new_rank
+                    belt.rank = rank
                     session.commit()
 
             return {
@@ -1036,11 +1044,11 @@ class BeltAttemptResource(Resource):
             }
 
     put_model = api.model('BeltAttemptPut', {
-        'student_id': fields.Integer(example=42, required=False),
-        'belt_id': fields.Integer(example=42, required=False),
-        'skill_domain_id': fields.Integer(example=42, required=False),
-        'date': fields.Date(example='2021-11-13', required=True),
-        'success': fields.Boolean(example=True, required=False),
+        'student_id': fields.Integer(example=42),
+        'belt_id': fields.Integer(example=42),
+        'skill_domain_id': fields.Integer(example=42),
+        'date': fields.Date(example='2021-11-13'),
+        'success': fields.Boolean(example=True),
     })
 
     @api.expect(put_model, validate=True)

@@ -326,7 +326,7 @@ def add_class_levels() -> List[int]:
 
     class_level_prefixes = [
         '3e',
-        '4E',
+        '4E',  # changed to '4e' later
         '5e',
         '6e',
         '7e',
@@ -557,9 +557,6 @@ def add_belt_attempts(skill_domain_ids: List[int], belt_ids: List[int], student_
     # update belt attempt
     success = True
     res = requests.put(API_URL + f'/belt-attempts/{attempt_id}', json={
-        'skill_domain_id': skill_domain_id,
-        'belt_id': belt_id,
-        'date': attempt_date,
         'success': success,
     })
     res.raise_for_status()
