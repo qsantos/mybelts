@@ -428,7 +428,7 @@ def add_students(school_class_ids: List[int]) -> List[int]:
         'Charlie Brown',
         'Dave Ramsay',
         'Eve V',
-        'Faythe Runner',
+        'Faith Connors',
         'Grace Hopper',
         'Henri Ford',
         'Judy Hopps',
