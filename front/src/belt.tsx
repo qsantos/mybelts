@@ -9,10 +9,8 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
 import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { Belt, BeltsService } from './api';
-import './index.css';
 import { ReactComponent as BeltImage } from './belt.svg';
 
 interface BeltIconProps {

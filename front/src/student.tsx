@@ -11,10 +11,8 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Table from 'react-bootstrap/Table';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { Student, StudentsService } from './api';
-import './index.css';
 
 interface CreateStudentButtonProps {
     school_class_id: number;
