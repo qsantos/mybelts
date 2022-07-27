@@ -141,19 +141,30 @@ def add_belts() -> List[int]:
 
     belt_names = [
         'White belt',
-        'White belt',
+        'White belt',  # changed to 'Yellow belt' later
         'Orange belt',
         'Green belt',
         'Blue belt',
         'Brown belt',
         'Black belt',
-        'Transparent belt',
+        'Transparent belt',  # deleted later
+    ]
+
+    belt_colors = [
+        '#ffffff',
+        '#ffffff',  # changed to '#f6d32d' later
+        '#ff7800',
+        '#13dc00',
+        '#3584e4',
+        '#865e3c',
+        '#000000',
+        '#dc8add'  # deleted later
     ]
 
     # add belts
     ids = []
-    for i, belt_name in enumerate(belt_names):
-        res = requests.post(API_URL + '/belts', json={'name': belt_name})
+    for i, (belt_name, belt_color) in enumerate(zip(belt_names, belt_colors)):
+        res = requests.post(API_URL + '/belts', json={'name': belt_name, 'color': belt_color})
         res.raise_for_status()
         j = res.json()
         print(j)
@@ -173,7 +184,8 @@ def add_belts() -> List[int]:
     assert j['belt']['rank'] == 2
 
     # change belt's color
-    res = requests.put(API_URL + f'/belts/{ids[1]}', json={'color': 'yellow'})
+    belt_colors[1] = '#f6d32d'
+    res = requests.put(API_URL + f'/belts/{ids[1]}', json={'color': belt_colors[1]})
     res.raise_for_status()
     j = res.json()
     print(j)
