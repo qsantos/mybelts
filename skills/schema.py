@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Dict, Iterator
+from typing import Dict, Iterator, List
 
 from sqlalchemy import (
     Boolean, Column, Date, DateTime, ForeignKey, Integer, LargeBinary, String,
@@ -75,7 +75,7 @@ class ClassLevel(Base):
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     prefix = Column(String, nullable=False, index=True)
 
-    school_classes = relationship(
+    school_classes: List['SchoolClass'] = relationship(  # type: ignore
         'SchoolClass',
         foreign_keys='SchoolClass.class_level_id',
         back_populates='class_level',
@@ -102,7 +102,7 @@ class SchoolClass(Base):
         back_populates='school_classes',
     )
 
-    students = relationship(
+    students: List['Student'] = relationship(  # type: ignore
         'Student',
         foreign_keys='Student.school_class_id',
         back_populates='school_class',
