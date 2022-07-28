@@ -24,6 +24,7 @@ mypy
 sqlalchemy-stubs
 types-flask
 types-jsonschema
+types-python-dateutil
 
 # misc
 pip-tools  # generate requirements.txt from requirements.in
