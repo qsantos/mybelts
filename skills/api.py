@@ -5,10 +5,10 @@ from typing import Any, Dict, List, NoReturn, Set
 
 import jwt
 from flask import Blueprint, Flask, Response, request, url_for
-from flask_restplus import fields  # type: ignore
-from flask_restplus import Api, Resource
-from flask_restplus import abort as flask_restplus_abort
-from flask_restplus.apidoc import apidoc  # type: ignore
+from flask_restx import fields  # type: ignore
+from flask_restx import Api, Resource
+from flask_restx import abort as flask_restx_abort
+from flask_restx.apidoc import apidoc  # type: ignore
 from jsonschema import FormatChecker
 from psycopg2.errors import UniqueViolation  # type: ignore
 from sqlalchemy import and_
@@ -24,7 +24,7 @@ from skills.schema import (
 
 
 def abort(code: int, message: str) -> NoReturn:  # type: ignore
-    flask_restplus_abort(code, message)
+    flask_restx_abort(code, message)
 
 
 # fix for location of SwaggerUI not at root

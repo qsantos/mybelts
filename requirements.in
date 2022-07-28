@@ -6,10 +6,9 @@ sqlalchemy-utils
 passlib
 
 # API
-Flask==1.1.1  # old version to avoid https://github.com/jarus/flask-testing/issues/143
-flask-restplus
+Werkzeug <= 2.1.2  # https://github.com/python-restx/flask-restx/issues/460
+flask-restx
 pyjwt
-Werkzeug==v0.16.0  # old version to avoid https://github.com/jarus/flask-testing/issues/143
 
 # linting
 flake8
