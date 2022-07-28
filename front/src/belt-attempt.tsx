@@ -13,6 +13,8 @@ import Spinner from 'react-bootstrap/Spinner';
 import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 
+import { ColumnDef, SortingState, flexRender, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+
 import { Belt, SkillDomain, Student, BeltAttempt, BeltAttemptsService, SchoolClassStudentBeltsStudentBelts } from './api';
 import { BeltIcon } from './belt';
 
@@ -321,23 +323,63 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
         label: belt.name,
     }));
 
-    return <>
-        <Table>
-            <thead>
-                <tr>
-                    <th>Skill domain</th>
-                    <th>Belt</th>
-                    <th>Date</th>
-                    <th>Passed?</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {belt_attempts.map((belt_attempt, index) => {
+    const [sorting, setSorting] = React.useState<SortingState>([]);
+    const columns = React.useMemo<ColumnDef<BeltAttempt>[]>(
+        () => [
+            {
+                header: 'Skill domain',
+                accessorFn: belt_attempt => {
+                    const skill_domain_id = belt_attempt.skill_domain_id;
+                    const skill_domain = skill_domain_by_id[skill_domain_id];
+                    if (skill_domain === undefined) {
+                        // should not happen
+                        console.error(`skill_domain ${skill_domain_id} not found for belt_attempt ${belt_attempt.id}`);
+                        return <></>;
+                    }
+                    return skill_domain.name;
+                }
+            },
+            {
+                header: 'Belt',
+                accessorFn: belt_attempt => {
+                    const belt_id = belt_attempt.belt_id;
+                    const belt = belt_by_id[belt_id];
+                    if (belt === undefined) {
+                        // should not happen
+                        console.error(`belt ${belt_id} not found for belt_attempt ${belt_attempt.id}`);
+                        return <></>;
+                    }
+                    return belt.name;
+                },
+                cell: info => {
+                    const belt_attempt = info.row.original;
+                    const belt_id = belt_attempt.belt_id;
+                    const belt = belt_by_id[belt_id];
+                    if (belt === undefined) {
+                        // should not happen
+                        console.error(`belt ${belt_id} not found for belt_attempt ${belt_attempt.id}`);
+                        return <></>;
+                    }
+                    return <BeltIcon belt={belt} />;
+                }
+            },
+            {
+                header: 'Date',
+                accessorKey: 'date',
+            },
+            {
+                header: 'Passed?',
+                accessorKey: 'success',
+                cell: info => info.getValue() ? '✅' : '❌',
+            },
+            {
+                header: 'Actions',
+                cell: info => {
+                    const belt_attempt = info.row.original;
                     const skill_domain_id = belt_attempt.skill_domain_id;
                     const belt_id = belt_attempt.belt_id;
-                    const skill_domain = skill_domain_by_id[skill_domain_id];
-                    const belt = belt_by_id[belt_id];
+                    const skill_domain = skill_domain_by_id[belt_attempt.skill_domain_id];
+                    const belt = belt_by_id[belt_attempt.belt_id];
                     if (skill_domain === undefined) {
                         // should not happen
                         console.error(`skill_domain ${skill_domain_id} not found for belt_attempt ${belt_attempt.id}`);
@@ -348,32 +390,93 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
                         console.error(`belt ${belt_id} not found for belt_attempt ${belt_attempt.id}`);
                         return <></>;
                     }
-                    return <tr key={belt_attempt.id}>
-                        <td>{skill_domain.name}</td>
-                        <td><BeltIcon belt={belt} /></td>
-                        <td>{belt_attempt.date}</td>
-                        <td>{belt_attempt.success ? '✅' : '❌'}</td>
-                        <td>
-                            <EditBeltAttemptButton
-                                belt_attempt={belt_attempt}
-                                student={student}
-                                skill_domain={skill_domain}
-                                belt={belt}
-                                skill_domain_options={skill_domain_options}
-                                belt_options={belt_options}
-                                changedCallback={new_belt_attempt => {
-                                    belt_attempts[index] = new_belt_attempt;
-                                    setBeltAttempts(belt_attempts);
-                                }}
-                            />
-                            {' '}
-                            <DeleteBeltAttemptButton belt_attempt={belt_attempt} student={student} deletedCallback={() => {
-                                belt_attempts.splice(index, 1);
-                                setBeltAttempts(belt_attempts);
-                            }} />
-                        </td>
-                    </tr>;
-                })}
+                    return <>
+                        <EditBeltAttemptButton
+                            belt_attempt={belt_attempt}
+                            student={student}
+                            skill_domain={skill_domain}
+                            belt={belt}
+                            skill_domain_options={skill_domain_options}
+                            belt_options={belt_options}
+                            changedCallback={new_belt_attempt => {
+                                // TODO: are we seriously copying the whole array?
+                                const new_belt_attempts = [...belt_attempts];
+                                new_belt_attempts[info.row.index] = new_belt_attempt;
+                                setBeltAttempts(new_belt_attempts);
+                            }}
+                        />
+                        {' '}
+                        <DeleteBeltAttemptButton belt_attempt={belt_attempt} student={student} deletedCallback={() => {
+                            // TODO: are we seriously copying the whole array?
+                            const new_belt_attempts = [...belt_attempts];
+                            new_belt_attempts.splice(info.row.index, 1);
+                            setBeltAttempts(new_belt_attempts);
+                        }} />
+                    </>;
+                },
+            },
+        ],
+        []
+    );
+
+    const table = useReactTable({
+        data: belt_attempts,
+        columns,
+        state: {
+            sorting,
+        },
+        onSortingChange: setSorting,
+        getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+    });
+
+    return <>
+        <Table>
+            <thead>
+                {table.getHeaderGroups().map(headerGroup => (
+                    <tr key={headerGroup.id}>
+                        {headerGroup.headers.map(header => (
+                            <th key={header.id} colSpan={header.colSpan}>
+                                {header.isPlaceholder ? null : (
+                                    <div
+                                        {...{
+                                            className: header.column.getCanSort()
+                                                ? 'cursor-pointer select-none'
+                                                : '',
+                                            onClick: header.column.getToggleSortingHandler(),
+                                        }}
+                                    >
+                                        {flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                        )}
+                                        {{
+                                            asc: ' 🔼',
+                                            desc: ' 🔽',
+                                        }[header.column.getIsSorted() as string] ?? null}
+                                    </div>
+                                )}
+                            </th>
+                        ))}
+                    </tr>
+                ))}
+            </thead>
+            <tbody>
+                {table
+                    .getRowModel()
+                    .rows.slice(0, 10)
+                    .map(row => (
+                        <tr key={row.id}>
+                            {row.getVisibleCells().map(cell => (
+                                <td key={cell.id}>
+                                    {flexRender(
+                                        cell.column.columnDef.cell,
+                                        cell.getContext()
+                                    )}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
             </tbody>
         </Table>
     </>;
