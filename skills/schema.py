@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Dict, Iterator, List
+from typing import Dict, Iterator
 
 from sqlalchemy import (
     Boolean, Column, Date, DateTime, ForeignKey, Integer, LargeBinary, String,
@@ -36,7 +36,7 @@ def session_context() -> Iterator[scoped_session]:
         session_factory.remove()  # type: ignore
 
 
-class HTTPRequest(Base):  # type: ignore
+class HTTPRequest(Base):
     __tablename__ = 'http_request'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
@@ -52,7 +52,7 @@ class HTTPRequest(Base):  # type: ignore
     response_body = Column(LargeBinary)
 
 
-class User(Base):  # type: ignore
+class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
@@ -69,13 +69,13 @@ class User(Base):  # type: ignore
         }
 
 
-class ClassLevel(Base):  # type: ignore
+class ClassLevel(Base):
     __tablename__ = 'class_level'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     prefix = Column(String, nullable=False, index=True)
 
-    school_classes: List['SchoolClass'] = relationship(  # type: ignore
+    school_classes = relationship(
         'SchoolClass',
         foreign_keys='SchoolClass.class_level_id',
         back_populates='class_level',
@@ -89,20 +89,20 @@ class ClassLevel(Base):  # type: ignore
         }
 
 
-class SchoolClass(Base):  # type: ignore
+class SchoolClass(Base):
     __tablename__ = 'school_class'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     class_level_id = Column(Integer, ForeignKey(ClassLevel.id, ondelete='CASCADE'), nullable=False)
     suffix = Column(String, nullable=False, index=True)
 
-    class_level = relationship(  # type: ignore
+    class_level = relationship(
         'ClassLevel',
         foreign_keys=class_level_id,
         back_populates='school_classes',
     )
 
-    students: List['Student'] = relationship(  # type: ignore
+    students = relationship(
         'Student',
         foreign_keys='Student.school_class_id',
         back_populates='school_class',
@@ -117,20 +117,20 @@ class SchoolClass(Base):  # type: ignore
         }
 
 
-class Student(Base):  # type: ignore
+class Student(Base):
     __tablename__ = 'student'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     school_class_id = Column(Integer, ForeignKey('school_class.id', ondelete='CASCADE'), nullable=False)
     name = Column(String, nullable=False, index=True)
 
-    school_class: SchoolClass = relationship(  # type: ignore
+    school_class = relationship(
         'SchoolClass',
         foreign_keys=school_class_id,
         back_populates='students',
     )
 
-    belt_attempts: List['BeltAttempt'] = relationship(  # type: ignore
+    belt_attempts = relationship(
         'BeltAttempt',
         foreign_keys='BeltAttempt.student_id',
         back_populates='student',
@@ -145,7 +145,7 @@ class Student(Base):  # type: ignore
         }
 
 
-class Belt(Base):  # type: ignore
+class Belt(Base):
     __tablename__ = 'belt'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
@@ -153,7 +153,7 @@ class Belt(Base):  # type: ignore
     name = Column(String, nullable=False, index=True)
     color = Column(String, nullable=False, index=True, server_default='')
 
-    belt_attempts: List['BeltAttempt'] = relationship(  # type: ignore
+    belt_attempts = relationship(
         'BeltAttempt',
         foreign_keys='BeltAttempt.belt_id',
         back_populates='belt',
@@ -172,13 +172,13 @@ class Belt(Base):  # type: ignore
         self.rank, other.rank = other.rank, self.rank
 
 
-class SkillDomain(Base):  # type: ignore
+class SkillDomain(Base):
     __tablename__ = 'skill_domain'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     name = Column(String, index=True, nullable=False)
 
-    belt_attempts: List['BeltAttempt'] = relationship(  # type: ignore
+    belt_attempts = relationship(
         'BeltAttempt',
         foreign_keys='BeltAttempt.skill_domain_id',
         back_populates='skill_domain',
@@ -192,7 +192,7 @@ class SkillDomain(Base):  # type: ignore
         }
 
 
-class BeltAttempt(Base):  # type: ignore
+class BeltAttempt(Base):
     __tablename__ = 'belt_attempt'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
@@ -202,19 +202,19 @@ class BeltAttempt(Base):  # type: ignore
     date = Column(Date, nullable=False, index=True, server_default=func.current_date())
     success = Column(Boolean, index=True, nullable=False)
 
-    student: Student = relationship(  # type: ignore
+    student = relationship(
         'Student',
         foreign_keys=student_id,
         back_populates='belt_attempts',
     )
 
-    skill_domain: SkillDomain = relationship(  # type: ignore
+    skill_domain = relationship(
         'SkillDomain',
         foreign_keys=skill_domain_id,
         back_populates='belt_attempts',
     )
 
-    belt: Belt = relationship(  # type: ignore
+    belt = relationship(
         'Belt',
         foreign_keys=belt_id,
         back_populates='belt_attempts',

@@ -626,7 +626,7 @@ class StudentsResource(Resource):
                 abort(404, f'School class {school_class_id} not found')
             class_level = school_class.class_level
             student = Student(
-                school_class=school_class,
+                school_class_id=school_class_id,
                 name=request.json['name'],
             )
             session.add(student)
