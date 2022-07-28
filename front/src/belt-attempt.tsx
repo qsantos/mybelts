@@ -18,6 +18,13 @@ import { ColumnDef, SortingState, flexRender, getCoreRowModel, getSortedRowModel
 import { Belt, SkillDomain, Student, BeltAttempt, BeltAttemptsService, SchoolClassStudentBeltsStudentBelts } from './api';
 import { BeltIcon } from './belt';
 
+const localeDateOptions: Intl.DateTimeFormatOptions = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+};
+
 interface CreateBeltAttemptButtonProps {
     student: Student;
     skill_domains: SkillDomain[];
@@ -366,6 +373,11 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
             {
                 header: 'Date',
                 accessorKey: 'date',
+                cell: info => {
+                    const date = info.row.original.date;
+                    const d = new Date(date);
+                    return d.toLocaleDateString('en-US', localeDateOptions);
+                },
             },
             {
                 header: 'Passed?',
