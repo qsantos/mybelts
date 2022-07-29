@@ -410,6 +410,7 @@ function StudentView() {
         </>;
     }
 
+    // skill domains and belts must be fetched separately to make sure we have them all
     const { skill_domains } = skillDomainList;
     const { belts } = beltList;
     const { class_level, school_class, student, belt_attempts } = beltAttemptList;
