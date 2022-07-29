@@ -2,9 +2,11 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { BeltAttemptList } from '../models/BeltAttemptList';
+import type { StudentListBare } from '../models/StudentListBare';
 import type { StudentOne } from '../models/StudentOne';
 import type { StudentPut } from '../models/StudentPut';
 import type { StudentsPost } from '../models/StudentsPost';
+import type { StudentsPut } from '../models/StudentsPut';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { request as __request } from '../core/request';
 
@@ -22,6 +24,26 @@ export class StudentsService {
     ): CancelablePromise<StudentOne> {
         return __request({
             method: 'POST',
+            path: `/students`,
+            headers: {
+                'X-Fields': xFields,
+            },
+            body: payload,
+        });
+    }
+
+    /**
+     * @param payload
+     * @param xFields An optional fields mask
+     * @returns StudentListBare Success
+     * @throws ApiError
+     */
+    public static putStudentsResource(
+        payload: StudentsPut,
+        xFields?: string,
+    ): CancelablePromise<StudentListBare> {
+        return __request({
+            method: 'PUT',
             path: `/students`,
             headers: {
                 'X-Fields': xFields,

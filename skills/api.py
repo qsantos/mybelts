@@ -150,6 +150,10 @@ api_model_student_list = api.model('StudentList', {
     'students': fields.List(fields.Nested(api_model_student), required=True),
 })
 
+api_model_student_list_bare = api.model('StudentListBare', {
+    'students': fields.List(fields.Nested(api_model_student), required=True),
+})
+
 api_model_student_one = api.model('StudentOne', {
     'class_level': fields.Nested(api_model_class_level, required=True),
     'school_class': fields.Nested(api_model_school_class, required=True),
@@ -636,6 +640,33 @@ class StudentsResource(Resource):
                 'class_level': class_level.json(),
                 'school_class': school_class.json(),
                 'student': student.json(),
+            }
+
+    put_model_students = api.model('StudentsPutStudents', {
+        'id': fields.Integer(example=42, required=True),
+        'name': fields.String(example='John Doe'),
+        'rank': fields.Integer(example=7),
+    })
+    put_model = api.model('StudentsPut', {
+        'students': fields.List(fields.Nested(put_model_students, required=True)),
+    })
+
+    @api.expect(put_model, validate=True)
+    @api.marshal_with(api_model_student_list_bare)
+    def put(self) -> Any:
+        with session_context() as session:
+            authenticate(session)
+            students_json = request.json['students']
+            session.bulk_update_mappings(Student, students_json)
+            students = session.query(Student).filter(
+                Student.id.in_(student_json['id'] for student_json in students_json),
+            ).all()
+            session.commit()
+            return {
+                'students': [
+                    student.json()
+                    for student in students
+                ],
             }
 
 
@@ -1147,7 +1178,7 @@ def create_app() -> Flask:
                     response_status_code=response.status_code,
                     response_status=response.status,
                     response_headers=dict(response.headers),
-                    response_body=response.data,
+                    # response_body=response.data,
                 )
                 session.add(http_request_response)
                 session.commit()

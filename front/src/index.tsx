@@ -32,7 +32,7 @@ import { CreateSkillDomainButton, SkillDomainListing } from './skill-domain';
 import { CreateBeltButton, BeltListing } from './belt';
 import { CreateClassLevelButton, EditClassLevelButton, DeleteClassLevelButton, ClassLevelListing } from './class-level';
 import { CreateSchoolClassButton, EditSchoolClassButton, DeleteSchoolClassButton, SchoolClassListing } from './school-class';
-import { CreateStudentButton, EditStudentButton, DeleteStudentButton, StudentListing } from './student';
+import { CreateStudentButton, EditStudentButton, DeleteStudentButton, UpdateStudentRanks, StudentListing } from './student';
 import { CreateBeltAttemptButton, BeltAttemptListing, BeltAttemptGrid,  } from './belt-attempt';
 
 function BreadcrumbItem({ children, href, active }: { children: ReactNode, href?: string, active?: boolean }) {
@@ -354,6 +354,10 @@ function SchoolClassView() {
         <CreateStudentButton school_class_id={school_class.id} createdCallback={student => {
             students.push(student);
             setStudentList({ ...studentList, students });
+        }} />
+        {' '}
+        <UpdateStudentRanks students={students} changedCallback={new_students => {
+            setStudentList({ ...studentList, students: new_students });
         }} />
         <StudentListing
             students={sorted_students}

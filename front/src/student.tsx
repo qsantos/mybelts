@@ -48,7 +48,9 @@ export function CreateStudentButton(props : CreateStudentButtonProps): ReactElem
     }
 
     return <>
-        <Button onClick={() => setShow(true)}>Add</Button>
+        <OverlayTrigger overlay={<Tooltip>Add a new student to the class</Tooltip>}>
+            <Button onClick={() => setShow(true)}>Add</Button>
+        </OverlayTrigger>
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
@@ -83,7 +85,7 @@ export function CreateStudentButton(props : CreateStudentButtonProps): ReactElem
 interface EditStudentButtonProps
 {
     student: Student;
-     changedCallback?: (changed_student: Student) => void
+    changedCallback?: (changed_student: Student) => void
 }
 
 export function EditStudentButton(props : EditStudentButtonProps): ReactElement {
@@ -205,6 +207,94 @@ export function DeleteStudentButton(props : DeleteStudentButtonProps): ReactElem
                     : <Button variant="danger" onClick={handleDelete}>Delete</Button>
                 }
             </Modal.Footer>
+        </Modal>
+    </>;
+}
+
+interface UpdateStudentRanksProps {
+    students: Student[],
+    changedCallback?: (changed_students: Student[]) => void
+}
+
+export function UpdateStudentRanks(props: UpdateStudentRanksProps): ReactElement {
+    const { students, changedCallback } = props;
+
+    const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(false);
+    const [updating, setUpdating] = useState(false);
+
+    const firstElementRef = React.useRef<HTMLInputElement>(null);
+    React.useEffect(() => {
+        const element = firstElementRef.current;
+        if (element !== null) {
+            element.focus();
+        }
+    }, [show]);
+
+    function handleSubmit(event: FormEvent) {
+        setUpdating(true);
+        const target = event.target as typeof event.target & {
+            rank: HTMLInputElement[];
+        };
+        const inputElements = [...target.rank];
+        const new_student_ranks = inputElements.map((inputElement: HTMLInputElement) => {
+            return {
+                id: parseInt(inputElement.getAttribute('data-student-id') || '0'),
+                rank: parseInt(inputElement.value || '0'),
+            };
+        });
+        const updates = {
+            students: new_student_ranks,
+        };
+        StudentsService.putStudentsResource(updates).then(({ students: changed_students }) => {
+            setShow(false);
+            setUpdating(false);
+            if (changedCallback !== undefined) {
+                changedCallback(changed_students);
+            }
+        }).catch(error => {
+            setUpdating(false);
+            setErrorMessage(error.body.message);
+        });
+        event.preventDefault();
+    }
+
+    return <>
+        <OverlayTrigger overlay={<Tooltip>Quickly change the ranks of all students</Tooltip>}>
+            <Button onClick={() => setShow(true)}>Update Ranks</Button>
+        </OverlayTrigger>
+        <Modal show={show}>
+            <Form onSubmit={handleSubmit}>
+                <Modal.Header>
+                    <Modal.Title>Delete Student</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
+                    {students.map((student, index) =>
+                        <Form.Group controlId="rank" key={student.id} className="mb-3">
+                            <Form.Label>{student.name}</Form.Label>
+                            <Form.Control
+                                type="number"
+                                defaultValue={student.rank}
+                                onFocus={event => event.target.select()}
+                                ref={index == 0 ? firstElementRef : null}
+                                data-student-id={student.id}
+                            />
+                        </Form.Group>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    {updating
+                        ? <Button disabled variant="danger">
+                            <Spinner animation="border" role="status" size="sm">
+                                <span className="visually-hidden">Deleting</span>
+                            </Spinner>
+                        </Button>
+                        : <Button type="submit">Save</Button>
+                    }
+                </Modal.Footer>
+            </Form>
         </Modal>
     </>;
 }
