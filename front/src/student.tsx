@@ -59,8 +59,8 @@ export function CreateStudentButton(props : CreateStudentButtonProps): ReactElem
                 <Modal.Body>
                     {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
-                        <Form.Label>Suffix</Form.Label>
-                        <Form.Control type="text" placeholder="Example: D" />
+                        <Form.Label>Name</Form.Label>
+                        <Form.Control type="text" placeholder="Example: John Doe" />
                         <Form.Text className="text-muted">
                             Name for the new student
                         </Form.Text>
