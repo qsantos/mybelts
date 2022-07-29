@@ -487,9 +487,21 @@ def add_students(school_class_ids: List[int]) -> List[int]:
     return ids
 
 
-def add_belt_attempts(skill_domain_ids: List[int], belt_ids: List[int], student_ids: List[int]) -> List[int]:
+def add_belt_attempts(student_ids: List[int]) -> List[int]:
     print('Testing resource /belt-attempts')
-    da, db, dc, dd, de = skill_domain_ids
+
+    # get belts
+    res = requests.get(API_URL + '/belts')
+    res.raise_for_status()
+    j = res.json()
+    belts = j['belts']
+    belts.sort(key=lambda belt: belt['rank'])
+
+    # get skill domains
+    res = requests.get(API_URL + '/skill-domains')
+    res.raise_for_status()
+    j = res.json()
+    skill_domains = j['skill_domains']
 
     school_year_start = date(2022, 9, 1)
     school_year_stop = date(2023, 7, 8)
@@ -498,28 +510,28 @@ def add_belt_attempts(skill_domain_ids: List[int], belt_ids: List[int], student_
     # add belt attempts
     attempt_ids = []
     for student_id in student_ids:
-        for skill_domain_id in skill_domain_ids:
+        for skill_domain in skill_domains:
             attempt_dates = sorted(
                 (school_year_start + timedelta(days=randrange(school_year_days))).isoformat()
-                for _ in range(randrange(3 * len(belt_ids) // 2))
+                for _ in range(randrange(3 * len(belts) // 2))
             )
             cur_belt = 0
             for attempt_date in attempt_dates:
-                belt_id = belt_ids[cur_belt]
+                belt = belts[cur_belt]
                 success = choice((False, True))
 
                 res = requests.post(API_URL + '/belt-attempts', json={
                     'student_id': student_id,
-                    'skill_domain_id': skill_domain_id,
-                    'belt_id': belt_id,
+                    'skill_domain_id': skill_domain['id'],
+                    'belt_id': belt['id'],
                     'date': attempt_date,
                     'success': success,
                 })
                 res.raise_for_status()
                 j = res.json()
                 print(j)
-                assert j['skill_domain']['id'] == skill_domain_id
-                assert j['belt']['id'] == belt_id
+                assert j['skill_domain']['id'] == skill_domain['id']
+                assert j['belt']['id'] == belt['id']
                 assert j['student']['id'] == student_id
                 assert j['belt_attempt']['date'] == attempt_date
                 assert j['belt_attempt']['success'] == success
@@ -527,28 +539,28 @@ def add_belt_attempts(skill_domain_ids: List[int], belt_ids: List[int], student_
 
                 if success:
                     cur_belt += 1
-                    if cur_belt >= len(belt_ids):
+                    if cur_belt >= len(belts):
                         break
 
     student_id = choice(student_ids)
-    skill_domain_id = choice(skill_domain_ids)
-    belt_id = choice(belt_ids)
+    skill_domain = choice(skill_domains)
+    belt = choice(belts)
     attempt_date = (school_year_start + timedelta(days=randrange(school_year_days))).isoformat()
     success = False
 
     # add one more belt attempt
     res = requests.post(API_URL + '/belt-attempts', json={
         'student_id': student_id,
-        'skill_domain_id': skill_domain_id,
-        'belt_id': belt_id,
+        'skill_domain_id': skill_domain['id'],
+        'belt_id': belt['id'],
         'date': attempt_date,
         'success': success,
     })
     res.raise_for_status()
     j = res.json()
     print(j)
-    assert j['skill_domain']['id'] == skill_domain_id
-    assert j['belt']['id'] == belt_id
+    assert j['skill_domain']['id'] == skill_domain['id']
+    assert j['belt']['id'] == belt['id']
     assert j['student']['id'] == student_id
     assert j['belt_attempt']['date'] == attempt_date
     assert j['belt_attempt']['success'] == success
@@ -562,8 +574,8 @@ def add_belt_attempts(skill_domain_ids: List[int], belt_ids: List[int], student_
     res.raise_for_status()
     j = res.json()
     print(j)
-    assert j['skill_domain']['id'] == skill_domain_id
-    assert j['belt']['id'] == belt_id
+    assert j['skill_domain']['id'] == skill_domain['id']
+    assert j['belt']['id'] == belt['id']
     assert j['student']['id'] == student_id
     assert j['belt_attempt']['date'] == attempt_date
     assert j['belt_attempt']['success'] == success
@@ -584,12 +596,12 @@ def main() -> None:
     reset_database()
     add_admin()
     add_users()
-    belt_ids = add_belts()
-    skill_domain_ids = add_skill_domains()
+    add_belts()
+    add_skill_domains()
     class_level_ids = add_class_levels()
     school_class_ids = add_school_classes(class_level_ids)
     student_ids = add_students(school_class_ids)
-    add_belt_attempts(skill_domain_ids, belt_ids, student_ids)
+    add_belt_attempts(student_ids)
 
 
 if __name__ == '__main__':
