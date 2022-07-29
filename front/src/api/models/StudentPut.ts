@@ -3,5 +3,5 @@
 /* eslint-disable */
 
 export type StudentPut = {
-    name: string;
+    name?: string;
 }

@@ -3,5 +3,5 @@
 /* eslint-disable */
 
 export type ClassLevelPut = {
-    prefix: string;
+    prefix?: string;
 }
