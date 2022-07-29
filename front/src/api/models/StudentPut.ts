@@ -4,4 +4,5 @@
 
 export type StudentPut = {
     name?: string;
+    rank?: number;
 }

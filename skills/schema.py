@@ -123,6 +123,7 @@ class Student(Base):
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     school_class_id = Column(Integer, ForeignKey('school_class.id', ondelete='CASCADE'), nullable=False)
     name = Column(String, nullable=False, index=True)
+    rank = Column(Integer, nullable=False, index=True, server_default='0')
 
     school_class = relationship(
         'SchoolClass',
@@ -142,6 +143,7 @@ class Student(Base):
             'created': self.created.isoformat(),
             'school_class_id': self.school_class_id,
             'name': self.name,
+            'rank': self.rank,
         }
 
 

@@ -96,9 +96,11 @@ export function EditStudentButton(props : EditStudentButtonProps): ReactElement 
         event.preventDefault();
         const target = event.target as typeof event.target & {
             name: {value: string};
+            rank: {value: string};
         };
         StudentsService.putStudentResource(student.id, {
             name: target.name.value,
+            rank: parseInt(target.rank.value),
         }).then(({ student: changed_student }) => {
             setChanging(false);
             setShow(false);
@@ -127,6 +129,13 @@ export function EditStudentButton(props : EditStudentButtonProps): ReactElement 
                         <Form.Control type="text" placeholder="Example: John Doe" defaultValue={student.name} />
                         <Form.Text className="text-muted">
                             New name for the student “{student.name}”
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group controlId="rank">
+                        <Form.Label>Rank</Form.Label>
+                        <Form.Control type="number" placeholder="Example: 7" defaultValue={student.rank} />
+                        <Form.Text className="text-muted">
+                            New rank for the student “{student.name}”
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
@@ -211,6 +220,7 @@ export function StudentListing(props: StudentListingProps): ReactElement {
         <Table>
             <thead>
                 <tr>
+                    <th>Rank</th>
                     <th>Name</th>
                     <th>Action</th>
                 </tr>
@@ -218,6 +228,7 @@ export function StudentListing(props: StudentListingProps): ReactElement {
             <tbody>
                 {students.map((student, index) =>
                     <tr key={student.id}>
+                        <td>{student.rank}</td>
                         <td>
                             <Nav.Link as={Link} to={`/students/${student.id}`}>
                                 {student.name}

@@ -91,6 +91,7 @@ api_model_student = api.model('Student', {
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
     'school_class_id': fields.Integer(example=42, required=True),
     'name': fields.String(example='John Doe', required=True),
+    'rank': fields.Integer(example=7, required=True),
 })
 
 api_model_belt = api.model('Belt', {
@@ -657,6 +658,7 @@ class StudentResource(Resource):
 
     put_model = api.model('StudentPut', {
         'name': fields.String(example='John Doe'),
+        'rank': fields.Integer(example=7),
     })
 
     @api.expect(put_model, validate=True)
@@ -670,6 +672,9 @@ class StudentResource(Resource):
             name = request.json.get('name')
             if name is not None:
                 student.name = name
+            rank = request.json.get('rank')
+            if rank is not None:
+                student.rank = rank
             session.commit()
             school_class = student.school_class
             class_level = school_class.class_level
