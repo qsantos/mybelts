@@ -750,7 +750,7 @@ class StudentBeltAttemptsResource(Resource):
             skill_domains = []
             skill_domain_ids: Set[int] = set()
             belt_attempts = []
-            for belt_attempt, belt, skill_domain in things:
+            for belt_attempt, skill_domain, belt in things:
                 belt_attempts.append(belt_attempt)
                 if belt.id not in belt_ids:
                     belt_ids.add(belt.id)
