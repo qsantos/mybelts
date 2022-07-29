@@ -331,7 +331,6 @@ function SchoolClassView() {
     }
 
     const { class_level, school_class, students } = studentList;
-    const sorted_students = students.sort((a, b) => a.name.localeCompare(b.name));
 
     return <>
         <Breadcrumb>
@@ -360,7 +359,7 @@ function SchoolClassView() {
             setStudentList({ ...studentList, students: new_students });
         }} />
         <StudentListing
-            students={sorted_students}
+            students={students}
             setStudents={new_students => setStudentList({ ...studentList, students: new_students })}
         />
     </>;
