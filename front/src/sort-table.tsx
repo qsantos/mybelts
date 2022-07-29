@@ -60,7 +60,7 @@ export function SortTable<T>(props: SortTableProps<T>): ReactElement {
             <tbody>
                 {table
                     .getRowModel()
-                    .rows.slice(0, 10)
+                    .rows
                     .map(row => (
                         <tr key={row.id}>
                             {row.getVisibleCells().map(cell => (
