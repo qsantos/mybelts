@@ -10,9 +10,10 @@ import Nav from 'react-bootstrap/Nav';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
 import Tooltip from 'react-bootstrap/Tooltip';
-import Table from 'react-bootstrap/Table';
+import { ColumnDef } from '@tanstack/react-table';
 
 import { Student, StudentsService } from './api';
+import { SortTable } from './sort-table';
 
 interface CreateStudentButtonProps {
     school_class_id: number;
@@ -216,42 +217,59 @@ interface StudentListingProps {
 export function StudentListing(props: StudentListingProps): ReactElement {
     const { students, setStudents } = props;
     const navigate = useNavigate();
-    return <>
-        <Table>
-            <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Name</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {students.map((student, index) =>
-                    <tr key={student.id}>
-                        <td>{student.rank}</td>
-                        <td>
-                            <Nav.Link as={Link} to={`/students/${student.id}`}>
-                                {student.name}
-                            </Nav.Link>
-                        </td>
-                        <td>
-                            <OverlayTrigger overlay={<Tooltip>View</Tooltip>}>
-                                <Button onClick={() => navigate(`/students/${student.id}`)}>🔍</Button>
-                            </OverlayTrigger>
-                            {' '}
-                            <EditStudentButton student={student} changedCallback={new_student => {
-                                students[index] = new_student;
-                                setStudents(students);
-                            }} />
-                            {' '}
-                            <DeleteStudentButton student={student} deletedCallback={() => {
-                                students.splice(index, 1);
-                                setStudents(students);
-                            }} />
-                        </td>
-                    </tr>
-                )}
-            </tbody>
-        </Table>
-    </>;
+
+    const columns = React.useMemo<ColumnDef<Student>[]>(
+        () => [
+            {
+                header: 'Rank',
+                accessorKey: 'rank',
+            },
+            {
+                header: 'Name',
+                accessorKey: 'name',
+                cell: info => {
+                    const student = info.row.original;
+                    return (
+                        <Nav.Link as={Link} to={`/students/${student.id}`}>
+                            {student.name}
+                        </Nav.Link>
+                    );
+                },
+            },
+            {
+                header: 'Action',
+                cell: info => {
+                    const student = info.row.original;
+                    return <>
+                        <OverlayTrigger overlay={<Tooltip>View</Tooltip>}>
+                            <Button onClick={() => navigate(`/students/${student.id}`)}>🔍</Button>
+                        </OverlayTrigger>
+                        {' '}
+                        <EditStudentButton student={student} changedCallback={new_student => {
+                            // TODO: are we seriously copying the whole array?
+                            const new_students = [...students];
+                            new_students[info.row.index] = new_student;
+                            setStudents(new_students);
+                        }} />
+                        {' '}
+                        <DeleteStudentButton student={student} deletedCallback={() => {
+                            // TODO: are we seriously copying the whole array?
+                            const new_students = [...students];
+                            new_students.splice(info.row.index, 1);
+                            setStudents(new_students);
+                        }} />
+                    </>;
+                },
+            },
+        ],
+        [],
+    );
+
+    const sorting = [
+        {
+            id: 'rank',
+            desc: false,
+        },
+    ];
+    return <SortTable data={students} columns={columns} initialSorting={sorting} />;
 }

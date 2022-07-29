@@ -7,12 +7,13 @@ import { ColumnDef, SortingState, flexRender, getCoreRowModel, getSortedRowModel
 interface SortTableProps<T> {
     data: T[],
     columns: ColumnDef<T>[],
+    initialSorting?: SortingState,
 }
 
 export function SortTable<T>(props: SortTableProps<T>): ReactElement {
-    const {data, columns} = props;
+    const {data, columns, initialSorting} = props;
 
-    const [sorting, setSorting] = useState<SortingState>([]);
+    const [sorting, setSorting] = useState<SortingState>(initialSorting || []);
 
     const table = useReactTable({
         data,
