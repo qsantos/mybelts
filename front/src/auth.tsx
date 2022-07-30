@@ -20,6 +20,8 @@ export function LoginButton(props: LoginButtonProps): ReactElement {
     const [errorMessage, setErrorMessage] = useState(false);
     const [loggingIn, setLoggingIn] = useState(false);
 
+    const nameInputRef = React.useRef<HTMLInputElement>(null);
+
     function handleSubmit(event: FormEvent) {
         event.preventDefault();
         setLoggingIn(true);
@@ -40,7 +42,7 @@ export function LoginButton(props: LoginButtonProps): ReactElement {
     }
 
     return <>
-        <Modal show={show}>
+        <Modal show={show} onShow={() => nameInputRef.current?.focus?.()}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
                     <Modal.Title>Log In</Modal.Title>
@@ -49,7 +51,7 @@ export function LoginButton(props: LoginButtonProps): ReactElement {
                     {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
                         <Form.Label>User Name</Form.Label>
-                        <Form.Control type="text" placeholder="Example: tartempion" />
+                        <Form.Control type="text" placeholder="Example: tartempion" ref={nameInputRef} />
                         <Form.Text className="text-muted">
                             Your user name
                         </Form.Text>
