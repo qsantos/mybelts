@@ -657,7 +657,7 @@ class StudentsResource(Resource):
         with session_context() as session:
             authenticate(session)
             students_json = request.json['students']
-            session.bulk_update_mappings(Student, students_json)
+            session.bulk_update_mappings(Student, students_json)  # type: ignore
             students = session.query(Student).filter(
                 Student.id.in_(student_json['id'] for student_json in students_json),
             ).all()
