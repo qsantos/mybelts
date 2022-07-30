@@ -217,13 +217,15 @@ export function SkillDomainListing(props: SkillDomainListingProps): ReactElement
                         <td>{skill_domain.name}</td>
                         <td>
                             <EditSkillDomainButton skill_domain={skill_domain} changedCallback={new_skill_domain => {
-                                skill_domains[index] = new_skill_domain;
-                                setSkillDomains(skill_domains);
+                                const new_skill_domains = [...skill_domains];
+                                new_skill_domains[index] = new_skill_domain;
+                                setSkillDomains(new_skill_domains);
                             }} />
                             {' '}
                             <DeleteSkillDomainButton skill_domain={skill_domain} deletedCallback={() => {
-                                skill_domains.splice(index, 1);
-                                setSkillDomains(skill_domains);
+                                const new_skill_domains = [...skill_domains];
+                                new_skill_domains.splice(index, 1);
+                                setSkillDomains(new_skill_domains);
                             }} />
                         </td>
                     </tr>

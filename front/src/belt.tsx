@@ -301,19 +301,21 @@ export function BeltListing(props: BeltListingProps): ReactElement {
                             <MoveBeltButton buttonContent="↓" direction_name="Down" direction={1} belt={belt} belts={belts} setBelts={setBelts} setErrorMessage={setErrorMessage} />
                             {' '}
                             <EditBeltButton belt={belt} changedCallback={new_belt => {
-                                belts[index] = new_belt;
-                                setBelts(belts);
+                                const new_belts = [...belts];
+                                new_belts[index] = new_belt;
+                                setBelts(new_belts);
                             }} />
                             {' '}
                             <DeleteBeltButton belt={belt} deletedCallback={() => {
-                                belts.splice(index, 1);
-                                for (let j = index; j < belts.length; j += 1) {
-                                    const other_belt = belts[j];
+                                const new_belts = [...belts];
+                                new_belts.splice(index, 1);
+                                for (let j = index; j < new_belts.length; j += 1) {
+                                    const other_belt = new_belts[j];
                                     if (other_belt !== undefined) {  // always true
                                         other_belt.rank -= 1;
                                     }
                                 }
-                                setBelts(belts);
+                                setBelts(new_belts);
                             }} />
                         </td>
                     </tr>)}

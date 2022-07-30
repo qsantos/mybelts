@@ -230,13 +230,15 @@ export function SchoolClassListing(props: SchoolClassListingProps): ReactElement
                             </OverlayTrigger>
                             {' '}
                             <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
-                                school_classes[index] = new_school_class;
-                                setSchoolClasses(school_classes);
+                                const new_school_classes = [...school_classes];
+                                new_school_classes[index] = new_school_class;
+                                setSchoolClasses(new_school_classes);
                             }} />
                             {' '}
                             <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => {
-                                school_classes.splice(index, 1);
-                                setSchoolClasses(school_classes);
+                                const new_school_classes = [...school_classes];
+                                new_school_classes.splice(index, 1);
+                                setSchoolClasses(new_school_classes);
                             }} />
                         </td>
                     </tr>

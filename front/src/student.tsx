@@ -336,15 +336,15 @@ export function StudentListing(props: StudentListingProps): ReactElement {
                         </OverlayTrigger>
                         {' '}
                         <EditStudentButton student={student} changedCallback={new_student => {
-                            students[info.row.index] = new_student;
-                            // TODO: are we seriously copying the whole array?
-                            setStudents([...students]);
+                            const new_students = [...students];
+                            new_students[info.row.index] = new_student;
+                            setStudents(new_students);
                         }} />
                         {' '}
                         <DeleteStudentButton student={student} deletedCallback={() => {
-                            students.splice(info.row.index, 1);
-                            // TODO: are we seriously copying the whole array?
-                            setStudents([...students]);
+                            const new_students = [...students];
+                            new_students.splice(info.row.index, 1);
+                            setStudents(new_students);
                         }} />
                     </>;
                 },

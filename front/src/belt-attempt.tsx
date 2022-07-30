@@ -410,16 +410,16 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
                             skill_domain_options={skill_domain_options}
                             belt_options={belt_options}
                             changedCallback={new_belt_attempt => {
-                                belt_attempts[info.row.index] = new_belt_attempt;
-                                // TODO: are we seriously copying the whole array?
-                                setBeltAttempts([...belt_attempts]);
+                                const new_belt_attempts = [...belt_attempts];
+                                new_belt_attempts[info.row.index] = new_belt_attempt;
+                                setBeltAttempts(new_belt_attempts);
                             }}
                         />
                         {' '}
                         <DeleteBeltAttemptButton belt_attempt={belt_attempt} student={student} deletedCallback={() => {
-                            belt_attempts.splice(info.row.index, 1);
-                            // TODO: are we seriously copying the whole array?
-                            setBeltAttempts([...belt_attempts]);
+                            const new_belt_attempts = [...belt_attempts];
+                            new_belt_attempts.splice(info.row.index, 1);
+                            setBeltAttempts(new_belt_attempts);
                         }} />
                     </>;
                 },

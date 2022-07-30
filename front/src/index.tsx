@@ -82,9 +82,8 @@ function UsersView() {
         </Breadcrumb>
         <h3>Users</h3>
         {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-        <CreateUserButton createdCallback={user => {
-            users.push(user);
-            setUserList({ ...userList, users });
+        <CreateUserButton createdCallback={new_user => {
+            setUserList({ ...userList, users: [...users, new_user] });
         }}/>
         <h4>List of available users</h4>
         <UserListing
@@ -135,9 +134,8 @@ function BeltsView() {
         </Breadcrumb>
         <h3>Belts</h3>
         {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
-        <CreateBeltButton createdCallback={belt => {
-            belts.push(belt);
-            setBeltList({ ...beltList, belts });
+        <CreateBeltButton createdCallback={new_belt => {
+            setBeltList({ ...beltList, belts: [...belts, new_belt] });
         }}/>
         <h4>List of available belts</h4>
         <BeltListing
@@ -179,9 +177,8 @@ function SkillDomainsView() {
             <BreadcrumbItem active href="/skill-domains">Skill Domains</BreadcrumbItem>
         </Breadcrumb>
         <h3>Skill Domains</h3>
-        <CreateSkillDomainButton createdCallback={skill_domain => {
-            skill_domains.push(skill_domain);
-            setSkillDomainList({ ...skillDomainList, skill_domains });
+        <CreateSkillDomainButton createdCallback={new_skill_domain => {
+            setSkillDomainList({ ...skillDomainList, skill_domains: [...skill_domains, new_skill_domain] });
         }}/>
         <h4>List of available skill domains</h4>
         <SkillDomainListing
@@ -223,9 +220,8 @@ function ClassLevelsView() {
         </Breadcrumb>
         <h3>Class Levels</h3>
         <h3>List of available class levels</h3>
-        <CreateClassLevelButton createdCallback={class_level => {
-            class_levels.push(class_level);
-            setClassLevelList({ ...classLevelList, class_levels });
+        <CreateClassLevelButton createdCallback={new_class_level => {
+            setClassLevelList({ ...classLevelList, class_levels: [...class_levels, new_class_level] });
         }} />
         <ClassLevelListing
             class_levels={sorted_class_levels}
@@ -282,9 +278,8 @@ function ClassLevelView() {
         {' '}
         <DeleteClassLevelButton class_level={class_level} deletedCallback={() => navigate('/class-levels')} />
         <h4>List of classes</h4>
-        <CreateSchoolClassButton class_level_id={class_level.id} createdCallback={school_class => {
-            school_classes.push(school_class);
-            setSchoolClassList({ ...schoolClassList, school_classes });
+        <CreateSchoolClassButton class_level_id={class_level.id} createdCallback={new_school_class => {
+            setSchoolClassList({ ...schoolClassList, school_classes: [...school_classes, new_school_class] });
         }} />
         <SchoolClassListing
             school_classes={sorted_school_classes}
@@ -350,9 +345,8 @@ function SchoolClassView() {
         {' '}
         <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => navigate(`/class-levels/${class_level.id}`)} />
         <h4>List of students</h4>
-        <CreateStudentButton school_class_id={school_class.id} createdCallback={student => {
-            students.push(student);
-            setStudentList({ ...studentList, students });
+        <CreateStudentButton school_class_id={school_class.id} createdCallback={new_student => {
+            setStudentList({ ...studentList, students: [...students, new_student] });
         }} />
         {' '}
         <UpdateStudentRanks students={students} changedCallback={new_students => {
@@ -431,9 +425,8 @@ function StudentView() {
         {' '}
         <DeleteStudentButton student={student} deletedCallback={() => navigate(`/school-classes/${school_class.id}`)} />
         <h4>List of belt attempts:</h4>
-        <CreateBeltAttemptButton student={student} skill_domains={skill_domains} belts={belts} createdCallback={belt_attempt => {
-            belt_attempts.push(belt_attempt);
-            setBeltAttemptList({ ...beltAttemptList, belt_attempts });
+        <CreateBeltAttemptButton student={student} skill_domains={skill_domains} belts={belts} createdCallback={new_belt_attempt => {
+            setBeltAttemptList({ ...beltAttemptList, belt_attempts: [...belt_attempts, new_belt_attempt] });
         }} />
         <BeltAttemptListing
             skill_domains={skill_domains}

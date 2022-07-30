@@ -253,13 +253,15 @@ export function UserListing(props: UserListingProps): ReactElement {
                         <td>{user.is_admin ? '✅' : '❌'}</td>
                         <td>
                             <EditUserButton user={user} changedCallback={new_user => {
-                                users[index] = new_user;
-                                setUsers(users);
+                                const new_users = [...users];
+                                new_users[index] = new_user;
+                                setUsers(new_users);
                             }} />
                             {' '}
                             <DeleteUserButton user={user} deletedCallback={() => {
-                                users.splice(index, 1);
-                                setUsers(users);
+                                const new_users = [...users];
+                                new_users.splice(index, 1);
+                                setUsers(new_users);
                             }} />
                         </td>
                     </tr>)}

@@ -228,13 +228,15 @@ export function ClassLevelListing(props: ClassLevelListingProps): ReactElement {
                             </OverlayTrigger>
                             {' '}
                             <EditClassLevelButton class_level={class_level} changedCallback={new_class_level => {
-                                class_levels[index] = new_class_level;
-                                setClassLevels(class_levels);
+                                const new_class_levels = [...class_levels];
+                                new_class_levels[index] = new_class_level;
+                                setClassLevels(new_class_levels);
                             }} />
                             {' '}
                             <DeleteClassLevelButton class_level={class_level} deletedCallback={() => {
-                                class_levels.splice(index, 1);
-                                setClassLevels(class_levels);
+                                const new_class_levels = [...class_levels];
+                                new_class_levels.splice(index, 1);
+                                setClassLevels(new_class_levels);
                             }} />
                         </td>
                     </tr>
