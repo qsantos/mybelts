@@ -16,6 +16,7 @@ import { ColumnDef } from '@tanstack/react-table';
 
 import { Belt, SkillDomain, Student, BeltAttempt, BeltAttemptsService, SchoolClassStudentBeltsStudentBelts } from './api';
 import { BeltIcon } from './belt';
+import { getAPIError } from './lib';
 import { SortTable } from './sort-table';
 
 const localeDateOptions: Intl.DateTimeFormatOptions = {
@@ -35,7 +36,7 @@ interface CreateBeltAttemptButtonProps {
 export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): ReactElement {
     const { student, skill_domains, belts, createdCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -61,7 +62,7 @@ export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): R
             }
         }).catch(error => {
             setCreating(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -149,7 +150,7 @@ interface EditBeltAttemptButtonProps {
 export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): ReactElement {
     const { belt_attempt, student, skill_domain, belt, skill_domain_options, belt_options, changedCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [changing, setChanging] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -174,7 +175,7 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
             }
         }).catch(error => {
             setChanging(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -258,7 +259,7 @@ interface DeleteBeltAttemptButtonProps {
 export function DeleteBeltAttemptButton(props : DeleteBeltAttemptButtonProps): ReactElement {
     const { student, belt_attempt, deletedCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [deleting, setDeleting] = useState(false);
 
     function handleDelete() {
@@ -271,7 +272,7 @@ export function DeleteBeltAttemptButton(props : DeleteBeltAttemptButtonProps): R
             }
         }).catch(error => {
             setDeleting(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 

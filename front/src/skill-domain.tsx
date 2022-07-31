@@ -11,6 +11,7 @@ import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import { SkillDomain, SkillDomainsService } from './api';
+import { getAPIError } from './lib';
 
 interface CreateSkillDomainButtonProps
 {
@@ -20,7 +21,7 @@ interface CreateSkillDomainButtonProps
 export function CreateSkillDomainButton(props : CreateSkillDomainButtonProps): ReactElement {
     const { createdCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -39,7 +40,7 @@ export function CreateSkillDomainButton(props : CreateSkillDomainButtonProps): R
             }
         }).catch(error => {
             setCreating(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -85,7 +86,7 @@ interface EditSkillDomainButtonProps
 export function EditSkillDomainButton(props : EditSkillDomainButtonProps): ReactElement {
     const { skill_domain, changedCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [changing, setChanging] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -104,7 +105,7 @@ export function EditSkillDomainButton(props : EditSkillDomainButtonProps): React
             }
         }).catch(error => {
             setChanging(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -152,7 +153,7 @@ interface DeleteSkillDomainButtonProps
 export function DeleteSkillDomainButton(props : DeleteSkillDomainButtonProps): ReactElement {
     const { skill_domain, deletedCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [deleting, setDeleting] = useState(false);
 
     function handleDelete() {
@@ -165,7 +166,7 @@ export function DeleteSkillDomainButton(props : DeleteSkillDomainButtonProps): R
             }
         }).catch(error => {
             setDeleting(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 

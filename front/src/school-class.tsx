@@ -13,6 +13,7 @@ import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import { SchoolClass, SchoolClassesService } from './api';
+import { getAPIError } from './lib';
 
 interface CreateSchoolClassButtonProps
 {
@@ -23,7 +24,7 @@ interface CreateSchoolClassButtonProps
 export function CreateSchoolClassButton(props : CreateSchoolClassButtonProps): ReactElement {
     const { class_level_id, createdCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -43,7 +44,7 @@ export function CreateSchoolClassButton(props : CreateSchoolClassButtonProps): R
             }
         }).catch(error => {
             setCreating(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -89,7 +90,7 @@ interface EditSchoolClassButtonProps
 export function EditSchoolClassButton(props : EditSchoolClassButtonProps): ReactElement {
     const { school_class, changedCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [changing, setChanging] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -108,7 +109,7 @@ export function EditSchoolClassButton(props : EditSchoolClassButtonProps): React
             }
         }).catch(error => {
             setChanging(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -156,7 +157,7 @@ interface DeleteSchoolClassButtonProps
 export function DeleteSchoolClassButton(props : DeleteSchoolClassButtonProps): ReactElement {
     const { school_class, deletedCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [deleting, setDeleting] = useState(false);
 
     function handleDelete() {
@@ -169,7 +170,7 @@ export function DeleteSchoolClassButton(props : DeleteSchoolClassButtonProps): R
             }
         }).catch(error => {
             setDeleting(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 

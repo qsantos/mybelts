@@ -13,6 +13,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { Student, StudentsService } from './api';
+import { getAPIError } from './lib';
 import { SortTable } from './sort-table';
 
 interface CreateStudentButtonProps {
@@ -23,7 +24,7 @@ interface CreateStudentButtonProps {
 export function CreateStudentButton(props : CreateStudentButtonProps): ReactElement {
     const { school_class_id, createdCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -43,7 +44,7 @@ export function CreateStudentButton(props : CreateStudentButtonProps): ReactElem
             }
         }).catch(error => {
             setCreating(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -91,7 +92,7 @@ interface EditStudentButtonProps
 export function EditStudentButton(props : EditStudentButtonProps): ReactElement {
     const { student, changedCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [changing, setChanging] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -112,7 +113,7 @@ export function EditStudentButton(props : EditStudentButtonProps): ReactElement 
             }
         }).catch(error => {
             setChanging(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -167,7 +168,7 @@ interface DeleteStudentButtonProps
 export function DeleteStudentButton(props : DeleteStudentButtonProps): ReactElement {
     const { student, deletedCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [deleting, setDeleting] = useState(false);
 
     function handleDelete() {
@@ -180,7 +181,7 @@ export function DeleteStudentButton(props : DeleteStudentButtonProps): ReactElem
             }
         }).catch(error => {
             setDeleting(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -220,7 +221,7 @@ export function UpdateStudentRanks(props: UpdateStudentRanksProps): ReactElement
     const { students, changedCallback } = props;
 
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [updating, setUpdating] = useState(false);
 
     const firstElementRef = React.useRef<HTMLInputElement>(null);
@@ -254,7 +255,7 @@ export function UpdateStudentRanks(props: UpdateStudentRanksProps): ReactElement
             }
         }).catch(error => {
             setUpdating(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
         event.preventDefault();
     }

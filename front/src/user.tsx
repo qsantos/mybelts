@@ -11,6 +11,7 @@ import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import { User, UsersService } from './api';
+import { getAPIError } from './lib';
 
 interface CreateUserButtonProps
 {
@@ -20,7 +21,7 @@ interface CreateUserButtonProps
 export function CreateUserButton(props : CreateUserButtonProps): ReactElement {
     const { createdCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -43,7 +44,7 @@ export function CreateUserButton(props : CreateUserButtonProps): ReactElement {
             }
         }).catch(error => {
             setCreating(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -102,7 +103,7 @@ interface EditUserButtonProps
 export function EditUserButton(props : EditUserButtonProps): ReactElement {
     const { user, changedCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [changing, setChanging] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -125,7 +126,7 @@ export function EditUserButton(props : EditUserButtonProps): ReactElement {
             }
         }).catch(error => {
             setChanging(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -186,7 +187,7 @@ interface DeleteUserButtonProps
 export function DeleteUserButton(props : DeleteUserButtonProps): ReactElement {
     const { user, deletedCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [deleting, setDeleting] = useState(false);
 
     function handleDelete() {
@@ -199,7 +200,7 @@ export function DeleteUserButton(props : DeleteUserButtonProps): ReactElement {
             }
         }).catch(error => {
             setDeleting(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 

@@ -13,6 +13,7 @@ import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import { ClassLevel, ClassLevelsService } from './api';
+import { getAPIError } from './lib';
 
 interface CreateClassLevelButtonProps
 {
@@ -22,7 +23,7 @@ interface CreateClassLevelButtonProps
 export function CreateClassLevelButton(props : CreateClassLevelButtonProps): ReactElement {
     const { createdCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -41,7 +42,7 @@ export function CreateClassLevelButton(props : CreateClassLevelButtonProps): Rea
             }
         }).catch(error => {
             setCreating(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -87,7 +88,7 @@ interface EditClassLevelButtonProps
 export function EditClassLevelButton(props : EditClassLevelButtonProps): ReactElement {
     const { class_level, changedCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [changing, setChanging] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -106,7 +107,7 @@ export function EditClassLevelButton(props : EditClassLevelButtonProps): ReactEl
             }
         }).catch(error => {
             setChanging(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -154,7 +155,7 @@ interface DeleteClassLevelButtonProps
 export function DeleteClassLevelButton(props : DeleteClassLevelButtonProps): ReactElement {
     const { class_level, deletedCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [deleting, setDeleting] = useState(false);
 
     function handleDelete() {
@@ -167,7 +168,7 @@ export function DeleteClassLevelButton(props : DeleteClassLevelButtonProps): Rea
             }
         }).catch(error => {
             setDeleting(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 

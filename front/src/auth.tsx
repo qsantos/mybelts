@@ -8,6 +8,7 @@ import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 
 import { LoginInfo, UsersService } from './api';
+import { getAPIError } from './lib';
 
 interface LoginButtonProps {
     className?: string;
@@ -17,7 +18,7 @@ interface LoginButtonProps {
 export function LoginButton(props: LoginButtonProps): ReactElement {
     const { className, loggedInCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [loggingIn, setLoggingIn] = useState(false);
 
     const nameInputRef = React.useRef<HTMLInputElement>(null);
@@ -37,7 +38,7 @@ export function LoginButton(props: LoginButtonProps): ReactElement {
             loggedInCallback(loginInfo);
         }).catch(error => {
             setLoggingIn(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 

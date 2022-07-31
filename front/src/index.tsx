@@ -23,6 +23,7 @@ import {
     StudentList, StudentsService,
     BeltAttemptList,
 } from './api';
+import { getAPIError } from './lib';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
@@ -58,7 +59,7 @@ function UsersView() {
         UsersService
             .getUsersResource()
             .then(setUserList)
-            .catch(error => { setErrorMessage(error.body.message); });
+            .catch(error => { setErrorMessage(getAPIError(error)); });
     }, []);
 
     if (userList === null) {
@@ -102,7 +103,7 @@ function BeltsView() {
         BeltsService
             .getBeltsResource()
             .then(setBeltList)
-            .catch(error => { setErrorMessage(error.body.message); });
+            .catch(error => { setErrorMessage(getAPIError(error)); });
     }, []);
 
     if (beltList === null) {
@@ -155,7 +156,7 @@ function SkillDomainsView() {
         SkillDomainsService
             .getSkillDomainsResource()
             .then(setSkillDomainList)
-            .catch(error => { setErrorMessage(error.body.message); });
+            .catch(error => { setErrorMessage(getAPIError(error)); });
     }, []);
 
     if (skillDomainList === null) {
@@ -197,7 +198,7 @@ function ClassLevelsView() {
         ClassLevelsService
             .getClassLevelsResource()
             .then(setClassLevelList)
-            .catch(error => { setErrorMessage(error.body.message); });
+            .catch(error => { setErrorMessage(getAPIError(error)); });
     }, []);
 
     if (classLevelList === null) {
@@ -248,7 +249,7 @@ function ClassLevelView() {
         ClassLevelsService
             .getClassLevelSchoolClassesResource(parseInt(class_level_id))
             .then(setSchoolClassList)
-            .catch(error => { setErrorMessage(error.body.message); });
+            .catch(error => { setErrorMessage(getAPIError(error)); });
     }, [class_level_id]);
 
     if (schoolClassList === null) {
@@ -306,7 +307,7 @@ function SchoolClassView() {
         SchoolClassesService
             .getSchoolClassResource(parseInt(school_class_id))
             .then(setStudentList)
-            .catch(error => { setErrorMessage(error.body.message); });
+            .catch(error => { setErrorMessage(getAPIError(error)); });
     }, [school_class_id]);
 
     if (studentList === null) {
@@ -379,15 +380,15 @@ function StudentView() {
         BeltsService
             .getBeltsResource()
             .then(setBeltList)
-            .catch(error => { setErrorMessage(error.body.message); });
+            .catch(error => { setErrorMessage(getAPIError(error)); });
         SkillDomainsService
             .getSkillDomainsResource()
             .then(setSkillDomainList)
-            .catch(error => { setErrorMessage(error.body.message); });
+            .catch(error => { setErrorMessage(getAPIError(error)); });
         StudentsService
             .getStudentBeltAttemptsResource(parseInt(student_id))
             .then(setBeltAttemptList)
-            .catch(error => { setErrorMessage(error.body.message); });
+            .catch(error => { setErrorMessage(getAPIError(error)); });
     }, [student_id]);
 
     if (beltList === null || skillDomainList === null || beltAttemptList === null) {
@@ -455,7 +456,7 @@ function SchoolClassBeltsView() {
         SchoolClassesService
             .getSchoolClassStudentBeltsResource(parseInt(school_class_id))
             .then(setSchoolClassStudentBelts)
-            .catch(error => { setErrorMessage(error.body.message); });
+            .catch(error => { setErrorMessage(getAPIError(error)); });
     }, [school_class_id]);
 
     if (schoolClassStudentBelts === null) {

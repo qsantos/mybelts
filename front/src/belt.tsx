@@ -12,6 +12,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 
 import { Belt, BeltsService } from './api';
 import { ReactComponent as BeltImage } from './belt.svg';
+import { getAPIError } from './lib';
 
 interface BeltIconProps {
     belt: Belt;
@@ -34,7 +35,7 @@ interface CreateBeltButtonProps
 export function CreateBeltButton(props : CreateBeltButtonProps): ReactElement {
     const { createdCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [creating, setCreating] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -53,7 +54,7 @@ export function CreateBeltButton(props : CreateBeltButtonProps): ReactElement {
             }
         }).catch(error => {
             setCreating(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -122,7 +123,7 @@ export function MoveBeltButton(props : MoveBeltButtonProps): ReactElement {
             setBelts(belts);
         }).catch(error => {
             setMoving(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -151,7 +152,7 @@ interface EditBeltButtonProps
 export function EditBeltButton(props : EditBeltButtonProps): ReactElement {
     const { belt, changedCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [changing, setChanging] = useState(false);
 
     function handleSubmit(event: FormEvent) {
@@ -172,7 +173,7 @@ export function EditBeltButton(props : EditBeltButtonProps): ReactElement {
             }
         }).catch(error => {
             setChanging(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
@@ -227,7 +228,7 @@ interface DeleteBeltButtonProps
 export function DeleteBeltButton(props : DeleteBeltButtonProps): ReactElement {
     const { belt, deletedCallback } = props;
     const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [deleting, setDeleting] = useState(false);
 
     function handleDelete() {
@@ -240,7 +241,7 @@ export function DeleteBeltButton(props : DeleteBeltButtonProps): ReactElement {
             }
         }).catch(error => {
             setDeleting(false);
-            setErrorMessage(error.body.message);
+            setErrorMessage(getAPIError(error));
         });
     }
 
