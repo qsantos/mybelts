@@ -4,6 +4,7 @@ import React from 'react';
 import { ReactNode, StrictMode, useEffect, useState } from 'react';
 
 import Alert from 'react-bootstrap/Alert';
+import Badge from 'react-bootstrap/Badge';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
@@ -515,8 +516,14 @@ function Layout() {
                 <Nav.Item><Nav.Link as={Link} to="/class-levels">Class Levels</Nav.Link></Nav.Item>
             </Nav>
             {loginInfo
-                ? <LogoutButton className="me-2" loggedOutCallback={() => setLoginInfo(null)}/>
-                : <LoginButton className="me-2" loggedInCallback={setLoginInfo}/>
+                ? <>
+                    <Badge bg="info" className="me-2">{loginInfo.user.name}</Badge>
+                    <LogoutButton className="me-2" loggedOutCallback={() => setLoginInfo(null)}/>
+                </>
+                : <>
+                    <Badge bg="warning" className="me-2">Not connected</Badge>
+                    <LoginButton className="me-2" loggedInCallback={setLoginInfo}/>
+                </>
             }
         </Navbar>
         {loginInfo && <Outlet />}
