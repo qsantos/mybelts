@@ -14,6 +14,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 
 import {
     OpenAPI,
+    LoginInfo,
     UserList, UsersService,
     BeltList, BeltsService,
     ClassLevelList, ClassLevelsService,
@@ -491,14 +492,15 @@ function SchoolClassBeltsView() {
 }
 
 function Layout() {
-    const saved_token = localStorage.getItem('token');
-    const [token, setToken] = useState<null | string>(saved_token);
-    if (token === null) {
+    const rawSavedLoginInfo = localStorage.getItem('login_info');
+    const savedLoginInfo = rawSavedLoginInfo === null ? null : (JSON.parse(rawSavedLoginInfo) as LoginInfo);
+    const [loginInfo, setLoginInfo] = useState<LoginInfo | null>(savedLoginInfo);
+    if (loginInfo === null) {
         OpenAPI.TOKEN = undefined;
-        localStorage.removeItem('token');
+        localStorage.removeItem('login_info');
     } else {
-        OpenAPI.TOKEN = token;
-        localStorage.setItem('token', token);
+        OpenAPI.TOKEN = loginInfo.token;
+        localStorage.setItem('login_info', JSON.stringify(loginInfo));
     }
 
     return <>
@@ -511,12 +513,12 @@ function Layout() {
                 <Nav.Item><Nav.Link as={Link} to="/belts">Belts</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/class-levels">Class Levels</Nav.Link></Nav.Item>
             </Nav>
-            {token
-                ? <LogoutButton className="me-2" loggedOutCallback={() => setToken(null)}/>
-                : <LoginButton className="me-2" loggedInCallback={setToken}/>
+            {loginInfo
+                ? <LogoutButton className="me-2" loggedOutCallback={() => setLoginInfo(null)}/>
+                : <LoginButton className="me-2" loggedInCallback={setLoginInfo}/>
             }
         </Navbar>
-        {token && <Outlet />}
+        {loginInfo && <Outlet />}
     </>;
 }
 

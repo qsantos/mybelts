@@ -7,11 +7,11 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 
-import { UsersService } from './api';
+import { LoginInfo, UsersService } from './api';
 
 interface LoginButtonProps {
     className?: string;
-    loggedInCallback: (token: string) => void;
+    loggedInCallback: (loginInfo: LoginInfo) => void;
 }
 
 export function LoginButton(props: LoginButtonProps): ReactElement {
@@ -32,9 +32,9 @@ export function LoginButton(props: LoginButtonProps): ReactElement {
         UsersService.postLoginResource({
             name: target.name.value,
             password: target.password.value,
-        }).then(({ token }) => {
+        }).then((loginInfo) => {
             setLoggingIn(false);
-            loggedInCallback(token);
+            loggedInCallback(loginInfo);
         }).catch(error => {
             setLoggingIn(false);
             setErrorMessage(error.body.message);
