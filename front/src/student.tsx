@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -307,7 +307,6 @@ interface StudentListingProps {
 
 export function StudentListing(props: StudentListingProps): ReactElement {
     const { students, setStudents } = props;
-    const navigate = useNavigate();
 
     const columns = React.useMemo<ColumnDef<Student>[]>(
         () => [
@@ -332,10 +331,6 @@ export function StudentListing(props: StudentListingProps): ReactElement {
                 cell: info => {
                     const student = info.row.original;
                     return <>
-                        <OverlayTrigger overlay={<Tooltip>View</Tooltip>}>
-                            <Button onClick={() => navigate(`/students/${student.id}`)}>🔍</Button>
-                        </OverlayTrigger>
-                        {' '}
                         <EditStudentButton student={student} changedCallback={new_student => {
                             const new_students = [...students];
                             new_students[info.row.index] = new_student;

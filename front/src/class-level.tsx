@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -206,7 +206,6 @@ interface ClassLevelListingProps {
 
 export function ClassLevelListing(props: ClassLevelListingProps): ReactElement {
     const { class_levels, setClassLevels } = props;
-    const navigate = useNavigate();
     return <>
         <Table>
             <thead>
@@ -224,10 +223,6 @@ export function ClassLevelListing(props: ClassLevelListingProps): ReactElement {
                             </Nav.Link>
                         </td>
                         <td>
-                            <OverlayTrigger overlay={<Tooltip>View</Tooltip>}>
-                                <Button onClick={() => navigate(`${class_level.id}`)}>🔍</Button>
-                            </OverlayTrigger>
-                            {' '}
                             <EditClassLevelButton class_level={class_level} changedCallback={new_class_level => {
                                 const new_class_levels = [...class_levels];
                                 new_class_levels[index] = new_class_level;

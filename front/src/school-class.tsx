@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -208,7 +208,6 @@ interface SchoolClassListingProps {
 
 export function SchoolClassListing(props: SchoolClassListingProps): ReactElement {
     const { school_classes, setSchoolClasses } = props;
-    const navigate = useNavigate();
     return <>
         <Table>
             <thead>
@@ -226,10 +225,6 @@ export function SchoolClassListing(props: SchoolClassListingProps): ReactElement
                             </Nav.Link>
                         </td>
                         <td>
-                            <OverlayTrigger overlay={<Tooltip>View</Tooltip>}>
-                                <Button onClick={() => navigate(`/school-classes/${school_class.id}`)}>🔍</Button>
-                            </OverlayTrigger>
-                            {' '}
                             <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
                                 const new_school_classes = [...school_classes];
                                 new_school_classes[index] = new_school_class;
