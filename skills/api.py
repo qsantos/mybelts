@@ -118,6 +118,17 @@ api_model_belt_attempt = api.model('BeltAttempt', {
     'success': fields.Boolean(example=True, required=True),
 })
 
+api_model_login_payload = api.model('LoginPayload', {
+    'user_id': fields.Integer(example=42, required=True),
+    'exp': fields.Float(example=1659261001.276245, required=True, help='Timestamp of the expiration'),
+})
+
+api_model_login_info = api.model('LoginInfo', {
+    'payload': fields.Nested(api_model_login_payload),
+    'token': fields.String(required=True),
+    'user': fields.Nested(api_model_user, required=True),
+})
+
 api_model_user_list = api.model('UserList', {
     'users': fields.List(fields.Nested(api_model_user), required=True),
 })
@@ -218,6 +229,7 @@ class LoginResource(Resource):
     })
 
     @api.expect(post_model, validate=True)
+    @api.marshal_with(api_model_login_info)
     def post(self) -> Any:
         with session_context() as session:
             user = session.query(User).filter(User.name == request.json['name']).one_or_none()
@@ -230,6 +242,7 @@ class LoginResource(Resource):
             return {
                 'payload': payload,
                 'token': jwt.encode(payload, SECRET, algorithm='HS256'),
+                'user': user.json(),
             }
 
 
