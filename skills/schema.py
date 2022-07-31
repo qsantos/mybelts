@@ -60,6 +60,13 @@ class User(Base):
     password = Column(PasswordType(schemes=['pbkdf2_sha512']), nullable=False)
     is_admin = Column(Boolean, nullable=False, index=True, default=False)
 
+    student = relationship(
+        'Student',
+        foreign_keys='Student.user_id',
+        back_populates='user',
+        uselist=False,
+    )
+
     def json(self) -> Dict:
         return {
             'id': self.id,
@@ -121,9 +128,16 @@ class Student(Base):
     __tablename__ = 'student'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), unique=True)
     school_class_id = Column(Integer, ForeignKey('school_class.id', ondelete='CASCADE'), nullable=False)
     name = Column(String, nullable=False, index=True)
     rank = Column(Integer, nullable=False, index=True, server_default='0')
+
+    user = relationship(
+        'User',
+        foreign_keys=user_id,
+        back_populates='student',
+    )
 
     school_class = relationship(
         'SchoolClass',
