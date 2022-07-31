@@ -274,6 +274,11 @@ def authenticate(session: Session) -> User:
     return user
 
 
+def need_admin(user: User) -> None:
+    if not user.is_admin:
+        abort(403, 'User cannot perform action')
+
+
 @users_ns.route('/users')
 class UsersResource(Resource):
     @api.marshal_with(api_model_user_list)
@@ -295,7 +300,8 @@ class UsersResource(Resource):
     @api.marshal_with(api_model_user_one)
     def post(self) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             user = User(
                 name=request.json['name'],
                 password=request.json['password'],
@@ -319,9 +325,9 @@ class UsersMeResource(Resource):
     @api.marshal_with(api_model_user_one)
     def get(self) -> Any:
         with session_context() as session:
-            user = authenticate(session)
+            me = authenticate(session)
             return {
-                'user': user.json(),
+                'user': me.json(),
             }
 
 
@@ -348,7 +354,8 @@ class UserResource(Resource):
     @api.marshal_with(api_model_user_one)
     def put(self, user_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             user = session.query(User).get(user_id)
             if user is None:
                 abort(404, f'User {user_id} not found')
@@ -368,7 +375,8 @@ class UserResource(Resource):
 
     def delete(self, user_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             user = session.query(User).get(user_id)
             if user is None:
                 abort(404, f'User {user_id} not found')
@@ -397,7 +405,8 @@ class ClassLevelsResource(Resource):
     @api.marshal_with(api_model_class_level_one)
     def post(self) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             class_level = ClassLevel(prefix=request.json['prefix'])
             session.add(class_level)
             session.commit()
@@ -427,7 +436,8 @@ class ClassLevelResource(Resource):
     @api.marshal_with(api_model_class_level_one)
     def put(self, class_level_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             class_level = session.query(ClassLevel).get(class_level_id)
             if class_level is None:
                 abort(404, f'Class level {class_level_id} not found')
@@ -441,7 +451,8 @@ class ClassLevelResource(Resource):
 
     def delete(self, class_level_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             class_level = session.query(ClassLevel).get(class_level_id)
             if class_level is None:
                 abort(404, f'Class level {class_level_id} not found')
@@ -478,7 +489,8 @@ class SchoolClassesResource(Resource):
     @api.marshal_with(api_model_school_class_one)
     def post(self) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             class_level_id = request.json['class_level_id']
             class_level = session.query(ClassLevel).get(class_level_id)
             if class_level is None:
@@ -522,7 +534,8 @@ class SchoolClassResource(Resource):
     @api.marshal_with(api_model_school_class_one)
     def put(self, school_class_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
@@ -538,7 +551,8 @@ class SchoolClassResource(Resource):
 
     def delete(self, school_class_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
@@ -637,7 +651,8 @@ class StudentsResource(Resource):
     @api.marshal_with(api_model_student_one)
     def post(self) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             school_class_id = request.json['school_class_id']
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
@@ -668,7 +683,8 @@ class StudentsResource(Resource):
     @api.marshal_with(api_model_student_list_bare)
     def put(self) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             students_json = request.json['students']
             session.bulk_update_mappings(Student, students_json)  # type: ignore
             students = session.query(Student).filter(
@@ -709,7 +725,8 @@ class StudentResource(Resource):
     @api.marshal_with(api_model_student_one)
     def put(self, student_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             student = session.query(Student).get(student_id)
             if student is None:
                 abort(404, f'Student {student_id} not found')
@@ -730,7 +747,8 @@ class StudentResource(Resource):
 
     def delete(self, student_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             student = session.query(Student).get(student_id)
             if student is None:
                 abort(404, f'Student {student_id} not found')
@@ -805,7 +823,8 @@ class SkillDomainsResource(Resource):
     @api.marshal_with(api_model_skill_domain_one)
     def post(self) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             skill_domain = SkillDomain(
                 name=request.json['name'],
             )
@@ -837,7 +856,8 @@ class SkillDomainResource(Resource):
     @api.marshal_with(api_model_skill_domain_one)
     def put(self, skill_domain_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             skill_domain = session.query(SkillDomain).get(skill_domain_id)
             if skill_domain is None:
                 abort(404, f'Skill domain {skill_domain} not found')
@@ -851,7 +871,8 @@ class SkillDomainResource(Resource):
 
     def delete(self, skill_domain_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             skill_domain = session.query(SkillDomain).get(skill_domain_id)
             if skill_domain is None:
                 abort(404, f'Skill domain {skill_domain_id} not found')
@@ -881,7 +902,8 @@ class BeltsResource(Resource):
     @api.marshal_with(api_model_belt_one)
     def post(self) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             # TODO: store this information somewhere
             max_rank: int = session.query(func.max(Belt.rank)).scalar()  # type: ignore
             # no belt in database
@@ -921,7 +943,8 @@ class BeltResource(Resource):
     @api.marshal_with(api_model_belt_one)
     def put(self, belt_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             belt = session.query(Belt).get(belt_id)
             if belt is None:
                 abort(404, f'Belt {belt_id} not found')
@@ -938,7 +961,8 @@ class BeltResource(Resource):
 
     def delete(self, belt_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             belt = session.query(Belt).get(belt_id)
             if belt is None:
                 abort(404, f'Belt {belt_id} not found')
@@ -970,7 +994,8 @@ class BeltRankResource(Resource):
             abort(400, 'Only provide one of other_belt_id, increase_by')
 
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             belt = session.query(Belt).get(belt_id)
             if belt is None:
                 abort(404, f'Belt {belt_id} not found')
@@ -1030,7 +1055,8 @@ class BeltAttemptsResource(Resource):
     @api.marshal_with(api_model_belt_attempt_one)
     def post(self) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             student_id = request.json['student_id']
             student = session.query(Student).get(student_id)
             if student is None:
@@ -1104,7 +1130,8 @@ class BeltAttemptResource(Resource):
     @api.marshal_with(api_model_belt_attempt_one)
     def put(self, belt_attempt_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             belt_attempt = session.query(BeltAttempt).get(belt_attempt_id)
             if belt_attempt is None:
                 abort(404, f'Belt attempt {belt_attempt_id} not found')
@@ -1156,7 +1183,8 @@ class BeltAttemptResource(Resource):
 
     def delete(self, belt_attempt_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             belt_attempt = session.query(BeltAttempt).get(belt_attempt_id)
             if belt_attempt is None:
                 abort(404, f'Belt attempt {belt_attempt_id} not found')
