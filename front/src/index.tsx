@@ -515,6 +515,7 @@ function Layout() {
                 <Nav.Item><Nav.Link as={Link} to="/belts">Belts</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/class-levels">Class Levels</Nav.Link></Nav.Item>
             </Nav>
+            {loginInfo?.student ? <Badge bg="info" className="me-2">{loginInfo.student.name}</Badge> : null}
             {loginInfo
                 ? <>
                     <Badge bg="info" className="me-2">{loginInfo.user.name}</Badge>
