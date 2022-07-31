@@ -127,6 +127,7 @@ api_model_login_info = api.model('LoginInfo', {
     'payload': fields.Nested(api_model_login_payload),
     'token': fields.String(required=True),
     'user': fields.Nested(api_model_user, required=True),
+    'student': fields.Nested(api_model_student),
 })
 
 api_model_user_list = api.model('UserList', {
@@ -243,6 +244,7 @@ class LoginResource(Resource):
                 'payload': payload,
                 'token': jwt.encode(payload, SECRET, algorithm='HS256'),
                 'user': user.json(),
+                'student': user.student.json() if user.student is not None else None,
             }
 
 
