@@ -11,6 +11,7 @@ import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import { Belt, BeltsService } from './api';
+import { AdminOnly } from './auth';
 import { ReactComponent as BeltImage } from './belt.svg';
 import { getAPIError } from './lib';
 
@@ -280,6 +281,7 @@ interface BeltListingProps {
 
 export function BeltListing(props: BeltListingProps): ReactElement {
     const { belts, setBelts, setErrorMessage } = props;
+
     return <>
         <Table>
             <thead>
@@ -287,7 +289,9 @@ export function BeltListing(props: BeltListingProps): ReactElement {
                     <th>Rank</th>
                     <th>Name</th>
                     <th>Color</th>
-                    <th>Actions</th>
+                    <AdminOnly>
+                        <th>Actions</th>
+                    </AdminOnly>
                 </tr>
             </thead>
             <tbody>
@@ -296,29 +300,31 @@ export function BeltListing(props: BeltListingProps): ReactElement {
                         <td>{belt.rank}</td>
                         <td>{belt.name}</td>
                         <td><BeltIcon belt={belt} /></td>
-                        <td>
-                            <MoveBeltButton buttonContent="↑" direction_name="Up" direction={-1} belt={belt} belts={belts} setBelts={setBelts} setErrorMessage={setErrorMessage} />
-                            {' '}
-                            <MoveBeltButton buttonContent="↓" direction_name="Down" direction={1} belt={belt} belts={belts} setBelts={setBelts} setErrorMessage={setErrorMessage} />
-                            {' '}
-                            <EditBeltButton belt={belt} changedCallback={new_belt => {
-                                const new_belts = [...belts];
-                                new_belts[index] = new_belt;
-                                setBelts(new_belts);
-                            }} />
-                            {' '}
-                            <DeleteBeltButton belt={belt} deletedCallback={() => {
-                                const new_belts = [...belts];
-                                new_belts.splice(index, 1);
-                                for (let j = index; j < new_belts.length; j += 1) {
-                                    const other_belt = new_belts[j];
-                                    if (other_belt !== undefined) {  // always true
-                                        other_belt.rank -= 1;
+                        <AdminOnly>
+                            <td>
+                                <MoveBeltButton buttonContent="↑" direction_name="Up" direction={-1} belt={belt} belts={belts} setBelts={setBelts} setErrorMessage={setErrorMessage} />
+                                {' '}
+                                <MoveBeltButton buttonContent="↓" direction_name="Down" direction={1} belt={belt} belts={belts} setBelts={setBelts} setErrorMessage={setErrorMessage} />
+                                {' '}
+                                <EditBeltButton belt={belt} changedCallback={new_belt => {
+                                    const new_belts = [...belts];
+                                    new_belts[index] = new_belt;
+                                    setBelts(new_belts);
+                                }} />
+                                {' '}
+                                <DeleteBeltButton belt={belt} deletedCallback={() => {
+                                    const new_belts = [...belts];
+                                    new_belts.splice(index, 1);
+                                    for (let j = index; j < new_belts.length; j += 1) {
+                                        const other_belt = new_belts[j];
+                                        if (other_belt !== undefined) {  // always true
+                                            other_belt.rank -= 1;
+                                        }
                                     }
-                                }
-                                setBelts(new_belts);
-                            }} />
-                        </td>
+                                    setBelts(new_belts);
+                                }} />
+                            </td>
+                        </AdminOnly>
                     </tr>)}
             </tbody>
         </Table>

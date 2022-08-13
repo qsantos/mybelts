@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormEvent, ReactElement, useState } from 'react';
+import { FormEvent, ReactElement, ReactNode, useState } from 'react';
 
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -11,6 +11,24 @@ import { LoginInfo, UsersService } from './api';
 import { getAPIError } from './lib';
 
 export const LoginContext = React.createContext<LoginInfo | null>(null);
+
+export function is_admin(): boolean {
+    const loginInfo = React.useContext(LoginContext);
+    return loginInfo !== null && loginInfo.user.is_admin;
+}
+
+interface AdminOnlyProps {
+    children: ReactNode | ReactNode[];
+}
+
+export function AdminOnly(props: AdminOnlyProps): (ReactElement | null) {
+    const loginInfo = React.useContext(LoginContext);
+    if (loginInfo !== null && loginInfo.user.is_admin) {
+        return <>{props.children}</>;
+    } else {
+        return null;
+    }
+}
 
 interface LoginButtonProps {
     className?: string;

@@ -15,6 +15,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { Belt, SkillDomain, Student, BeltAttempt, BeltAttemptsService, SchoolClassStudentBeltsStudentBelts } from './api';
+import { is_admin } from './auth';
 import { BeltIcon } from './belt';
 import { getAPIError } from './lib';
 import { SortTable } from './sort-table';
@@ -331,103 +332,103 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
         label: belt.name,
     }));
 
-    const columns = React.useMemo<ColumnDef<BeltAttempt>[]>(
-        () => [
-            {
-                header: 'Skill domain',
-                accessorFn: belt_attempt => {
-                    const skill_domain_id = belt_attempt.skill_domain_id;
-                    const skill_domain = skill_domain_by_id[skill_domain_id];
-                    if (skill_domain === undefined) {
-                        // should not happen
-                        console.error(`skill_domain ${skill_domain_id} not found for belt_attempt ${belt_attempt.id}`);
-                        return <></>;
-                    }
-                    return skill_domain.name;
+    const columns: ColumnDef<BeltAttempt>[] = [
+        {
+            header: 'Skill domain',
+            accessorFn: belt_attempt => {
+                const skill_domain_id = belt_attempt.skill_domain_id;
+                const skill_domain = skill_domain_by_id[skill_domain_id];
+                if (skill_domain === undefined) {
+                    // should not happen
+                    console.error(`skill_domain ${skill_domain_id} not found for belt_attempt ${belt_attempt.id}`);
+                    return <></>;
                 }
-            },
-            {
-                header: 'Belt',
-                accessorFn: belt_attempt => {
-                    const belt_id = belt_attempt.belt_id;
-                    const belt = belt_by_id[belt_id];
-                    if (belt === undefined) {
-                        // should not happen
-                        console.error(`belt ${belt_id} not found for belt_attempt ${belt_attempt.id}`);
-                        return <></>;
-                    }
-                    return belt.name;
-                },
-                cell: info => {
-                    const belt_attempt = info.row.original;
-                    const belt_id = belt_attempt.belt_id;
-                    const belt = belt_by_id[belt_id];
-                    if (belt === undefined) {
-                        // should not happen
-                        console.error(`belt ${belt_id} not found for belt_attempt ${belt_attempt.id}`);
-                        return <></>;
-                    }
-                    return <BeltIcon belt={belt} />;
+                return skill_domain.name;
+            }
+        },
+        {
+            header: 'Belt',
+            accessorFn: belt_attempt => {
+                const belt_id = belt_attempt.belt_id;
+                const belt = belt_by_id[belt_id];
+                if (belt === undefined) {
+                    // should not happen
+                    console.error(`belt ${belt_id} not found for belt_attempt ${belt_attempt.id}`);
+                    return <></>;
                 }
+                return belt.name;
             },
-            {
-                header: 'Date',
-                accessorKey: 'date',
-                cell: info => {
-                    const date = info.row.original.date;
-                    const d = new Date(date);
-                    return d.toLocaleDateString('en-US', localeDateOptions);
-                },
+            cell: info => {
+                const belt_attempt = info.row.original;
+                const belt_id = belt_attempt.belt_id;
+                const belt = belt_by_id[belt_id];
+                if (belt === undefined) {
+                    // should not happen
+                    console.error(`belt ${belt_id} not found for belt_attempt ${belt_attempt.id}`);
+                    return <></>;
+                }
+                return <BeltIcon belt={belt} />;
+            }
+        },
+        {
+            header: 'Date',
+            accessorKey: 'date',
+            cell: info => {
+                const date = info.row.original.date;
+                const d = new Date(date);
+                return d.toLocaleDateString('en-US', localeDateOptions);
             },
-            {
-                header: 'Passed?',
-                accessorKey: 'success',
-                cell: info => info.getValue() ? '✅' : '❌',
-            },
-            {
-                header: 'Actions',
-                cell: info => {
-                    const belt_attempt = info.row.original;
-                    const skill_domain_id = belt_attempt.skill_domain_id;
-                    const belt_id = belt_attempt.belt_id;
-                    const skill_domain = skill_domain_by_id[belt_attempt.skill_domain_id];
-                    const belt = belt_by_id[belt_attempt.belt_id];
-                    if (skill_domain === undefined) {
-                        // should not happen
-                        console.error(`skill_domain ${skill_domain_id} not found for belt_attempt ${belt_attempt.id}`);
-                        return <></>;
-                    }
-                    if (belt === undefined) {
-                        // should not happen
-                        console.error(`belt ${belt_id} not found for belt_attempt ${belt_attempt.id}`);
-                        return <></>;
-                    }
-                    return <>
-                        <EditBeltAttemptButton
-                            belt_attempt={belt_attempt}
-                            student={student}
-                            skill_domain={skill_domain}
-                            belt={belt}
-                            skill_domain_options={skill_domain_options}
-                            belt_options={belt_options}
-                            changedCallback={new_belt_attempt => {
-                                const new_belt_attempts = [...belt_attempts];
-                                new_belt_attempts[info.row.index] = new_belt_attempt;
-                                setBeltAttempts(new_belt_attempts);
-                            }}
-                        />
-                        {' '}
-                        <DeleteBeltAttemptButton belt_attempt={belt_attempt} student={student} deletedCallback={() => {
+        },
+        {
+            header: 'Passed?',
+            accessorKey: 'success',
+            cell: info => info.getValue() ? '✅' : '❌',
+        },
+    ];
+
+    if (is_admin()) {
+        columns.push({
+            header: 'Actions',
+            cell: info => {
+                const belt_attempt = info.row.original;
+                const skill_domain_id = belt_attempt.skill_domain_id;
+                const belt_id = belt_attempt.belt_id;
+                const skill_domain = skill_domain_by_id[belt_attempt.skill_domain_id];
+                const belt = belt_by_id[belt_attempt.belt_id];
+                if (skill_domain === undefined) {
+                    // should not happen
+                    console.error(`skill_domain ${skill_domain_id} not found for belt_attempt ${belt_attempt.id}`);
+                    return <></>;
+                }
+                if (belt === undefined) {
+                    // should not happen
+                    console.error(`belt ${belt_id} not found for belt_attempt ${belt_attempt.id}`);
+                    return <></>;
+                }
+                return <>
+                    <EditBeltAttemptButton
+                        belt_attempt={belt_attempt}
+                        student={student}
+                        skill_domain={skill_domain}
+                        belt={belt}
+                        skill_domain_options={skill_domain_options}
+                        belt_options={belt_options}
+                        changedCallback={new_belt_attempt => {
                             const new_belt_attempts = [...belt_attempts];
-                            new_belt_attempts.splice(info.row.index, 1);
+                            new_belt_attempts[info.row.index] = new_belt_attempt;
                             setBeltAttempts(new_belt_attempts);
-                        }} />
-                    </>;
-                },
+                        }}
+                    />
+                    {' '}
+                    <DeleteBeltAttemptButton belt_attempt={belt_attempt} student={student} deletedCallback={() => {
+                        const new_belt_attempts = [...belt_attempts];
+                        new_belt_attempts.splice(info.row.index, 1);
+                        setBeltAttempts(new_belt_attempts);
+                    }} />
+                </>;
             },
-        ],
-        []
-    );
+        });
+    }
 
     return <SortTable data={belt_attempts} columns={columns} />;
 }

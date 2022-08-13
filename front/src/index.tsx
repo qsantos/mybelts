@@ -29,7 +29,7 @@ import { getAPIError } from './lib';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 
-import { LoginButton, LogoutButton, LoginContext } from './auth';
+import { AdminOnly, LoginButton, LogoutButton, LoginContext, is_admin } from './auth';
 import { CreateUserButton, UserListing } from './user';
 import { CreateSkillDomainButton, SkillDomainListing } from './skill-domain';
 import { CreateBeltButton, BeltListing } from './belt';
@@ -55,6 +55,10 @@ function Loader() {
 function UsersView() {
     const [errorMessage, setErrorMessage] = useState('');
     const [userList, setUserList] = useState<null | UserList>(null);
+
+    if (!is_admin()) {
+        return null;
+    }
 
     useEffect(() => {
         UsersService
@@ -137,9 +141,11 @@ function BeltsView() {
         </Breadcrumb>
         <h3>Belts</h3>
         {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
-        <CreateBeltButton createdCallback={new_belt => {
-            setBeltList({ ...beltList, belts: [...belts, new_belt] });
-        }}/>
+        <AdminOnly>
+            <CreateBeltButton createdCallback={new_belt => {
+                setBeltList({ ...beltList, belts: [...belts, new_belt] });
+            }}/>
+        </AdminOnly>
         <h4>List of available belts</h4>
         <BeltListing
             belts={sorted_belts}
@@ -180,9 +186,11 @@ function SkillDomainsView() {
             <BreadcrumbItem active href="/skill-domains">Skill Domains</BreadcrumbItem>
         </Breadcrumb>
         <h3>Skill Domains</h3>
-        <CreateSkillDomainButton createdCallback={new_skill_domain => {
-            setSkillDomainList({ ...skillDomainList, skill_domains: [...skill_domains, new_skill_domain] });
-        }}/>
+        <AdminOnly>
+            <CreateSkillDomainButton createdCallback={new_skill_domain => {
+                setSkillDomainList({ ...skillDomainList, skill_domains: [...skill_domains, new_skill_domain] });
+            }}/>
+        </AdminOnly>
         <h4>List of available skill domains</h4>
         <SkillDomainListing
             skill_domains={sorted_skill_domains}
@@ -223,9 +231,11 @@ function ClassLevelsView() {
         </Breadcrumb>
         <h3>Class Levels</h3>
         <h3>List of available class levels</h3>
-        <CreateClassLevelButton createdCallback={new_class_level => {
-            setClassLevelList({ ...classLevelList, class_levels: [...class_levels, new_class_level] });
-        }} />
+        <AdminOnly>
+            <CreateClassLevelButton createdCallback={new_class_level => {
+                setClassLevelList({ ...classLevelList, class_levels: [...class_levels, new_class_level] });
+            }} />
+        </AdminOnly>
         <ClassLevelListing
             class_levels={sorted_class_levels}
             setClassLevels={new_class_levels => setClassLevelList({ ...classLevelList, class_levels: new_class_levels })}
@@ -275,15 +285,19 @@ function ClassLevelView() {
             <BreadcrumbItem active href={`/class-levels/${class_level.id}`}>Level {class_level.prefix}</BreadcrumbItem>
         </Breadcrumb>
         <h3>Class level: {class_level.prefix}</h3>
-        <EditClassLevelButton class_level={class_level} changedCallback={new_class_level => {
-            setSchoolClassList({ ...schoolClassList, class_level: new_class_level });
-        }} />
-        {' '}
-        <DeleteClassLevelButton class_level={class_level} deletedCallback={() => navigate('/class-levels')} />
+        <AdminOnly>
+            <EditClassLevelButton class_level={class_level} changedCallback={new_class_level => {
+                setSchoolClassList({ ...schoolClassList, class_level: new_class_level });
+            }} />
+            {' '}
+            <DeleteClassLevelButton class_level={class_level} deletedCallback={() => navigate('/class-levels')} />
+        </AdminOnly>
         <h4>List of classes</h4>
-        <CreateSchoolClassButton class_level_id={class_level.id} createdCallback={new_school_class => {
-            setSchoolClassList({ ...schoolClassList, school_classes: [...school_classes, new_school_class] });
-        }} />
+        <AdminOnly>
+            <CreateSchoolClassButton class_level_id={class_level.id} createdCallback={new_school_class => {
+                setSchoolClassList({ ...schoolClassList, school_classes: [...school_classes, new_school_class] });
+            }} />
+        </AdminOnly>
         <SchoolClassListing
             school_classes={sorted_school_classes}
             setSchoolClasses={new_school_classes => setSchoolClassList({ ...schoolClassList, school_classes: new_school_classes })}
@@ -341,20 +355,22 @@ function SchoolClassView() {
         <OverlayTrigger overlay={<Tooltip>Belts</Tooltip>}>
             <Button onClick={() => navigate('belts')}>🥋</Button>
         </OverlayTrigger>
-        {' '}
-        <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
-            setStudentList({ ...studentList, school_class: new_school_class });
-        }} />
-        {' '}
-        <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => navigate(`/class-levels/${class_level.id}`)} />
-        <h4>List of students</h4>
-        <CreateStudentButton school_class_id={school_class.id} createdCallback={new_student => {
-            setStudentList({ ...studentList, students: [...students, new_student] });
-        }} />
-        {' '}
-        <UpdateStudentRanks students={students} changedCallback={new_students => {
-            setStudentList({ ...studentList, students: new_students });
-        }} />
+        <AdminOnly>
+            {' '}
+            <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
+                setStudentList({ ...studentList, school_class: new_school_class });
+            }} />
+            {' '}
+            <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => navigate(`/class-levels/${class_level.id}`)} />
+            <h4>List of students</h4>
+            <CreateStudentButton school_class_id={school_class.id} createdCallback={new_student => {
+                setStudentList({ ...studentList, students: [...students, new_student] });
+            }} />
+            {' '}
+            <UpdateStudentRanks students={students} changedCallback={new_students => {
+                setStudentList({ ...studentList, students: new_students });
+            }} />
+        </AdminOnly>
         <StudentListing
             students={students}
             setStudents={new_students => setStudentList({ ...studentList, students: new_students })}
@@ -422,15 +438,19 @@ function StudentView() {
             <BreadcrumbItem active href={`/student/${student.id}`}>Student {student.name}</BreadcrumbItem>
         </Breadcrumb>
         <h3>Student: {student.name}</h3>
-        <EditStudentButton student={student} changedCallback={new_student => {
-            setBeltAttemptList({ ...beltAttemptList, student: new_student });
-        }} />
-        {' '}
-        <DeleteStudentButton student={student} deletedCallback={() => navigate(`/school-classes/${school_class.id}`)} />
+        <AdminOnly>
+            <EditStudentButton student={student} changedCallback={new_student => {
+                setBeltAttemptList({ ...beltAttemptList, student: new_student });
+            }} />
+            {' '}
+            <DeleteStudentButton student={student} deletedCallback={() => navigate(`/school-classes/${school_class.id}`)} />
+        </AdminOnly>
         <h4>List of belt attempts:</h4>
-        <CreateBeltAttemptButton student={student} skill_domains={skill_domains} belts={belts} createdCallback={new_belt_attempt => {
-            setBeltAttemptList({ ...beltAttemptList, belt_attempts: [...belt_attempts, new_belt_attempt] });
-        }} />
+        <AdminOnly>
+            <CreateBeltAttemptButton student={student} skill_domains={skill_domains} belts={belts} createdCallback={new_belt_attempt => {
+                setBeltAttemptList({ ...beltAttemptList, belt_attempts: [...belt_attempts, new_belt_attempt] });
+            }} />
+        </AdminOnly>
         <BeltAttemptListing
             skill_domains={skill_domains}
             belts={belts}
@@ -510,7 +530,9 @@ function Layout() {
             <Navbar.Brand as={Link} to="/">Skills</Navbar.Brand>
             <Nav className="me-auto">
                 <Nav.Item><Nav.Link as={Link} to="/">Home</Nav.Link></Nav.Item>
-                <Nav.Item><Nav.Link as={Link} to="/users">Users</Nav.Link></Nav.Item>
+                <AdminOnly>
+                    <Nav.Item><Nav.Link as={Link} to="/users">Users</Nav.Link></Nav.Item>
+                </AdminOnly>
                 <Nav.Item><Nav.Link as={Link} to="/skill-domains">Skill Domains</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/belts">Belts</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/class-levels">Class Levels</Nav.Link></Nav.Item>

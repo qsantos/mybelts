@@ -11,6 +11,7 @@ import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import { SkillDomain, SkillDomainsService } from './api';
+import { AdminOnly } from './auth';
 import { getAPIError } from './lib';
 
 interface CreateSkillDomainButtonProps
@@ -209,26 +210,30 @@ export function SkillDomainListing(props: SkillDomainListingProps): ReactElement
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Actions</th>
+                    <AdminOnly>
+                        <th>Actions</th>
+                    </AdminOnly>
                 </tr>
             </thead>
             <tbody>
                 {skill_domains.map((skill_domain, index) =>
                     <tr key={skill_domain.id}>
                         <td>{skill_domain.name}</td>
-                        <td>
-                            <EditSkillDomainButton skill_domain={skill_domain} changedCallback={new_skill_domain => {
-                                const new_skill_domains = [...skill_domains];
-                                new_skill_domains[index] = new_skill_domain;
-                                setSkillDomains(new_skill_domains);
-                            }} />
-                            {' '}
-                            <DeleteSkillDomainButton skill_domain={skill_domain} deletedCallback={() => {
-                                const new_skill_domains = [...skill_domains];
-                                new_skill_domains.splice(index, 1);
-                                setSkillDomains(new_skill_domains);
-                            }} />
-                        </td>
+                        <AdminOnly>
+                            <td>
+                                <EditSkillDomainButton skill_domain={skill_domain} changedCallback={new_skill_domain => {
+                                    const new_skill_domains = [...skill_domains];
+                                    new_skill_domains[index] = new_skill_domain;
+                                    setSkillDomains(new_skill_domains);
+                                }} />
+                                {' '}
+                                <DeleteSkillDomainButton skill_domain={skill_domain} deletedCallback={() => {
+                                    const new_skill_domains = [...skill_domains];
+                                    new_skill_domains.splice(index, 1);
+                                    setSkillDomains(new_skill_domains);
+                                }} />
+                            </td>
+                        </AdminOnly>
                     </tr>
                 )}
             </tbody>

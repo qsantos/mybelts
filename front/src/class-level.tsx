@@ -13,6 +13,7 @@ import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import { ClassLevel, ClassLevelsService } from './api';
+import { AdminOnly } from './auth';
 import { getAPIError } from './lib';
 
 interface CreateClassLevelButtonProps
@@ -211,7 +212,9 @@ export function ClassLevelListing(props: ClassLevelListingProps): ReactElement {
             <thead>
                 <tr>
                     <th>Prefix</th>
-                    <th>Action</th>
+                    <AdminOnly>
+                        <th>Action</th>
+                    </AdminOnly>
                 </tr>
             </thead>
             <tbody>
@@ -222,19 +225,21 @@ export function ClassLevelListing(props: ClassLevelListingProps): ReactElement {
                                 {class_level.prefix}
                             </Nav.Link>
                         </td>
-                        <td>
-                            <EditClassLevelButton class_level={class_level} changedCallback={new_class_level => {
-                                const new_class_levels = [...class_levels];
-                                new_class_levels[index] = new_class_level;
-                                setClassLevels(new_class_levels);
-                            }} />
-                            {' '}
-                            <DeleteClassLevelButton class_level={class_level} deletedCallback={() => {
-                                const new_class_levels = [...class_levels];
-                                new_class_levels.splice(index, 1);
-                                setClassLevels(new_class_levels);
-                            }} />
-                        </td>
+                        <AdminOnly>
+                            <td>
+                                <EditClassLevelButton class_level={class_level} changedCallback={new_class_level => {
+                                    const new_class_levels = [...class_levels];
+                                    new_class_levels[index] = new_class_level;
+                                    setClassLevels(new_class_levels);
+                                }} />
+                                {' '}
+                                <DeleteClassLevelButton class_level={class_level} deletedCallback={() => {
+                                    const new_class_levels = [...class_levels];
+                                    new_class_levels.splice(index, 1);
+                                    setClassLevels(new_class_levels);
+                                }} />
+                            </td>
+                        </AdminOnly>
                     </tr>
                 )}
             </tbody>

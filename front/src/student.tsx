@@ -13,6 +13,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { Student, StudentsService } from './api';
+import { is_admin } from './auth';
 import { getAPIError } from './lib';
 import { SortTable } from './sort-table';
 
@@ -308,46 +309,46 @@ interface StudentListingProps {
 export function StudentListing(props: StudentListingProps): ReactElement {
     const { students, setStudents } = props;
 
-    const columns = React.useMemo<ColumnDef<Student>[]>(
-        () => [
-            {
-                header: 'Rank',
-                accessorKey: 'rank',
+    const columns: ColumnDef<Student>[] = [
+        {
+            header: 'Rank',
+            accessorKey: 'rank',
+        },
+        {
+            header: 'Name',
+            accessorKey: 'name',
+            cell: info => {
+                const student = info.row.original;
+                return (
+                    <Nav.Link as={Link} to={`/students/${student.id}`}>
+                        {student.name}
+                    </Nav.Link>
+                );
             },
-            {
-                header: 'Name',
-                accessorKey: 'name',
-                cell: info => {
-                    const student = info.row.original;
-                    return (
-                        <Nav.Link as={Link} to={`/students/${student.id}`}>
-                            {student.name}
-                        </Nav.Link>
-                    );
-                },
-            },
-            {
-                header: 'Action',
-                cell: info => {
-                    const student = info.row.original;
-                    return <>
-                        <EditStudentButton student={student} changedCallback={new_student => {
-                            const new_students = [...students];
-                            new_students[info.row.index] = new_student;
-                            setStudents(new_students);
-                        }} />
-                        {' '}
-                        <DeleteStudentButton student={student} deletedCallback={() => {
-                            const new_students = [...students];
-                            new_students.splice(info.row.index, 1);
-                            setStudents(new_students);
-                        }} />
-                    </>;
-                },
-            },
-        ],
-        [],
-    );
+        },
+    ];
+
+    if (is_admin()) {
+        columns.push({
+            header: 'Action',
+            cell: info => {
+                const student = info.row.original;
+                return <>
+                    <EditStudentButton student={student} changedCallback={new_student => {
+                        const new_students = [...students];
+                        new_students[info.row.index] = new_student;
+                        setStudents(new_students);
+                    }} />
+                    {' '}
+                    <DeleteStudentButton student={student} deletedCallback={() => {
+                        const new_students = [...students];
+                        new_students.splice(info.row.index, 1);
+                        setStudents(new_students);
+                    }} />
+                </>;
+            }
+        });
+    }
 
     const sorting = [
         {

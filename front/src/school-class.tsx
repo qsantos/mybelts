@@ -13,6 +13,7 @@ import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import { SchoolClass, SchoolClassesService } from './api';
+import { AdminOnly } from './auth';
 import { getAPIError } from './lib';
 
 interface CreateSchoolClassButtonProps
@@ -213,7 +214,9 @@ export function SchoolClassListing(props: SchoolClassListingProps): ReactElement
             <thead>
                 <tr>
                     <th>Suffix</th>
-                    <th>Action</th>
+                    <AdminOnly>
+                        <th>Action</th>
+                    </AdminOnly>
                 </tr>
             </thead>
             <tbody>
@@ -224,19 +227,21 @@ export function SchoolClassListing(props: SchoolClassListingProps): ReactElement
                                 {school_class.suffix}
                             </Nav.Link>
                         </td>
-                        <td>
-                            <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
-                                const new_school_classes = [...school_classes];
-                                new_school_classes[index] = new_school_class;
-                                setSchoolClasses(new_school_classes);
-                            }} />
-                            {' '}
-                            <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => {
-                                const new_school_classes = [...school_classes];
-                                new_school_classes.splice(index, 1);
-                                setSchoolClasses(new_school_classes);
-                            }} />
-                        </td>
+                        <AdminOnly>
+                            <td>
+                                <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
+                                    const new_school_classes = [...school_classes];
+                                    new_school_classes[index] = new_school_class;
+                                    setSchoolClasses(new_school_classes);
+                                }} />
+                                {' '}
+                                <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => {
+                                    const new_school_classes = [...school_classes];
+                                    new_school_classes.splice(index, 1);
+                                    setSchoolClasses(new_school_classes);
+                                }} />
+                            </td>
+                        </AdminOnly>
                     </tr>
                 )}
             </tbody>
