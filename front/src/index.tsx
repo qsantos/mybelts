@@ -52,6 +52,28 @@ function Loader() {
     </Spinner>;
 }
 
+function HomeView() {
+    const loginInfo = React.useContext(LoginContext);
+    if (loginInfo === null) {
+        // not connected
+        return <></>;
+    }
+
+    const student = loginInfo.student;
+    const user = loginInfo.user;
+
+    if (student) {
+        // student
+        return <StudentWidget student_id={student.id} />;
+    } else if (user.is_admin) {
+        // admin
+        return <>Hello admin {user.name}</>;
+    } else {
+        // other
+        return <>Hello {user.name}</>;
+    }
+}
+
 function UsersView() {
     const [errorMessage, setErrorMessage] = useState('');
     const [userList, setUserList] = useState<null | UserList>(null);
@@ -565,6 +587,7 @@ function Layout() {
 function App() {
     return <Routes>
         <Route path="/" element={<Layout />}>
+            <Route path="" element={<HomeView />} />
             <Route path="users" element={<UsersView />} />
             <Route path="belts" element={<BeltsView />} />
             <Route path="skill-domains" element={<SkillDomainsView />} />
