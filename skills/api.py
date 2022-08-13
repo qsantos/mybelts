@@ -127,7 +127,7 @@ api_model_login_info = api.model('LoginInfo', {
     'payload': fields.Nested(api_model_login_payload),
     'token': fields.String(required=True),
     'user': fields.Nested(api_model_user, required=True),
-    'student': fields.Nested(api_model_student),
+    'student': fields.Nested(api_model_student, skip_none=True),
 })
 
 api_model_user_list = api.model('UserList', {
@@ -230,7 +230,7 @@ class LoginResource(Resource):
     })
 
     @api.expect(post_model, validate=True)
-    @api.marshal_with(api_model_login_info)
+    @api.marshal_with(api_model_login_info, skip_none=True)
     def post(self) -> Any:
         with session_context() as session:
             user = session.query(User).filter(User.name == request.json['name']).one_or_none()
