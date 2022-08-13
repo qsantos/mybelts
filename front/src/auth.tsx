@@ -10,6 +10,8 @@ import Spinner from 'react-bootstrap/Spinner';
 import { LoginInfo, UsersService } from './api';
 import { getAPIError } from './lib';
 
+export const LoginContext = React.createContext<LoginInfo | null>(null);
+
 interface LoginButtonProps {
     className?: string;
     loggedInCallback: (loginInfo: LoginInfo) => void;

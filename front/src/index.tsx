@@ -29,7 +29,7 @@ import { getAPIError } from './lib';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 
-import { LoginButton, LogoutButton } from './auth';
+import { LoginButton, LogoutButton, LoginContext } from './auth';
 import { CreateUserButton, UserListing } from './user';
 import { CreateSkillDomainButton, SkillDomainListing } from './skill-domain';
 import { CreateBeltButton, BeltListing } from './belt';
@@ -505,7 +505,7 @@ function Layout() {
         localStorage.setItem('login_info', JSON.stringify(loginInfo));
     }
 
-    return <>
+    return <LoginContext.Provider value={loginInfo}>
         <Navbar>
             <Navbar.Brand as={Link} to="/">Skills</Navbar.Brand>
             <Nav className="me-auto">
@@ -528,7 +528,7 @@ function Layout() {
             }
         </Navbar>
         {loginInfo && <Outlet />}
-    </>;
+    </LoginContext.Provider>;
 }
 
 function App() {
