@@ -435,7 +435,7 @@ function StudentWidget(props: StudentWidgetProps) {
                 <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
                 <BreadcrumbItem>Level ?</BreadcrumbItem>
                 <BreadcrumbItem active href="/">Class ?</BreadcrumbItem>
-                <BreadcrumbItem active href={`/student/${student_id}`}>Student ?</BreadcrumbItem>
+                <BreadcrumbItem active href={`/students/${student_id}`}>Student ?</BreadcrumbItem>
             </Breadcrumb>
             <h3>Student: ?</h3>
             {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
@@ -455,7 +455,7 @@ function StudentWidget(props: StudentWidgetProps) {
             <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
             <BreadcrumbItem href={`/class-levels/${class_level.id}`}>Level {class_level.prefix}</BreadcrumbItem>
             <BreadcrumbItem active href={`/school-classes/${school_class.id}`}>Class {school_class.suffix}</BreadcrumbItem>
-            <BreadcrumbItem active href={`/student/${student.id}`}>Student {student.name}</BreadcrumbItem>
+            <BreadcrumbItem active href={`/students/${student.id}`}>Student {student.name}</BreadcrumbItem>
         </Breadcrumb>
         <h3>Student: {student.name}</h3>
         <AdminOnly>
