@@ -378,14 +378,12 @@ function SchoolClassView() {
     </>;
 }
 
-function StudentView() {
-    const params = useParams();
-    if (params.student_id === undefined) {
-        // should not happen
-        console.error('Attribute student_id of <StudentView /> is undefined');
-        return <></>;
-    }
-    const student_id = params.student_id;
+interface StudentWidgetProps {
+    student_id: number,
+}
+
+function StudentWidget(props: StudentWidgetProps) {
+    const { student_id } = props;
 
     const [errorMessage, setErrorMessage] = useState('');
     const [beltList, setBeltList] = useState<null | BeltList>(null);
@@ -403,7 +401,7 @@ function StudentView() {
             .then(setSkillDomainList)
             .catch(error => { setErrorMessage(getAPIError(error)); });
         StudentsService
-            .getStudentBeltAttemptsResource(parseInt(student_id))
+            .getStudentBeltAttemptsResource(student_id)
             .then(setBeltAttemptList)
             .catch(error => { setErrorMessage(getAPIError(error)); });
     }, [student_id]);
@@ -459,6 +457,17 @@ function StudentView() {
             setBeltAttempts={new_belt_attempts => setBeltAttemptList({ ...beltAttemptList, belt_attempts: new_belt_attempts })}
         />
     </>;
+}
+
+function StudentView() {
+    const params = useParams();
+    if (params.student_id === undefined) {
+        // should not happen
+        console.error('Attribute student_id of <StudentView /> is undefined');
+        return <></>;
+    }
+    const student_id = parseInt(params.student_id);
+    return <StudentWidget student_id={student_id} />;
 }
 
 function SchoolClassBeltsView() {
