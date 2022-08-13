@@ -475,11 +475,9 @@ export function BeltAttemptGrid(props: BeltAttemptGridProps): ReactElement {
                             if (belt === undefined) {
                                 return <td key={skill_domain.id}>-</td>;
                             }
-                            return <>
-                                <td key={skill_domain.id}>
-                                    <BeltIcon belt={belt} />
-                                </td>
-                            </>;
+                            return <td key={skill_domain.id}>
+                                <BeltIcon belt={belt} />
+                            </td>;
                         })}
                     </tr>;
                 })}
