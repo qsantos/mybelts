@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import Select from 'react-select';
 import { Link } from 'react-router-dom';
 
@@ -384,7 +385,7 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
             cell: info => {
                 const date = info.row.original.date;
                 const d = new Date(date);
-                return d.toLocaleDateString('en-US', localeDateOptions);  // TODO
+                return d.toLocaleDateString(i18n.language, localeDateOptions);
             },
         },
         {
