@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormEvent, ReactElement, ReactNode, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -37,6 +38,7 @@ interface LoginButtonProps {
 
 export function LoginButton(props: LoginButtonProps): ReactElement {
     const { className, loggedInCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [loggingIn, setLoggingIn] = useState(false);
@@ -66,39 +68,39 @@ export function LoginButton(props: LoginButtonProps): ReactElement {
         <Modal show={show} onShow={() => nameInputRef.current?.focus?.()}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>Log In</Modal.Title>
+                    <Modal.Title>{t('login.title')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
+                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
-                        <Form.Label>User Name</Form.Label>
-                        <Form.Control type="text" placeholder="Example: tartempion" ref={nameInputRef} />
+                        <Form.Label>{t('login.username.title')}</Form.Label>
+                        <Form.Control type="text" placeholder={t('login.username.placeholder')} ref={nameInputRef} />
                         <Form.Text className="text-muted">
-                            Your user name
+                            {t('login.username.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="password">
-                        <Form.Label>Password</Form.Label>
+                        <Form.Label>{t('login.password.title')}</Form.Label>
                         <Form.Control type="password" />
                         <Form.Text className="text-muted">
-                            Your password
+                            {t('login.password.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    <Button variant="secondary" onClick={() => setShow(false)}>{t('login.cancel')}</Button>
                     {loggingIn
                         ? <Button disabled type="submit">
                             <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">Logging in</span>
+                                <span className="visually-hidden">{t('login.in_process')}</span>
                             </Spinner>
                         </Button>
-                        : <Button type="submit">Log in</Button>
+                        : <Button type="submit">{t('login.confirm')}</Button>
                     }
                 </Modal.Footer>
             </Form>
         </Modal>
-        <Button onClick={() => setShow(true)} className={className} >Log in</Button>
+        <Button onClick={() => setShow(true)} className={className} >{t('login.button')}</Button>
     </>;
 }
 
@@ -109,8 +111,9 @@ interface LogoutButtonProps {
 
 export function LogoutButton(props: LogoutButtonProps): ReactElement {
     const { className, loggedOutCallback } = props;
+    const { t } = useTranslation();
 
     return <>
-        <Button onClick={() => loggedOutCallback()} className={className} >Log out</Button>
+        <Button onClick={() => loggedOutCallback()} className={className} >{t('logout.button')}</Button>
     </>;
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -21,6 +22,7 @@ interface CreateSkillDomainButtonProps
 
 export function CreateSkillDomainButton(props : CreateSkillDomainButtonProps): ReactElement {
     const { createdCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [creating, setCreating] = useState(false);
@@ -46,31 +48,31 @@ export function CreateSkillDomainButton(props : CreateSkillDomainButtonProps): R
     }
 
     return <>
-        <Button onClick={() => setShow(true)}>Add</Button>
+        <Button onClick={() => setShow(true)}>{t('skill_domain.add.button')}</Button>
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>Add Skill Domain</Modal.Title>
+                    <Modal.Title>{t('skill_domain.add.title')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
+                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control type="text" placeholder="Example: Algebra" />
+                        <Form.Label>{t('skill_domain.add_edit.name.title')}</Form.Label>
+                        <Form.Control type="text" placeholder={t('skill_domain.add_edit.name.placeholder')}/>
                         <Form.Text className="text-muted">
-                            Name for the new skill domain
+                            {t('skill_domain.add_edit.name.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    <Button variant="secondary" onClick={() => setShow(false)}>{t('skill_domain.add.cancel')}</Button>
                     {creating
                         ? <Button disabled type="submit">
                             <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">Creating</span>
+                                <span className="visually-hidden">{t('skill_domain.add.in_process')}</span>
                             </Spinner>
                         </Button>
-                        : <Button type="submit">Add</Button>
+                        : <Button type="submit">{t('skill_domain.add.confirm')}</Button>
                     }
                 </Modal.Footer>
             </Form>
@@ -86,6 +88,7 @@ interface EditSkillDomainButtonProps
 
 export function EditSkillDomainButton(props : EditSkillDomainButtonProps): ReactElement {
     const { skill_domain, changedCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [changing, setChanging] = useState(false);
@@ -111,33 +114,33 @@ export function EditSkillDomainButton(props : EditSkillDomainButtonProps): React
     }
 
     return <>
-        <OverlayTrigger overlay={<Tooltip>Edit</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip>{t('skill_domain.edit.button')}</Tooltip>}>
             <Button onClick={() => setShow(true)}>✏️</Button>
         </OverlayTrigger>
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>Edit Skill Domain</Modal.Title>
+                    <Modal.Title>{t('skill_domain.edit.title')}: {skill_domain.name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
+                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control type="text" placeholder="Example: Algebra" defaultValue={skill_domain.name} />
+                        <Form.Label>{t('skill_domain.add_edit.name.title')}</Form.Label>
+                        <Form.Control type="text" placeholder={t('skill_domain.add_edit.name.placeholder')} defaultValue={skill_domain.name} />
                         <Form.Text className="text-muted">
-                            New name for the skill domain “{skill_domain.name}”
+                            {t('skill_domain.add_edit.name.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    <Button variant="secondary" onClick={() => setShow(false)}>{t('skill_domain.edit.cancel')}</Button>
                     {changing
                         ? <Button type="submit" disabled>
                             <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">Saving</span>
+                                <span className="visually-hidden">{t('skill_domain.edit.in_process')}</span>
                             </Spinner>
                         </Button>
-                        : <Button type="submit">Save</Button>
+                        : <Button type="submit">{t('skill_domain.edit.cancel')}</Button>
                     }
                 </Modal.Footer>
             </Form>
@@ -153,6 +156,7 @@ interface DeleteSkillDomainButtonProps
 
 export function DeleteSkillDomainButton(props : DeleteSkillDomainButtonProps): ReactElement {
     const { skill_domain, deletedCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [deleting, setDeleting] = useState(false);
@@ -172,26 +176,26 @@ export function DeleteSkillDomainButton(props : DeleteSkillDomainButtonProps): R
     }
 
     return <>
-        <OverlayTrigger overlay={<Tooltip>Delete</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip>{t('skill_domain.delete.button')}</Tooltip>}>
             <Button variant="danger" onClick={() => setShow(true)}>🗑️</Button>
         </OverlayTrigger>
         <Modal show={show}>
             <Modal.Header>
-                <Modal.Title>Delete Skill Domain</Modal.Title>
+                <Modal.Title>{t('skill_domain.delete.title')}: {skill_domain.name}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
-                Are you sure you want to delete the skill domain “{skill_domain.name}”?
+                {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
+                {t('skill_domain.delete.message')}
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                <Button variant="secondary" onClick={() => setShow(false)}>{t('skill_domain.delete.cancel')}</Button>
                 {deleting
                     ? <Button disabled variant="danger">
                         <Spinner animation="border" role="status" size="sm">
-                            <span className="visually-hidden">Deleting</span>
+                            <span className="visually-hidden">{t('skill_domain.delete.in_process')}</span>
                         </Spinner>
                     </Button>
-                    : <Button variant="danger" onClick={handleDelete}>Delete</Button>
+                    : <Button variant="danger" onClick={handleDelete}>{t('skill_domain.delete.confirm')}</Button>
                 }
             </Modal.Footer>
         </Modal>
@@ -205,13 +209,14 @@ interface SkillDomainListingProps {
 
 export function SkillDomainListing(props: SkillDomainListingProps): ReactElement {
     const { skill_domains, setSkillDomains } = props;
+    const { t } = useTranslation();
     return <>
         <Table>
             <thead>
                 <tr>
-                    <th>Name</th>
+                    <th>{t('skill_domain.list.name.title')}</th>
                     <AdminOnly>
-                        <th>Actions</th>
+                        <th>{t('skill_domain.list.actions.title')}</th>
                     </AdminOnly>
                 </tr>
             </thead>

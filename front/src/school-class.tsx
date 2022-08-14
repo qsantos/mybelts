@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import Alert from 'react-bootstrap/Alert';
@@ -24,6 +25,7 @@ interface CreateSchoolClassButtonProps
 
 export function CreateSchoolClassButton(props : CreateSchoolClassButtonProps): ReactElement {
     const { class_level_id, createdCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [creating, setCreating] = useState(false);
@@ -50,31 +52,31 @@ export function CreateSchoolClassButton(props : CreateSchoolClassButtonProps): R
     }
 
     return <>
-        <Button onClick={() => setShow(true)}>Add</Button>
+        <Button onClick={() => setShow(true)}>{t('school_class.add.button')}</Button>
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>Add Class</Modal.Title>
+                    <Modal.Title>{t('school_class.add.title')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
+                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
                     <Form.Group controlId="suffix">
-                        <Form.Label>Suffix</Form.Label>
-                        <Form.Control type="text" placeholder="Example: D" />
+                        <Form.Label>{t('school_class.add_edit.suffix.title')}</Form.Label>
+                        <Form.Control type="text" placeholder={t('school_class.add_edit.suffix.placeholder')}/>
                         <Form.Text className="text-muted">
-                            Suffix for the new class
+                            {t('school_class.add_edit.suffix.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    <Button variant="secondary" onClick={() => setShow(false)}>{t('school_class.add.cancel')}</Button>
                     {creating
                         ? <Button disabled type="submit">
                             <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">Creating</span>
+                                <span className="visually-hidden">{t('school_class.add.in_process')}</span>
                             </Spinner>
                         </Button>
-                        : <Button type="submit">Add</Button>
+                        : <Button type="submit">{t('school_class.add.confirm')}</Button>
                     }
                 </Modal.Footer>
             </Form>
@@ -90,6 +92,7 @@ interface EditSchoolClassButtonProps
 
 export function EditSchoolClassButton(props : EditSchoolClassButtonProps): ReactElement {
     const { school_class, changedCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [changing, setChanging] = useState(false);
@@ -115,33 +118,33 @@ export function EditSchoolClassButton(props : EditSchoolClassButtonProps): React
     }
 
     return <>
-        <OverlayTrigger overlay={<Tooltip>Edit</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip>{t('school_class.edit.button')}</Tooltip>}>
             <Button onClick={() => setShow(true)}>✏️</Button>
         </OverlayTrigger>
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>Edit Class</Modal.Title>
+                    <Modal.Title>{t('school_class.edit.title')}: {school_class.suffix}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
+                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
                     <Form.Group controlId="suffix">
-                        <Form.Label>Suffix</Form.Label>
-                        <Form.Control type="text" placeholder="Example: D" defaultValue={school_class.suffix} />
+                        <Form.Label>{t('school_class.add_edit.suffix.title')}</Form.Label>
+                        <Form.Control type="text" placeholder={t('school_class.add_edit.suffix.placeholder')} defaultValue={school_class.suffix} />
                         <Form.Text className="text-muted">
-                            New suffix for the class “{school_class.suffix}”
+                            {t('school_class.add_edit.suffix.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    <Button variant="secondary" onClick={() => setShow(false)}>{t('school_class.edit.cancel')}</Button>
                     {changing
                         ? <Button type="submit" disabled>
                             <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">Saving</span>
+                                <span className="visually-hidden">{t('school_class.edit.in_process')}</span>
                             </Spinner>
                         </Button>
-                        : <Button type="submit">Save</Button>
+                        : <Button type="submit">{t('school_class.edit.confirm')}</Button>
                     }
                 </Modal.Footer>
             </Form>
@@ -157,6 +160,7 @@ interface DeleteSchoolClassButtonProps
 
 export function DeleteSchoolClassButton(props : DeleteSchoolClassButtonProps): ReactElement {
     const { school_class, deletedCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [deleting, setDeleting] = useState(false);
@@ -176,26 +180,26 @@ export function DeleteSchoolClassButton(props : DeleteSchoolClassButtonProps): R
     }
 
     return <>
-        <OverlayTrigger overlay={<Tooltip>Delete</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip>{t('school_class.delete.button')}</Tooltip>}>
             <Button variant="danger" onClick={() => setShow(true)}>🗑️</Button>
         </OverlayTrigger>
         <Modal show={show}>
             <Modal.Header>
-                <Modal.Title>Delete Class</Modal.Title>
+                <Modal.Title>{t('school_class.delete.title')}: {school_class.suffix}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
-                Are you sure you want to delete the class “{school_class.suffix}”?
+                {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
+                {t('school_class.delete.message')}
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                <Button variant="secondary" onClick={() => setShow(false)}>{t('school_class.delete.cancel')}</Button>
                 {deleting
                     ? <Button disabled variant="danger">
                         <Spinner animation="border" role="status" size="sm">
-                            <span className="visually-hidden">Deleting</span>
+                            <span className="visually-hidden">{t('school_class.delete.in_process')}</span>
                         </Spinner>
                     </Button>
-                    : <Button variant="danger" onClick={handleDelete}>Delete</Button>
+                    : <Button variant="danger" onClick={handleDelete}>{t('school_class.delete.confirm')}</Button>
                 }
             </Modal.Footer>
         </Modal>
@@ -209,13 +213,14 @@ interface SchoolClassListingProps {
 
 export function SchoolClassListing(props: SchoolClassListingProps): ReactElement {
     const { school_classes, setSchoolClasses } = props;
+    const { t } = useTranslation();
     return <>
         <Table>
             <thead>
                 <tr>
-                    <th>Suffix</th>
+                    <th>{t('school_class.list.suffix.title')}</th>
                     <AdminOnly>
-                        <th>Action</th>
+                        <th>{t('school_class.list.actions.title')}</th>
                     </AdminOnly>
                 </tr>
             </thead>

@@ -2,6 +2,8 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter, Link, Outlet, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import React from 'react';
 import { ReactNode, StrictMode, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import './i18n';
 
 import Alert from 'react-bootstrap/Alert';
 import Badge from 'react-bootstrap/Badge';
@@ -47,8 +49,9 @@ function BreadcrumbItem({ children, href, active }: { children: ReactNode, href?
 }
 
 function Loader() {
+    const { t } = useTranslation();
     return <Spinner animation="border" role="status">
-        <span className="visually-hidden">Loading</span>
+        <span className="visually-hidden">{t('loading')}</span>
     </Spinner>;
 }
 
@@ -75,6 +78,7 @@ function HomeView() {
 }
 
 function UsersView() {
+    const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [userList, setUserList] = useState<null | UserList>(null);
 
@@ -92,11 +96,11 @@ function UsersView() {
     if (userList === null) {
         return <>
             <Breadcrumb>
-                <BreadcrumbItem href="/">Home</BreadcrumbItem>
-                <BreadcrumbItem active href="/users">Users</BreadcrumbItem>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem active href="/users">{t('user.list.title.primary')}</BreadcrumbItem>
             </Breadcrumb>
-            <h3>Users</h3>
-            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
+            <h3>{t('user.list.title.primary')}</h3>
+            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
@@ -106,15 +110,15 @@ function UsersView() {
 
     return <>
         <Breadcrumb>
-            <BreadcrumbItem href="/">Home</BreadcrumbItem>
-            <BreadcrumbItem active href="/users">Users</BreadcrumbItem>
+            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+            <BreadcrumbItem active href="/users">{t('user.list.title.primary')}</BreadcrumbItem>
         </Breadcrumb>
-        <h3>Users</h3>
+        <h3>{t('user.list.title.primary')}</h3>
         {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
         <CreateUserButton createdCallback={new_user => {
             setUserList({ ...userList, users: [...users, new_user] });
         }}/>
-        <h4>List of available users</h4>
+        <h4>{t('user.list.title.secondary')}</h4>
         <UserListing
             users={sorted_users}
             setUsers={new_users => setUserList({ ...userList, users: new_users })}
@@ -123,6 +127,7 @@ function UsersView() {
 }
 
 function BeltsView() {
+    const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [beltList, setBeltList] = useState<null | BeltList>(null);
 
@@ -136,11 +141,11 @@ function BeltsView() {
     if (beltList === null) {
         return <>
             <Breadcrumb>
-                <BreadcrumbItem href="/">Home</BreadcrumbItem>
-                <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem active href="/belts">{t('belt.list.title.primary')}</BreadcrumbItem>
             </Breadcrumb>
-            <h3>Belts</h3>
-            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
+            <h3>{t('belt.list.title.primary')}</h3>
+            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
@@ -158,17 +163,17 @@ function BeltsView() {
 
     return <>
         <Breadcrumb>
-            <BreadcrumbItem href="/">Home</BreadcrumbItem>
-            <BreadcrumbItem active href="/belts">Belts</BreadcrumbItem>
+            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+            <BreadcrumbItem active href="/belts">{t('belt.list.title.primary')}</BreadcrumbItem>
         </Breadcrumb>
-        <h3>Belts</h3>
-        {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
+        <h3>{t('belt.list.title.primary')}</h3>
+        {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
         <AdminOnly>
             <CreateBeltButton createdCallback={new_belt => {
                 setBeltList({ ...beltList, belts: [...belts, new_belt] });
             }}/>
         </AdminOnly>
-        <h4>List of available belts</h4>
+        <h4>{t('belt.list.title.secondary')}</h4>
         <BeltListing
             belts={sorted_belts}
             setBelts={new_belts => setBeltList({ ...beltList, belts: new_belts })}
@@ -178,6 +183,7 @@ function BeltsView() {
 }
 
 function SkillDomainsView() {
+    const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [skillDomainList, setSkillDomainList] = useState<null | SkillDomainList>(null);
 
@@ -191,11 +197,11 @@ function SkillDomainsView() {
     if (skillDomainList === null) {
         return <>
             <Breadcrumb>
-                <BreadcrumbItem href="/">Home</BreadcrumbItem>
-                <BreadcrumbItem active href="/skill-domains">Skill Domains</BreadcrumbItem>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem active href="/skill-domains">{t('class_level.list.title.primary')}</BreadcrumbItem>
             </Breadcrumb>
-            <h3>Skill Domains</h3>
-            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
+            <h3>{t('class_level.list.title.primary')}</h3>
+            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
@@ -204,16 +210,16 @@ function SkillDomainsView() {
 
     return <>
         <Breadcrumb>
-            <BreadcrumbItem href="/">Home</BreadcrumbItem>
-            <BreadcrumbItem active href="/skill-domains">Skill Domains</BreadcrumbItem>
+            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+            <BreadcrumbItem active href="/skill-domains">{t('class_level.list.title.primary')}</BreadcrumbItem>
         </Breadcrumb>
-        <h3>Skill Domains</h3>
+        <h3>{t('class_level.list.title.primary')}</h3>
         <AdminOnly>
             <CreateSkillDomainButton createdCallback={new_skill_domain => {
                 setSkillDomainList({ ...skillDomainList, skill_domains: [...skill_domains, new_skill_domain] });
             }}/>
         </AdminOnly>
-        <h4>List of available skill domains</h4>
+        <h4>{t('skill_domain.list.title.secondary')}</h4>
         <SkillDomainListing
             skill_domains={sorted_skill_domains}
             setSkillDomains={new_skill_domains => setSkillDomainList({ ...skillDomainList, skill_domains: new_skill_domains })}
@@ -222,6 +228,7 @@ function SkillDomainsView() {
 }
 
 function ClassLevelsView() {
+    const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [classLevelList, setClassLevelList] = useState<null | ClassLevelList>(null);
 
@@ -235,11 +242,11 @@ function ClassLevelsView() {
     if (classLevelList === null) {
         return <>
             <Breadcrumb>
-                <BreadcrumbItem href="/">Home</BreadcrumbItem>
-                <BreadcrumbItem active href="/class-levels">Levels</BreadcrumbItem>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem active href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
             </Breadcrumb>
-            <h3>Class Levels</h3>
-            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
+            <h3>{t('class_level.list.title.primary')}</h3>
+            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
@@ -248,16 +255,16 @@ function ClassLevelsView() {
 
     return <>
         <Breadcrumb>
-            <BreadcrumbItem href="/">Home</BreadcrumbItem>
-            <BreadcrumbItem active href="/class-levels">Levels</BreadcrumbItem>
+            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+            <BreadcrumbItem active href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
         </Breadcrumb>
-        <h3>Class Levels</h3>
-        <h3>List of available class levels</h3>
+        <h3>{t('class_level.list.title.primary')}</h3>
         <AdminOnly>
             <CreateClassLevelButton createdCallback={new_class_level => {
                 setClassLevelList({ ...classLevelList, class_levels: [...class_levels, new_class_level] });
             }} />
         </AdminOnly>
+        <h4>{t('class_level.list.title.secondary')}</h4>
         <ClassLevelListing
             class_levels={sorted_class_levels}
             setClassLevels={new_class_levels => setClassLevelList({ ...classLevelList, class_levels: new_class_levels })}
@@ -274,6 +281,7 @@ function ClassLevelView() {
     }
     const class_level_id = params.class_level_id;
 
+    const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [schoolClassList, setSchoolClassList] = useState<null | SchoolClassList>(null);
     const navigate = useNavigate();
@@ -288,12 +296,12 @@ function ClassLevelView() {
     if (schoolClassList === null) {
         return <>
             <Breadcrumb>
-                <BreadcrumbItem href="/">Home</BreadcrumbItem>
-                <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-                <BreadcrumbItem active href={'/class-levels/' + class_level_id}>Level ?</BreadcrumbItem>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
+                <BreadcrumbItem active href={'/class-levels/' + class_level_id}>{t('class_level.view.title')} ?</BreadcrumbItem>
             </Breadcrumb>
-            <h3>Class level: ?</h3>
-            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
+            <h3>{t('class_level.view.title')}: ?</h3>
+            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
@@ -302,11 +310,11 @@ function ClassLevelView() {
 
     return <>
         <Breadcrumb>
-            <BreadcrumbItem href="/">Home</BreadcrumbItem>
-            <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-            <BreadcrumbItem active href={'/class-levels/' + class_level.id}>Level {class_level.prefix}</BreadcrumbItem>
+            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+            <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
+            <BreadcrumbItem active href={'/class-levels/' + class_level.id}>{t('class_level.view.title')} {class_level.prefix}</BreadcrumbItem>
         </Breadcrumb>
-        <h3>Class level: {class_level.prefix}</h3>
+        <h3>{t('class_level.view.title')}: {class_level.prefix}</h3>
         <AdminOnly>
             <EditClassLevelButton class_level={class_level} changedCallback={new_class_level => {
                 setSchoolClassList({ ...schoolClassList, class_level: new_class_level });
@@ -314,7 +322,7 @@ function ClassLevelView() {
             {' '}
             <DeleteClassLevelButton class_level={class_level} deletedCallback={() => navigate('/class-levels')} />
         </AdminOnly>
-        <h4>List of classes</h4>
+        <h4>{t('school_class.list.title.secondary')}</h4>
         <AdminOnly>
             <CreateSchoolClassButton class_level_id={class_level.id} createdCallback={new_school_class => {
                 setSchoolClassList({ ...schoolClassList, school_classes: [...school_classes, new_school_class] });
@@ -336,6 +344,7 @@ function SchoolClassView() {
     }
     const school_class_id = params.school_class_id;
 
+    const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [studentList, setStudentList] = useState<null | StudentList>(null);
     const navigate = useNavigate();
@@ -350,17 +359,17 @@ function SchoolClassView() {
     if (studentList === null) {
         return <>
             <Breadcrumb>
-                <BreadcrumbItem href="/">Home</BreadcrumbItem>
-                <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-                <BreadcrumbItem>Level ?</BreadcrumbItem>
-                <BreadcrumbItem active href="/">Class ?</BreadcrumbItem>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
+                <BreadcrumbItem>{t('class_level.view.title')} ?</BreadcrumbItem>
+                <BreadcrumbItem active href="/">{t('school_class.view.title')} ?</BreadcrumbItem>
             </Breadcrumb>
-            <h3>Class: ?</h3>
-            <OverlayTrigger overlay={<Tooltip>Belts</Tooltip>}>
+            <h3>{t('school_class.view.title')}: ?</h3>
+            <OverlayTrigger overlay={<Tooltip>{t('school_class.view.belts')}</Tooltip>}>
                 <Button onClick={() => navigate('belts')}>🥋</Button>
             </OverlayTrigger>
             {' '}
-            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
+            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
@@ -368,13 +377,13 @@ function SchoolClassView() {
 
     return <>
         <Breadcrumb>
-            <BreadcrumbItem href="/">Home</BreadcrumbItem>
-            <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-            <BreadcrumbItem href={'/class-levels/' + class_level.id}>Level {class_level.prefix}</BreadcrumbItem>
-            <BreadcrumbItem active href={'/school-classes/' + school_class.id}>Class {school_class.suffix}</BreadcrumbItem>
+            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+            <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
+            <BreadcrumbItem href={'/class-levels/' + class_level.id}>{t('class_level.view.title')} {class_level.prefix}</BreadcrumbItem>
+            <BreadcrumbItem active href={'/school-classes/' + school_class.id}>{t('school_class.view.title')} {school_class.suffix}</BreadcrumbItem>
         </Breadcrumb>
-        <h3>Class: {class_level.prefix}{school_class.suffix}</h3>
-        <OverlayTrigger overlay={<Tooltip>Belts</Tooltip>}>
+        <h3>{t('school_class.view.title')}: {class_level.prefix}{school_class.suffix}</h3>
+        <OverlayTrigger overlay={<Tooltip>{t('school_class.view.belts')}</Tooltip>}>
             <Button onClick={() => navigate('belts')}>🥋</Button>
         </OverlayTrigger>
         <AdminOnly>
@@ -384,7 +393,7 @@ function SchoolClassView() {
             }} />
             {' '}
             <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => navigate('/class-levels/' + class_level.id)} />
-            <h4>List of students</h4>
+            <h4>{t('student.list.title.secondary')}</h4>
             <CreateStudentButton school_class_id={school_class.id} createdCallback={new_student => {
                 setStudentList({ ...studentList, students: [...students, new_student] });
             }} />
@@ -407,6 +416,7 @@ interface StudentWidgetProps {
 function StudentWidget(props: StudentWidgetProps) {
     const { student_id } = props;
 
+    const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [beltList, setBeltList] = useState<null | BeltList>(null);
     const [skillDomainList, setSkillDomainList] = useState<null | SkillDomainList>(null);
@@ -431,14 +441,14 @@ function StudentWidget(props: StudentWidgetProps) {
     if (beltList === null || skillDomainList === null || beltAttemptList === null) {
         return <>
             <Breadcrumb>
-                <BreadcrumbItem href="/">Home</BreadcrumbItem>
-                <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-                <BreadcrumbItem>Level ?</BreadcrumbItem>
-                <BreadcrumbItem active href="/">Class ?</BreadcrumbItem>
-                <BreadcrumbItem active href={'/students/' + student_id}>Student ?</BreadcrumbItem>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
+                <BreadcrumbItem>{t('class_level.view.title')} ?</BreadcrumbItem>
+                <BreadcrumbItem active href="/">{t('school_class.view.title')} ?</BreadcrumbItem>
+                <BreadcrumbItem active href={'/students/' + student_id}>{t('student.view.title')} ?</BreadcrumbItem>
             </Breadcrumb>
-            <h3>Student: ?</h3>
-            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
+            <h3>{t('student.view.title')}: ?</h3>
+            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
@@ -451,13 +461,13 @@ function StudentWidget(props: StudentWidgetProps) {
 
     return <>
         <Breadcrumb>
-            <BreadcrumbItem href="/">Home</BreadcrumbItem>
-            <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-            <BreadcrumbItem href={'/class-levels/' + class_level.id}>Level {class_level.prefix}</BreadcrumbItem>
-            <BreadcrumbItem active href={'/school-classes/' + school_class.id}>Class {school_class.suffix}</BreadcrumbItem>
-            <BreadcrumbItem active href={'/students/' + student.id}>Student {student.name}</BreadcrumbItem>
+            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+            <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
+            <BreadcrumbItem href={'/class-levels/' + class_level.id}>{t('class_level.view.title')} {class_level.prefix}</BreadcrumbItem>
+            <BreadcrumbItem active href={'/school-classes/' + school_class.id}>{t('school_class.view.title')} {school_class.suffix}</BreadcrumbItem>
+            <BreadcrumbItem active href={'/students/' + student.id}>{t('student.view.title')} {student.name}</BreadcrumbItem>
         </Breadcrumb>
-        <h3>Student: {student.name}</h3>
+        <h3>{t('student.view.title')}: {student.name}</h3>
         <AdminOnly>
             <EditStudentButton student={student} changedCallback={new_student => {
                 setBeltAttemptList({ ...beltAttemptList, student: new_student });
@@ -465,7 +475,7 @@ function StudentWidget(props: StudentWidgetProps) {
             {' '}
             <DeleteStudentButton student={student} deletedCallback={() => navigate('/school-classes/' + school_class.id)} />
         </AdminOnly>
-        <h4>List of belt attempts:</h4>
+        <h4>{t('belt_attempt.list.title.secondary')}</h4>
         <AdminOnly>
             <CreateBeltAttemptButton student={student} skill_domains={skill_domains} belts={belts} createdCallback={new_belt_attempt => {
                 setBeltAttemptList({ ...beltAttemptList, belt_attempts: [...belt_attempts, new_belt_attempt] });
@@ -501,6 +511,7 @@ function SchoolClassBeltsView() {
     }
     const school_class_id = params.school_class_id;
 
+    const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [schoolClassStudentBelts, setSchoolClassStudentBelts] = useState<null | SchoolClassStudentBelts>(null);
 
@@ -514,14 +525,14 @@ function SchoolClassBeltsView() {
     if (schoolClassStudentBelts === null) {
         return <>
             <Breadcrumb>
-                <BreadcrumbItem href="/">Home</BreadcrumbItem>
-                <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-                <BreadcrumbItem>Level ?</BreadcrumbItem>
-                <BreadcrumbItem href={'/school-class/' + school_class_id}>Class ?</BreadcrumbItem>
-                <BreadcrumbItem active href={'/school-classes/' + school_class_id + '/belt'}>Belts</BreadcrumbItem>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
+                <BreadcrumbItem>{t('class_level.view.title')} ?</BreadcrumbItem>
+                <BreadcrumbItem href={'/school-class/' + school_class_id}>{t('school_class.view.title')} ?</BreadcrumbItem>
+                <BreadcrumbItem active href={'/school-classes/' + school_class_id + '/belt'}>{t('school_class.view.belts')}</BreadcrumbItem>
             </Breadcrumb>
-            <h3>Belts of class: ?</h3>
-            {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
+            <h3>{t('school_class.view.belts')}: ?</h3>
+            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
@@ -529,13 +540,13 @@ function SchoolClassBeltsView() {
 
     return <>
         <Breadcrumb>
-            <BreadcrumbItem href="/">Home</BreadcrumbItem>
-            <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-            <BreadcrumbItem href={'/class-levels/' + class_level.id}>Level {class_level.prefix}</BreadcrumbItem>
-            <BreadcrumbItem active href={'/school-classes/' + school_class.id}>Class {school_class.suffix}</BreadcrumbItem>
-            <BreadcrumbItem active href={'/school-classes/' + school_class.id + '/belt'}>Belts</BreadcrumbItem>
+            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+            <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
+            <BreadcrumbItem href={'/class-levels/' + class_level.id}>{t('class_level.view.title')} {class_level.prefix}</BreadcrumbItem>
+            <BreadcrumbItem active href={'/school-classes/' + school_class.id}>{t('school_class.view.title')} {school_class.suffix}</BreadcrumbItem>
+            <BreadcrumbItem active href={'/school-classes/' + school_class.id + '/belt'}>{t('school_class.view.belts')}</BreadcrumbItem>
         </Breadcrumb>
-        <h3>Belts of class: {class_level.prefix}{school_class.suffix}</h3>
+        <h3>{t('school_class.view.belts')}: {class_level.prefix}{school_class.suffix}</h3>
         <BeltAttemptGrid
             skill_domains={skill_domains}
             belts={belts}
@@ -545,6 +556,8 @@ function SchoolClassBeltsView() {
 }
 
 function Layout() {
+    const { t } = useTranslation();
+
     const rawSavedLoginInfo = localStorage.getItem('login_info');
     const savedLoginInfo = rawSavedLoginInfo === null ? null : (JSON.parse(rawSavedLoginInfo) as LoginInfo);
     const [loginInfo, setLoginInfo] = useState<LoginInfo | null>(savedLoginInfo);
@@ -558,15 +571,15 @@ function Layout() {
 
     return <LoginContext.Provider value={loginInfo}>
         <Navbar>
-            <Navbar.Brand as={Link} to="/">Skills</Navbar.Brand>
+            <Navbar.Brand as={Link} to="/">{t('main_title')}</Navbar.Brand>
             <Nav className="me-auto">
-                <Nav.Item><Nav.Link as={Link} to="/">Home</Nav.Link></Nav.Item>
+                <Nav.Item><Nav.Link as={Link} to="/">{t('home_page')}</Nav.Link></Nav.Item>
                 <AdminOnly>
-                    <Nav.Item><Nav.Link as={Link} to="/users">Users</Nav.Link></Nav.Item>
+                    <Nav.Item><Nav.Link as={Link} to="/users">{t('user.list.title.primary')}</Nav.Link></Nav.Item>
                 </AdminOnly>
-                <Nav.Item><Nav.Link as={Link} to="/skill-domains">Skill Domains</Nav.Link></Nav.Item>
-                <Nav.Item><Nav.Link as={Link} to="/belts">Belts</Nav.Link></Nav.Item>
-                <Nav.Item><Nav.Link as={Link} to="/class-levels">Class Levels</Nav.Link></Nav.Item>
+                <Nav.Item><Nav.Link as={Link} to="/skill-domains">{t('skill_domain.list.title.primary')}</Nav.Link></Nav.Item>
+                <Nav.Item><Nav.Link as={Link} to="/belts">{t('belt.list.title.primary')}</Nav.Link></Nav.Item>
+                <Nav.Item><Nav.Link as={Link} to="/class-levels">{t('class_level.list.title.primary')}</Nav.Link></Nav.Item>
             </Nav>
             {loginInfo?.student ? <Badge bg="info" className="me-2">{loginInfo.student.name}</Badge> : null}
             {loginInfo
@@ -575,7 +588,7 @@ function Layout() {
                     <LogoutButton className="me-2" loggedOutCallback={() => setLoginInfo(null)}/>
                 </>
                 : <>
-                    <Badge bg="warning" className="me-2">Not connected</Badge>
+                    <Badge bg="warning" className="me-2">{t('not_connected')}</Badge>
                     <LoginButton className="me-2" loggedInCallback={setLoginInfo}/>
                 </>
             }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Select from 'react-select';
 import { Link } from 'react-router-dom';
 
@@ -36,6 +37,7 @@ interface CreateBeltAttemptButtonProps {
 
 export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): ReactElement {
     const { student, skill_domains, belts, createdCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [creating, setCreating] = useState(false);
@@ -81,51 +83,51 @@ export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): R
     }));
 
     return <>
-        <Button onClick={() => setShow(true)}>Add</Button>
+        <Button onClick={() => setShow(true)}>{t('belt_attempt.add.button')}</Button>
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>Add Belt Attempt for {student.name}</Modal.Title>
+                    <Modal.Title>{t('belt_attempt.add.title')} {student.name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
+                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
                     <Form.Group controlId="skill_domain">
-                        <Form.Label>Skill domain</Form.Label>
+                        <Form.Label>{t('belt_attempt.add_edit.skill_domain.title')}</Form.Label>
                         <Select id="skill_domain" name="skill_domain" options={skill_domain_options} />
                         <Form.Text className="text-muted">
-                            What skill domain was tested?
+                            {t('belt_attempt.add_edit.skill_domain.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="belt">
-                        <Form.Label>Belt</Form.Label>
+                        <Form.Label>{t('belt_attempt.add_edit.belt.title')}</Form.Label>
                         <Select id="belt" name="belt" options={belt_options} />
                         <Form.Text className="text-muted">
-                            What belt did the student attempt?
+                            {t('belt_attempt.add_edit.belt.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="date">
-                        <Form.Label>Date</Form.Label>
+                        <Form.Label>{t('belt_attempt.add_edit.belt.help')}</Form.Label>
                         <Form.Control type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
                         <Form.Text className="text-muted">
-                            What belt did the student attempt?
+                            {t('belt_attempt.add_edit.belt.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="success">
-                        <Form.Check label="Passed" />
+                        <Form.Check label={t('belt_attempt.add_edit.passed.title')} />
                         <Form.Text className="text-muted">
-                            Did the student pass?
+                            {t('belt_attempt.add_edit.passed.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    <Button variant="secondary" onClick={() => setShow(false)}>{t('belt_attempt.add.cancel')}</Button>
                     {creating
                         ? <Button disabled type="submit">
                             <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">Creating</span>
+                                <span className="visually-hidden">{t('belt_attempt.add.in_process')}</span>
                             </Spinner>
                         </Button>
-                        : <Button type="submit">Add</Button>
+                        : <Button type="submit">{t('belt_attempt.add.confirm')}</Button>
                     }
                 </Modal.Footer>
             </Form>
@@ -150,6 +152,7 @@ interface EditBeltAttemptButtonProps {
 
 export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): ReactElement {
     const { belt_attempt, student, skill_domain, belt, skill_domain_options, belt_options, changedCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [changing, setChanging] = useState(false);
@@ -181,18 +184,18 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
     }
 
     return <>
-        <OverlayTrigger overlay={<Tooltip>Edit</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip>{t('belt_attempt.edit.button')}</Tooltip>}>
             <Button onClick={() => setShow(true)}>✏️</Button>
         </OverlayTrigger>
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>Add Belt Attempt for {student.name}</Modal.Title>
+                    <Modal.Title>{t('belt_attempt.edit.title')}: {student.name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
+                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
                     <Form.Group controlId="skill_domain">
-                        <Form.Label>Skill domain</Form.Label>
+                        <Form.Label>{t('belt_attempt.add_edit.skill_domain.title')}</Form.Label>
                         <Select
                             id="skill_domain"
                             name="skill_domain"
@@ -203,11 +206,11 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
                             }}
                         />
                         <Form.Text className="text-muted">
-                            What skill domain was tested?
+                            {t('belt_attempt.add_edit.skill_domain.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="belt">
-                        <Form.Label>Belt</Form.Label>
+                        <Form.Label>{t('belt_attempt.add_edit.belt.title')}</Form.Label>
                         <Select
                             id="belt"
                             name="belt"
@@ -218,32 +221,32 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
                             }}
                         />
                         <Form.Text className="text-muted">
-                            What belt did the student attempt?
+                            {t('belt_attempt.add_edit.belt.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="date">
-                        <Form.Label>Date</Form.Label>
+                        <Form.Label>{t('belt_attempt.add_edit.date.title')}</Form.Label>
                         <Form.Control type="date" defaultValue={belt_attempt.date} />
                         <Form.Text className="text-muted">
-                            What belt did the student attempt?
+                            {t('belt_attempt.add_edit.date.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="success">
-                        <Form.Check label="Passed" defaultChecked={belt_attempt.success} />
+                        <Form.Check label={t('belt_attempt.add_edit.passed.title')} defaultChecked={belt_attempt.success} />
                         <Form.Text className="text-muted">
-                            Did the student pass?
+                            {t('belt_attempt.add_edit.passed.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    <Button variant="secondary" onClick={() => setShow(false)}>{t('belt_attempt.edit.cancel')}</Button>
                     {changing
                         ? <Button type="submit" disabled>
                             <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">Saving</span>
+                                <span className="visually-hidden">{t('belt_attempt.edit.in_process')}</span>
                             </Spinner>
                         </Button>
-                        : <Button type="submit">Save</Button>
+                        : <Button type="submit">{t('belt_attempt.edit.confirm')}</Button>
                     }
                 </Modal.Footer>
             </Form>
@@ -259,6 +262,7 @@ interface DeleteBeltAttemptButtonProps {
 
 export function DeleteBeltAttemptButton(props : DeleteBeltAttemptButtonProps): ReactElement {
     const { student, belt_attempt, deletedCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [deleting, setDeleting] = useState(false);
@@ -278,26 +282,26 @@ export function DeleteBeltAttemptButton(props : DeleteBeltAttemptButtonProps): R
     }
 
     return <>
-        <OverlayTrigger overlay={<Tooltip>Delete</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip>{t('belt_attempt.delete.button')}</Tooltip>}>
             <Button variant="danger" onClick={() => setShow(true)}>🗑️</Button>
         </OverlayTrigger>
         <Modal show={show}>
             <Modal.Header>
-                <Modal.Title>Delete Belt Attempt of {student.name}</Modal.Title>
+                <Modal.Title>{t('belt_attempt.delete.title')}: {student.name}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
-                Are you sure you want to delete the belt attempt?
+                {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
+                {t('belt_attempt.delete.message')}
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                <Button variant="secondary" onClick={() => setShow(false)}>{t('belt_attempt.delete.confirm')}</Button>
                 {deleting
                     ? <Button disabled variant="danger">
                         <Spinner animation="border" role="status" size="sm">
-                            <span className="visually-hidden">Deleting</span>
+                            <span className="visually-hidden">{t('belt_attempt.delete.in_process')}</span>
                         </Spinner>
                     </Button>
-                    : <Button variant="danger" onClick={handleDelete}>Delete</Button>
+                    : <Button variant="danger" onClick={handleDelete}>{t('belt_attempt.delete.confirm')}</Button>
                 }
             </Modal.Footer>
         </Modal>
@@ -314,6 +318,7 @@ interface BeltAttemptListingProps {
 
 export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement {
     const { skill_domains, belts, student, belt_attempts, setBeltAttempts } = props;
+    const { t } = useTranslation();
 
     const skill_domain_by_id = Object.fromEntries(
         skill_domains.map(skill_domain => [skill_domain.id, skill_domain])
@@ -334,7 +339,8 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
 
     const columns: ColumnDef<BeltAttempt>[] = [
         {
-            header: 'Skill domain',
+            id: 'belt_attempt',
+            header: t('belt_attempt.list.skill_domain.title'),
             accessorFn: belt_attempt => {
                 const skill_domain_id = belt_attempt.skill_domain_id;
                 const skill_domain = skill_domain_by_id[skill_domain_id];
@@ -347,7 +353,8 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
             }
         },
         {
-            header: 'Belt',
+            id: 'belt',
+            header: t('belt_attempt.list.belt.title'),
             accessorFn: belt_attempt => {
                 const belt_id = belt_attempt.belt_id;
                 const belt = belt_by_id[belt_id];
@@ -371,16 +378,18 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
             }
         },
         {
-            header: 'Date',
+            id: 'date',
+            header: t('belt_attempt.list.date.title'),
             accessorKey: 'date',
             cell: info => {
                 const date = info.row.original.date;
                 const d = new Date(date);
-                return d.toLocaleDateString('en-US', localeDateOptions);
+                return d.toLocaleDateString('en-US', localeDateOptions);  // TODO
             },
         },
         {
-            header: 'Passed?',
+            id: 'passed',
+            header: t('belt_attempt.list.passed.title'),
             accessorKey: 'success',
             cell: info => info.getValue() ? '✅' : '❌',
         },
@@ -388,7 +397,8 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
 
     if (is_admin()) {
         columns.push({
-            header: 'Actions',
+            id: 'actions',
+            header: t('belt_attempt.list.actions.title'),
             cell: info => {
                 const belt_attempt = info.row.original;
                 const skill_domain_id = belt_attempt.skill_domain_id;
@@ -442,6 +452,7 @@ interface BeltAttemptGridProps {
 
 export function BeltAttemptGrid(props: BeltAttemptGridProps): ReactElement {
     const { skill_domains, belts, student_belts } = props;
+    const { t } = useTranslation();
 
     const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
 
@@ -449,7 +460,7 @@ export function BeltAttemptGrid(props: BeltAttemptGridProps): ReactElement {
         <Table>
             <thead>
                 <tr>
-                    <th>Student</th>
+                    <th>{t('belt_attempt.grid.student')}</th>
                     {skill_domains.map(skill_domain => <th key={skill_domain.id}>{skill_domain.name}</th>)}
                 </tr>
             </thead>

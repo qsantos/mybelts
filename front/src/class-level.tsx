@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import Alert from 'react-bootstrap/Alert';
@@ -23,6 +24,7 @@ interface CreateClassLevelButtonProps
 
 export function CreateClassLevelButton(props : CreateClassLevelButtonProps): ReactElement {
     const { createdCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [creating, setCreating] = useState(false);
@@ -52,27 +54,27 @@ export function CreateClassLevelButton(props : CreateClassLevelButtonProps): Rea
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>Add Class Level</Modal.Title>
+                    <Modal.Title>{t('class_level.add.button')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
+                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
                     <Form.Group controlId="prefix">
-                        <Form.Label>Prefix</Form.Label>
-                        <Form.Control type="text" placeholder="Example: 4e" />
+                        <Form.Label>{t('class_level.add_edit.prefix.title')}</Form.Label>
+                        <Form.Control type="text" placeholder={t('class_level.add_edit.prefix.placeholder')}/>
                         <Form.Text className="text-muted">
-                            Prefix for the new class level
+                            {t('class_level.add_edit.prefix.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    <Button variant="secondary" onClick={() => setShow(false)}>{t('class_level.add.cancel')}</Button>
                     {creating
                         ? <Button disabled type="submit">
                             <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">Creating</span>
+                                <span className="visually-hidden">{t('class_level.add.in_process')}</span>
                             </Spinner>
                         </Button>
-                        : <Button type="submit">Add</Button>
+                        : <Button type="submit">{t('class_level.add.confirm')}</Button>
                     }
                 </Modal.Footer>
             </Form>
@@ -88,6 +90,7 @@ interface EditClassLevelButtonProps
 
 export function EditClassLevelButton(props : EditClassLevelButtonProps): ReactElement {
     const { class_level, changedCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [changing, setChanging] = useState(false);
@@ -113,33 +116,33 @@ export function EditClassLevelButton(props : EditClassLevelButtonProps): ReactEl
     }
 
     return <>
-        <OverlayTrigger overlay={<Tooltip>Edit</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip>{t('class_level.edit.button')}</Tooltip>}>
             <Button onClick={() => setShow(true)}>✏️</Button>
         </OverlayTrigger>
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>Edit Class Level</Modal.Title>
+                    <Modal.Title>{t('class_level.edit.title')}: {class_level.prefix}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
+                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
                     <Form.Group controlId="prefix">
-                        <Form.Label>Prefix</Form.Label>
-                        <Form.Control type="text" placeholder="Example: 4e" defaultValue={class_level.prefix} />
+                        <Form.Label>{t('class_level.add_edit.prefix.title')}</Form.Label>
+                        <Form.Control type="text" placeholder={t('class_level.add_edit.prefix.placeholder')} defaultValue={class_level.prefix} />
                         <Form.Text className="text-muted">
-                            New prefix for the class level “{class_level.prefix}”
+                            {t('class_level.add_edit.prefix.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    <Button variant="secondary" onClick={() => setShow(false)}>{t('class_level.edit.cancel')}</Button>
                     {changing
                         ? <Button type="submit" disabled>
                             <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">Saving</span>
+                                <span className="visually-hidden">{t('class_level.edit.in_process')}</span>
                             </Spinner>
                         </Button>
-                        : <Button type="submit">Save</Button>
+                        : <Button type="submit">{t('class_level.edit.confirm')}</Button>
                     }
                 </Modal.Footer>
             </Form>
@@ -155,6 +158,7 @@ interface DeleteClassLevelButtonProps
 
 export function DeleteClassLevelButton(props : DeleteClassLevelButtonProps): ReactElement {
     const { class_level, deletedCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [deleting, setDeleting] = useState(false);
@@ -174,26 +178,26 @@ export function DeleteClassLevelButton(props : DeleteClassLevelButtonProps): Rea
     }
 
     return <>
-        <OverlayTrigger overlay={<Tooltip>Delete</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip>{t('class_level.delete.button')}</Tooltip>}>
             <Button variant="danger" onClick={() => setShow(true)}>🗑️</Button>
         </OverlayTrigger>
         <Modal show={show}>
             <Modal.Header>
-                <Modal.Title>Delete Class Level</Modal.Title>
+                <Modal.Title>{t('class_level.delete.title')}: {class_level.prefix}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
-                Are you sure you want to delete the class level “{class_level.prefix}”?
+                {t('class_level.delete.message')}
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                <Button variant="secondary" onClick={() => setShow(false)}>{t('class_level.delete.cancel')}</Button>
                 {deleting
                     ? <Button disabled variant="danger">
                         <Spinner animation="border" role="status" size="sm">
-                            <span className="visually-hidden">Deleting</span>
+                            <span className="visually-hidden">{t('class_level.delete.in_process')}</span>
                         </Spinner>
                     </Button>
-                    : <Button variant="danger" onClick={handleDelete}>Delete</Button>
+                    : <Button variant="danger" onClick={handleDelete}>{t('class_level.delete.confirm')}</Button>
                 }
             </Modal.Footer>
         </Modal>
@@ -207,13 +211,14 @@ interface ClassLevelListingProps {
 
 export function ClassLevelListing(props: ClassLevelListingProps): ReactElement {
     const { class_levels, setClassLevels } = props;
+    const { t } = useTranslation();
     return <>
         <Table>
             <thead>
                 <tr>
-                    <th>Prefix</th>
+                    <th>{t('class_level.list.prefix.title')}</th>
                     <AdminOnly>
-                        <th>Action</th>
+                        <th>{t('class_level.list.actions.title')}</th>
                     </AdminOnly>
                 </tr>
             </thead>

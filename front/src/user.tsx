@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -20,6 +21,7 @@ interface CreateUserButtonProps
 
 export function CreateUserButton(props : CreateUserButtonProps): ReactElement {
     const { createdCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [creating, setCreating] = useState(false);
@@ -49,44 +51,44 @@ export function CreateUserButton(props : CreateUserButtonProps): ReactElement {
     }
 
     return <>
-        <Button onClick={() => setShow(true)}>Add</Button>
+        <Button onClick={() => setShow(true)}>{t('user.add.button')}</Button>
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>Add User</Modal.Title>
+                    <Modal.Title>{t('user.add.title')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
+                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control type="text" placeholder="Example: tartempion" />
+                        <Form.Label>{t('user.add_edit.name.title')}</Form.Label>
+                        <Form.Control type="text" placeholder={t('user.add_edit.name.placeholder')}/>
                         <Form.Text className="text-muted">
-                            Name for the new user
+                            {t('user.add_edit.name.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="password">
-                        <Form.Label>Password</Form.Label>
+                        <Form.Label>{t('user.add_edit.password.title')}</Form.Label>
                         <Form.Control type="password" />
                         <Form.Text className="text-muted">
-                            Password for the new user
+                            {t('user.add_edit.password.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="is_admin">
-                        <Form.Check label="Administrator" />
+                        <Form.Check label={t('user.add_edit.is_admin.title')}/>
                         <Form.Text className="text-muted">
-                            Should the user have administrator privileges?
+                            {t('user.add_edit.is_admin.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    <Button variant="secondary" onClick={() => setShow(false)}>{t('user.add.cancel')}</Button>
                     {creating
                         ? <Button disabled type="submit">
                             <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">Creating</span>
+                                <span className="visually-hidden">{t('user.add.in_process')}</span>
                             </Spinner>
                         </Button>
-                        : <Button type="submit">Add</Button>
+                        : <Button type="submit">{t('user.add.confirm')}</Button>
                     }
                 </Modal.Footer>
             </Form>
@@ -102,6 +104,7 @@ interface EditUserButtonProps
 
 export function EditUserButton(props : EditUserButtonProps): ReactElement {
     const { user, changedCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [changing, setChanging] = useState(false);
@@ -131,46 +134,46 @@ export function EditUserButton(props : EditUserButtonProps): ReactElement {
     }
 
     return <>
-        <OverlayTrigger overlay={<Tooltip>Edit</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip>{t('user.edit.button')}</Tooltip>}>
             <Button onClick={() => setShow(true)}>✏️</Button>
         </OverlayTrigger>
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>Edit User</Modal.Title>
+                    <Modal.Title>{t('user.edit.title')}: {user.name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
+                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
                     <Form.Group controlId="name">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control type="text" placeholder="Example: tartempion" defaultValue={user.name} />
+                        <Form.Label>{t('user.add_edit.name.title')}</Form.Label>
+                        <Form.Control type="text" placeholder={t('user.add_edit.name.placeholder')} defaultValue={user.name} />
                         <Form.Text className="text-muted">
-                            New name for the user
+                            {t('user.add_edit.name.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="password">
-                        <Form.Label>Password</Form.Label>
+                        <Form.Label>{t('user.add_edit.password.title')}</Form.Label>
                         <Form.Control type="password" />
                         <Form.Text className="text-muted">
-                            New password for the user
+                            {t('user.add_edit.password.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="is_admin">
-                        <Form.Check label="Administrator" defaultChecked={user.is_admin} />
+                        <Form.Check label={t('user.add_edit.is_admin.title')} defaultChecked={user.is_admin} />
                         <Form.Text className="text-muted">
-                            Should the user have administrator privileges?
+                            {t('user.add_edit.is_admin.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                    <Button variant="secondary" onClick={() => setShow(false)}>{t('user.edit.cancel')}</Button>
                     {changing
                         ? <Button type="submit" disabled>
                             <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">Saving</span>
+                                <span className="visually-hidden">{t('user.edit.in_process')}</span>
                             </Spinner>
                         </Button>
-                        : <Button type="submit">Save</Button>
+                        : <Button type="submit">{t('user.edit.confirm')}</Button>
                     }
                 </Modal.Footer>
             </Form>
@@ -186,6 +189,7 @@ interface DeleteUserButtonProps
 
 export function DeleteUserButton(props : DeleteUserButtonProps): ReactElement {
     const { user, deletedCallback } = props;
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [deleting, setDeleting] = useState(false);
@@ -205,26 +209,26 @@ export function DeleteUserButton(props : DeleteUserButtonProps): ReactElement {
     }
 
     return <>
-        <OverlayTrigger overlay={<Tooltip>Delete</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip>{t('user.delete.button')}</Tooltip>}>
             <Button variant="danger" onClick={() => setShow(true)}>🗑️</Button>
         </OverlayTrigger>
         <Modal show={show}>
             <Modal.Header>
-                <Modal.Title>Delete User</Modal.Title>
+                <Modal.Title>{t('user.delete.title')}: {user.name}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {errorMessage && <Alert variant="danger">Error: {errorMessage}</Alert>}
-                Are you sure you want to delete the user “{user.name}”?
+                {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
+                {t('user.delete.message')}
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShow(false)}>Cancel</Button>
+                <Button variant="secondary" onClick={() => setShow(false)}>{t('user.delete.cancel')}</Button>
                 {deleting
                     ? <Button disabled variant="danger">
                         <Spinner animation="border" role="status" size="sm">
-                            <span className="visually-hidden">Deleting</span>
+                            <span className="visually-hidden">{t('user.delete.in_process')}</span>
                         </Spinner>
                     </Button>
-                    : <Button variant="danger" onClick={handleDelete}>Delete</Button>
+                    : <Button variant="danger" onClick={handleDelete}>{t('user.delete.confirm')}</Button>
                 }
             </Modal.Footer>
         </Modal>
@@ -238,13 +242,14 @@ interface UserListingProps {
 
 export function UserListing(props: UserListingProps): ReactElement {
     const { users, setUsers } = props;
+    const { t } = useTranslation();
     return <>
         <Table>
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Is Admin?</th>
-                    <th>Actions</th>
+                    <th>{t('user.list.name.title')}</th>
+                    <th>{t('user.list.is_admin.title')}</th>
+                    <th>{t('user.list.actions.title')}</th>
                 </tr>
             </thead>
             <tbody>
