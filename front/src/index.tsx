@@ -3,6 +3,7 @@ import { BrowserRouter, Link, Outlet, Route, Routes, useNavigate, useParams } fr
 import React from 'react';
 import { ReactNode, StrictMode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 import './i18n';
 
 import Alert from 'react-bootstrap/Alert';
@@ -555,6 +556,19 @@ function SchoolClassBeltsView() {
     </>;
 }
 
+function LanguageSelector() {
+    const currentLanguageCode = i18n.language;
+    const otherLanguageCode = currentLanguageCode == 'en' ? 'fr' : 'en';
+
+    const languageEmojis = {
+        'en': '🇬🇧',
+        'fr': '🇫🇷',
+    };
+    const otherLanguageEmoji = languageEmojis[otherLanguageCode];
+
+    return <Button onClick={() => i18n.changeLanguage(otherLanguageCode)}>{otherLanguageEmoji}</Button>;
+}
+
 function Layout() {
     const { t } = useTranslation();
 
@@ -582,6 +596,7 @@ function Layout() {
                 <Nav.Item><Nav.Link as={Link} to="/class-levels">{t('class_level.list.title.primary')}</Nav.Link></Nav.Item>
             </Nav>
             {loginInfo?.student ? <Badge bg="info" className="me-2">{loginInfo.student.name}</Badge> : null}
+            <LanguageSelector />
             {loginInfo
                 ? <>
                     <Badge bg="info" className="me-2">{loginInfo.user.name}</Badge>
