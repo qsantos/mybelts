@@ -150,7 +150,7 @@ function BeltsView() {
     // TODO: handle case where result is false
     sorted_belts.reduce((previous, belt, index) => {
         if (belt.rank != index + 1) {
-            console.error(`Inconsistent ranking of belts ${belt.id}!`);
+            console.error('Inconsistent ranking of belts ' + belt.id + '!');
             return false;
         }
         return previous;
@@ -290,7 +290,7 @@ function ClassLevelView() {
             <Breadcrumb>
                 <BreadcrumbItem href="/">Home</BreadcrumbItem>
                 <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-                <BreadcrumbItem active href={`/class-levels/${class_level_id}`}>Level ?</BreadcrumbItem>
+                <BreadcrumbItem active href={'/class-levels/' + class_level_id}>Level ?</BreadcrumbItem>
             </Breadcrumb>
             <h3>Class level: ?</h3>
             {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
@@ -304,7 +304,7 @@ function ClassLevelView() {
         <Breadcrumb>
             <BreadcrumbItem href="/">Home</BreadcrumbItem>
             <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-            <BreadcrumbItem active href={`/class-levels/${class_level.id}`}>Level {class_level.prefix}</BreadcrumbItem>
+            <BreadcrumbItem active href={'/class-levels/' + class_level.id}>Level {class_level.prefix}</BreadcrumbItem>
         </Breadcrumb>
         <h3>Class level: {class_level.prefix}</h3>
         <AdminOnly>
@@ -370,8 +370,8 @@ function SchoolClassView() {
         <Breadcrumb>
             <BreadcrumbItem href="/">Home</BreadcrumbItem>
             <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-            <BreadcrumbItem href={`/class-levels/${class_level.id}`}>Level {class_level.prefix}</BreadcrumbItem>
-            <BreadcrumbItem active href={`/school-classes/${school_class.id}`}>Class {school_class.suffix}</BreadcrumbItem>
+            <BreadcrumbItem href={'/class-levels/' + class_level.id}>Level {class_level.prefix}</BreadcrumbItem>
+            <BreadcrumbItem active href={'/school-classes/' + school_class.id}>Class {school_class.suffix}</BreadcrumbItem>
         </Breadcrumb>
         <h3>Class: {class_level.prefix}{school_class.suffix}</h3>
         <OverlayTrigger overlay={<Tooltip>Belts</Tooltip>}>
@@ -383,7 +383,7 @@ function SchoolClassView() {
                 setStudentList({ ...studentList, school_class: new_school_class });
             }} />
             {' '}
-            <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => navigate(`/class-levels/${class_level.id}`)} />
+            <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => navigate('/class-levels/' + class_level.id)} />
             <h4>List of students</h4>
             <CreateStudentButton school_class_id={school_class.id} createdCallback={new_student => {
                 setStudentList({ ...studentList, students: [...students, new_student] });
@@ -435,7 +435,7 @@ function StudentWidget(props: StudentWidgetProps) {
                 <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
                 <BreadcrumbItem>Level ?</BreadcrumbItem>
                 <BreadcrumbItem active href="/">Class ?</BreadcrumbItem>
-                <BreadcrumbItem active href={`/students/${student_id}`}>Student ?</BreadcrumbItem>
+                <BreadcrumbItem active href={'/students/' + student_id}>Student ?</BreadcrumbItem>
             </Breadcrumb>
             <h3>Student: ?</h3>
             {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
@@ -453,9 +453,9 @@ function StudentWidget(props: StudentWidgetProps) {
         <Breadcrumb>
             <BreadcrumbItem href="/">Home</BreadcrumbItem>
             <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-            <BreadcrumbItem href={`/class-levels/${class_level.id}`}>Level {class_level.prefix}</BreadcrumbItem>
-            <BreadcrumbItem active href={`/school-classes/${school_class.id}`}>Class {school_class.suffix}</BreadcrumbItem>
-            <BreadcrumbItem active href={`/students/${student.id}`}>Student {student.name}</BreadcrumbItem>
+            <BreadcrumbItem href={'/class-levels/' + class_level.id}>Level {class_level.prefix}</BreadcrumbItem>
+            <BreadcrumbItem active href={'/school-classes/' + school_class.id}>Class {school_class.suffix}</BreadcrumbItem>
+            <BreadcrumbItem active href={'/students/' + student.id}>Student {student.name}</BreadcrumbItem>
         </Breadcrumb>
         <h3>Student: {student.name}</h3>
         <AdminOnly>
@@ -463,7 +463,7 @@ function StudentWidget(props: StudentWidgetProps) {
                 setBeltAttemptList({ ...beltAttemptList, student: new_student });
             }} />
             {' '}
-            <DeleteStudentButton student={student} deletedCallback={() => navigate(`/school-classes/${school_class.id}`)} />
+            <DeleteStudentButton student={student} deletedCallback={() => navigate('/school-classes/' + school_class.id)} />
         </AdminOnly>
         <h4>List of belt attempts:</h4>
         <AdminOnly>
@@ -517,8 +517,8 @@ function SchoolClassBeltsView() {
                 <BreadcrumbItem href="/">Home</BreadcrumbItem>
                 <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
                 <BreadcrumbItem>Level ?</BreadcrumbItem>
-                <BreadcrumbItem href={`/school-class/${school_class_id}`}>Class ?</BreadcrumbItem>
-                <BreadcrumbItem active href={`/school-classes/${school_class_id}/belts`}>Belts</BreadcrumbItem>
+                <BreadcrumbItem href={'/school-class/' + school_class_id}>Class ?</BreadcrumbItem>
+                <BreadcrumbItem active href={'/school-classes/' + school_class_id + '/belt'}>Belts</BreadcrumbItem>
             </Breadcrumb>
             <h3>Belts of class: ?</h3>
             {errorMessage ? <Alert variant="danger">Error: {errorMessage}</Alert> : <Loader />}
@@ -531,9 +531,9 @@ function SchoolClassBeltsView() {
         <Breadcrumb>
             <BreadcrumbItem href="/">Home</BreadcrumbItem>
             <BreadcrumbItem href="/class-levels">Levels</BreadcrumbItem>
-            <BreadcrumbItem href={`/class-levels/${class_level.id}`}>Level {class_level.prefix}</BreadcrumbItem>
-            <BreadcrumbItem active href={`/school-classes/${school_class.id}`}>Class {school_class.suffix}</BreadcrumbItem>
-            <BreadcrumbItem active href={`/school-classes/${school_class.id}/belts`}>Belts</BreadcrumbItem>
+            <BreadcrumbItem href={'/class-levels/' + class_level.id}>Level {class_level.prefix}</BreadcrumbItem>
+            <BreadcrumbItem active href={'/school-classes/' + school_class.id}>Class {school_class.suffix}</BreadcrumbItem>
+            <BreadcrumbItem active href={'/school-classes/' + school_class.id + '/belt'}>Belts</BreadcrumbItem>
         </Breadcrumb>
         <h3>Belts of class: {class_level.prefix}{school_class.suffix}</h3>
         <BeltAttemptGrid

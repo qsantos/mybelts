@@ -223,7 +223,7 @@ export function SchoolClassListing(props: SchoolClassListingProps): ReactElement
                 {school_classes.map((school_class, index) =>
                     <tr key={school_class.id}>
                         <td>
-                            <Nav.Link as={Link} to={`/school-classes/${school_class.id}`}>
+                            <Nav.Link as={Link} to={'/school-classes/' + school_class.id}>
                                 {school_class.suffix}
                             </Nav.Link>
                         </td>

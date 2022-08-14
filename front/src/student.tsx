@@ -320,7 +320,7 @@ export function StudentListing(props: StudentListingProps): ReactElement {
             cell: info => {
                 const student = info.row.original;
                 return (
-                    <Nav.Link as={Link} to={`/students/${student.id}`}>
+                    <Nav.Link as={Link} to={'/students/' + student.id}>
                         {student.name}
                     </Nav.Link>
                 );

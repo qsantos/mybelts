@@ -340,7 +340,7 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
                 const skill_domain = skill_domain_by_id[skill_domain_id];
                 if (skill_domain === undefined) {
                     // should not happen
-                    console.error(`skill_domain ${skill_domain_id} not found for belt_attempt ${belt_attempt.id}`);
+                    console.error('skill_domain ' + skill_domain_id + ' not found for belt_attempt ' + belt_attempt.id);
                     return <></>;
                 }
                 return skill_domain.name;
@@ -353,7 +353,7 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
                 const belt = belt_by_id[belt_id];
                 if (belt === undefined) {
                     // should not happen
-                    console.error(`belt ${belt_id} not found for belt_attempt ${belt_attempt.id}`);
+                    console.error('belt ' + belt_id + ' not found for belt_attempt ' + belt_attempt.id);
                     return <></>;
                 }
                 return belt.name;
@@ -364,7 +364,7 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
                 const belt = belt_by_id[belt_id];
                 if (belt === undefined) {
                     // should not happen
-                    console.error(`belt ${belt_id} not found for belt_attempt ${belt_attempt.id}`);
+                    console.error('belt ' + belt_id + ' not found for belt_attempt ' + belt_attempt.id);
                     return <></>;
                 }
                 return <BeltIcon belt={belt} />;
@@ -397,12 +397,12 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
                 const belt = belt_by_id[belt_attempt.belt_id];
                 if (skill_domain === undefined) {
                     // should not happen
-                    console.error(`skill_domain ${skill_domain_id} not found for belt_attempt ${belt_attempt.id}`);
+                    console.error('skill_domain ' + skill_domain_id + ' not found for belt_attempt ' + belt_attempt.id);
                     return <></>;
                 }
                 if (belt === undefined) {
                     // should not happen
-                    console.error(`belt ${belt_id} not found for belt_attempt ${belt_attempt.id}`);
+                    console.error('belt ' + belt_id + ' not found for belt_attempt ' + belt_attempt.id);
                     return <></>;
                 }
                 return <>
@@ -462,7 +462,7 @@ export function BeltAttemptGrid(props: BeltAttemptGridProps): ReactElement {
                     );
                     return <tr key={student.id}>
                         <th>
-                            <Nav.Link as={Link} to={`/students/${student.id}`}>
+                            <Nav.Link as={Link} to={'/students/' + student.id}>
                                 {student.name}
                             </Nav.Link>
                         </th>

@@ -221,7 +221,7 @@ export function ClassLevelListing(props: ClassLevelListingProps): ReactElement {
                 {class_levels.map((class_level, index) =>
                     <tr key={class_level.id}>
                         <td>
-                            <Nav.Link as={Link} to={`${class_level.id}`}>
+                            <Nav.Link as={Link} to={'/class-levels/' + class_level.id}>
                                 {class_level.prefix}
                             </Nav.Link>
                         </td>
