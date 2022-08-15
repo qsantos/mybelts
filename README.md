@@ -48,7 +48,7 @@
 - start the system services (`sudo systemctl start nginx postgresql`)
 - activate the Python virtual environment (`source env/bin/activate`)
 - start the back-end (`FLASK_DEBUG=1 FLASK_APP=skills.api flask run`)
-- start the front (`cd front; NODE_OPTIONS='--openssl-legacy-provider' npm run start`)
+- start the front (`cd front; NODE_OPTIONS='--openssl-legacy-provider' BROWSER=none npm run start`)
 - open the web app (`firefox http://127.0.0.1/`)
 - login as `root` with password `root`
 
