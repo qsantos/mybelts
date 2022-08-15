@@ -90,6 +90,7 @@ api_model_student = api.model('Student', {
     'id': fields.Integer(example=42, required=True),
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
     'user_id': fields.Integer(example=42, required=True),
+    'username': fields.String(example='jdoe', required=True),
     'school_class_id': fields.Integer(example=42, required=True),
     'display_name': fields.String(example='John Doe', required=True),
     'rank': fields.Integer(example=7, required=True),

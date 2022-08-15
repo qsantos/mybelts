@@ -9,4 +9,5 @@ export type Student = {
     rank: number;
     school_class_id: number;
     user_id: number;
+    username: string;
 }

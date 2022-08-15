@@ -156,6 +156,7 @@ class Student(Base):
             'id': self.id,
             'created': self.created.isoformat(),
             'user_id': self.user_id,
+            'username': self.user.username,
             'school_class_id': self.school_class_id,
             'display_name': self.display_name,
             'rank': self.rank,
