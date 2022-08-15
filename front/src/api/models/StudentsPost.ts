@@ -4,5 +4,7 @@
 
 export type StudentsPost = {
     display_name: string;
+    password: string;
     school_class_id: number;
+    username: string;
 }

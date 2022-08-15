@@ -649,6 +649,8 @@ class SchoolClassStudentBeltsResource(Resource):
 class StudentsResource(Resource):
     post_model = api.model('StudentsPost', {
         'school_class_id': fields.Integer(example=42, required=True),
+        'username': fields.String(example='tartempion', required=True),
+        'password': fields.String(example='correct horse battery stable', required=True),
         'display_name': fields.String(example='John Doe', required=True),
     })
 
@@ -663,12 +665,14 @@ class StudentsResource(Resource):
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
             class_level = school_class.class_level
-            display_name = request.json['display_name']
-            user = User(username=display_name, password=display_name)  # TODO
+            user = User(
+                username=request.json['username'],
+                password=request.json['password'],
+            )
             student = Student(
                 school_class_id=school_class_id,
                 user=user,
-                display_name=display_name,
+                display_name=request.json['display_name'],
             )
             session.add(student)
             session.commit()
@@ -729,6 +733,8 @@ class StudentResource(Resource):
 
     put_model = api.model('StudentPut', {
         'display_name': fields.String(example='John Doe'),
+        'username': fields.String(example='tartempion'),
+        'password': fields.String(example='correct horse battery stable'),
         'rank': fields.Integer(example=7),
     })
 
@@ -745,6 +751,12 @@ class StudentResource(Resource):
             display_name = request.json.get('display_name')
             if display_name is not None:
                 student.display_name = display_name
+            username = request.json.get('username')
+            if username is not None:
+                user.username = username
+            password = request.json.get('password')
+            if password:
+                user.password = password
             rank = request.json.get('rank')
             if rank is not None:
                 student.rank = rank

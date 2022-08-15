@@ -445,9 +445,14 @@ def add_students(school_class_ids: List[int]) -> List[int]:
     # add students
     ids = []
     for school_class_id, display_name in zip(student_classes, display_names):
+        first, last = display_name.lower().split()
+        username = first[0] + last
+        password = username + '42'
         res = requests.post(API_URL + '/students', json={
             'school_class_id': school_class_id,
             'display_name': display_name,
+            'username': username,
+            'password': password,
         })
         res.raise_for_status()
         j = res.json()

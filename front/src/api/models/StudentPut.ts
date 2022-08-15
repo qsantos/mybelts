@@ -4,5 +4,7 @@
 
 export type StudentPut = {
     display_name?: string;
+    password?: string;
     rank?: number;
+    username?: string;
 }

@@ -35,10 +35,14 @@ export function CreateStudentButton(props : CreateStudentButtonProps): ReactElem
         event.preventDefault();
         const target = event.target as typeof event.target & {
             display_name: {value: string};
+            username: {value: string};
+            password: {value: string};
         };
         StudentsService.postStudentsResource({
             school_class_id: school_class_id,
             display_name: target.display_name.value,
+            username: target.username.value,
+            password: target.password.value,
         }).then(({ student }) => {
             setShow(false);
             setCreating(false);
@@ -67,6 +71,20 @@ export function CreateStudentButton(props : CreateStudentButtonProps): ReactElem
                         <Form.Control type="text" placeholder={t('student.add_edit.display_name.placeholder')}/>
                         <Form.Text className="text-muted">
                             {t('student.add_edit.display_name.help')}
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group controlId="username">
+                        <Form.Label>{t('student.add_edit.username.title')}</Form.Label>
+                        <Form.Control type="text" placeholder={t('student.add_edit.username.placeholder')}/>
+                        <Form.Text className="text-muted">
+                            {t('student.add_edit.username.help')}
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group controlId="password">
+                        <Form.Label>{t('student.add_edit.password.title')}</Form.Label>
+                        <Form.Control type="password" />
+                        <Form.Text className="text-muted">
+                            {t('student.add_edit.password.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
@@ -104,11 +122,15 @@ export function EditStudentButton(props : EditStudentButtonProps): ReactElement 
         event.preventDefault();
         const target = event.target as typeof event.target & {
             display_name: {value: string};
+            username: {value: string};
+            password: {value: string};
             rank: {value: string};
         };
         StudentsService.putStudentResource(student.id, {
             display_name: target.display_name.value,
             rank: parseInt(target.rank.value),
+            username: target.username.value,
+            password: target.password.value,
         }).then(({ student: changed_student }) => {
             setChanging(false);
             setShow(false);
@@ -144,6 +166,20 @@ export function EditStudentButton(props : EditStudentButtonProps): ReactElement 
                         <Form.Control type="number" placeholder={t('student.add_edit.rank.placeholder')} defaultValue={student.rank} />
                         <Form.Text className="text-muted">
                             {t('student.add_edit.rank.help')}
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group controlId="username">
+                        <Form.Label>{t('student.add_edit.username.title')}</Form.Label>
+                        <Form.Control type="text" placeholder={t('student.add_edit.username.placeholder')} defaultValue={student.username} />
+                        <Form.Text className="text-muted">
+                            {t('student.add_edit.username.help')}
+                        </Form.Text>
+                    </Form.Group>
+                    <Form.Group controlId="password">
+                        <Form.Label>{t('student.add_edit.password.title')}</Form.Label>
+                        <Form.Control type="password" />
+                        <Form.Text className="text-muted">
+                            {t('student.add_edit.password.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
