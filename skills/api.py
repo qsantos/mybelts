@@ -89,6 +89,7 @@ api_model_school_class = api.model('SchoolClass', {
 api_model_student = api.model('Student', {
     'id': fields.Integer(example=42, required=True),
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
+    'user_id': fields.Integer(example=42, required=True),
     'school_class_id': fields.Integer(example=42, required=True),
     'display_name': fields.String(example='John Doe', required=True),
     'rank': fields.Integer(example=7, required=True),
@@ -169,6 +170,7 @@ api_model_student_list_bare = api.model('StudentListBare', {
 api_model_student_one = api.model('StudentOne', {
     'class_level': fields.Nested(api_model_class_level, required=True),
     'school_class': fields.Nested(api_model_school_class, required=True),
+    'user': fields.Nested(api_model_user, required=True),
     'student': fields.Nested(api_model_student, required=True),
 })
 
@@ -660,15 +662,19 @@ class StudentsResource(Resource):
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
             class_level = school_class.class_level
+            display_name = request.json['display_name']
+            user = User(username=display_name, password=display_name)  # TODO
             student = Student(
                 school_class_id=school_class_id,
-                display_name=request.json['display_name'],
+                user=user,
+                display_name=display_name,
             )
             session.add(student)
             session.commit()
             return {
                 'class_level': class_level.json(),
                 'school_class': school_class.json(),
+                'user': user.json(),
                 'student': student.json(),
             }
 
@@ -712,9 +718,11 @@ class StudentResource(Resource):
                 abort(404, f'Student {student_id} not found')
             school_class = student.school_class
             class_level = school_class.class_level
+            user = student.user
             return {
                 'class_level': class_level.json(),
                 'school_class': school_class.json(),
+                'user': user.json(),
                 'student': student.json(),
             }
 
@@ -732,6 +740,7 @@ class StudentResource(Resource):
             student = session.query(Student).get(student_id)
             if student is None:
                 abort(404, f'Student {student_id} not found')
+            user = student.user
             display_name = request.json.get('display_name')
             if display_name is not None:
                 student.display_name = display_name
@@ -744,6 +753,7 @@ class StudentResource(Resource):
             return {
                 'class_level': class_level.json(),
                 'school_class': school_class.json(),
+                'user': user.json(),
                 'student': student.json(),
             }
 

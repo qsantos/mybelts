@@ -128,7 +128,7 @@ class Student(Base):
     __tablename__ = 'student'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
-    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), unique=True)
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), unique=True, nullable=False)
     school_class_id = Column(Integer, ForeignKey('school_class.id', ondelete='CASCADE'), nullable=False)
     display_name = Column(String, nullable=False, index=True)
     rank = Column(Integer, nullable=False, index=True, server_default='0')
@@ -155,6 +155,7 @@ class Student(Base):
         return {
             'id': self.id,
             'created': self.created.isoformat(),
+            'user_id': self.user_id,
             'school_class_id': self.school_class_id,
             'display_name': self.display_name,
             'rank': self.rank,
