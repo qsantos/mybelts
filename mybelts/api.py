@@ -224,7 +224,7 @@ api_model_school_class_student_belts = api.model('SchoolClassStudentBelts', {
 })
 
 
-@users_ns.route('/login')
+@api.route('/login')
 @api.doc(security=None)
 class LoginResource(Resource):
     post_model = api.model('LoginPost', {

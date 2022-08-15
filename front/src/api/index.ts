@@ -54,6 +54,7 @@ export type { UsersPost } from './models/UsersPost';
 export { BeltAttemptsService } from './services/BeltAttemptsService';
 export { BeltsService } from './services/BeltsService';
 export { ClassLevelsService } from './services/ClassLevelsService';
+export { DefaultService } from './services/DefaultService';
 export { SchoolClassesService } from './services/SchoolClassesService';
 export { SkillDomainsService } from './services/SkillDomainsService';
 export { StudentsService } from './services/StudentsService';

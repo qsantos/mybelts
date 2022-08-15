@@ -8,7 +8,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 
-import { LoginInfo, UsersService } from './api';
+import { LoginInfo, DefaultService } from './api';
 import { getAPIError } from './lib';
 
 export const LoginContext = React.createContext<LoginInfo | null>(null);
@@ -52,7 +52,7 @@ export function LoginButton(props: LoginButtonProps): ReactElement {
             username: {value: string};
             password: {value: string};
         };
-        UsersService.postLoginResource({
+        DefaultService.postLoginResource({
             username: target.username.value,
             password: target.password.value,
         }).then((loginInfo) => {

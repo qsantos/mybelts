@@ -1,8 +1,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { LoginInfo } from '../models/LoginInfo';
-import type { LoginPost } from '../models/LoginPost';
 import type { UserList } from '../models/UserList';
 import type { UserOne } from '../models/UserOne';
 import type { UserPut } from '../models/UserPut';
@@ -11,26 +9,6 @@ import type { CancelablePromise } from '../core/CancelablePromise';
 import { request as __request } from '../core/request';
 
 export class UsersService {
-
-    /**
-     * @param payload
-     * @param xFields An optional fields mask
-     * @returns LoginInfo Success
-     * @throws ApiError
-     */
-    public static postLoginResource(
-        payload: LoginPost,
-        xFields?: string,
-    ): CancelablePromise<LoginInfo> {
-        return __request({
-            method: 'POST',
-            path: `/login`,
-            headers: {
-                'X-Fields': xFields,
-            },
-            body: payload,
-        });
-    }
 
     /**
      * @param xFields An optional fields mask
