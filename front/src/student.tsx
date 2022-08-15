@@ -34,11 +34,11 @@ export function CreateStudentButton(props : CreateStudentButtonProps): ReactElem
         setCreating(true);
         event.preventDefault();
         const target = event.target as typeof event.target & {
-            name: {value: string};
+            display_name: {value: string};
         };
         StudentsService.postStudentsResource({
             school_class_id: school_class_id,
-            name: target.name.value,
+            display_name: target.display_name.value,
         }).then(({ student }) => {
             setShow(false);
             setCreating(false);
@@ -62,11 +62,11 @@ export function CreateStudentButton(props : CreateStudentButtonProps): ReactElem
                 </Modal.Header>
                 <Modal.Body>
                     {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-                    <Form.Group controlId="name">
-                        <Form.Label>{t('student.add_edit.name.title')}</Form.Label>
-                        <Form.Control type="text" placeholder={t('student.add_edit.name.placeholder')}/>
+                    <Form.Group controlId="display_name">
+                        <Form.Label>{t('student.add_edit.display_name.title')}</Form.Label>
+                        <Form.Control type="text" placeholder={t('student.add_edit.display_name.placeholder')}/>
                         <Form.Text className="text-muted">
-                            {t('student.add_edit.name.help')}
+                            {t('student.add_edit.display_name.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
@@ -103,11 +103,11 @@ export function EditStudentButton(props : EditStudentButtonProps): ReactElement 
         setChanging(true);
         event.preventDefault();
         const target = event.target as typeof event.target & {
-            name: {value: string};
+            display_name: {value: string};
             rank: {value: string};
         };
         StudentsService.putStudentResource(student.id, {
-            name: target.name.value,
+            display_name: target.display_name.value,
             rank: parseInt(target.rank.value),
         }).then(({ student: changed_student }) => {
             setChanging(false);
@@ -128,15 +128,15 @@ export function EditStudentButton(props : EditStudentButtonProps): ReactElement 
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>{t('student.edit.title')}: {student.name}</Modal.Title>
+                    <Modal.Title>{t('student.edit.title')}: {student.display_name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-                    <Form.Group controlId="name">
-                        <Form.Label>{t('student.add_edit.name.title')}</Form.Label>
-                        <Form.Control type="text" placeholder={t('student.add_edit.name.placeholder')} defaultValue={student.name} />
+                    <Form.Group controlId="display_name">
+                        <Form.Label>{t('student.add_edit.display_name.title')}</Form.Label>
+                        <Form.Control type="text" placeholder={t('student.add_edit.display_name.placeholder')} defaultValue={student.display_name} />
                         <Form.Text className="text-muted">
-                            {t('student.add_edit.name.help')}
+                            {t('student.add_edit.display_name.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="rank">
@@ -196,7 +196,7 @@ export function DeleteStudentButton(props : DeleteStudentButtonProps): ReactElem
         </OverlayTrigger>
         <Modal show={show}>
             <Modal.Header>
-                <Modal.Title>{t('student.delete.title')}: {student.name}</Modal.Title>
+                <Modal.Title>{t('student.delete.title')}: {student.display_name}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
@@ -279,7 +279,7 @@ export function UpdateStudentRanks(props: UpdateStudentRanksProps): ReactElement
                     {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
                     {students.map((student, index) =>
                         <Form.Group controlId="rank" key={student.id} className="mb-3">
-                            <Form.Label>{student.name}</Form.Label>
+                            <Form.Label>{student.display_name}</Form.Label>
                             <Form.Control
                                 type="number"
                                 defaultValue={student.rank}
@@ -322,14 +322,14 @@ export function StudentListing(props: StudentListingProps): ReactElement {
             accessorKey: 'rank',
         },
         {
-            id: 'name',
-            header: t('student.list.name.title'),
-            accessorKey: 'name',
+            id: 'display_name',
+            header: t('student.list.display_name.title'),
+            accessorKey: 'display_name',
             cell: info => {
                 const student = info.row.original;
                 return (
                     <Nav.Link as={Link} to={'/students/' + student.id}>
-                        {student.name}
+                        {student.display_name}
                     </Nav.Link>
                 );
             },

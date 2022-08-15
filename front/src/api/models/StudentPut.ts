@@ -3,6 +3,6 @@
 /* eslint-disable */
 
 export type StudentPut = {
-    name?: string;
+    display_name?: string;
     rank?: number;
 }

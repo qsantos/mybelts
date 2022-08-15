@@ -88,7 +88,7 @@ export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): R
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>{t('belt_attempt.add.title')} {student.name}</Modal.Title>
+                    <Modal.Title>{t('belt_attempt.add.title')} {student.display_name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
@@ -191,7 +191,7 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>{t('belt_attempt.edit.title')}: {student.name}</Modal.Title>
+                    <Modal.Title>{t('belt_attempt.edit.title')}: {student.display_name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
@@ -288,7 +288,7 @@ export function DeleteBeltAttemptButton(props : DeleteBeltAttemptButtonProps): R
         </OverlayTrigger>
         <Modal show={show}>
             <Modal.Header>
-                <Modal.Title>{t('belt_attempt.delete.title')}: {student.name}</Modal.Title>
+                <Modal.Title>{t('belt_attempt.delete.title')}: {student.display_name}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
@@ -475,7 +475,7 @@ export function BeltAttemptGrid(props: BeltAttemptGridProps): ReactElement {
                     return <tr key={student.id}>
                         <th>
                             <Nav.Link as={Link} to={'/students/' + student.id}>
-                                {student.name}
+                                {student.display_name}
                             </Nav.Link>
                         </th>
                         {skill_domains.map(skill_domain => {

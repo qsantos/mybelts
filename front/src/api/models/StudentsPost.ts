@@ -3,6 +3,6 @@
 /* eslint-disable */
 
 export type StudentsPost = {
-    name: string;
+    display_name: string;
     school_class_id: number;
 }

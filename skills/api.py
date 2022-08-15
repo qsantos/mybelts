@@ -90,7 +90,7 @@ api_model_student = api.model('Student', {
     'id': fields.Integer(example=42, required=True),
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
     'school_class_id': fields.Integer(example=42, required=True),
-    'name': fields.String(example='John Doe', required=True),
+    'display_name': fields.String(example='John Doe', required=True),
     'rank': fields.Integer(example=7, required=True),
 })
 
@@ -646,7 +646,7 @@ class SchoolClassStudentBeltsResource(Resource):
 class StudentsResource(Resource):
     post_model = api.model('StudentsPost', {
         'school_class_id': fields.Integer(example=42, required=True),
-        'name': fields.String(example='John Doe', required=True),
+        'display_name': fields.String(example='John Doe', required=True),
     })
 
     @api.expect(post_model, validate=True)
@@ -662,7 +662,7 @@ class StudentsResource(Resource):
             class_level = school_class.class_level
             student = Student(
                 school_class_id=school_class_id,
-                name=request.json['name'],
+                display_name=request.json['display_name'],
             )
             session.add(student)
             session.commit()
@@ -674,7 +674,7 @@ class StudentsResource(Resource):
 
     put_model_students = api.model('StudentsPutStudents', {
         'id': fields.Integer(example=42, required=True),
-        'name': fields.String(example='John Doe'),
+        'display_name': fields.String(example='John Doe'),
         'rank': fields.Integer(example=7),
     })
     put_model = api.model('StudentsPut', {
@@ -719,7 +719,7 @@ class StudentResource(Resource):
             }
 
     put_model = api.model('StudentPut', {
-        'name': fields.String(example='John Doe'),
+        'display_name': fields.String(example='John Doe'),
         'rank': fields.Integer(example=7),
     })
 
@@ -732,9 +732,9 @@ class StudentResource(Resource):
             student = session.query(Student).get(student_id)
             if student is None:
                 abort(404, f'Student {student_id} not found')
-            name = request.json.get('name')
-            if name is not None:
-                student.name = name
+            display_name = request.json.get('display_name')
+            if display_name is not None:
+                student.display_name = display_name
             rank = request.json.get('rank')
             if rank is not None:
                 student.rank = rank

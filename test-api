@@ -427,7 +427,7 @@ def add_students(school_class_ids: List[int]) -> List[int]:
     print('Testing resource /students')
     a, b, c, d = school_class_ids
     student_classes = [a, a, a, a, a, a, b, b, b, c, c]
-    student_names = [
+    display_names = [
         'Alice Wonderland',
         'Bob Dylan',
         'Charlie Brown',
@@ -440,30 +440,30 @@ def add_students(school_class_ids: List[int]) -> List[int]:
         'Ken Thompson',
         'Tycho Brahe',
     ]
-    assert len(student_classes) == len(student_names)
+    assert len(student_classes) == len(display_names)
 
     # add students
     ids = []
-    for school_class_id, student_name in zip(student_classes, student_names):
+    for school_class_id, display_name in zip(student_classes, display_names):
         res = requests.post(API_URL + '/students', json={
             'school_class_id': school_class_id,
-            'name': student_name,
+            'display_name': display_name,
         })
         res.raise_for_status()
         j = res.json()
         print(j)
         assert j['school_class']['id'] == school_class_id
-        assert j['student']['name'] == student_name
+        assert j['student']['display_name'] == display_name
         ids.append(j['student']['id'])
 
     # rename student
-    student_names[1] = 'Bob Marley'
-    res = requests.put(API_URL + f'/students/{ids[1]}', json={'name': student_names[1]})
+    display_names[1] = 'Bob Marley'
+    res = requests.put(API_URL + f'/students/{ids[1]}', json={'display_name': display_names[1]})
     res.raise_for_status()
     j = res.json()
     print(j)
     assert j['school_class']['id'] == student_classes[1]
-    assert j['student']['name'] == student_names[1]
+    assert j['student']['display_name'] == display_names[1]
 
     # delete student
     res = requests.delete(API_URL + f'/students/{ids[4]}')
@@ -472,16 +472,16 @@ def add_students(school_class_ids: List[int]) -> List[int]:
     assert res.status_code == 404
     ids.pop(4)
     student_classes.pop(4)
-    student_names.pop(4)
+    display_names.pop(4)
 
     # check final state
-    for id, school_class_id, student_name in reversed(list(zip(ids, student_classes, student_names))):
+    for id, school_class_id, display_name in reversed(list(zip(ids, student_classes, display_names))):
         res = requests.get(API_URL + f'/students/{id}')
         res.raise_for_status()
         j = res.json()
         print(j)
         assert j['school_class']['id'] == school_class_id
-        assert j['student']['name'] == student_name
+        assert j['student']['display_name'] == display_name
 
     print('Tested resource /students')
     return ids

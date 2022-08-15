@@ -4,8 +4,8 @@
 
 export type Student = {
     created: string;
+    display_name: string;
     id: number;
-    name: string;
     rank: number;
     school_class_id: number;
 }

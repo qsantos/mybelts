@@ -466,9 +466,9 @@ function StudentWidget(props: StudentWidgetProps) {
             <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
             <BreadcrumbItem href={'/class-levels/' + class_level.id}>{t('class_level.view.title')} {class_level.prefix}</BreadcrumbItem>
             <BreadcrumbItem active href={'/school-classes/' + school_class.id}>{t('school_class.view.title')} {school_class.suffix}</BreadcrumbItem>
-            <BreadcrumbItem active href={'/students/' + student.id}>{t('student.view.title')} {student.name}</BreadcrumbItem>
+            <BreadcrumbItem active href={'/students/' + student.id}>{t('student.view.title')} {student.display_name}</BreadcrumbItem>
         </Breadcrumb>
-        <h3>{t('student.view.title')}: {student.name}</h3>
+        <h3>{t('student.view.title')}: {student.display_name}</h3>
         <AdminOnly>
             <EditStudentButton student={student} changedCallback={new_student => {
                 setBeltAttemptList({ ...beltAttemptList, student: new_student });
@@ -595,7 +595,7 @@ function Layout() {
                 <Nav.Item><Nav.Link as={Link} to="/belts">{t('belt.list.title.primary')}</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/class-levels">{t('class_level.list.title.primary')}</Nav.Link></Nav.Item>
             </Nav>
-            {loginInfo?.student ? <Badge bg="info" className="me-2">{loginInfo.student.name}</Badge> : null}
+            {loginInfo?.student ? <Badge bg="info" className="me-2">{loginInfo.student.display_name}</Badge> : null}
             <LanguageSelector />
             {loginInfo
                 ? <>
