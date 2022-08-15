@@ -14,6 +14,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
+import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import {
@@ -35,7 +36,7 @@ import './index.css';
 import { AdminOnly, LoginButton, LogoutButton, LoginContext, is_admin } from './auth';
 import { CreateUserButton, UserListing } from './user';
 import { CreateSkillDomainButton, SkillDomainListing } from './skill-domain';
-import { CreateBeltButton, BeltListing } from './belt';
+import { BeltIcon, CreateBeltButton, BeltListing } from './belt';
 import { CreateClassLevelButton, EditClassLevelButton, DeleteClassLevelButton, ClassLevelListing } from './class-level';
 import { CreateSchoolClassButton, EditSchoolClassButton, DeleteSchoolClassButton, SchoolClassListing } from './school-class';
 import { CreateStudentButton, EditStudentButton, DeleteStudentButton, UpdateStudentRanks, StudentListing } from './student';
@@ -458,6 +459,11 @@ function StudentWidget(props: StudentWidgetProps) {
     const { belts } = beltList;
     const { class_level, school_class, student, belt_attempts } = beltAttemptList;
 
+    const belt_by_id = Object.fromEntries(
+        belts.map(belt => [belt.id, belt])
+    );
+    const passed_attempts = belt_attempts.filter(belt_attempt => belt_attempt.success);
+
     const sorted_belt_attempts = belt_attempts.sort((a, b) => b.date.localeCompare(a.date));
 
     return <>
@@ -476,6 +482,69 @@ function StudentWidget(props: StudentWidgetProps) {
             {' '}
             <DeleteStudentButton student={student} deletedCallback={() => navigate('/school-classes/' + school_class.id)} />
         </AdminOnly>
+        <h4>{t('student.belts.title')}</h4>
+        <Table>
+            <thead>
+                <tr>
+                    <th>{t('student.belts.skill_domain.title')}</th>
+                    <th>{t('student.belts.achieved_belt.title')}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {skill_domains.map(skill_domain => {
+                    const domain_attempts = passed_attempts.filter(belt_attempt => belt_attempt.skill_domain_id == skill_domain.id);
+                    if (domain_attempts.length == 0) {
+                        // no successful attempt yet
+                        const belt = belts[0];
+                        if (belt === undefined) {
+                            // should not happen
+                            console.error('no belt found');
+                            return <></>;
+                        }
+                        return (
+                            <tr key={skill_domain.id}>
+                                <th>{skill_domain.name}</th>
+                                <td>{t('student.belts.no_belt')}</td>
+                            </tr>
+                        );
+                    }
+                    const sorted_attempts = domain_attempts.sort((a, b) => {
+                        const belt_a = belt_by_id[a.belt_id];
+                        if (belt_a === undefined) {
+                            // should not happen
+                            console.error('belt ' + belt_a + ' not found');
+                            return 0;
+                        }
+                        const belt_b = belt_by_id[b.belt_id];
+                        if (belt_b === undefined) {
+                            // should not happen
+                            console.error('belt ' + belt_a + ' not found');
+                            return 0;
+                        }
+                        return belt_b.rank - belt_a.rank;
+                    });
+                    const best_attempt = sorted_attempts[0];
+                    if (best_attempt === undefined) {
+                        // should not happen
+                        console.error('no belt attempt found');
+                        return <></>;
+                    }
+                    const belt_id = best_attempt.belt_id;
+                    const belt = belt_by_id[belt_id];
+                    if (belt === undefined) {
+                        // should not happen
+                        console.error('belt ' + belt_id + ' not found');
+                        return <></>;
+                    }
+                    return (
+                        <tr key={skill_domain.id}>
+                            <th>{skill_domain.name}</th>
+                            <td><BeltIcon belt={belt} /></td>
+                        </tr>
+                    );
+                })}
+            </tbody>
+        </Table>
         <h4>{t('belt_attempt.list.title.secondary')}</h4>
         <AdminOnly>
             <CreateBeltAttemptButton student={student} skill_domains={skill_domains} belts={belts} createdCallback={new_belt_attempt => {
