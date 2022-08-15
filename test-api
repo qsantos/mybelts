@@ -10,8 +10,8 @@ from requests.exceptions import ConnectionError
 from alembic import command
 from alembic.config import Config
 
-from skills.api import create_app
-from skills.schema import Base, User, session_context
+from mybelts.api import create_app
+from mybelts.schema import Base, User, session_context
 
 API_PORT = 5001
 API_URL = f'http://127.0.0.1:{API_PORT}/api'

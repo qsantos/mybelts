@@ -9,9 +9,9 @@ test-api:
   services:
     - postgres
   variables:
-    POSTGRES_USER: skills
-    POSTGRES_PASSWORD: skills
-    POSTGRES_DB: skills
+    POSTGRES_USER: mybelts
+    POSTGRES_PASSWORD: mybelts
+    POSTGRES_DB: mybelts
   script:
     - pip install -r requirements.txt
     - flake8 .

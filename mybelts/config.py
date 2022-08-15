@@ -1,10 +1,10 @@
 from os import environ
 
-PGUSER = environ.get('PGUSER', 'skills')
-PGPASSWORD = environ.get('PGPASSWORD', 'skills')
+PGUSER = environ.get('PGUSER', 'mybelts')
+PGPASSWORD = environ.get('PGPASSWORD', 'mybelts')
 PGHOST = environ.get('PGHOST', 'localhost')
 PGPORT = environ.get('PGPORT', '5432')
-PGSCHEMA = environ.get('PGSCHEMA', 'skills')
+PGSCHEMA = environ.get('PGSCHEMA', 'mybelts')
 
 POSTGRES_URI = f'postgresql+psycopg2://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGSCHEMA}'
 

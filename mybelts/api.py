@@ -16,8 +16,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
-from skills.config import SECRET
-from skills.schema import (
+from mybelts.config import SECRET
+from mybelts.schema import (
     Belt, BeltAttempt, ClassLevel, HTTPRequest, SchoolClass, SkillDomain,
     Student, User, session_context,
 )

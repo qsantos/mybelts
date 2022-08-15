@@ -12,8 +12,8 @@ fileConfig(config.config_file_name)  # type: ignore
 sys.path.insert(0, os.getcwd())
 
 if True:  # placate isort
-    from skills.config import POSTGRES_URI
-    from skills.schema import Base
+    from mybelts.config import POSTGRES_URI
+    from mybelts.schema import Base
 
 # connect to project's models
 target_metadata = Base.metadata

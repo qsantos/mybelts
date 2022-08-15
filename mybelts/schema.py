@@ -11,7 +11,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker
 from sqlalchemy_utils.types.password import PasswordType  # type: ignore
 
-from skills.config import POSTGRES_URI
+from mybelts.config import POSTGRES_URI
 
 engine = create_engine(POSTGRES_URI)
 session_factory = scoped_session(sessionmaker(bind=engine))
