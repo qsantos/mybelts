@@ -2,6 +2,8 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
+import { DefaultService } from './api';
+
 const resources = {
     en: {
         translation: {
@@ -455,6 +457,14 @@ const resources = {
     }
 };
 
+function missingKeyHandler(
+    _languages: readonly string[],
+    namespace: string,
+    key: string,
+) {
+    DefaultService.postMissingI18NKeyResource({language: i18n.language, namespace, key});
+}
+
 i18n
     .use(initReactI18next)
     .use(LanguageDetector)
@@ -463,6 +473,8 @@ i18n
         interpolation: {
             escapeValue: false,
         },
+        saveMissing: true,
+        missingKeyHandler,
     });
 
 export default i18n;

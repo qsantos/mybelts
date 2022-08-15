@@ -18,8 +18,8 @@ from sqlalchemy.sql.expression import func
 
 from mybelts.config import SECRET
 from mybelts.schema import (
-    Belt, BeltAttempt, ClassLevel, HTTPRequest, SchoolClass, SkillDomain,
-    Student, User, session_context,
+    Belt, BeltAttempt, ClassLevel, HTTPRequest, MissingI18nKey, SchoolClass,
+    SkillDomain, Student, User, session_context,
 )
 
 
@@ -222,6 +222,30 @@ api_model_school_class_student_belts = api.model('SchoolClassStudentBelts', {
         })), required=True),
     })), required=True),
 })
+
+
+@api.route('/missing-i18n-key')
+@api.doc(security=None)
+class MissingI18nKeyResource(Resource):
+    post_model = api.model('MissingI18nKeyPost', {
+        'language': fields.String(example='en', required=True),
+        'namespace': fields.String(example='translation', required=True),
+        'key': fields.String(example='main_title', required=True),
+    })
+
+    @api.expect(post_model, validate=True)
+    @api.response(204, 'Success')
+    def post(self) -> Any:
+        with session_context() as session:
+            session.query
+            missing_i18n_key = MissingI18nKey(
+                language=request.json['language'],
+                namespace=request.json['namespace'],
+                key=request.json['key'],
+            )
+            session.add(missing_i18n_key)
+            session.commit()
+            return None, 204
 
 
 @api.route('/login')

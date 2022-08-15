@@ -52,6 +52,15 @@ class HTTPRequest(Base):
     response_body = Column(LargeBinary)
 
 
+class MissingI18nKey(Base):
+    __tablename__ = 'missing_i18n_key'
+    id = Column(Integer, primary_key=True)
+    created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
+    language = Column(String, nullable=False, index=True)
+    namespace = Column(String, nullable=False, index=True)
+    key = Column(String, nullable=False, index=True)
+
+
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
