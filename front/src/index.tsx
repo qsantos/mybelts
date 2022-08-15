@@ -71,10 +71,10 @@ function HomeView() {
         return <StudentWidget student_id={student.id} />;
     } else if (user.is_admin) {
         // admin
-        return <>Hello admin {user.name}</>;
+        return <>Hello admin {user.username}</>;
     } else {
         // other
-        return <>Hello {user.name}</>;
+        return <>Hello {user.username}</>;
     }
 }
 
@@ -107,7 +107,7 @@ function UsersView() {
 
     const { users } = userList;
 
-    const sorted_users = users.sort((a, b) => a.name.localeCompare(b.name));
+    const sorted_users = users.sort((a, b) => a.username.localeCompare(b.username));
 
     return <>
         <Breadcrumb>
@@ -599,7 +599,7 @@ function Layout() {
             <LanguageSelector />
             {loginInfo
                 ? <>
-                    <Badge bg="info" className="me-2">{loginInfo.user.name}</Badge>
+                    <Badge bg="info" className="me-2">{loginInfo.user.username}</Badge>
                     <LogoutButton className="me-2" loggedOutCallback={() => setLoginInfo(null)}/>
                 </>
                 : <>

@@ -4,6 +4,6 @@
 
 export type UserPut = {
     is_admin?: boolean;
-    name?: string;
     password?: string;
+    username?: string;
 }

@@ -3,6 +3,6 @@
 /* eslint-disable */
 
 export type LoginPost = {
-    name: string;
     password: string;
+    username: string;
 }

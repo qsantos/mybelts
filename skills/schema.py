@@ -56,7 +56,7 @@ class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
-    name = Column(String, nullable=False, index=True, unique=True)
+    username = Column(String, nullable=False, index=True, unique=True)
     password = Column(PasswordType(schemes=['pbkdf2_sha512']), nullable=False)
     is_admin = Column(Boolean, nullable=False, index=True, default=False)
 
@@ -71,7 +71,7 @@ class User(Base):
         return {
             'id': self.id,
             'created': self.created,
-            'name': self.name,
+            'username': self.username,
             'is_admin': self.is_admin,
         }
 

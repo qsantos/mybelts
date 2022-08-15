@@ -52,7 +52,7 @@ def add_admin() -> None:
     # create admin user
     with session_context() as session:
         user = User(
-            name='root',
+            username='root',
             password='root',
             is_admin=True,
         )
@@ -64,7 +64,7 @@ def add_admin() -> None:
     assert res.status_code == 401
 
     # test logging in
-    res = requests.post(API_URL + '/login', json={'name': 'root', 'password': 'root'})
+    res = requests.post(API_URL + '/login', json={'username': 'root', 'password': 'root'})
     res.raise_for_status()
     j = res.json()
     print(j)
@@ -85,27 +85,27 @@ def add_users() -> None:
 
     # add first user
     res = requests.post(API_URL + '/users', json={
-        'name': 'me',
+        'username': 'me',
         'password': 'me',
         'is_admin': True,
     })
     res.raise_for_status()
     j = res.json()
     print(j)
-    assert j['user']['name'] == 'me'
+    assert j['user']['username'] == 'me'
     assert j['user']['is_admin']
     user_id1 = j['user']['id']
 
     # add second user
     res = requests.post(API_URL + '/users', json={
-        'name': 'tartempion',
+        'username': 'tartempion',
         'password': 'correct horse battery staple',
         'is_admin': True,
     })
     res.raise_for_status()
     j = res.json()
     print(j)
-    assert j['user']['name'] == 'tartempion'
+    assert j['user']['username'] == 'tartempion'
     assert j['user']['is_admin']
     user_id2 = j['user']['id']
 
@@ -117,7 +117,7 @@ def add_users() -> None:
     j = res.json()
     print(j)
     assert j['user']['id'] == user_id2
-    assert j['user']['name'] == 'tartempion'
+    assert j['user']['username'] == 'tartempion'
     assert not j['user']['is_admin']
 
     # delete second user
@@ -132,7 +132,7 @@ def add_users() -> None:
     j = res.json()
     print(j)
     assert j['user']['id'] == user_id1
-    assert j['user']['name'] == 'me'
+    assert j['user']['username'] == 'me'
     assert j['user']['is_admin']
 
     print('Tested /users resource')

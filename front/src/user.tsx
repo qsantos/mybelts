@@ -30,12 +30,12 @@ export function CreateUserButton(props : CreateUserButtonProps): ReactElement {
         setCreating(true);
         event.preventDefault();
         const target = event.target as typeof event.target & {
-            name: {value: string};
+            username: {value: string};
             password: {value: string};
             is_admin: {checked: boolean};
         };
         UsersService.postUsersResource({
-            name: target.name.value,
+            username: target.username.value,
             password: target.password.value,
             is_admin: target.is_admin.checked,
         }).then(({ user }) => {
@@ -59,11 +59,11 @@ export function CreateUserButton(props : CreateUserButtonProps): ReactElement {
                 </Modal.Header>
                 <Modal.Body>
                     {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-                    <Form.Group controlId="name">
-                        <Form.Label>{t('user.add_edit.name.title')}</Form.Label>
-                        <Form.Control type="text" placeholder={t('user.add_edit.name.placeholder')}/>
+                    <Form.Group controlId="username">
+                        <Form.Label>{t('user.add_edit.username.title')}</Form.Label>
+                        <Form.Control type="text" placeholder={t('user.add_edit.username.placeholder')}/>
                         <Form.Text className="text-muted">
-                            {t('user.add_edit.name.help')}
+                            {t('user.add_edit.username.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="password">
@@ -113,12 +113,12 @@ export function EditUserButton(props : EditUserButtonProps): ReactElement {
         setChanging(true);
         event.preventDefault();
         const target = event.target as typeof event.target & {
-            name: {value: string};
+            username: {value: string};
             password: {value: string};
             is_admin: {checked: boolean};
         };
         UsersService.putUserResource(user.id, {
-            name: target.name.value,
+            username: target.username.value,
             password: target.password.value,
             is_admin: target.is_admin.checked,
         }).then(({ user: changed_user }) => {
@@ -140,15 +140,15 @@ export function EditUserButton(props : EditUserButtonProps): ReactElement {
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>{t('user.edit.title')}: {user.name}</Modal.Title>
+                    <Modal.Title>{t('user.edit.title')}: {user.username}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-                    <Form.Group controlId="name">
-                        <Form.Label>{t('user.add_edit.name.title')}</Form.Label>
-                        <Form.Control type="text" placeholder={t('user.add_edit.name.placeholder')} defaultValue={user.name} />
+                    <Form.Group controlId="username">
+                        <Form.Label>{t('user.add_edit.username.title')}</Form.Label>
+                        <Form.Control type="text" placeholder={t('user.add_edit.username.placeholder')} defaultValue={user.username} />
                         <Form.Text className="text-muted">
-                            {t('user.add_edit.name.help')}
+                            {t('user.add_edit.username.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="password">
@@ -214,7 +214,7 @@ export function DeleteUserButton(props : DeleteUserButtonProps): ReactElement {
         </OverlayTrigger>
         <Modal show={show}>
             <Modal.Header>
-                <Modal.Title>{t('user.delete.title')}: {user.name}</Modal.Title>
+                <Modal.Title>{t('user.delete.title')}: {user.username}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
@@ -247,7 +247,7 @@ export function UserListing(props: UserListingProps): ReactElement {
         <Table>
             <thead>
                 <tr>
-                    <th>{t('user.list.name.title')}</th>
+                    <th>{t('user.list.username.title')}</th>
                     <th>{t('user.list.is_admin.title')}</th>
                     <th>{t('user.list.actions.title')}</th>
                 </tr>
@@ -255,7 +255,7 @@ export function UserListing(props: UserListingProps): ReactElement {
             <tbody>
                 {users.map((user, index) =>
                     <tr key={user.id}>
-                        <td>{user.name}</td>
+                        <td>{user.username}</td>
                         <td>{user.is_admin ? '✅' : '❌'}</td>
                         <td>
                             <EditUserButton user={user} changedCallback={new_user => {

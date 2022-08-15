@@ -50,7 +50,7 @@ api = Api(
         'apikey': {
             'type': 'apiKey',
             'in': 'header',
-            'name': 'Authorization',
+            'username': 'Authorization',
             'description': 'The JWT preceded by "Bearer "',
         },
     },
@@ -69,7 +69,7 @@ belt_attempts_ns = api.namespace('Belt Attempts', path='/')
 api_model_user = api.model('User', {
     'id': fields.Integer(example=42, required=True),
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
-    'name': fields.String(example='tartempion', required=True),
+    'username': fields.String(example='tartempion', required=True),
     'is_admin': fields.Boolean(example=False, required=True),
 })
 
@@ -225,7 +225,7 @@ api_model_school_class_student_belts = api.model('SchoolClassStudentBelts', {
 @api.doc(security=None)
 class LoginResource(Resource):
     post_model = api.model('LoginPost', {
-        'name': fields.String(example='tartempion', required=True),
+        'username': fields.String(example='tartempion', required=True),
         'password': fields.String(example='correct horse battery stable', required=True),
     })
 
@@ -233,7 +233,7 @@ class LoginResource(Resource):
     @api.marshal_with(api_model_login_info, skip_none=True)
     def post(self) -> Any:
         with session_context() as session:
-            user = session.query(User).filter(User.name == request.json['name']).one_or_none()
+            user = session.query(User).filter(User.username == request.json['username']).one_or_none()
             if user is None or user.password != request.json['password']:
                 abort(401, 'Invalid credentials')
             payload = {
@@ -293,7 +293,7 @@ class UsersResource(Resource):
             }
 
     post_model = api.model('UsersPost', {
-        'name': fields.String(example='tartempion', required=True),
+        'username': fields.String(example='tartempion', required=True),
         'password': fields.String(example='correct horse battery staple', required=True),
         'is_admin': fields.Boolean(example=False, required=True),
     })
@@ -305,7 +305,7 @@ class UsersResource(Resource):
             me = authenticate(session)
             need_admin(me)
             user = User(
-                name=request.json['name'],
+                username=request.json['username'],
                 password=request.json['password'],
                 is_admin=request.json['is_admin'],
             )
@@ -314,7 +314,7 @@ class UsersResource(Resource):
                 session.commit()
             except IntegrityError as e:
                 if isinstance(e.orig, UniqueViolation):
-                    abort(409, f'User with name "{request.json["name"]}" already exists')
+                    abort(409, f'User with username "{request.json["username"]}" already exists')
                 else:
                     raise
             return {
@@ -347,7 +347,7 @@ class UserResource(Resource):
             }
 
     put_model = api.model('UserPut', {
-        'name': fields.String(example='tartempion'),
+        'username': fields.String(example='tartempion'),
         'password': fields.String(example='correct horse battery staple'),
         'is_admin': fields.Boolean(example=False),
     })
@@ -361,9 +361,9 @@ class UserResource(Resource):
             user = session.query(User).get(user_id)
             if user is None:
                 abort(404, f'User {user_id} not found')
-            name = request.json.get('name')
-            if name is not None:
-                user.name = name
+            username = request.json.get('username')
+            if username is not None:
+                user.username = username
             password = request.json.get('password')
             if password is not None:
                 user.password = password

@@ -49,11 +49,11 @@ export function LoginButton(props: LoginButtonProps): ReactElement {
         event.preventDefault();
         setLoggingIn(true);
         const target = event.target as typeof event.target & {
-            name: {value: string};
+            username: {value: string};
             password: {value: string};
         };
         UsersService.postLoginResource({
-            name: target.name.value,
+            username: target.username.value,
             password: target.password.value,
         }).then((loginInfo) => {
             setLoggingIn(false);
@@ -72,7 +72,7 @@ export function LoginButton(props: LoginButtonProps): ReactElement {
                 </Modal.Header>
                 <Modal.Body>
                     {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-                    <Form.Group controlId="name">
+                    <Form.Group controlId="username">
                         <Form.Label>{t('login.username.title')}</Form.Label>
                         <Form.Control type="text" placeholder={t('login.username.placeholder')} ref={nameInputRef} />
                         <Form.Text className="text-muted">
