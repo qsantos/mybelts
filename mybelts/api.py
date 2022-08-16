@@ -263,6 +263,8 @@ class LoginResource(Resource):
             user = session.query(User).filter(User.username == request.json['username']).one_or_none()
             if user is None or user.password != request.json['password']:
                 abort(401, 'Invalid credentials')
+            user.last_login = datetime.now(timezone.utc)
+            session.commit()
             payload = {
                 'user_id': user.id,
                 'exp': (datetime.now(timezone.utc) + timedelta(hours=1)).timestamp(),

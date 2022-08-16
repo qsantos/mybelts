@@ -68,6 +68,7 @@ class User(Base):
     username = Column(String, nullable=False, index=True, unique=True)
     password = Column(PasswordType(schemes=['pbkdf2_sha512']), nullable=False)
     is_admin = Column(Boolean, nullable=False, index=True, default=False)
+    last_login = Column(DateTime(timezone=True), index=True)
 
     student = relationship(
         'Student',
