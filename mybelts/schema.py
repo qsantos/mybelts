@@ -168,7 +168,7 @@ class Student(Base):
             'created': self.created.isoformat(),
             'user_id': self.user_id,
             'username': self.user.username,
-            'last_login': self.last_login,
+            'last_login': self.user.last_login,
             'school_class_id': self.school_class_id,
             'display_name': self.display_name,
             'rank': self.rank,
