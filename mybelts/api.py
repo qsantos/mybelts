@@ -127,11 +127,17 @@ api_model_login_payload = api.model('LoginPayload', {
     'exp': fields.Float(example=1659261001.276245, required=True, help='Timestamp of the expiration'),
 })
 
+api_model_missing_i18n_key_events = api.model('MissingI18nKeyEvents', {
+    'total': fields.Integer(example=42, required=True),
+    'unique': fields.Integer(example=42, required=True),
+})
+
 api_model_login_info = api.model('LoginInfo', {
     'payload': fields.Nested(api_model_login_payload),
     'token': fields.String(required=True),
     'user': fields.Nested(api_model_user, required=True),
     'student': fields.Nested(api_model_student, skip_none=True),
+    'missing_i18n_key_events_since_last_login': fields.Nested(api_model_missing_i18n_key_events, skip_none=True),
 })
 
 api_model_user_list = api.model('UserList', {
@@ -265,7 +271,21 @@ class LoginResource(Resource):
             user = session.query(User).filter(User.username == request.json['username']).one_or_none()
             if user is None or user.password != request.json['password']:
                 abort(401, 'Invalid credentials')
+            last_login = user.last_login
             user.last_login = datetime.now(timezone.utc)
+            missing_i18n_key_events_since_last_login = None
+            if user.is_admin:
+                events_since_last_login = session.query(MissingI18nKey).filter(MissingI18nKey.created >= last_login)
+                total = events_since_last_login.count()
+                if total > 0:
+                    missing_i18n_key_events_since_last_login = {
+                        'total': total,
+                        'unique': events_since_last_login.distinct(
+                            MissingI18nKey.language,
+                            MissingI18nKey.namespace,
+                            MissingI18nKey.key,
+                        ).count(),
+                    }
             session.commit()
             payload = {
                 'user_id': user.id,
@@ -276,6 +296,7 @@ class LoginResource(Resource):
                 'token': jwt.encode(payload, SECRET, algorithm='HS256'),
                 'user': user.json(),
                 'student': user.student.json() if user.student is not None else None,
+                'missing_i18n_key_events_since_last_login': missing_i18n_key_events_since_last_login,
             }
 
 

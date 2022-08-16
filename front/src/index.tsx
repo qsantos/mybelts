@@ -654,6 +654,8 @@ function Layout() {
         localStorage.setItem('login_info', JSON.stringify(loginInfo));
     }
 
+    const missing_i18n_key_events_since_last_login = loginInfo ? loginInfo.missing_i18n_key_events_since_last_login : null;
+
     return <LoginContext.Provider value={loginInfo}>
         <Navbar>
             <Navbar.Brand as={Link} to="/">{t('main_title')}</Navbar.Brand>
@@ -679,6 +681,11 @@ function Layout() {
                 </>
             }
         </Navbar>
+        {missing_i18n_key_events_since_last_login &&
+            <Alert variant="danger">
+                {t('missing_i18n_keys', missing_i18n_key_events_since_last_login)}
+            </Alert>
+        }
         {loginInfo && <Outlet />}
     </LoginContext.Provider>;
 }

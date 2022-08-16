@@ -24,6 +24,7 @@ export type { ClassLevelsPost } from './models/ClassLevelsPost';
 export type { LoginInfo } from './models/LoginInfo';
 export type { LoginPayload } from './models/LoginPayload';
 export type { LoginPost } from './models/LoginPost';
+export type { MissingI18nKeyEvents } from './models/MissingI18nKeyEvents';
 export type { MissingI18nKeyPost } from './models/MissingI18nKeyPost';
 export type { SchoolClass } from './models/SchoolClass';
 export type { SchoolClassesPost } from './models/SchoolClassesPost';
