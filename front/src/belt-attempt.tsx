@@ -457,6 +457,7 @@ export function BeltAttemptGrid(props: BeltAttemptGridProps): ReactElement {
     const columns: ColumnDef<Student>[] = [
         {
             id: 'display_name',
+            accessorKey: 'display_name',
             header: t('student.list.display_name.title'),
             cell: info => {
                 const student = info.row.original;
@@ -497,13 +498,16 @@ export function BeltAttemptGrid(props: BeltAttemptGridProps): ReactElement {
         },
     }));
 
-    const sorting = [];
+    const sorting = [{
+        id: 'display_name',
+        desc: false,
+    }];
 
     if (is_admin()) {
-        sorting.push({
+        sorting[0] = {
             id: 'rank',
             desc: false,
-        });
+        };
         columns.unshift({
             id: 'rank',
             header: t('student.list.rank.title'),
