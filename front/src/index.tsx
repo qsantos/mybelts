@@ -33,7 +33,7 @@ import { formatDatetime, getAPIError } from './lib';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 
-import { AdminOnly, LoginButton, LogoutButton, LoginContext, is_admin } from './auth';
+import { AdminOnly, LoginFormWidget, LogoutButton, LoginContext, is_admin } from './auth';
 import { CreateUserButton, UserListing } from './user';
 import { CreateSkillDomainButton, SkillDomainListing } from './skill-domain';
 import { BeltIcon, CreateBeltButton, BeltListing } from './belt';
@@ -649,12 +649,13 @@ function Layout() {
     if (loginInfo === null) {
         OpenAPI.TOKEN = undefined;
         localStorage.removeItem('login_info');
-    } else {
-        OpenAPI.TOKEN = loginInfo.token;
-        localStorage.setItem('login_info', JSON.stringify(loginInfo));
+        return <LoginFormWidget loggedInCallback={setLoginInfo} />;
     }
 
-    const missing_i18n_key_events_since_last_login = loginInfo ? loginInfo.missing_i18n_key_events_since_last_login : null;
+    OpenAPI.TOKEN = loginInfo.token;
+    localStorage.setItem('login_info', JSON.stringify(loginInfo));
+
+    const missing_i18n_key_events_since_last_login = loginInfo.missing_i18n_key_events_since_last_login;
 
     return <LoginContext.Provider value={loginInfo}>
         <Navbar>
@@ -668,25 +669,17 @@ function Layout() {
                 <Nav.Item><Nav.Link as={Link} to="/belts">{t('belt.list.title.primary')}</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/class-levels">{t('class_level.list.title.primary')}</Nav.Link></Nav.Item>
             </Nav>
-            {loginInfo?.student ? <Badge bg="info" className="me-2">{loginInfo.student.display_name}</Badge> : null}
+            {loginInfo.student ? <Badge bg="info" className="me-2">{loginInfo.student.display_name}</Badge> : null}
             <LanguageSelector />
-            {loginInfo
-                ? <>
-                    <Badge bg="info" className="me-2">{loginInfo.user.username}</Badge>
-                    <LogoutButton className="me-2" loggedOutCallback={() => setLoginInfo(null)}/>
-                </>
-                : <>
-                    <Badge bg="warning" className="me-2">{t('not_connected')}</Badge>
-                    <LoginButton className="me-2" loggedInCallback={setLoginInfo}/>
-                </>
-            }
+            <Badge bg="info" className="me-2">{loginInfo.user.username}</Badge>
+            <LogoutButton className="me-2" loggedOutCallback={() => setLoginInfo(null)}/>
         </Navbar>
         {missing_i18n_key_events_since_last_login &&
             <Alert variant="danger">
                 {t('missing_i18n_keys', missing_i18n_key_events_since_last_login)}
             </Alert>
         }
-        {loginInfo && <Outlet />}
+        <Outlet />
     </LoginContext.Provider>;
 }
 

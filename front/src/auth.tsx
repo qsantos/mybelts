@@ -31,15 +31,13 @@ export function AdminOnly(props: AdminOnlyProps): (ReactElement | null) {
     }
 }
 
-interface LoginButtonProps {
-    className?: string;
+interface LoginFormWidgetProps {
     loggedInCallback: (loginInfo: LoginInfo) => void;
 }
 
-export function LoginButton(props: LoginButtonProps): ReactElement {
-    const { className, loggedInCallback } = props;
+export function LoginFormWidget(props: LoginFormWidgetProps): ReactElement {
+    const { loggedInCallback } = props;
     const { t } = useTranslation();
-    const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [loggingIn, setLoggingIn] = useState(false);
 
@@ -64,44 +62,40 @@ export function LoginButton(props: LoginButtonProps): ReactElement {
         });
     }
 
-    return <>
-        <Modal show={show} onShow={() => nameInputRef.current?.focus?.()}>
-            <Form onSubmit={handleSubmit}>
-                <Modal.Header>
-                    <Modal.Title>{t('login.title')}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-                    <Form.Group controlId="username">
-                        <Form.Label>{t('login.username.title')}</Form.Label>
-                        <Form.Control type="text" placeholder={t('login.username.placeholder')} ref={nameInputRef} />
-                        <Form.Text className="text-muted">
-                            {t('login.username.help')}
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group controlId="password">
-                        <Form.Label>{t('login.password.title')}</Form.Label>
-                        <Form.Control type="password" />
-                        <Form.Text className="text-muted">
-                            {t('login.password.help')}
-                        </Form.Text>
-                    </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>{t('login.cancel')}</Button>
-                    {loggingIn
-                        ? <Button disabled type="submit">
-                            <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">{t('login.in_process')}</span>
-                            </Spinner>
-                        </Button>
-                        : <Button type="submit">{t('login.confirm')}</Button>
-                    }
-                </Modal.Footer>
-            </Form>
-        </Modal>
-        <Button onClick={() => setShow(true)} className={className} >{t('login.button')}</Button>
-    </>;
+    return (
+        <Form onSubmit={handleSubmit}>
+            <Modal.Header>
+                <Modal.Title>{t('login.title')}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
+                <Form.Group controlId="username">
+                    <Form.Label>{t('login.username.title')}</Form.Label>
+                    <Form.Control type="text" placeholder={t('login.username.placeholder')} ref={nameInputRef} />
+                    <Form.Text className="text-muted">
+                        {t('login.username.help')}
+                    </Form.Text>
+                </Form.Group>
+                <Form.Group controlId="password">
+                    <Form.Label>{t('login.password.title')}</Form.Label>
+                    <Form.Control type="password" />
+                    <Form.Text className="text-muted">
+                        {t('login.password.help')}
+                    </Form.Text>
+                </Form.Group>
+            </Modal.Body>
+            <Modal.Footer>
+                {loggingIn
+                    ? <Button disabled type="submit">
+                        <Spinner animation="border" role="status" size="sm">
+                            <span className="visually-hidden">{t('login.in_process')}</span>
+                        </Spinner>
+                    </Button>
+                    : <Button type="submit">{t('login.confirm')}</Button>
+                }
+            </Modal.Footer>
+        </Form>
+    );
 }
 
 interface LogoutButtonProps {
