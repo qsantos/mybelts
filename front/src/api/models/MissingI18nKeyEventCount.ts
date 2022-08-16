@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type MissingI18nKeyEvents = {
+export type MissingI18nKeyEventCount = {
     total: number;
     unique: number;
 }

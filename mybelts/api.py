@@ -127,7 +127,7 @@ api_model_login_payload = api.model('LoginPayload', {
     'exp': fields.Float(example=1659261001.276245, required=True, help='Timestamp of the expiration'),
 })
 
-api_model_missing_i18n_key_events = api.model('MissingI18nKeyEvents', {
+api_model_missing_i18n_key_event_count = api.model('MissingI18nKeyEventCount', {
     'total': fields.Integer(example=42, required=True),
     'unique': fields.Integer(example=42, required=True),
 })
@@ -137,7 +137,18 @@ api_model_login_info = api.model('LoginInfo', {
     'token': fields.String(required=True),
     'user': fields.Nested(api_model_user, required=True),
     'student': fields.Nested(api_model_student, skip_none=True),
-    'missing_i18n_key_events_since_last_login': fields.Nested(api_model_missing_i18n_key_events, skip_none=True),
+    'missing_i18n_key_events_since_last_login': fields.Nested(api_model_missing_i18n_key_event_count, skip_none=True),
+})
+
+api_model_missing_i18n_key_event = api.model('MissingI18nKeyEvent', {
+    'language': fields.String(example='en', required=True),
+    'namespace': fields.String(example='translation', required=True),
+    'key': fields.String(example='main_title', required=True),
+    'count': fields.Integer(example=42, required=True),
+})
+
+api_model_missing_i18n_key_event_list = api.model('MissingI18nKeyEventList', {
+    'events': fields.List(fields.Nested(api_model_missing_i18n_key_event), required=True),
 })
 
 api_model_user_list = api.model('UserList', {
@@ -235,6 +246,29 @@ api_model_school_class_student_belts = api.model('SchoolClassStudentBelts', {
 @api.route('/missing-i18n-key')
 @api.doc(security=None)
 class MissingI18nKeyResource(Resource):
+    @api.marshal_with(api_model_missing_i18n_key_event_list)
+    def get(self) -> Any:
+        with session_context() as session:
+            # me = authenticate(session)
+            # need_admin(me)
+            group_by = (
+                MissingI18nKey.language,
+                MissingI18nKey.namespace,
+                MissingI18nKey.key,
+            )
+            events = session.query(*group_by, func.count(MissingI18nKey.id)).group_by(*group_by).all()
+            return {
+                'events': [
+                    {
+                        'language': language,
+                        'namespace': namespace,
+                        'key': key,
+                        'count': count,
+                    }
+                    for (language, namespace, key, count) in events
+                ],
+            }
+
     post_model = api.model('MissingI18nKeyPost', {
         'language': fields.String(example='en', required=True),
         'namespace': fields.String(example='translation', required=True),

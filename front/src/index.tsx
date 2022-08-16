@@ -18,6 +18,7 @@ import Table from 'react-bootstrap/Table';
 import {
     OpenAPI,
     LoginInfo,
+    DefaultService, MissingI18nKeyEventList,
     UserList, UsersService,
     BeltList, BeltsService,
     ClassLevelList, ClassLevelsService,
@@ -77,6 +78,65 @@ function HomeView() {
         // other
         return <>Hello {user.username}</>;
     }
+}
+
+function I18nView() {
+    if (!is_admin()) {
+        return null;
+    }
+
+    const { t } = useTranslation();
+    const [errorMessage, setErrorMessage] = useState('');
+    const [eventList, setEventList] = useState<null | MissingI18nKeyEventList>(null);
+
+    useEffect(() => {
+        DefaultService
+            .getMissingI18NKeyResource()
+            .then(setEventList)
+            .catch(error => { setErrorMessage(getAPIError(error)); });
+    }, []);
+
+    if (eventList === null) {
+        return <>
+            <Breadcrumb>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem active href="/i18n">i18n</BreadcrumbItem>
+            </Breadcrumb>
+            <h3>i18n</h3>
+            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
+        </>;
+    }
+
+    const { events } = eventList;
+
+    return <>
+        <Breadcrumb>
+            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+            <BreadcrumbItem active href="/i18n">i18n</BreadcrumbItem>
+        </Breadcrumb>
+        <h3>i18n</h3>
+        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+        <Table>
+            <thead>
+                <tr>
+                    <th>Language</th>
+                    <th>Namespace</th>
+                    <th>Key</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {events.map((event, i) => (
+                    <tr key={i}>
+                        <th>{event.language}</th>
+                        <th>{event.namespace}</th>
+                        <th>{event.key}</th>
+                        <th>{event.count}</th>
+                    </tr>
+                ))}
+            </tbody>
+        </Table>
+    </>;
 }
 
 function UsersView() {
@@ -645,6 +705,7 @@ function Layout() {
                 <AdminOnly>
                     <Nav.Item><Nav.Link as={Link} to="/class-levels">{t('class_level.list.title.primary')}</Nav.Link></Nav.Item>
                     <Nav.Item><Nav.Link as={Link} to="/users">{t('user.list.title.primary')}</Nav.Link></Nav.Item>
+                    <Nav.Item><Nav.Link as={Link} to="/i18n">i18n</Nav.Link></Nav.Item>
                 </AdminOnly>
             </Nav>
             {loginInfo.student ? <Badge bg="info" className="me-2">{loginInfo.student.display_name}</Badge> : null}
@@ -665,6 +726,7 @@ function App() {
     return <Routes>
         <Route path="/" element={<Layout />}>
             <Route path="" element={<HomeView />} />
+            <Route path="i18n" element={<I18nView />} />
             <Route path="users" element={<UsersView />} />
             <Route path="belts" element={<BeltsView />} />
             <Route path="skill-domains" element={<SkillDomainsView />} />
