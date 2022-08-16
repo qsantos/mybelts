@@ -373,12 +373,14 @@ function SchoolClassView() {
 
     if (studentList === null || schoolClassStudentBelts === null) {
         return <>
-            <Breadcrumb>
-                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-                <BreadcrumbItem>{t('class_level.view.title')} ?</BreadcrumbItem>
-                <BreadcrumbItem active href="/">{t('school_class.view.title')} ?</BreadcrumbItem>
-            </Breadcrumb>
+            <AdminOnly>
+                <Breadcrumb>
+                    <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                    <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
+                    <BreadcrumbItem>{t('class_level.view.title')} ?</BreadcrumbItem>
+                    <BreadcrumbItem active href="/">{t('school_class.view.title')} ?</BreadcrumbItem>
+                </Breadcrumb>
+            </AdminOnly>
             <h3>{t('school_class.view.title')}: ?</h3>
             {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
         </>;
@@ -389,12 +391,14 @@ function SchoolClassView() {
     const { belts, skill_domains, student_belts } = schoolClassStudentBelts;
 
     return <>
-        <Breadcrumb>
-            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-            <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-            <BreadcrumbItem href={'/class-levels/' + class_level.id}>{t('class_level.view.title')} {class_level.prefix}</BreadcrumbItem>
-            <BreadcrumbItem active href={'/school-classes/' + school_class.id}>{t('school_class.view.title')} {school_class.suffix}</BreadcrumbItem>
-        </Breadcrumb>
+        <AdminOnly>
+            <Breadcrumb>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
+                <BreadcrumbItem href={'/class-levels/' + class_level.id}>{t('class_level.view.title')} {class_level.prefix}</BreadcrumbItem>
+                <BreadcrumbItem active href={'/school-classes/' + school_class.id}>{t('school_class.view.title')} {school_class.suffix}</BreadcrumbItem>
+            </Breadcrumb>
+        </AdminOnly>
         <h3>{t('school_class.view.title')}: {class_level.prefix}{school_class.suffix}</h3>
         <AdminOnly>
             {' '}
