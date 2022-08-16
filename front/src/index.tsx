@@ -682,12 +682,12 @@ function Layout() {
             <Navbar.Brand as={Link} to="/">{t('main_title')}</Navbar.Brand>
             <Nav className="me-auto">
                 <Nav.Item><Nav.Link as={Link} to="/">{t('home_page')}</Nav.Link></Nav.Item>
-                <AdminOnly>
-                    <Nav.Item><Nav.Link as={Link} to="/users">{t('user.list.title.primary')}</Nav.Link></Nav.Item>
-                </AdminOnly>
                 <Nav.Item><Nav.Link as={Link} to="/skill-domains">{t('skill_domain.list.title.primary')}</Nav.Link></Nav.Item>
                 <Nav.Item><Nav.Link as={Link} to="/belts">{t('belt.list.title.primary')}</Nav.Link></Nav.Item>
-                <Nav.Item><Nav.Link as={Link} to="/class-levels">{t('class_level.list.title.primary')}</Nav.Link></Nav.Item>
+                <AdminOnly>
+                    <Nav.Item><Nav.Link as={Link} to="/class-levels">{t('class_level.list.title.primary')}</Nav.Link></Nav.Item>
+                    <Nav.Item><Nav.Link as={Link} to="/users">{t('user.list.title.primary')}</Nav.Link></Nav.Item>
+                </AdminOnly>
             </Nav>
             {loginInfo.student ? <Badge bg="info" className="me-2">{loginInfo.student.display_name}</Badge> : null}
             <LanguageSelector />
