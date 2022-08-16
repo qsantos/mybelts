@@ -490,6 +490,11 @@ function StudentWidget(props: StudentWidgetProps) {
             </Breadcrumb>
         </AdminOnly>
         <h3>{t('student.view.title')}: {student.display_name}</h3>
+        {t('student.view.school_class')}:
+        {' '}
+        <Link to={'/school-classes/' + school_class.id}>
+            {class_level.prefix}{school_class.suffix}
+        </Link>
         <AdminOnly>
             <EditStudentButton student={student} changedCallback={new_student => {
                 setBeltAttemptList({ ...beltAttemptList, student: new_student });
