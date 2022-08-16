@@ -456,13 +456,15 @@ function StudentWidget(props: StudentWidgetProps) {
 
     if (beltList === null || skillDomainList === null || beltAttemptList === null) {
         return <>
-            <Breadcrumb>
-                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-                <BreadcrumbItem>{t('class_level.view.title')} ?</BreadcrumbItem>
-                <BreadcrumbItem active href="/">{t('school_class.view.title')} ?</BreadcrumbItem>
-                <BreadcrumbItem active href={'/students/' + student_id}>{t('student.view.title')} ?</BreadcrumbItem>
-            </Breadcrumb>
+            <AdminOnly>
+                <Breadcrumb>
+                    <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                    <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
+                    <BreadcrumbItem>{t('class_level.view.title')} ?</BreadcrumbItem>
+                    <BreadcrumbItem active href="/">{t('school_class.view.title')} ?</BreadcrumbItem>
+                    <BreadcrumbItem active href={'/students/' + student_id}>{t('student.view.title')} ?</BreadcrumbItem>
+                </Breadcrumb>
+            </AdminOnly>
             <h3>{t('student.view.title')}: ?</h3>
             {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
         </>;
@@ -481,13 +483,15 @@ function StudentWidget(props: StudentWidgetProps) {
     const sorted_belt_attempts = belt_attempts.sort((a, b) => b.date.localeCompare(a.date));
 
     return <>
-        <Breadcrumb>
-            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-            <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-            <BreadcrumbItem href={'/class-levels/' + class_level.id}>{t('class_level.view.title')} {class_level.prefix}</BreadcrumbItem>
-            <BreadcrumbItem active href={'/school-classes/' + school_class.id}>{t('school_class.view.title')} {school_class.suffix}</BreadcrumbItem>
-            <BreadcrumbItem active href={'/students/' + student.id}>{t('student.view.title')} {student.display_name}</BreadcrumbItem>
-        </Breadcrumb>
+        <AdminOnly>
+            <Breadcrumb>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
+                <BreadcrumbItem href={'/class-levels/' + class_level.id}>{t('class_level.view.title')} {class_level.prefix}</BreadcrumbItem>
+                <BreadcrumbItem active href={'/school-classes/' + school_class.id}>{t('school_class.view.title')} {school_class.suffix}</BreadcrumbItem>
+                <BreadcrumbItem active href={'/students/' + student.id}>{t('student.view.title')} {student.display_name}</BreadcrumbItem>
+            </Breadcrumb>
+        </AdminOnly>
         <h3>{t('student.view.title')}: {student.display_name}</h3>
         <AdminOnly>
             <EditStudentButton student={student} changedCallback={new_student => {
@@ -608,13 +612,15 @@ function SchoolClassBeltsView() {
 
     if (schoolClassStudentBelts === null) {
         return <>
-            <Breadcrumb>
-                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-                <BreadcrumbItem>{t('class_level.view.title')} ?</BreadcrumbItem>
-                <BreadcrumbItem href={'/school-class/' + school_class_id}>{t('school_class.view.title')} ?</BreadcrumbItem>
-                <BreadcrumbItem active href={'/school-classes/' + school_class_id + '/belt'}>{t('school_class.view.belts')}</BreadcrumbItem>
-            </Breadcrumb>
+            <AdminOnly>
+                <Breadcrumb>
+                    <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                    <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
+                    <BreadcrumbItem>{t('class_level.view.title')} ?</BreadcrumbItem>
+                    <BreadcrumbItem href={'/school-class/' + school_class_id}>{t('school_class.view.title')} ?</BreadcrumbItem>
+                    <BreadcrumbItem active href={'/school-classes/' + school_class_id + '/belt'}>{t('school_class.view.belts')}</BreadcrumbItem>
+                </Breadcrumb>
+            </AdminOnly>
             <h3>{t('school_class.view.belts')}: ?</h3>
             {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
         </>;
@@ -623,13 +629,15 @@ function SchoolClassBeltsView() {
     const { class_level, school_class, belts, skill_domains, student_belts } = schoolClassStudentBelts;
 
     return <>
-        <Breadcrumb>
-            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-            <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-            <BreadcrumbItem href={'/class-levels/' + class_level.id}>{t('class_level.view.title')} {class_level.prefix}</BreadcrumbItem>
-            <BreadcrumbItem active href={'/school-classes/' + school_class.id}>{t('school_class.view.title')} {school_class.suffix}</BreadcrumbItem>
-            <BreadcrumbItem active href={'/school-classes/' + school_class.id + '/belt'}>{t('school_class.view.belts')}</BreadcrumbItem>
-        </Breadcrumb>
+        <AdminOnly>
+            <Breadcrumb>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
+                <BreadcrumbItem href={'/class-levels/' + class_level.id}>{t('class_level.view.title')} {class_level.prefix}</BreadcrumbItem>
+                <BreadcrumbItem active href={'/school-classes/' + school_class.id}>{t('school_class.view.title')} {school_class.suffix}</BreadcrumbItem>
+                <BreadcrumbItem active href={'/school-classes/' + school_class.id + '/belt'}>{t('school_class.view.belts')}</BreadcrumbItem>
+            </Breadcrumb>
+        </AdminOnly>
         <h3>{t('school_class.view.belts')}: {class_level.prefix}{school_class.suffix}</h3>
         <BeltAttemptGrid
             skill_domains={skill_domains}
