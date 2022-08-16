@@ -1,22 +1,17 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
 
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import Nav from 'react-bootstrap/Nav';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
 import Tooltip from 'react-bootstrap/Tooltip';
-import { ColumnDef } from '@tanstack/react-table';
 
 import { Student, StudentsService } from './api';
-import { is_admin } from './auth';
 import { getAPIError } from './lib';
-import { SortTable } from './sort-table';
 
 interface CreateStudentButtonProps {
     school_class_id: number;
@@ -340,66 +335,4 @@ export function UpdateStudentRanks(props: UpdateStudentRanksProps): ReactElement
             </Form>
         </Modal>
     </>;
-}
-
-interface StudentListingProps {
-    students: Student[];
-    setStudents: (students: Student[]) => void;
-}
-
-export function StudentListing(props: StudentListingProps): ReactElement {
-    const { students, setStudents } = props;
-    const { t } = useTranslation();
-
-    const columns: ColumnDef<Student>[] = [
-        {
-            id: 'rank',
-            header: t('student.list.rank.title'),
-            accessorKey: 'rank',
-        },
-        {
-            id: 'display_name',
-            header: t('student.list.display_name.title'),
-            accessorKey: 'display_name',
-            cell: info => {
-                const student = info.row.original;
-                return (
-                    <Nav.Link as={Link} to={'/students/' + student.id}>
-                        {student.display_name}
-                    </Nav.Link>
-                );
-            },
-        },
-    ];
-
-    if (is_admin()) {
-        columns.push({
-            id: 'actions',
-            header: t('student.list.actions.title'),
-            cell: info => {
-                const student = info.row.original;
-                return <>
-                    <EditStudentButton student={student} changedCallback={new_student => {
-                        const new_students = [...students];
-                        new_students[info.row.index] = new_student;
-                        setStudents(new_students);
-                    }} />
-                    {' '}
-                    <DeleteStudentButton student={student} deletedCallback={() => {
-                        const new_students = [...students];
-                        new_students.splice(info.row.index, 1);
-                        setStudents(new_students);
-                    }} />
-                </>;
-            }
-        });
-    }
-
-    const sorting = [
-        {
-            id: 'rank',
-            desc: false,
-        },
-    ];
-    return <SortTable data={students} columns={columns} initialSorting={sorting} />;
 }

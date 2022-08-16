@@ -577,7 +577,7 @@ class SchoolClassResource(Resource):
     def get(self, school_class_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
-            need_admin(me)
+            authorize(me, me.student is not None and me.student.school_class_id == school_class_id)
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')

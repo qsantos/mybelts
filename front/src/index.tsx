@@ -12,10 +12,8 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
 import Table from 'react-bootstrap/Table';
-import Tooltip from 'react-bootstrap/Tooltip';
 
 import {
     OpenAPI,
@@ -39,7 +37,7 @@ import { CreateSkillDomainButton, SkillDomainListing } from './skill-domain';
 import { BeltIcon, CreateBeltButton, BeltListing } from './belt';
 import { CreateClassLevelButton, EditClassLevelButton, DeleteClassLevelButton, ClassLevelListing } from './class-level';
 import { CreateSchoolClassButton, EditSchoolClassButton, DeleteSchoolClassButton, SchoolClassListing } from './school-class';
-import { CreateStudentButton, EditStudentButton, DeleteStudentButton, UpdateStudentRanks, StudentListing } from './student';
+import { CreateStudentButton, EditStudentButton, DeleteStudentButton, UpdateStudentRanks } from './student';
 import { CreateBeltAttemptButton, BeltAttemptListing, BeltAttemptGrid,  } from './belt-attempt';
 
 function BreadcrumbItem({ children, href, active }: { children: ReactNode, href?: string, active?: boolean }) {
@@ -348,10 +346,6 @@ function ClassLevelView() {
 }
 
 function SchoolClassView() {
-    if (!is_admin()) {
-        return null;
-    }
-
     const params = useParams();
     if (params.school_class_id === undefined) {
         // should not happen
@@ -363,6 +357,7 @@ function SchoolClassView() {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [studentList, setStudentList] = useState<null | StudentList>(null);
+    const [schoolClassStudentBelts, setSchoolClassStudentBelts] = useState<null | SchoolClassStudentBelts>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -370,9 +365,13 @@ function SchoolClassView() {
             .getSchoolClassResource(parseInt(school_class_id))
             .then(setStudentList)
             .catch(error => { setErrorMessage(getAPIError(error)); });
+        SchoolClassesService
+            .getSchoolClassStudentBeltsResource(parseInt(school_class_id))
+            .then(setSchoolClassStudentBelts)
+            .catch(error => { setErrorMessage(getAPIError(error)); });
     }, [school_class_id]);
 
-    if (studentList === null) {
+    if (studentList === null || schoolClassStudentBelts === null) {
         return <>
             <Breadcrumb>
                 <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
@@ -381,15 +380,13 @@ function SchoolClassView() {
                 <BreadcrumbItem active href="/">{t('school_class.view.title')} ?</BreadcrumbItem>
             </Breadcrumb>
             <h3>{t('school_class.view.title')}: ?</h3>
-            <OverlayTrigger overlay={<Tooltip>{t('school_class.view.belts')}</Tooltip>}>
-                <Button onClick={() => navigate('belts')}>🥋</Button>
-            </OverlayTrigger>
-            {' '}
             {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
         </>;
     }
 
     const { class_level, school_class, students } = studentList;
+    //const { class_level, school_class, belts, skill_domains, student_belts } = schoolClassStudentBelts;
+    const { belts, skill_domains, student_belts } = schoolClassStudentBelts;
 
     return <>
         <Breadcrumb>
@@ -399,9 +396,6 @@ function SchoolClassView() {
             <BreadcrumbItem active href={'/school-classes/' + school_class.id}>{t('school_class.view.title')} {school_class.suffix}</BreadcrumbItem>
         </Breadcrumb>
         <h3>{t('school_class.view.title')}: {class_level.prefix}{school_class.suffix}</h3>
-        <OverlayTrigger overlay={<Tooltip>{t('school_class.view.belts')}</Tooltip>}>
-            <Button onClick={() => navigate('belts')}>🥋</Button>
-        </OverlayTrigger>
         <AdminOnly>
             {' '}
             <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
@@ -418,9 +412,12 @@ function SchoolClassView() {
                 setStudentList({ ...studentList, students: new_students });
             }} />
         </AdminOnly>
-        <StudentListing
+        <BeltAttemptGrid
             students={students}
             setStudents={new_students => setStudentList({ ...studentList, students: new_students })}
+            skill_domains={skill_domains}
+            belts={belts}
+            student_belts={student_belts}
         />
     </>;
 }
@@ -590,63 +587,6 @@ function StudentView() {
     return <StudentWidget student_id={student_id} />;
 }
 
-function SchoolClassBeltsView() {
-    const params = useParams();
-    if (params.school_class_id === undefined) {
-        // should not happen
-        console.error('Attribute school_class_id of <ClassLevelView /> is undefined');
-        return <></>;
-    }
-    const school_class_id = params.school_class_id;
-
-    const { t } = useTranslation();
-    const [errorMessage, setErrorMessage] = useState('');
-    const [schoolClassStudentBelts, setSchoolClassStudentBelts] = useState<null | SchoolClassStudentBelts>(null);
-
-    useEffect(() => {
-        SchoolClassesService
-            .getSchoolClassStudentBeltsResource(parseInt(school_class_id))
-            .then(setSchoolClassStudentBelts)
-            .catch(error => { setErrorMessage(getAPIError(error)); });
-    }, [school_class_id]);
-
-    if (schoolClassStudentBelts === null) {
-        return <>
-            <AdminOnly>
-                <Breadcrumb>
-                    <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                    <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-                    <BreadcrumbItem>{t('class_level.view.title')} ?</BreadcrumbItem>
-                    <BreadcrumbItem href={'/school-class/' + school_class_id}>{t('school_class.view.title')} ?</BreadcrumbItem>
-                    <BreadcrumbItem active href={'/school-classes/' + school_class_id + '/belt'}>{t('school_class.view.belts')}</BreadcrumbItem>
-                </Breadcrumb>
-            </AdminOnly>
-            <h3>{t('school_class.view.belts')}: ?</h3>
-            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
-        </>;
-    }
-
-    const { class_level, school_class, belts, skill_domains, student_belts } = schoolClassStudentBelts;
-
-    return <>
-        <AdminOnly>
-            <Breadcrumb>
-                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-                <BreadcrumbItem href={'/class-levels/' + class_level.id}>{t('class_level.view.title')} {class_level.prefix}</BreadcrumbItem>
-                <BreadcrumbItem active href={'/school-classes/' + school_class.id}>{t('school_class.view.title')} {school_class.suffix}</BreadcrumbItem>
-                <BreadcrumbItem active href={'/school-classes/' + school_class.id + '/belt'}>{t('school_class.view.belts')}</BreadcrumbItem>
-            </Breadcrumb>
-        </AdminOnly>
-        <h3>{t('school_class.view.belts')}: {class_level.prefix}{school_class.suffix}</h3>
-        <BeltAttemptGrid
-            skill_domains={skill_domains}
-            belts={belts}
-            student_belts={student_belts}
-        />
-    </>;
-}
-
 function LanguageSelector() {
     const currentLanguageCode = i18n.language;
     const otherLanguageCode = currentLanguageCode == 'en' ? 'fr' : 'en';
@@ -714,10 +654,7 @@ function App() {
                 <Route index element={<ClassLevelsView />} />
                 <Route path=":class_level_id" element={<ClassLevelView />} />
             </Route>
-            <Route path="school-classes/:school_class_id">
-                <Route index element={<SchoolClassView />} />
-                <Route path="belts" element={<SchoolClassBeltsView />} />
-            </Route>
+            <Route path="school-classes/:school_class_id" element={<SchoolClassView />} />
             <Route path="students/:student_id" element={<StudentView />} />
         </Route>
     </Routes>;

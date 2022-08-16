@@ -11,15 +11,15 @@ import Modal from 'react-bootstrap/Modal';
 import Nav from 'react-bootstrap/Nav';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
-import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { Belt, SkillDomain, Student, BeltAttempt, BeltAttemptsService, SchoolClassStudentBeltsStudentBelts } from './api';
-import { is_admin } from './auth';
+import { LoginContext, is_admin } from './auth';
 import { BeltIcon } from './belt';
 import { formatDate, getAPIError } from './lib';
 import { SortTable } from './sort-table';
+import { EditStudentButton, DeleteStudentButton } from './student';
 
 interface CreateBeltAttemptButtonProps {
     student: Student;
@@ -434,54 +434,102 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
 
 
 interface BeltAttemptGridProps {
+    students: Student[];
+    setStudents: (students: Student[]) => void;
     skill_domains: SkillDomain[];
     belts: Belt[];
     student_belts: SchoolClassStudentBeltsStudentBelts[],
 }
 
 export function BeltAttemptGrid(props: BeltAttemptGridProps): ReactElement {
-    const { skill_domains, belts, student_belts } = props;
+    const { students, setStudents, skill_domains, belts, student_belts } = props;
     const { t } = useTranslation();
-
+    const loginInfo = React.useContext(LoginContext);
+    if (!loginInfo) {
+        return <></>;
+    }
+    const user = loginInfo.user;
     const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
+    const student_belts_by_student_id = Object.fromEntries(student_belts.map(
+        ({student, belts: xbelts}) => [student.id, xbelts]
+    ));
 
-    return <>
-        <Table>
-            <thead>
-                <tr>
-                    <th>{t('belt_attempt.grid.student')}</th>
-                    {skill_domains.map(skill_domain => <th key={skill_domain.id}>{skill_domain.name}</th>)}
-                </tr>
-            </thead>
-            <tbody>
-                {student_belts.map(({student, belts: skill_belt_ids}) => {
-                    const belt_id_by_skill_domain_id = Object.fromEntries(
-                        skill_belt_ids.map(
-                            ({skill_domain_id, belt_id}) => [skill_domain_id, belt_id]
-                        )
-                    );
-                    return <tr key={student.id}>
-                        <th>
-                            <Nav.Link as={Link} to={'/students/' + student.id}>
-                                {student.display_name}
-                            </Nav.Link>
-                        </th>
-                        {skill_domains.map(skill_domain => {
-                            const belt_id = belt_id_by_skill_domain_id[skill_domain.id];
-                            if (belt_id === undefined) {
-                                return <td key={skill_domain.id}>-</td>;
-                            }
-                            const belt = belt_by_id[belt_id];
-                            if (belt === undefined) {
-                                return <td key={skill_domain.id}>-</td>;
-                            }
-                            return <td key={skill_domain.id}>
-                                <BeltIcon belt={belt} />
-                            </td>;
-                        })}
-                    </tr>;
-                })}
-            </tbody>
-        </Table>
-    </>;
+    const columns: ColumnDef<Student>[] = [
+        {
+            id: 'display_name',
+            header: t('student.list.display_name.title'),
+            cell: info => {
+                const student = info.row.original;
+                const enabled = user.is_admin || student.user_id == user.id;
+                return (
+                    <Nav.Link as={Link} to={'/students/' + student.id} disabled={!enabled}>
+                        {student.display_name}
+                    </Nav.Link>
+                );
+            },
+        },
+    ];
+
+    skill_domains.forEach(skill_domain => columns.push({
+        id: skill_domain.name,
+        header: skill_domain.name,
+        cell: info => {
+            const student = info.row.original;
+            const this_belts = student_belts_by_student_id[student.id];
+            if (this_belts === undefined) {
+                return '';
+            }
+            let belt_id = undefined;
+            this_belts.forEach(({belt_id: xbelt_id, skill_domain_id}) => {
+                if (skill_domain_id == skill_domain.id) {
+                    belt_id = xbelt_id;
+                }
+            });
+            if (belt_id === undefined) {
+                return '';
+            }
+
+            const belt = belt_by_id[belt_id];
+            if (belt === undefined) {
+                return '';
+            }
+            return <BeltIcon belt={belt} />;
+        },
+    }));
+
+    const sorting = [];
+
+    if (is_admin()) {
+        sorting.push({
+            id: 'rank',
+            desc: false,
+        });
+        columns.unshift({
+            id: 'rank',
+            header: t('student.list.rank.title'),
+            accessorKey: 'rank',
+        });
+        columns.push({
+            id: 'actions',
+            header: t('student.list.actions.title'),
+            cell: info => {
+                const student = info.row.original;
+                return <>
+                    <EditStudentButton student={student} changedCallback={new_student => {
+                        const new_students = [...students];
+                        new_students[info.row.index] = new_student;
+                        setStudents(new_students);
+                    }} />
+                    {' '}
+                    <DeleteStudentButton student={student} deletedCallback={() => {
+                        const new_students = [...students];
+                        new_students.splice(info.row.index, 1);
+                        setStudents(new_students);
+                    }} />
+                </>;
+            }
+        });
+    }
+
+    return <SortTable data={students} columns={columns} initialSorting={sorting} />;
 }
