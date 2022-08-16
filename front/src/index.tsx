@@ -202,9 +202,9 @@ function SkillDomainsView() {
         return <>
             <Breadcrumb>
                 <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                <BreadcrumbItem active href="/skill-domains">{t('class_level.list.title.primary')}</BreadcrumbItem>
+                <BreadcrumbItem active href="/skill-domains">{t('skill_domain.list.title.primary')}</BreadcrumbItem>
             </Breadcrumb>
-            <h3>{t('class_level.list.title.primary')}</h3>
+            <h3>{t('skill_domain.list.title.primary')}</h3>
             {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
         </>;
     }
@@ -215,9 +215,9 @@ function SkillDomainsView() {
     return <>
         <Breadcrumb>
             <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-            <BreadcrumbItem active href="/skill-domains">{t('class_level.list.title.primary')}</BreadcrumbItem>
+            <BreadcrumbItem active href="/skill-domains">{t('skill_domain.list.title.primary')}</BreadcrumbItem>
         </Breadcrumb>
-        <h3>{t('class_level.list.title.primary')}</h3>
+        <h3>{t('skill_domain.list.title.primary')}</h3>
         <AdminOnly>
             <CreateSkillDomainButton createdCallback={new_skill_domain => {
                 setSkillDomainList({ ...skillDomainList, skill_domains: [...skill_domains, new_skill_domain] });
