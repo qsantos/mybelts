@@ -605,6 +605,15 @@ function LanguageSelector() {
     return <Button onClick={() => i18n.changeLanguage(otherLanguageCode)}>{otherLanguageEmoji}</Button>;
 }
 
+function NotFound() {
+    const { t } = useTranslation();
+    return (
+        <Alert variant="warning">
+            {t('not_found')}
+        </Alert>
+    );
+}
+
 function Layout() {
     const { t } = useTranslation();
 
@@ -661,6 +670,7 @@ function App() {
             </Route>
             <Route path="school-classes/:school_class_id" element={<SchoolClassView />} />
             <Route path="students/:student_id" element={<StudentView />} />
+            <Route path="*" element={<NotFound />} />
         </Route>
     </Routes>;
 }
