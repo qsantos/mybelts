@@ -330,7 +330,12 @@ def authenticate(session: Session) -> User:
 
 def need_admin(user: User) -> None:
     if not user.is_admin:
-        abort(403, 'User cannot perform action')
+        abort(403, 'This action can only be performed by an administrator')
+
+
+def authorize(user, authorized: bool) -> None:
+    if not user.is_admin and not authorized:
+        abort(403, 'This action can not be performed by this user')
 
 
 @users_ns.route('/users')
@@ -338,7 +343,8 @@ class UsersResource(Resource):
     @api.marshal_with(api_model_user_list)
     def get(self) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             users = session.query(User).all()
             return {
                 'users': [user.json() for user in users],
@@ -390,7 +396,8 @@ class UserResource(Resource):
     @api.marshal_with(api_model_user_one)
     def get(self, user_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            authorize(me, me.user_id == user_id)
             user = session.query(User).get(user_id)
             if user is None:
                 abort(404, f'User {user_id} not found')
@@ -443,7 +450,8 @@ class ClassLevelsResource(Resource):
     @api.marshal_with(api_model_class_level_list)
     def get(self) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             return {
                 'class_levels': [
                     class_level.json()
@@ -474,7 +482,8 @@ class ClassLevelResource(Resource):
     @api.marshal_with(api_model_class_level_one)
     def get(self, class_level_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             class_level = session.query(ClassLevel).get(class_level_id)
             if class_level is None:
                 abort(404, f'Class level {class_level_id} not found')
@@ -519,7 +528,8 @@ class ClassLevelSchoolClassesResource(Resource):
     @api.marshal_with(api_model_school_class_list)
     def get(self, class_level_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             class_level = session.query(ClassLevel).get(class_level_id)
             if class_level is None:
                 abort(404, f'Class level {class_level_id} not found')
@@ -566,7 +576,8 @@ class SchoolClassResource(Resource):
     @api.marshal_with(api_model_student_list)
     def get(self, school_class_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
@@ -619,7 +630,8 @@ class SchoolClassStudentsResource(Resource):
     @api.marshal_with(api_model_student_list)
     def get(self, school_class_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
@@ -639,7 +651,8 @@ class SchoolClassStudentBeltsResource(Resource):
     @api.marshal_with(api_model_school_class_student_belts)
     def get(self, school_class_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            authorize(me, me.student is not None and me.student.school_class_id == school_class_id)
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
@@ -766,7 +779,8 @@ class StudentResource(Resource):
     @api.marshal_with(api_model_student_one)
     def get(self, student_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            authorize(me, me.student is not None and me.student.id == student_id)
             student = session.query(Student).get(student_id)
             if student is None:
                 abort(404, f'Student {student_id} not found')
@@ -835,7 +849,8 @@ class StudentBeltAttemptsResource(Resource):
     @api.marshal_with(api_model_belt_attempt_list)
     def get(self, student_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            authorize(me, me.student is not None and me.student.id == student_id)
             student = session.query(Student).get(student_id)
             if student is None:
                 abort(404, f'Student {student_id} not found')
@@ -1174,7 +1189,8 @@ class BeltAttemptResource(Resource):
     @api.marshal_with(api_model_belt_attempt_one)
     def get(self, belt_attempt_id: int) -> Any:
         with session_context() as session:
-            authenticate(session)
+            me = authenticate(session)
+            need_admin(me)
             belt_attempt = session.query(BeltAttempt).get(belt_attempt_id)
             if belt_attempt is None:
                 abort(404, f'Belt attempt {belt_attempt_id} not found')

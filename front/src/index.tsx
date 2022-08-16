@@ -82,13 +82,13 @@ function HomeView() {
 }
 
 function UsersView() {
-    const { t } = useTranslation();
-    const [errorMessage, setErrorMessage] = useState('');
-    const [userList, setUserList] = useState<null | UserList>(null);
-
     if (!is_admin()) {
         return null;
     }
+
+    const { t } = useTranslation();
+    const [errorMessage, setErrorMessage] = useState('');
+    const [userList, setUserList] = useState<null | UserList>(null);
 
     useEffect(() => {
         UsersService
@@ -232,6 +232,10 @@ function SkillDomainsView() {
 }
 
 function ClassLevelsView() {
+    if (!is_admin()) {
+        return null;
+    }
+
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [classLevelList, setClassLevelList] = useState<null | ClassLevelList>(null);
@@ -277,6 +281,10 @@ function ClassLevelsView() {
 }
 
 function ClassLevelView() {
+    if (!is_admin()) {
+        return null;
+    }
+
     const params = useParams();
     if (params.class_level_id === undefined) {
         // should not happen
@@ -340,6 +348,10 @@ function ClassLevelView() {
 }
 
 function SchoolClassView() {
+    if (!is_admin()) {
+        return null;
+    }
+
     const params = useParams();
     if (params.school_class_id === undefined) {
         // should not happen
