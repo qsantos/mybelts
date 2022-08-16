@@ -1,7 +1,6 @@
 import React from 'react';
 import { FormEvent, ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import i18n from 'i18next';
 import Select from 'react-select';
 import { Link } from 'react-router-dom';
 
@@ -19,15 +18,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Belt, SkillDomain, Student, BeltAttempt, BeltAttemptsService, SchoolClassStudentBeltsStudentBelts } from './api';
 import { is_admin } from './auth';
 import { BeltIcon } from './belt';
-import { getAPIError } from './lib';
+import { formatDate, getAPIError } from './lib';
 import { SortTable } from './sort-table';
-
-const localeDateOptions: Intl.DateTimeFormatOptions = {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-};
 
 interface CreateBeltAttemptButtonProps {
     student: Student;
@@ -382,11 +374,7 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
             id: 'date',
             header: t('belt_attempt.list.date.title'),
             accessorKey: 'date',
-            cell: info => {
-                const date = info.row.original.date;
-                const d = new Date(date);
-                return d.toLocaleDateString(i18n.language, localeDateOptions);
-            },
+            cell: info => formatDate(info.row.original.date),
         },
         {
             id: 'passed',

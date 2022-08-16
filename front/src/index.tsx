@@ -28,7 +28,7 @@ import {
     StudentList, StudentsService,
     BeltAttemptList,
 } from './api';
-import { getAPIError } from './lib';
+import { formatDatetime, getAPIError } from './lib';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
@@ -72,7 +72,9 @@ function HomeView() {
         return <StudentWidget student_id={student.id} />;
     } else if (user.is_admin) {
         // admin
-        return <>Hello admin {user.username}</>;
+        return <>
+            Hello {user.username}. You last logged in on {formatDatetime(user.last_login)}.
+        </>;
     } else {
         // other
         return <>Hello {user.username}</>;

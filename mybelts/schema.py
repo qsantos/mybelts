@@ -83,6 +83,7 @@ class User(Base):
             'created': self.created,
             'username': self.username,
             'is_admin': self.is_admin,
+            'last_login': self.last_login,
         }
 
 
@@ -167,6 +168,7 @@ class Student(Base):
             'created': self.created.isoformat(),
             'user_id': self.user_id,
             'username': self.user.username,
+            'last_login': self.last_login,
             'school_class_id': self.school_class_id,
             'display_name': self.display_name,
             'rank': self.rank,

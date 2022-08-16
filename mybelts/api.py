@@ -71,6 +71,7 @@ api_model_user = api.model('User', {
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
     'username': fields.String(example='tartempion', required=True),
     'is_admin': fields.Boolean(example=False, required=True),
+    'last_login': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
 })
 
 api_model_class_level = api.model('ClassLevel', {
@@ -91,6 +92,7 @@ api_model_student = api.model('Student', {
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
     'user_id': fields.Integer(example=42, required=True),
     'username': fields.String(example='jdoe', required=True),
+    'last_login': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
     'school_class_id': fields.Integer(example=42, required=True),
     'display_name': fields.String(example='John Doe', required=True),
     'rank': fields.Integer(example=7, required=True),
