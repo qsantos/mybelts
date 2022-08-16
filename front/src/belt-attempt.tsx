@@ -17,7 +17,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Belt, SkillDomain, Student, BeltAttempt, BeltAttemptsService, SchoolClassStudentBeltsStudentBelts } from './api';
 import { LoginContext, is_admin } from './auth';
 import { BeltIcon } from './belt';
-import { formatDate, getAPIError } from './lib';
+import { formatDate, formatDatetime, getAPIError } from './lib';
 import { SortTable } from './sort-table';
 import { EditStudentButton, DeleteStudentButton } from './student';
 
@@ -512,6 +512,14 @@ export function BeltAttemptGrid(props: BeltAttemptGridProps): ReactElement {
             id: 'rank',
             header: t('student.list.rank.title'),
             accessorKey: 'rank',
+        });
+        columns.push({
+            id: 'last_login',
+            header: t('student.list.last_login.title'),
+            cell: info => {
+                const student = info.row.original;
+                return student.last_login ? formatDatetime(student.last_login) : '';
+            }
         });
         columns.push({
             id: 'actions',
