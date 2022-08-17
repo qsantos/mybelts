@@ -318,7 +318,7 @@ class LoginResource(Resource):
                             MissingI18nKey.language,
                             MissingI18nKey.namespace,
                             MissingI18nKey.key,
-                        ).count(),
+                        ).count(),  # type: ignore
                     }
             session.commit()
             payload = {
