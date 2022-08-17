@@ -367,7 +367,7 @@ def need_admin(user: User) -> None:
         abort(403, 'This action can only be performed by an administrator')
 
 
-def authorize(user, authorized: bool) -> None:
+def authorize(user: User, authorized: bool) -> None:
     if not user.is_admin and not authorized:
         abort(403, 'This action can not be performed by this user')
 
