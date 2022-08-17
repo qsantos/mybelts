@@ -27,6 +27,7 @@ import {
     StudentList, StudentsService,
     BeltAttemptList,
 } from './api';
+import { OpenAPIWithCallback } from './api/core/request';
 import { formatDatetime, getAPIError } from './lib';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -684,14 +685,23 @@ function Layout() {
     const rawSavedLoginInfo = localStorage.getItem('login_info');
     const savedLoginInfo = rawSavedLoginInfo === null ? null : (JSON.parse(rawSavedLoginInfo) as LoginInfo);
     const [loginInfo, setLoginInfo] = useState<LoginInfo | null>(savedLoginInfo);
+    const [loginMessage, setLoginMessage] = useState('');
     if (loginInfo === null) {
         OpenAPI.TOKEN = undefined;
         localStorage.removeItem('login_info');
-        return <LoginFormWidget loggedInCallback={setLoginInfo} />;
+        return <LoginFormWidget loggedInCallback={setLoginInfo} infoMessage={loginMessage} />;
     }
 
     OpenAPI.TOKEN = loginInfo.token;
     localStorage.setItem('login_info', JSON.stringify(loginInfo));
+    (OpenAPI as OpenAPIWithCallback).ERROR_CALLBACK = (status: number) => {
+        if (status === 401) {
+            setLoginInfo(null);
+            setLoginMessage(t('expired_token'));
+            return true;
+        }
+        return false;
+    };
 
     const missing_i18n_key_events_since_last_login = loginInfo.missing_i18n_key_events_since_last_login;
 

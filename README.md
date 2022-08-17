@@ -71,6 +71,6 @@ Assuming the API is listening locally on port 80, run the following commands.
 ```
 cd front
 wget http://127.0.0.1/api/swagger.json -O - | python3 -m json.tool --sort-keys >swagger.json
-npx openapi-typescript-codegen --input swagger.json -o src/api
+npx openapi-typescript-codegen --input swagger.json --request request.ts -o src/api
 rm -f swagger.json
 ```

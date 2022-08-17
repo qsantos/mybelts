@@ -32,11 +32,12 @@ export function AdminOnly(props: AdminOnlyProps): (ReactElement | null) {
 }
 
 interface LoginFormWidgetProps {
+    infoMessage: string,
     loggedInCallback: (loginInfo: LoginInfo) => void;
 }
 
 export function LoginFormWidget(props: LoginFormWidgetProps): ReactElement {
-    const { loggedInCallback } = props;
+    const { infoMessage, loggedInCallback } = props;
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [loggingIn, setLoggingIn] = useState(false);
@@ -69,6 +70,7 @@ export function LoginFormWidget(props: LoginFormWidgetProps): ReactElement {
             </Modal.Header>
             <Modal.Body>
                 {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
+                {infoMessage && <Alert variant="info">{infoMessage}</Alert>}
                 <Form.Group controlId="username">
                     <Form.Label>{t('login.username.title')}</Form.Label>
                     <Form.Control type="text" placeholder={t('login.username.placeholder')} ref={nameInputRef} />
