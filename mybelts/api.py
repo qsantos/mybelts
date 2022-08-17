@@ -18,7 +18,7 @@ from sqlalchemy.sql.expression import func
 
 from mybelts.config import SECRET
 from mybelts.schema import (
-    Belt, BeltAttempt, ClassLevel, HTTPRequest, MissingI18nKey, SchoolClass,
+    Belt, ClassLevel, Evaluation, HTTPRequest, MissingI18nKey, SchoolClass,
     SkillDomain, Student, User, session_context,
 )
 
@@ -63,7 +63,7 @@ school_class_ns = api.namespace('School Classes', path='/')
 students_ns = api.namespace('Students', path='/')
 skill_domains_ns = api.namespace('Skill Domains', path='/')
 belts_ns = api.namespace('Belts', path='/')
-belt_attempts_ns = api.namespace('Belt Attempts', path='/')
+evaluations_ns = api.namespace('Evaluations', path='/')
 
 
 api_model_user = api.model('User', {
@@ -112,7 +112,7 @@ api_model_skill_domain = api.model('SkillDomain', {
     'name': fields.String(example='Algebra', required=True),
 })
 
-api_model_belt_attempt = api.model('BeltAttempt', {
+api_model_evaluation = api.model('Evaluation', {
     'id': fields.Integer(example=42, required=True),
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
     'student_id': fields.Integer(example=42, required=True),
@@ -210,22 +210,22 @@ api_model_belt_one = api.model('BeltOne', {
     'belt': fields.Nested(api_model_belt, required=True),
 })
 
-api_model_belt_attempt_list = api.model('BeltAttemptList', {
+api_model_evaluation_list = api.model('EvaluationList', {
     'class_level': fields.Nested(api_model_class_level, required=True),
     'school_class': fields.Nested(api_model_school_class, required=True),
     'student': fields.Nested(api_model_student, required=True),
     'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
     'belts': fields.List(fields.Nested(api_model_belt), required=True),
-    'belt_attempts': fields.List(fields.Nested(api_model_belt_attempt), required=True),
+    'evaluations': fields.List(fields.Nested(api_model_evaluation), required=True),
 })
 
-api_model_belt_attempt_one = api.model('BeltAttemptOne', {
+api_model_evaluation_one = api.model('EvaluationOne', {
     'class_level': fields.Nested(api_model_class_level, required=True),
     'school_class': fields.Nested(api_model_school_class, required=True),
     'student': fields.Nested(api_model_student, required=True),
     'skill_domain': fields.Nested(api_model_skill_domain, required=True),
     'belt': fields.Nested(api_model_belt, required=True),
-    'belt_attempt': fields.Nested(api_model_belt_attempt, required=True),
+    'evaluation': fields.Nested(api_model_evaluation, required=True),
 })
 
 api_model_school_class_student_belts = api.model('SchoolClassStudentBelts', {
@@ -694,12 +694,12 @@ class SchoolClassStudentBeltsResource(Resource):
                 abort(404, f'School class {school_class_id} not found')
             class_level = school_class.class_level
 
-            success_belt_attempts = session.query(BeltAttempt).filter(BeltAttempt.success).subquery()
+            success_evaluations = session.query(Evaluation).filter(Evaluation.success).subquery()
             students_belts_skill_domains = (
                 session  # type: ignore
                 .query(Student, Belt, SkillDomain)
                 .select_from(Student)
-                .outerjoin(success_belt_attempts)
+                .outerjoin(success_evaluations)
                 .outerjoin(Belt)
                 .outerjoin(SkillDomain)
                 .filter(Student.school_class_id == school_class_id)
@@ -880,9 +880,9 @@ class StudentResource(Resource):
             session.commit()
 
 
-@students_ns.route('/students/<int:student_id>/belt-attempts')
-class StudentBeltAttemptsResource(Resource):
-    @api.marshal_with(api_model_belt_attempt_list)
+@students_ns.route('/students/<int:student_id>/evaluations')
+class StudentEvaluationsResource(Resource):
+    @api.marshal_with(api_model_evaluation_list)
     def get(self, student_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
@@ -893,11 +893,11 @@ class StudentBeltAttemptsResource(Resource):
 
             things = (
                 session  # type: ignore
-                .query(BeltAttempt, SkillDomain, Belt)
-                .select_from(BeltAttempt)
+                .query(Evaluation, SkillDomain, Belt)
+                .select_from(Evaluation)
                 .outerjoin(SkillDomain)
                 .outerjoin(Belt)
-                .filter(BeltAttempt.student_id == student.id)
+                .filter(Evaluation.student_id == student.id)
                 .all()
             )
 
@@ -905,9 +905,9 @@ class StudentBeltAttemptsResource(Resource):
             belt_ids: Set[int] = set()
             skill_domains = []
             skill_domain_ids: Set[int] = set()
-            belt_attempts = []
-            for belt_attempt, skill_domain, belt in things:
-                belt_attempts.append(belt_attempt)
+            evaluations = []
+            for evaluation, skill_domain, belt in things:
+                evaluations.append(evaluation)
                 if belt.id not in belt_ids:
                     belt_ids.add(belt.id)
                     belts.append(belt)
@@ -922,7 +922,7 @@ class StudentBeltAttemptsResource(Resource):
                 'student': student.json(),
                 'belts': [belt.json() for belt in belts],
                 'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
-                'belt_attempts': [belt_attempt.json() for belt_attempt in belt_attempts],
+                'evaluations': [evaluation.json() for evaluation in evaluations],
             }
 
 
@@ -1166,9 +1166,9 @@ class BeltRankResource(Resource):
             }
 
 
-@belt_attempts_ns.route('/belt-attempts')
-class BeltAttemptsResource(Resource):
-    post_model = api.model('BeltAttemptsPost', {
+@evaluations_ns.route('/evaluations')
+class EvaluationsResource(Resource):
+    post_model = api.model('EvaluationsPost', {
         'student_id': fields.Integer(example=42, required=True),
         'belt_id': fields.Integer(example=42, required=True),
         'skill_domain_id': fields.Integer(example=42, required=True),
@@ -1177,7 +1177,7 @@ class BeltAttemptsResource(Resource):
     })
 
     @api.expect(post_model, validate=True)
-    @api.marshal_with(api_model_belt_attempt_one)
+    @api.marshal_with(api_model_evaluation_one)
     def post(self) -> Any:
         with session_context() as session:
             me = authenticate(session)
@@ -1199,14 +1199,14 @@ class BeltAttemptsResource(Resource):
                 date_value = date.fromisoformat(date_string)
             except ValueError:
                 abort(400, f'Invalid date {date_string}')
-            belt_attempt = BeltAttempt(
+            evaluation = Evaluation(
                 student_id=student_id,
                 belt_id=belt_id,
                 skill_domain_id=skill_domain_id,
                 date=date_value,
                 success=request.json['success'],
             )
-            session.add(belt_attempt)
+            session.add(evaluation)
             session.commit()
             school_class = student.school_class
             class_level = school_class.class_level
@@ -1216,23 +1216,23 @@ class BeltAttemptsResource(Resource):
                 'student': student.json(),
                 'belt': belt.json(),
                 'skill_domain': skill_domain.json(),
-                'belt_attempt': belt_attempt.json(),
+                'evaluation': evaluation.json(),
             }
 
 
-@belt_attempts_ns.route('/belt-attempts/<int:belt_attempt_id>')
-class BeltAttemptResource(Resource):
-    @api.marshal_with(api_model_belt_attempt_one)
-    def get(self, belt_attempt_id: int) -> Any:
+@evaluations_ns.route('/evaluations/<int:evaluation_id>')
+class EvaluationResource(Resource):
+    @api.marshal_with(api_model_evaluation_one)
+    def get(self, evaluation_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
-            belt_attempt = session.query(BeltAttempt).get(belt_attempt_id)
-            if belt_attempt is None:
-                abort(404, f'Belt attempt {belt_attempt_id} not found')
-            skill_domain = belt_attempt.skill_domain
-            belt = belt_attempt.belt
-            student = belt_attempt.student
+            evaluation = session.query(Evaluation).get(evaluation_id)
+            if evaluation is None:
+                abort(404, f'Evaluation {evaluation_id} not found')
+            skill_domain = evaluation.skill_domain
+            belt = evaluation.belt
+            student = evaluation.student
             school_class = student.school_class
             class_level = school_class.class_level
             return {
@@ -1241,10 +1241,10 @@ class BeltAttemptResource(Resource):
                 'student': student.json(),
                 'skill_domain': skill_domain.json(),
                 'belt': belt.json(),
-                'belt_attempt': belt_attempt.json(),
+                'evaluation': evaluation.json(),
             }
 
-    put_model = api.model('BeltAttemptPut', {
+    put_model = api.model('EvaluationPut', {
         'student_id': fields.Integer(example=42),
         'belt_id': fields.Integer(example=42),
         'skill_domain_id': fields.Integer(example=42),
@@ -1253,48 +1253,48 @@ class BeltAttemptResource(Resource):
     })
 
     @api.expect(put_model, validate=True)
-    @api.marshal_with(api_model_belt_attempt_one)
-    def put(self, belt_attempt_id: int) -> Any:
+    @api.marshal_with(api_model_evaluation_one)
+    def put(self, evaluation_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
-            belt_attempt = session.query(BeltAttempt).get(belt_attempt_id)
-            if belt_attempt is None:
-                abort(404, f'Belt attempt {belt_attempt_id} not found')
+            evaluation = session.query(Evaluation).get(evaluation_id)
+            if evaluation is None:
+                abort(404, f'Evaluation {evaluation_id} not found')
             student_id = request.json.get('student_id')
             if student_id is not None:
                 student = session.query(Student).get(student_id)
                 if student is None:
                     abort(404, f'Student {student_id} not found')
-                belt_attempt.student_id = student.id
+                evaluation.student_id = student.id
             else:
-                student = belt_attempt.student
+                student = evaluation.student
             belt_id = request.json.get('belt_id')
             if belt_id is not None:
                 belt = session.query(Belt).get(belt_id)
                 if belt is None:
                     abort(404, f'Belt {belt_id} not found')
-                belt_attempt.belt_id = belt.id
+                evaluation.belt_id = belt.id
             else:
-                belt = belt_attempt.belt
+                belt = evaluation.belt
             skill_domain_id = request.json.get('skill_domain_id')
             if skill_domain_id is not None:
                 skill_domain = session.query(SkillDomain).get(skill_domain_id)
                 if skill_domain is None:
                     abort(404, f'Skill domain {skill_domain_id} not found')
-                belt_attempt.skill_domain_id = skill_domain.id
+                evaluation.skill_domain_id = skill_domain.id
             else:
-                skill_domain = belt_attempt.skill_domain
+                skill_domain = evaluation.skill_domain
             date_string = request.json.get('date')
             if date_string is not None:
                 try:
                     date_value = date.fromisoformat(date_string)
                 except ValueError:
                     abort(400, f'Invalid date {date_string}')
-                belt_attempt.date = date_value
+                evaluation.date = date_value
             success = request.json.get('success')
             if success is not None:
-                belt_attempt.success = success
+                evaluation.success = success
             session.commit()
             school_class = student.school_class
             class_level = school_class.class_level
@@ -1304,17 +1304,17 @@ class BeltAttemptResource(Resource):
                 'student': student.json(),
                 'skill_domain': skill_domain.json(),
                 'belt': belt.json(),
-                'belt_attempt': belt_attempt.json(),
+                'evaluation': evaluation.json(),
             }
 
-    def delete(self, belt_attempt_id: int) -> Any:
+    def delete(self, evaluation_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
-            belt_attempt = session.query(BeltAttempt).get(belt_attempt_id)
-            if belt_attempt is None:
-                abort(404, f'Belt attempt {belt_attempt_id} not found')
-            session.query(BeltAttempt).filter(BeltAttempt.id == belt_attempt.id).delete()
+            evaluation = session.query(Evaluation).get(evaluation_id)
+            if evaluation is None:
+                abort(404, f'Evaluation {evaluation_id} not found')
+            session.query(Evaluation).filter(Evaluation.id == evaluation.id).delete()
             session.commit()
 
 

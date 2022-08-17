@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { BeltAttemptList } from '../models/BeltAttemptList';
+import type { EvaluationList } from '../models/EvaluationList';
 import type { StudentListBare } from '../models/StudentListBare';
 import type { StudentOne } from '../models/StudentOne';
 import type { StudentPut } from '../models/StudentPut';
@@ -110,16 +110,16 @@ export class StudentsService {
     /**
      * @param studentId
      * @param xFields An optional fields mask
-     * @returns BeltAttemptList Success
+     * @returns EvaluationList Success
      * @throws ApiError
      */
-    public static getStudentBeltAttemptsResource(
+    public static getStudentEvaluationsResource(
         studentId: number,
         xFields?: string,
-    ): CancelablePromise<BeltAttemptList> {
+    ): CancelablePromise<EvaluationList> {
         return __request({
             method: 'GET',
-            path: `/students/${studentId}/belt-attempts`,
+            path: `/students/${studentId}/evaluations`,
             headers: {
                 'X-Fields': xFields,
             },

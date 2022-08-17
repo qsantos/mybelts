@@ -1,27 +1,27 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { BeltAttemptOne } from '../models/BeltAttemptOne';
-import type { BeltAttemptPut } from '../models/BeltAttemptPut';
-import type { BeltAttemptsPost } from '../models/BeltAttemptsPost';
+import type { EvaluationOne } from '../models/EvaluationOne';
+import type { EvaluationPut } from '../models/EvaluationPut';
+import type { EvaluationsPost } from '../models/EvaluationsPost';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { request as __request } from '../core/request';
 
-export class BeltAttemptsService {
+export class EvaluationsService {
 
     /**
      * @param payload
      * @param xFields An optional fields mask
-     * @returns BeltAttemptOne Success
+     * @returns EvaluationOne Success
      * @throws ApiError
      */
-    public static postBeltAttemptsResource(
-        payload: BeltAttemptsPost,
+    public static postEvaluationsResource(
+        payload: EvaluationsPost,
         xFields?: string,
-    ): CancelablePromise<BeltAttemptOne> {
+    ): CancelablePromise<EvaluationOne> {
         return __request({
             method: 'POST',
-            path: `/belt-attempts`,
+            path: `/evaluations`,
             headers: {
                 'X-Fields': xFields,
             },
@@ -30,32 +30,32 @@ export class BeltAttemptsService {
     }
 
     /**
-     * @param beltAttemptId
+     * @param evaluationId
      * @returns any Success
      * @throws ApiError
      */
-    public static deleteBeltAttemptResource(
-        beltAttemptId: number,
+    public static deleteEvaluationResource(
+        evaluationId: number,
     ): CancelablePromise<any> {
         return __request({
             method: 'DELETE',
-            path: `/belt-attempts/${beltAttemptId}`,
+            path: `/evaluations/${evaluationId}`,
         });
     }
 
     /**
-     * @param beltAttemptId
+     * @param evaluationId
      * @param xFields An optional fields mask
-     * @returns BeltAttemptOne Success
+     * @returns EvaluationOne Success
      * @throws ApiError
      */
-    public static getBeltAttemptResource(
-        beltAttemptId: number,
+    public static getEvaluationResource(
+        evaluationId: number,
         xFields?: string,
-    ): CancelablePromise<BeltAttemptOne> {
+    ): CancelablePromise<EvaluationOne> {
         return __request({
             method: 'GET',
-            path: `/belt-attempts/${beltAttemptId}`,
+            path: `/evaluations/${evaluationId}`,
             headers: {
                 'X-Fields': xFields,
             },
@@ -63,20 +63,20 @@ export class BeltAttemptsService {
     }
 
     /**
-     * @param beltAttemptId
+     * @param evaluationId
      * @param payload
      * @param xFields An optional fields mask
-     * @returns BeltAttemptOne Success
+     * @returns EvaluationOne Success
      * @throws ApiError
      */
-    public static putBeltAttemptResource(
-        beltAttemptId: number,
-        payload: BeltAttemptPut,
+    public static putEvaluationResource(
+        evaluationId: number,
+        payload: EvaluationPut,
         xFields?: string,
-    ): CancelablePromise<BeltAttemptOne> {
+    ): CancelablePromise<EvaluationOne> {
         return __request({
             method: 'PUT',
-            path: `/belt-attempts/${beltAttemptId}`,
+            path: `/evaluations/${evaluationId}`,
             headers: {
                 'X-Fields': xFields,
             },

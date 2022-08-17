@@ -14,21 +14,21 @@ import Spinner from 'react-bootstrap/Spinner';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 
-import { Belt, SkillDomain, Student, BeltAttempt, BeltAttemptsService, SchoolClassStudentBeltsStudentBelts } from './api';
+import { Belt, SkillDomain, Student, Evaluation, EvaluationsService, SchoolClassStudentBeltsStudentBelts } from './api';
 import { LoginContext, is_admin } from './auth';
 import { BeltIcon } from './belt';
 import { formatDate, formatDatetime, getAPIError } from './lib';
 import { SortTable } from './sort-table';
 import { EditStudentButton, DeleteStudentButton } from './student';
 
-interface CreateBeltAttemptButtonProps {
+interface CreateEvaluationButtonProps {
     student: Student;
     skill_domains: SkillDomain[];
     belts: Belt[];
-    createdCallback?: (belt_attmept: BeltAttempt) => void;
+    createdCallback?: (belt_attmept: Evaluation) => void;
 }
 
-export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): ReactElement {
+export function CreateEvaluationButton(props : CreateEvaluationButtonProps): ReactElement {
     const { student, skill_domains, belts, createdCallback } = props;
     const { t } = useTranslation();
     const [show, setShow] = useState(false);
@@ -44,17 +44,17 @@ export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): R
             date: {value: string};
             success: {checked: boolean};
         };
-        BeltAttemptsService.postBeltAttemptsResource({
+        EvaluationsService.postEvaluationsResource({
             student_id: student.id,
             skill_domain_id: parseInt(target.skill_domain.value),
             belt_id: parseInt(target.belt.value),
             date: target.date.value,
             success: target.success.checked,
-        }).then(({ belt_attempt }) => {
+        }).then(({ evaluation }) => {
             setShow(false);
             setCreating(false);
             if (createdCallback !== undefined) {
-                createdCallback(belt_attempt);
+                createdCallback(evaluation);
             }
         }).catch(error => {
             setCreating(false);
@@ -76,51 +76,51 @@ export function CreateBeltAttemptButton(props : CreateBeltAttemptButtonProps): R
     }));
 
     return <>
-        <Button onClick={() => setShow(true)}>{t('belt_attempt.add.button')}</Button>
+        <Button onClick={() => setShow(true)}>{t('evaluation.add.button')}</Button>
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>{t('belt_attempt.add.title')} {student.display_name}</Modal.Title>
+                    <Modal.Title>{t('evaluation.add.title')} {student.display_name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
                     <Form.Group controlId="skill_domain">
-                        <Form.Label>{t('belt_attempt.add_edit.skill_domain.title')}</Form.Label>
+                        <Form.Label>{t('evaluation.add_edit.skill_domain.title')}</Form.Label>
                         <Select id="skill_domain" name="skill_domain" options={skill_domain_options} />
                         <Form.Text className="text-muted">
-                            {t('belt_attempt.add_edit.skill_domain.help')}
+                            {t('evaluation.add_edit.skill_domain.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="belt">
-                        <Form.Label>{t('belt_attempt.add_edit.belt.title')}</Form.Label>
+                        <Form.Label>{t('evaluation.add_edit.belt.title')}</Form.Label>
                         <Select id="belt" name="belt" options={belt_options} />
                         <Form.Text className="text-muted">
-                            {t('belt_attempt.add_edit.belt.help')}
+                            {t('evaluation.add_edit.belt.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="date">
-                        <Form.Label>{t('belt_attempt.add_edit.belt.help')}</Form.Label>
+                        <Form.Label>{t('evaluation.add_edit.belt.help')}</Form.Label>
                         <Form.Control type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
                         <Form.Text className="text-muted">
-                            {t('belt_attempt.add_edit.belt.help')}
+                            {t('evaluation.add_edit.belt.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="success">
-                        <Form.Check label={t('belt_attempt.add_edit.passed.title')} />
+                        <Form.Check label={t('evaluation.add_edit.passed.title')} />
                         <Form.Text className="text-muted">
-                            {t('belt_attempt.add_edit.passed.help')}
+                            {t('evaluation.add_edit.passed.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>{t('belt_attempt.add.cancel')}</Button>
+                    <Button variant="secondary" onClick={() => setShow(false)}>{t('evaluation.add.cancel')}</Button>
                     {creating
                         ? <Button disabled type="submit">
                             <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">{t('belt_attempt.add.in_process')}</span>
+                                <span className="visually-hidden">{t('evaluation.add.in_process')}</span>
                             </Spinner>
                         </Button>
-                        : <Button type="submit">{t('belt_attempt.add.confirm')}</Button>
+                        : <Button type="submit">{t('evaluation.add.confirm')}</Button>
                     }
                 </Modal.Footer>
             </Form>
@@ -133,18 +133,18 @@ interface Option {
     label: string;
 }
 
-interface EditBeltAttemptButtonProps {
-    belt_attempt: BeltAttempt;
+interface EditEvaluationButtonProps {
+    evaluation: Evaluation;
     student: Student,
     skill_domain: SkillDomain;
     belt: Belt;
     skill_domain_options: Option[];
     belt_options: Option[];
-    changedCallback?: (changed_belt_attempt: BeltAttempt) => void;
+    changedCallback?: (changed_evaluation: Evaluation) => void;
 }
 
-export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): ReactElement {
-    const { belt_attempt, student, skill_domain, belt, skill_domain_options, belt_options, changedCallback } = props;
+export function EditEvaluationButton(props : EditEvaluationButtonProps): ReactElement {
+    const { evaluation, student, skill_domain, belt, skill_domain_options, belt_options, changedCallback } = props;
     const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -159,16 +159,16 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
             date: {value: string};
             success: {checked: boolean};
         };
-        BeltAttemptsService.putBeltAttemptResource(belt_attempt.id, {
+        EvaluationsService.putEvaluationResource(evaluation.id, {
             skill_domain_id: parseInt(target.skill_domain.value),
             belt_id: parseInt(target.belt.value),
             date: target.date.value,
             success: target.success.checked,
-        }).then(({ belt_attempt: changed_belt_attempt }) => {
+        }).then(({ evaluation: changed_evaluation }) => {
             setChanging(false);
             setShow(false);
             if (changedCallback !== undefined) {
-                changedCallback(changed_belt_attempt);
+                changedCallback(changed_evaluation);
             }
         }).catch(error => {
             setChanging(false);
@@ -177,69 +177,69 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
     }
 
     return <>
-        <OverlayTrigger overlay={<Tooltip>{t('belt_attempt.edit.button')}</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip>{t('evaluation.edit.button')}</Tooltip>}>
             <Button onClick={() => setShow(true)}>✏️</Button>
         </OverlayTrigger>
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>{t('belt_attempt.edit.title')}: {student.display_name}</Modal.Title>
+                    <Modal.Title>{t('evaluation.edit.title')}: {student.display_name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
                     <Form.Group controlId="skill_domain">
-                        <Form.Label>{t('belt_attempt.add_edit.skill_domain.title')}</Form.Label>
+                        <Form.Label>{t('evaluation.add_edit.skill_domain.title')}</Form.Label>
                         <Select
                             id="skill_domain"
                             name="skill_domain"
                             options={skill_domain_options}
                             defaultValue={{
-                                value: belt_attempt.skill_domain_id,
+                                value: evaluation.skill_domain_id,
                                 label: skill_domain.name,
                             }}
                         />
                         <Form.Text className="text-muted">
-                            {t('belt_attempt.add_edit.skill_domain.help')}
+                            {t('evaluation.add_edit.skill_domain.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="belt">
-                        <Form.Label>{t('belt_attempt.add_edit.belt.title')}</Form.Label>
+                        <Form.Label>{t('evaluation.add_edit.belt.title')}</Form.Label>
                         <Select
                             id="belt"
                             name="belt"
                             options={belt_options}
                             defaultValue={{
-                                value: belt_attempt.belt_id,
+                                value: evaluation.belt_id,
                                 label: belt.name,
                             }}
                         />
                         <Form.Text className="text-muted">
-                            {t('belt_attempt.add_edit.belt.help')}
+                            {t('evaluation.add_edit.belt.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="date">
-                        <Form.Label>{t('belt_attempt.add_edit.date.title')}</Form.Label>
-                        <Form.Control type="date" defaultValue={belt_attempt.date} />
+                        <Form.Label>{t('evaluation.add_edit.date.title')}</Form.Label>
+                        <Form.Control type="date" defaultValue={evaluation.date} />
                         <Form.Text className="text-muted">
-                            {t('belt_attempt.add_edit.date.help')}
+                            {t('evaluation.add_edit.date.help')}
                         </Form.Text>
                     </Form.Group>
                     <Form.Group controlId="success">
-                        <Form.Check label={t('belt_attempt.add_edit.passed.title')} defaultChecked={belt_attempt.success} />
+                        <Form.Check label={t('evaluation.add_edit.passed.title')} defaultChecked={evaluation.success} />
                         <Form.Text className="text-muted">
-                            {t('belt_attempt.add_edit.passed.help')}
+                            {t('evaluation.add_edit.passed.help')}
                         </Form.Text>
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>{t('belt_attempt.edit.cancel')}</Button>
+                    <Button variant="secondary" onClick={() => setShow(false)}>{t('evaluation.edit.cancel')}</Button>
                     {changing
                         ? <Button type="submit" disabled>
                             <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">{t('belt_attempt.edit.in_process')}</span>
+                                <span className="visually-hidden">{t('evaluation.edit.in_process')}</span>
                             </Spinner>
                         </Button>
-                        : <Button type="submit">{t('belt_attempt.edit.confirm')}</Button>
+                        : <Button type="submit">{t('evaluation.edit.confirm')}</Button>
                     }
                 </Modal.Footer>
             </Form>
@@ -247,14 +247,14 @@ export function EditBeltAttemptButton(props : EditBeltAttemptButtonProps): React
     </>;
 }
 
-interface DeleteBeltAttemptButtonProps {
+interface DeleteEvaluationButtonProps {
     student: Student;
-    belt_attempt: BeltAttempt;
+    evaluation: Evaluation;
     deletedCallback?: () => void;
 }
 
-export function DeleteBeltAttemptButton(props : DeleteBeltAttemptButtonProps): ReactElement {
-    const { student, belt_attempt, deletedCallback } = props;
+export function DeleteEvaluationButton(props : DeleteEvaluationButtonProps): ReactElement {
+    const { student, evaluation, deletedCallback } = props;
     const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -262,7 +262,7 @@ export function DeleteBeltAttemptButton(props : DeleteBeltAttemptButtonProps): R
 
     function handleDelete() {
         setDeleting(true);
-        BeltAttemptsService.deleteBeltAttemptResource(belt_attempt.id).then(() => {
+        EvaluationsService.deleteEvaluationResource(evaluation.id).then(() => {
             setShow(false);
             setDeleting(false);
             if (deletedCallback !== undefined ){
@@ -275,42 +275,42 @@ export function DeleteBeltAttemptButton(props : DeleteBeltAttemptButtonProps): R
     }
 
     return <>
-        <OverlayTrigger overlay={<Tooltip>{t('belt_attempt.delete.button')}</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip>{t('evaluation.delete.button')}</Tooltip>}>
             <Button variant="danger" onClick={() => setShow(true)}>🗑️</Button>
         </OverlayTrigger>
         <Modal show={show}>
             <Modal.Header>
-                <Modal.Title>{t('belt_attempt.delete.title')}: {student.display_name}</Modal.Title>
+                <Modal.Title>{t('evaluation.delete.title')}: {student.display_name}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-                {t('belt_attempt.delete.message')}
+                {t('evaluation.delete.message')}
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShow(false)}>{t('belt_attempt.delete.confirm')}</Button>
+                <Button variant="secondary" onClick={() => setShow(false)}>{t('evaluation.delete.confirm')}</Button>
                 {deleting
                     ? <Button disabled variant="danger">
                         <Spinner animation="border" role="status" size="sm">
-                            <span className="visually-hidden">{t('belt_attempt.delete.in_process')}</span>
+                            <span className="visually-hidden">{t('evaluation.delete.in_process')}</span>
                         </Spinner>
                     </Button>
-                    : <Button variant="danger" onClick={handleDelete}>{t('belt_attempt.delete.confirm')}</Button>
+                    : <Button variant="danger" onClick={handleDelete}>{t('evaluation.delete.confirm')}</Button>
                 }
             </Modal.Footer>
         </Modal>
     </>;
 }
 
-interface BeltAttemptListingProps {
+interface EvaluationListingProps {
     skill_domains: SkillDomain[];
     belts: Belt[];
     student: Student;
-    belt_attempts: BeltAttempt[];
-    setBeltAttempts: (belt_attempts: BeltAttempt[]) => void;
+    evaluations: Evaluation[];
+    setEvaluations: (evaluations: Evaluation[]) => void;
 }
 
-export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement {
-    const { skill_domains, belts, student, belt_attempts, setBeltAttempts } = props;
+export function EvaluationListing(props: EvaluationListingProps): ReactElement {
+    const { skill_domains, belts, student, evaluations, setEvaluations } = props;
     const { t } = useTranslation();
 
     const skill_domain_by_id = Object.fromEntries(
@@ -330,16 +330,16 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
         label: belt.name,
     }));
 
-    const columns: ColumnDef<BeltAttempt>[] = [
+    const columns: ColumnDef<Evaluation>[] = [
         {
-            id: 'belt_attempt',
-            header: t('belt_attempt.list.skill_domain.title'),
-            accessorFn: belt_attempt => {
-                const skill_domain_id = belt_attempt.skill_domain_id;
+            id: 'evaluation',
+            header: t('evaluation.list.skill_domain.title'),
+            accessorFn: evaluation => {
+                const skill_domain_id = evaluation.skill_domain_id;
                 const skill_domain = skill_domain_by_id[skill_domain_id];
                 if (skill_domain === undefined) {
                     // should not happen
-                    console.error('skill_domain ' + skill_domain_id + ' not found for belt_attempt ' + belt_attempt.id);
+                    console.error('skill_domain ' + skill_domain_id + ' not found for evaluation ' + evaluation.id);
                     return <></>;
                 }
                 return skill_domain.name;
@@ -347,24 +347,24 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
         },
         {
             id: 'belt',
-            header: t('belt_attempt.list.belt.title'),
-            accessorFn: belt_attempt => {
-                const belt_id = belt_attempt.belt_id;
+            header: t('evaluation.list.belt.title'),
+            accessorFn: evaluation => {
+                const belt_id = evaluation.belt_id;
                 const belt = belt_by_id[belt_id];
                 if (belt === undefined) {
                     // should not happen
-                    console.error('belt ' + belt_id + ' not found for belt_attempt ' + belt_attempt.id);
+                    console.error('belt ' + belt_id + ' not found for evaluation ' + evaluation.id);
                     return <></>;
                 }
                 return belt.name;
             },
             cell: info => {
-                const belt_attempt = info.row.original;
-                const belt_id = belt_attempt.belt_id;
+                const evaluation = info.row.original;
+                const belt_id = evaluation.belt_id;
                 const belt = belt_by_id[belt_id];
                 if (belt === undefined) {
                     // should not happen
-                    console.error('belt ' + belt_id + ' not found for belt_attempt ' + belt_attempt.id);
+                    console.error('belt ' + belt_id + ' not found for evaluation ' + evaluation.id);
                     return <></>;
                 }
                 return <BeltIcon belt={belt} />;
@@ -372,13 +372,13 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
         },
         {
             id: 'date',
-            header: t('belt_attempt.list.date.title'),
+            header: t('evaluation.list.date.title'),
             accessorKey: 'date',
             cell: info => formatDate(info.row.original.date),
         },
         {
             id: 'passed',
-            header: t('belt_attempt.list.passed.title'),
+            header: t('evaluation.list.passed.title'),
             accessorKey: 'success',
             cell: info => info.getValue() ? '✅' : '❌',
         },
@@ -387,53 +387,53 @@ export function BeltAttemptListing(props: BeltAttemptListingProps): ReactElement
     if (is_admin()) {
         columns.push({
             id: 'actions',
-            header: t('belt_attempt.list.actions.title'),
+            header: t('evaluation.list.actions.title'),
             cell: info => {
-                const belt_attempt = info.row.original;
-                const skill_domain_id = belt_attempt.skill_domain_id;
-                const belt_id = belt_attempt.belt_id;
-                const skill_domain = skill_domain_by_id[belt_attempt.skill_domain_id];
-                const belt = belt_by_id[belt_attempt.belt_id];
+                const evaluation = info.row.original;
+                const skill_domain_id = evaluation.skill_domain_id;
+                const belt_id = evaluation.belt_id;
+                const skill_domain = skill_domain_by_id[evaluation.skill_domain_id];
+                const belt = belt_by_id[evaluation.belt_id];
                 if (skill_domain === undefined) {
                     // should not happen
-                    console.error('skill_domain ' + skill_domain_id + ' not found for belt_attempt ' + belt_attempt.id);
+                    console.error('skill_domain ' + skill_domain_id + ' not found for evaluation ' + evaluation.id);
                     return <></>;
                 }
                 if (belt === undefined) {
                     // should not happen
-                    console.error('belt ' + belt_id + ' not found for belt_attempt ' + belt_attempt.id);
+                    console.error('belt ' + belt_id + ' not found for evaluation ' + evaluation.id);
                     return <></>;
                 }
                 return <>
-                    <EditBeltAttemptButton
-                        belt_attempt={belt_attempt}
+                    <EditEvaluationButton
+                        evaluation={evaluation}
                         student={student}
                         skill_domain={skill_domain}
                         belt={belt}
                         skill_domain_options={skill_domain_options}
                         belt_options={belt_options}
-                        changedCallback={new_belt_attempt => {
-                            const new_belt_attempts = [...belt_attempts];
-                            new_belt_attempts[info.row.index] = new_belt_attempt;
-                            setBeltAttempts(new_belt_attempts);
+                        changedCallback={new_evaluation => {
+                            const new_evaluations = [...evaluations];
+                            new_evaluations[info.row.index] = new_evaluation;
+                            setEvaluations(new_evaluations);
                         }}
                     />
                     {' '}
-                    <DeleteBeltAttemptButton belt_attempt={belt_attempt} student={student} deletedCallback={() => {
-                        const new_belt_attempts = [...belt_attempts];
-                        new_belt_attempts.splice(info.row.index, 1);
-                        setBeltAttempts(new_belt_attempts);
+                    <DeleteEvaluationButton evaluation={evaluation} student={student} deletedCallback={() => {
+                        const new_evaluations = [...evaluations];
+                        new_evaluations.splice(info.row.index, 1);
+                        setEvaluations(new_evaluations);
                     }} />
                 </>;
             },
         });
     }
 
-    return <SortTable data={belt_attempts} columns={columns} />;
+    return <SortTable data={evaluations} columns={columns} />;
 }
 
 
-interface BeltAttemptGridProps {
+interface EvaluationGridProps {
     students: Student[];
     setStudents: (students: Student[]) => void;
     skill_domains: SkillDomain[];
@@ -441,7 +441,7 @@ interface BeltAttemptGridProps {
     student_belts: SchoolClassStudentBeltsStudentBelts[],
 }
 
-export function BeltAttemptGrid(props: BeltAttemptGridProps): ReactElement {
+export function EvaluationGrid(props: EvaluationGridProps): ReactElement {
     const { students, setStudents, skill_domains, belts, student_belts } = props;
     const { t } = useTranslation();
     const loginInfo = React.useContext(LoginContext);

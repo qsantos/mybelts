@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type BeltAttempt = {
+export type Evaluation = {
     belt_id: number;
     created: string;
     date: string;

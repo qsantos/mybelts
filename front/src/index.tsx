@@ -25,7 +25,7 @@ import {
     SchoolClassList, SchoolClassesService, SchoolClassStudentBelts,
     SkillDomainList, SkillDomainsService,
     StudentList, StudentsService,
-    BeltAttemptList,
+    EvaluationList,
 } from './api';
 import { OpenAPIWithCallback } from './api/core/request';
 import { formatDatetime, getAPIError } from './lib';
@@ -40,7 +40,7 @@ import { BeltIcon, CreateBeltButton, BeltListing } from './belt';
 import { CreateClassLevelButton, EditClassLevelButton, DeleteClassLevelButton, ClassLevelListing } from './class-level';
 import { CreateSchoolClassButton, EditSchoolClassButton, DeleteSchoolClassButton, SchoolClassListing } from './school-class';
 import { CreateStudentButton, EditStudentButton, DeleteStudentButton, UpdateStudentRanks } from './student';
-import { CreateBeltAttemptButton, BeltAttemptListing, BeltAttemptGrid,  } from './belt-attempt';
+import { CreateEvaluationButton, EvaluationListing, EvaluationGrid,  } from './evaluation';
 
 function BreadcrumbItem({ children, href, active }: { children: ReactNode, href?: string, active?: boolean }) {
     if (href) {
@@ -477,7 +477,7 @@ function SchoolClassView() {
                 setStudentList({ ...studentList, students: new_students });
             }} />
         </AdminOnly>
-        <BeltAttemptGrid
+        <EvaluationGrid
             students={students}
             setStudents={new_students => setStudentList({ ...studentList, students: new_students })}
             skill_domains={skill_domains}
@@ -498,7 +498,7 @@ function StudentWidget(props: StudentWidgetProps) {
     const [errorMessage, setErrorMessage] = useState('');
     const [beltList, setBeltList] = useState<null | BeltList>(null);
     const [skillDomainList, setSkillDomainList] = useState<null | SkillDomainList>(null);
-    const [beltAttemptList, setBeltAttemptList] = useState<null | BeltAttemptList>(null);
+    const [evaluationList, setEvaluationList] = useState<null | EvaluationList>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -511,12 +511,12 @@ function StudentWidget(props: StudentWidgetProps) {
             .then(setSkillDomainList)
             .catch(error => { setErrorMessage(getAPIError(error)); });
         StudentsService
-            .getStudentBeltAttemptsResource(student_id)
-            .then(setBeltAttemptList)
+            .getStudentEvaluationsResource(student_id)
+            .then(setEvaluationList)
             .catch(error => { setErrorMessage(getAPIError(error)); });
     }, [student_id]);
 
-    if (beltList === null || skillDomainList === null || beltAttemptList === null) {
+    if (beltList === null || skillDomainList === null || evaluationList === null) {
         return <>
             <AdminOnly>
                 <Breadcrumb>
@@ -535,14 +535,14 @@ function StudentWidget(props: StudentWidgetProps) {
     // skill domains and belts must be fetched separately to make sure we have them all
     const { skill_domains } = skillDomainList;
     const { belts } = beltList;
-    const { class_level, school_class, student, belt_attempts } = beltAttemptList;
+    const { class_level, school_class, student, evaluations } = evaluationList;
 
     const belt_by_id = Object.fromEntries(
         belts.map(belt => [belt.id, belt])
     );
-    const passed_attempts = belt_attempts.filter(belt_attempt => belt_attempt.success);
+    const passed_evaluations = evaluations.filter(evaluation => evaluation.success);
 
-    const sorted_belt_attempts = belt_attempts.sort((a, b) => b.date.localeCompare(a.date));
+    const sorted_evaluations = evaluations.sort((a, b) => b.date.localeCompare(a.date));
 
     return <>
         <AdminOnly>
@@ -562,7 +562,7 @@ function StudentWidget(props: StudentWidgetProps) {
         </Link>
         <AdminOnly>
             <EditStudentButton student={student} changedCallback={new_student => {
-                setBeltAttemptList({ ...beltAttemptList, student: new_student });
+                setEvaluationList({ ...evaluationList, student: new_student });
             }} />
             {' '}
             <DeleteStudentButton student={student} deletedCallback={() => navigate('/school-classes/' + school_class.id)} />
@@ -577,9 +577,9 @@ function StudentWidget(props: StudentWidgetProps) {
             </thead>
             <tbody>
                 {skill_domains.map(skill_domain => {
-                    const domain_attempts = passed_attempts.filter(belt_attempt => belt_attempt.skill_domain_id == skill_domain.id);
-                    if (domain_attempts.length == 0) {
-                        // no successful attempt yet
+                    const domain_evaluations = passed_evaluations.filter(evaluation => evaluation.skill_domain_id == skill_domain.id);
+                    if (domain_evaluations.length == 0) {
+                        // no successful evaluation yet
                         const belt = belts[0];
                         if (belt === undefined) {
                             // should not happen
@@ -593,7 +593,7 @@ function StudentWidget(props: StudentWidgetProps) {
                             </tr>
                         );
                     }
-                    const sorted_attempts = domain_attempts.sort((a, b) => {
+                    const sorted_domain_evaluations = domain_evaluations.sort((a, b) => {
                         const belt_a = belt_by_id[a.belt_id];
                         if (belt_a === undefined) {
                             // should not happen
@@ -608,13 +608,13 @@ function StudentWidget(props: StudentWidgetProps) {
                         }
                         return belt_b.rank - belt_a.rank;
                     });
-                    const best_attempt = sorted_attempts[0];
-                    if (best_attempt === undefined) {
+                    const best_evaluation = sorted_domain_evaluations[0];
+                    if (best_evaluation === undefined) {
                         // should not happen
-                        console.error('no belt attempt found');
+                        console.error('no belt evaluation found');
                         return <></>;
                     }
-                    const belt_id = best_attempt.belt_id;
+                    const belt_id = best_evaluation.belt_id;
                     const belt = belt_by_id[belt_id];
                     if (belt === undefined) {
                         // should not happen
@@ -630,18 +630,18 @@ function StudentWidget(props: StudentWidgetProps) {
                 })}
             </tbody>
         </Table>
-        <h4>{t('belt_attempt.list.title.secondary')}</h4>
+        <h4>{t('evaluation.list.title.secondary')}</h4>
         <AdminOnly>
-            <CreateBeltAttemptButton student={student} skill_domains={skill_domains} belts={belts} createdCallback={new_belt_attempt => {
-                setBeltAttemptList({ ...beltAttemptList, belt_attempts: [...belt_attempts, new_belt_attempt] });
+            <CreateEvaluationButton student={student} skill_domains={skill_domains} belts={belts} createdCallback={new_evaluation => {
+                setEvaluationList({ ...evaluationList, evaluations: [...evaluations, new_evaluation] });
             }} />
         </AdminOnly>
-        <BeltAttemptListing
+        <EvaluationListing
             skill_domains={skill_domains}
             belts={belts}
             student={student}
-            belt_attempts={sorted_belt_attempts}
-            setBeltAttempts={new_belt_attempts => setBeltAttemptList({ ...beltAttemptList, belt_attempts: new_belt_attempts })}
+            evaluations={sorted_evaluations}
+            setEvaluations={new_evaluations => setEvaluationList({ ...evaluationList, evaluations: new_evaluations })}
         />
     </>;
 }

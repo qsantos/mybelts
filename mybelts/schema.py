@@ -156,9 +156,9 @@ class Student(Base):
         back_populates='students',
     )
 
-    belt_attempts = relationship(
-        'BeltAttempt',
-        foreign_keys='BeltAttempt.student_id',
+    evaluations = relationship(
+        'Evaluation',
+        foreign_keys='Evaluation.student_id',
         back_populates='student',
     )
 
@@ -183,9 +183,9 @@ class Belt(Base):
     name = Column(String, nullable=False, index=True)
     color = Column(String, nullable=False, index=True, server_default='')
 
-    belt_attempts = relationship(
-        'BeltAttempt',
-        foreign_keys='BeltAttempt.belt_id',
+    evaluations = relationship(
+        'Evaluation',
+        foreign_keys='Evaluation.belt_id',
         back_populates='belt',
     )
 
@@ -208,9 +208,9 @@ class SkillDomain(Base):
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     name = Column(String, index=True, nullable=False)
 
-    belt_attempts = relationship(
-        'BeltAttempt',
-        foreign_keys='BeltAttempt.skill_domain_id',
+    evaluations = relationship(
+        'Evaluation',
+        foreign_keys='Evaluation.skill_domain_id',
         back_populates='skill_domain',
     )
 
@@ -222,8 +222,8 @@ class SkillDomain(Base):
         }
 
 
-class BeltAttempt(Base):
-    __tablename__ = 'belt_attempt'
+class Evaluation(Base):
+    __tablename__ = 'evaluation'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     student_id = Column(Integer, ForeignKey('student.id', ondelete='CASCADE'), nullable=False)
@@ -235,19 +235,19 @@ class BeltAttempt(Base):
     student = relationship(
         'Student',
         foreign_keys=student_id,
-        back_populates='belt_attempts',
+        back_populates='evaluations',
     )
 
     skill_domain = relationship(
         'SkillDomain',
         foreign_keys=skill_domain_id,
-        back_populates='belt_attempts',
+        back_populates='evaluations',
     )
 
     belt = relationship(
         'Belt',
         foreign_keys=belt_id,
-        back_populates='belt_attempts',
+        back_populates='evaluations',
     )
 
     def json(self) -> Dict:
