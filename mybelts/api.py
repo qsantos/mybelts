@@ -309,7 +309,9 @@ class LoginResource(Resource):
             user.last_login = datetime.now(timezone.utc)
             missing_i18n_key_events_since_last_login = None
             if user.is_admin:
-                events_since_last_login = session.query(MissingI18nKey).filter(MissingI18nKey.created >= last_login)
+                events_since_last_login = session.query(MissingI18nKey)
+                if last_login is not None:
+                    events_since_last_login = events_since_last_login.filter(MissingI18nKey.created >= last_login)
                 total = events_since_last_login.count()
                 if total > 0:
                     missing_i18n_key_events_since_last_login = {
