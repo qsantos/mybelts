@@ -431,7 +431,7 @@ class UserResource(Resource):
     def get(self, user_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
-            authorize(me, me.user_id == user_id)
+            authorize(me, me.id == user_id)
             user = session.query(User).get(user_id)
             if user is None:
                 abort(404, f'User {user_id} not found')
