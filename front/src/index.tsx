@@ -561,6 +561,7 @@ function StudentWidget(props: StudentWidgetProps) {
             {class_level.prefix}{school_class.suffix}
         </Link>
         <AdminOnly>
+            <br />
             <EditStudentButton student={student} changedCallback={new_student => {
                 setEvaluationList({ ...evaluationList, student: new_student });
             }} />
