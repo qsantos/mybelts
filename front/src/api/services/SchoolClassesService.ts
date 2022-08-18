@@ -6,6 +6,7 @@ import type { SchoolClassOne } from '../models/SchoolClassOne';
 import type { SchoolClassPut } from '../models/SchoolClassPut';
 import type { SchoolClassStudentBelts } from '../models/SchoolClassStudentBelts';
 import type { StudentList } from '../models/StudentList';
+import type { WaitlistEntryList } from '../models/WaitlistEntryList';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { request as __request } from '../core/request';
 
@@ -118,6 +119,25 @@ export class SchoolClassesService {
         return __request({
             method: 'GET',
             path: `/school-classes/${schoolClassId}/students`,
+            headers: {
+                'X-Fields': xFields,
+            },
+        });
+    }
+
+    /**
+     * @param schoolClassId
+     * @param xFields An optional fields mask
+     * @returns WaitlistEntryList Success
+     * @throws ApiError
+     */
+    public static getSchoolClassWaitlistResource(
+        schoolClassId: number,
+        xFields?: string,
+    ): CancelablePromise<WaitlistEntryList> {
+        return __request({
+            method: 'GET',
+            path: `/school-classes/${schoolClassId}/waitlist`,
             headers: {
                 'X-Fields': xFields,
             },

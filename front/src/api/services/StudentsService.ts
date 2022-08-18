@@ -7,6 +7,9 @@ import type { StudentOne } from '../models/StudentOne';
 import type { StudentPut } from '../models/StudentPut';
 import type { StudentsPost } from '../models/StudentsPost';
 import type { StudentsPut } from '../models/StudentsPut';
+import type { StudentWaitlistPost } from '../models/StudentWaitlistPost';
+import type { WaitlistEntryList } from '../models/WaitlistEntryList';
+import type { WaitlistEntryOne } from '../models/WaitlistEntryOne';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { request as __request } from '../core/request';
 
@@ -123,6 +126,47 @@ export class StudentsService {
             headers: {
                 'X-Fields': xFields,
             },
+        });
+    }
+
+    /**
+     * @param studentId
+     * @param xFields An optional fields mask
+     * @returns WaitlistEntryList Success
+     * @throws ApiError
+     */
+    public static getStudentWaitlistResource(
+        studentId: number,
+        xFields?: string,
+    ): CancelablePromise<WaitlistEntryList> {
+        return __request({
+            method: 'GET',
+            path: `/students/${studentId}/waitlist`,
+            headers: {
+                'X-Fields': xFields,
+            },
+        });
+    }
+
+    /**
+     * @param studentId
+     * @param payload
+     * @param xFields An optional fields mask
+     * @returns WaitlistEntryOne Success
+     * @throws ApiError
+     */
+    public static postStudentWaitlistResource(
+        studentId: number,
+        payload: StudentWaitlistPost,
+        xFields?: string,
+    ): CancelablePromise<WaitlistEntryOne> {
+        return __request({
+            method: 'POST',
+            path: `/students/${studentId}/waitlist`,
+            headers: {
+                'X-Fields': xFields,
+            },
+            body: payload,
         });
     }
 

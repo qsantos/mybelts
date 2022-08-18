@@ -162,6 +162,12 @@ class Student(Base):
         back_populates='student',
     )
 
+    waitlist_entries = relationship(
+        'WaitlistEntry',
+        foreign_keys='WaitlistEntry.student_id',
+        back_populates='student',
+    )
+
     def json(self) -> Dict:
         return {
             'id': self.id,
@@ -189,6 +195,12 @@ class Belt(Base):
         back_populates='belt',
     )
 
+    waitlist_entries = relationship(
+        'WaitlistEntry',
+        foreign_keys='WaitlistEntry.belt_id',
+        back_populates='belt',
+    )
+
     def json(self) -> Dict:
         return {
             'id': self.id,
@@ -211,6 +223,12 @@ class SkillDomain(Base):
     evaluations = relationship(
         'Evaluation',
         foreign_keys='Evaluation.skill_domain_id',
+        back_populates='skill_domain',
+    )
+
+    waitlist_entries = relationship(
+        'WaitlistEntry',
+        foreign_keys='WaitlistEntry.skill_domain_id',
         back_populates='skill_domain',
     )
 
@@ -259,4 +277,40 @@ class Evaluation(Base):
             'belt_id': self.belt_id,
             'date': self.date.isoformat(),
             'success': self.success,
+        }
+
+
+class WaitlistEntry(Base):
+    __tablename__ = 'waitlist_entry'
+    id = Column(Integer, primary_key=True)
+    created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
+    student_id = Column(Integer, ForeignKey('student.id', ondelete='CASCADE'), nullable=False)
+    skill_domain_id = Column(Integer, ForeignKey('skill_domain.id', ondelete='CASCADE'), nullable=False)
+    belt_id = Column(Integer, ForeignKey('belt.id', ondelete='CASCADE'), nullable=False)
+
+    student = relationship(
+        'Student',
+        foreign_keys=student_id,
+        back_populates='waitlist_entries',
+    )
+
+    skill_domain = relationship(
+        'SkillDomain',
+        foreign_keys=skill_domain_id,
+        back_populates='waitlist_entries',
+    )
+
+    belt = relationship(
+        'Belt',
+        foreign_keys=belt_id,
+        back_populates='waitlist_entries',
+    )
+
+    def json(self) -> Dict:
+        return {
+            'id': self.id,
+            'created': self.created.isoformat(),
+            'student_id': self.student_id,
+            'skill_domain_id': self.skill_domain_id,
+            'belt_id': self.belt_id,
         }

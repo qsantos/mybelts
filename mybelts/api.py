@@ -19,7 +19,7 @@ from sqlalchemy.sql.expression import func
 from mybelts.config import SECRET
 from mybelts.schema import (
     Belt, ClassLevel, Evaluation, HTTPRequest, MissingI18nKey, SchoolClass,
-    SkillDomain, Student, User, session_context,
+    SkillDomain, Student, User, WaitlistEntry, session_context,
 )
 
 
@@ -64,6 +64,7 @@ students_ns = api.namespace('Students', path='/')
 skill_domains_ns = api.namespace('Skill Domains', path='/')
 belts_ns = api.namespace('Belts', path='/')
 evaluations_ns = api.namespace('Evaluations', path='/')
+waitlist_ns = api.namespace('Waitlist', path='/')
 
 
 api_model_user = api.model('User', {
@@ -120,6 +121,14 @@ api_model_evaluation = api.model('Evaluation', {
     'belt_id': fields.Integer(example=42, required=True),
     'date': fields.Date(example='2021-11-13', required=True),
     'success': fields.Boolean(example=True, required=True),
+})
+
+api_model_waitlist_entry = api.model('WaitlistEntry', {
+    'id': fields.Integer(example=42, required=True),
+    'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
+    'student_id': fields.Integer(example=42, required=True),
+    'skill_domain_id': fields.Integer(example=42, required=True),
+    'belt_id': fields.Integer(example=42, required=True),
 })
 
 api_model_login_payload = api.model('LoginPayload', {
@@ -226,6 +235,24 @@ api_model_evaluation_one = api.model('EvaluationOne', {
     'skill_domain': fields.Nested(api_model_skill_domain, required=True),
     'belt': fields.Nested(api_model_belt, required=True),
     'evaluation': fields.Nested(api_model_evaluation, required=True),
+})
+
+api_model_waitlist_entry_one = api.model('WaitlistEntryOne', {
+    'class_level': fields.Nested(api_model_class_level, required=True),
+    'school_class': fields.Nested(api_model_school_class, required=True),
+    'student': fields.Nested(api_model_student, required=True),
+    'skill_domain': fields.Nested(api_model_skill_domain, required=True),
+    'belt': fields.Nested(api_model_belt, required=True),
+    'waitlist_entry': fields.Nested(api_model_waitlist_entry, required=True),
+})
+
+api_model_waitlist_entry_list = api.model('WaitlistEntryList', {
+    'class_level': fields.Nested(api_model_class_level, required=True),
+    'school_class': fields.Nested(api_model_school_class, required=True),
+    'students': fields.List(fields.Nested(api_model_student), required=True),
+    'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
+    'belts': fields.List(fields.Nested(api_model_belt), required=True),
+    'waitlist_entries': fields.List(fields.Nested(api_model_waitlist_entry), required=True),
 })
 
 api_model_school_class_student_belts = api.model('SchoolClassStudentBelts', {
@@ -743,6 +770,58 @@ class SchoolClassStudentBeltsResource(Resource):
             }
 
 
+@school_class_ns.route('/school-classes/<int:school_class_id>/waitlist')
+class SchoolClassWaitlistResource(Resource):
+    @api.marshal_with(api_model_waitlist_entry_list)
+    def get(self, school_class_id: int) -> Any:
+        with session_context() as session:
+            me = authenticate(session)
+            need_admin(me)
+            school_class = session.query(SchoolClass).get(school_class_id)
+            if school_class is None:
+                abort(404, f'School class {school_class_id} not found')
+            class_level = school_class.class_level
+
+            things = (
+                session  # type: ignore
+                .query(WaitlistEntry, SkillDomain, Belt, Student)
+                .select_from(WaitlistEntry)
+                .outerjoin(SkillDomain)
+                .outerjoin(Belt)
+                .outerjoin(Student)
+                .filter(Student.school_class_id == school_class_id)
+                .all()
+            )
+
+            waitlist_entries = []
+            belts = []
+            belt_ids: Set[int] = set()
+            skill_domains = []
+            skill_domain_ids: Set[int] = set()
+            students = []
+            student_ids: Set[int] = set()
+            for waitlist_entry, skill_domain, belt, student in things:
+                waitlist_entries.append(waitlist_entry)
+                if belt.id not in belt_ids:
+                    belt_ids.add(belt.id)
+                    belts.append(belt)
+                if skill_domain.id not in skill_domain_ids:
+                    skill_domain_ids.add(skill_domain.id)
+                    skill_domains.append(skill_domain)
+                if student.id not in student_ids:
+                    student_ids.add(student.id)
+                    students.append(student)
+
+            return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
+                'students': [student.json() for student in students],
+                'belts': [belt.json() for belt in belts],
+                'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
+                'waitlist_entries': [waitlist_entry.json() for waitlist_entry in waitlist_entries],
+            }
+
+
 @students_ns.route('/students')
 class StudentsResource(Resource):
     post_model = api.model('StudentsPost', {
@@ -923,6 +1002,94 @@ class StudentEvaluationsResource(Resource):
                 'belts': [belt.json() for belt in belts],
                 'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
                 'evaluations': [evaluation.json() for evaluation in evaluations],
+            }
+
+
+@students_ns.route('/students/<int:student_id>/waitlist')
+class StudentWaitlistResource(Resource):
+    @api.marshal_with(api_model_waitlist_entry_list)
+    def get(self, student_id: int) -> Any:
+        with session_context() as session:
+            me = authenticate(session)
+            authorize(me, me.student is not None and me.student.id == student_id)
+            student = session.query(Student).get(student_id)
+            if student is None:
+                abort(404, f'Student {student_id} not found')
+            school_class = student.school_class
+            class_level = school_class.class_level
+
+            things = (
+                session  # type: ignore
+                .query(WaitlistEntry, SkillDomain, Belt, Student)
+                .select_from(WaitlistEntry)
+                .outerjoin(SkillDomain)
+                .outerjoin(Belt)
+                .outerjoin(Student)
+                .filter(Student.id == student_id)
+                .all()
+            )
+
+            waitlist_entries = []
+            belts = []
+            belt_ids: Set[int] = set()
+            skill_domains = []
+            skill_domain_ids: Set[int] = set()
+            for waitlist_entry, skill_domain, belt, student in things:
+                waitlist_entries.append(waitlist_entry)
+                if belt.id not in belt_ids:
+                    belt_ids.add(belt.id)
+                    belts.append(belt)
+                if skill_domain.id not in skill_domain_ids:
+                    skill_domain_ids.add(skill_domain.id)
+                    skill_domains.append(skill_domain)
+
+            return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
+                'students': [student.json()],
+                'belts': [belt.json() for belt in belts],
+                'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
+                'waitlist_entries': [waitlist_entry.json() for waitlist_entry in waitlist_entries],
+            }
+
+    post_model = api.model('StudentWaitlistPost', {
+        'belt_id': fields.Integer(example=42, required=True),
+        'skill_domain_id': fields.Integer(example=42, required=True),
+    })
+
+    @api.expect(post_model, validate=True)
+    @api.marshal_with(api_model_waitlist_entry_one)
+    def post(self, student_id: int) -> Any:
+        with session_context() as session:
+            me = authenticate(session)
+            authorize(me, me.student is not None and me.student.id == student_id)
+            student = session.query(Student).get(student_id)
+            if student is None:
+                abort(404, f'Student {student_id} not found')
+            belt_id = request.json['belt_id']
+            belt = session.query(Belt).get(belt_id)
+            if belt is None:
+                abort(404, f'Belt {belt_id} not found')
+            skill_domain_id = request.json['skill_domain_id']
+            skill_domain = session.query(SkillDomain).get(skill_domain_id)
+            if skill_domain is None:
+                abort(404, f'Skill domain {skill_domain_id} not found')
+            waitlist_entry = WaitlistEntry(
+                student_id=student_id,
+                belt_id=belt_id,
+                skill_domain_id=skill_domain_id,
+            )
+            session.add(waitlist_entry)
+            session.commit()
+            school_class = student.school_class
+            class_level = school_class.class_level
+            return {
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
+                'student': student.json(),
+                'belt': belt.json(),
+                'skill_domain': skill_domain.json(),
+                'waitlist_entry': waitlist_entry.json(),
             }
 
 

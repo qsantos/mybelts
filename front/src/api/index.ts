@@ -49,11 +49,15 @@ export type { StudentPut } from './models/StudentPut';
 export type { StudentsPost } from './models/StudentsPost';
 export type { StudentsPut } from './models/StudentsPut';
 export type { StudentsPutStudents } from './models/StudentsPutStudents';
+export type { StudentWaitlistPost } from './models/StudentWaitlistPost';
 export type { User } from './models/User';
 export type { UserList } from './models/UserList';
 export type { UserOne } from './models/UserOne';
 export type { UserPut } from './models/UserPut';
 export type { UsersPost } from './models/UsersPost';
+export type { WaitlistEntry } from './models/WaitlistEntry';
+export type { WaitlistEntryList } from './models/WaitlistEntryList';
+export type { WaitlistEntryOne } from './models/WaitlistEntryOne';
 
 export { BeltsService } from './services/BeltsService';
 export { ClassLevelsService } from './services/ClassLevelsService';
