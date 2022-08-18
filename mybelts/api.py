@@ -50,7 +50,7 @@ api = Api(
         'apikey': {
             'type': 'apiKey',
             'in': 'header',
-            'username': 'Authorization',
+            'name': 'Authorization',
             'description': 'The JWT preceded by "Bearer "',
         },
     },
