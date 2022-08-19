@@ -477,12 +477,14 @@ function SchoolClassView() {
         </AdminOnly>
         <h3>{t('school_class.view.title')}: {class_level.prefix}{school_class.suffix}</h3>
         <AdminOnly>
-            <SchoolClassWaitlist
-                students={students}
-                skill_domains={skill_domains}
-                belts={belts}
-                waitlist_entries={waitlistEntryList?.waitlist_entries || []}
-            />
+            {waitlistEntryList &&
+                <SchoolClassWaitlist
+                    students={waitlistEntryList.students}
+                    skill_domains={waitlistEntryList.skill_domains}
+                    belts={waitlistEntryList.belts}
+                    waitlist_entries={waitlistEntryList.waitlist_entries}
+                />
+            }
             <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
                 setStudentList({ ...studentList, school_class: new_school_class });
             }} />
