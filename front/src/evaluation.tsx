@@ -509,10 +509,10 @@ export function EvaluationGrid(props: EvaluationGridProps): (ReactElement | null
     }];
 
     if (is_admin()) {
-        sorting[0] = {
+        sorting.unshift({
             id: 'rank',
             desc: false,
-        };
+        });
         columns.unshift({
             id: 'rank',
             header: t('student.list.rank.title'),
