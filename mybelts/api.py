@@ -481,7 +481,13 @@ class UserResource(Resource):
             is_admin = request.json.get('is_admin')
             if is_admin is not None:
                 user.is_admin = is_admin
-            session.commit()
+            try:
+                session.commit()
+            except IntegrityError as e:
+                if isinstance(e.orig, UniqueViolation):
+                    abort(409, f'User with username "{username}" already exists')
+                else:
+                    raise
             return {
                 'user': user.json(),
             }
@@ -1114,7 +1120,16 @@ class StudentWaitlistResource(Resource):
                 skill_domain_id=skill_domain_id,
             )
             session.add(waitlist_entry)
-            session.commit()
+            try:
+                session.commit()
+            except IntegrityError as e:
+                if isinstance(e.orig, UniqueViolation):
+                    abort(409, (
+                        f'Already existing waitlist entry for student {student_id}, '
+                        'belt {belt_id} and skill domain {skill_domain_id}'
+                    ))
+                else:
+                    raise
             school_class = student.school_class
             class_level = school_class.class_level
             return {
