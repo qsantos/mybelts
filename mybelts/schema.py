@@ -3,7 +3,7 @@ from typing import Dict, Iterator, List
 
 from sqlalchemy import (
     Boolean, Column, Date, DateTime, ForeignKey, Integer, LargeBinary, String,
-    create_engine, func,
+    UniqueConstraint, create_engine, func,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.exc import SQLAlchemyError
@@ -287,6 +287,10 @@ class WaitlistEntry(Base):
     student_id = Column(Integer, ForeignKey('student.id', ondelete='CASCADE'), nullable=False)
     skill_domain_id = Column(Integer, ForeignKey('skill_domain.id', ondelete='CASCADE'), nullable=False)
     belt_id = Column(Integer, ForeignKey('belt.id', ondelete='CASCADE'), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('student_id', 'skill_domain_id'),
+    )
 
     student = relationship(
         'Student',
