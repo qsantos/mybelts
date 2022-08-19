@@ -13,7 +13,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import Table from 'react-bootstrap/Table';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-import { SchoolClass, SchoolClassesService } from './api';
+import { SchoolClass, SchoolClassesService, Student, SkillDomain, Belt, WaitlistEntry } from './api';
 import { AdminOnly } from './auth';
 import { getAPIError } from './lib';
 
@@ -252,4 +252,79 @@ export function SchoolClassListing(props: SchoolClassListingProps): ReactElement
             </tbody>
         </Table>
     </>;
+}
+
+interface SchoolClassWaitlistProps {
+    students: Student[],
+    skill_domains: SkillDomain[],
+    belts: Belt[],
+    waitlist_entries: WaitlistEntry[],
+}
+
+export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): ReactElement {
+    const { students, skill_domains, belts, waitlist_entries } = props;
+
+    if (!waitlist_entries) {
+        return <></>;
+    }
+
+    const { t } = useTranslation();
+
+    const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
+    const skill_domain_by_id = Object.fromEntries(skill_domains.map(skill_domain => [skill_domain.id, skill_domain]));
+    const student_by_id = Object.fromEntries(students.map(student => [student.id, student]));
+
+    const waitlist_by_student_id: {[index: number]: WaitlistEntry[]} = {};
+    waitlist_entries.forEach(waitlist_entry => {
+        const student_id = waitlist_entry.student_id;
+        const student_waitlist = waitlist_by_student_id[student_id];
+        if (student_waitlist === undefined) {
+            waitlist_by_student_id[student_id] = [waitlist_entry];
+        } else {
+            student_waitlist.push(waitlist_entry);
+        }
+    });
+
+    return (
+        <Alert>
+            <Alert.Heading>
+                <img src="/evaluation.png" height="30" />
+                {t('waitlist.title', {
+                    student_count: Object.keys(waitlist_by_student_id).length,
+                    evaluation_count: waitlist_entries.length,
+                })}
+            </Alert.Heading>
+            <ul>
+                {Object.entries(waitlist_by_student_id).map(([student_id, student_waitlist_entries]) => {
+                    const student = student_by_id[student_id];
+                    if (student === undefined) {
+                        console.error('student ' + student_id + ' not found');
+                        return <></>;
+                    }
+                    return (
+                        <li key={student_id}>
+                            <div className="ms-2 me-auto">
+                                <strong>{student.display_name}:</strong>
+                                {student_waitlist_entries.map(({skill_domain_id, belt_id}) => {
+                                    const skill_domain = skill_domain_by_id[skill_domain_id];
+                                    if (skill_domain === undefined) {
+                                        console.error('skill domain ' + skill_domain_id + ' not found');
+                                        return <></>;
+                                    }
+                                    const belt = belt_by_id[belt_id];
+                                    if (belt === undefined) {
+                                        console.error('belt ' + belt_id + ' not found');
+                                        return <></>;
+                                    }
+                                    return <span key={skill_domain_id}>
+                                        {skill_domain.name} ({belt.name})
+                                    </span>;
+                                })}
+                            </div>
+                        </li>
+                    );
+                })}
+            </ul>
+        </Alert>
+    );
 }

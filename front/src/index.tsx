@@ -26,6 +26,7 @@ import {
     SkillDomainList, SkillDomainsService,
     StudentList, StudentsService,
     EvaluationList,
+    WaitlistEntryList,
 } from './api';
 import { OpenAPIWithCallback } from './api/core/request';
 import { formatDatetime, getAPIError } from './lib';
@@ -38,7 +39,7 @@ import { CreateUserButton, UserListing } from './user';
 import { CreateSkillDomainButton, SkillDomainListing } from './skill-domain';
 import { BeltIcon, CreateBeltButton, BeltListing } from './belt';
 import { CreateClassLevelButton, EditClassLevelButton, DeleteClassLevelButton, ClassLevelListing } from './class-level';
-import { CreateSchoolClassButton, EditSchoolClassButton, DeleteSchoolClassButton, SchoolClassListing } from './school-class';
+import { CreateSchoolClassButton, EditSchoolClassButton, DeleteSchoolClassButton, SchoolClassListing, SchoolClassWaitlist } from './school-class';
 import { CreateStudentButton, EditStudentButton, DeleteStudentButton, UpdateStudentRanks } from './student';
 import { CreateEvaluationButton, EvaluationListing, EvaluationGrid,  } from './evaluation';
 
@@ -419,6 +420,7 @@ function SchoolClassView() {
     const [errorMessage, setErrorMessage] = useState('');
     const [studentList, setStudentList] = useState<null | StudentList>(null);
     const [schoolClassStudentBelts, setSchoolClassStudentBelts] = useState<null | SchoolClassStudentBelts>(null);
+    const [waitlistEntryList, setWaitlistEntryList] = useState<null | WaitlistEntryList>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -430,9 +432,13 @@ function SchoolClassView() {
             .getSchoolClassStudentBeltsResource(parseInt(school_class_id))
             .then(setSchoolClassStudentBelts)
             .catch(error => { setErrorMessage(getAPIError(error)); });
+        SchoolClassesService
+            .getSchoolClassWaitlistResource(parseInt(school_class_id))
+            .then(setWaitlistEntryList)
+            .catch(error => { setErrorMessage(getAPIError(error)); });
     }, [school_class_id]);
 
-    if (studentList === null || schoolClassStudentBelts === null) {
+    if (studentList === null || schoolClassStudentBelts === null || waitlistEntryList === null) {
         return <>
             <AdminOnly>
                 <Breadcrumb>
@@ -450,6 +456,7 @@ function SchoolClassView() {
     const { class_level, school_class, students } = studentList;
     //const { class_level, school_class, belts, skill_domains, student_belts } = schoolClassStudentBelts;
     const { belts, skill_domains, student_belts } = schoolClassStudentBelts;
+    const { waitlist_entries } = waitlistEntryList;
 
     return <>
         <AdminOnly>
@@ -462,7 +469,12 @@ function SchoolClassView() {
         </AdminOnly>
         <h3>{t('school_class.view.title')}: {class_level.prefix}{school_class.suffix}</h3>
         <AdminOnly>
-            {' '}
+            <SchoolClassWaitlist
+                students={students}
+                skill_domains={skill_domains}
+                belts={belts}
+                waitlist_entries={waitlist_entries}
+            />
             <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
                 setStudentList({ ...studentList, school_class: new_school_class });
             }} />
