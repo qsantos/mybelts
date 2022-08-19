@@ -340,7 +340,7 @@ export function EvaluationListing(props: EvaluationListingProps): ReactElement {
                 if (skill_domain === undefined) {
                     // should not happen
                     console.error('skill_domain ' + skill_domain_id + ' not found for evaluation ' + evaluation.id);
-                    return <></>;
+                    return null;
                 }
                 return skill_domain.name;
             }
@@ -354,7 +354,7 @@ export function EvaluationListing(props: EvaluationListingProps): ReactElement {
                 if (belt === undefined) {
                     // should not happen
                     console.error('belt ' + belt_id + ' not found for evaluation ' + evaluation.id);
-                    return <></>;
+                    return null;
                 }
                 return belt.name;
             },
@@ -365,7 +365,7 @@ export function EvaluationListing(props: EvaluationListingProps): ReactElement {
                 if (belt === undefined) {
                     // should not happen
                     console.error('belt ' + belt_id + ' not found for evaluation ' + evaluation.id);
-                    return <></>;
+                    return null;
                 }
                 return <BeltIcon belt={belt} />;
             }
@@ -397,12 +397,12 @@ export function EvaluationListing(props: EvaluationListingProps): ReactElement {
                 if (skill_domain === undefined) {
                     // should not happen
                     console.error('skill_domain ' + skill_domain_id + ' not found for evaluation ' + evaluation.id);
-                    return <></>;
+                    return null;
                 }
                 if (belt === undefined) {
                     // should not happen
                     console.error('belt ' + belt_id + ' not found for evaluation ' + evaluation.id);
-                    return <></>;
+                    return null;
                 }
                 return <>
                     <EditEvaluationButton
@@ -446,12 +446,12 @@ interface EvaluationGridProps {
     student_belts: SchoolClassStudentBeltsStudentBelts[],
 }
 
-export function EvaluationGrid(props: EvaluationGridProps): ReactElement {
+export function EvaluationGrid(props: EvaluationGridProps): (ReactElement | null) {
     const { students, setStudents, skill_domains, belts, student_belts } = props;
     const { t } = useTranslation();
     const loginInfo = React.useContext(LoginContext);
     if (!loginInfo) {
-        return <></>;
+        return null;
     }
     const user = loginInfo.user;
     const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));

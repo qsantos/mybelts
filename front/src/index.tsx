@@ -62,7 +62,7 @@ function HomeView() {
     const loginInfo = React.useContext(LoginContext);
     if (loginInfo === null) {
         // not connected
-        return <></>;
+        return null;
     }
 
     const student = loginInfo.student;
@@ -349,7 +349,7 @@ function ClassLevelView() {
     if (params.class_level_id === undefined) {
         // should not happen
         console.error('Attribute class_level_id of <ClassLevelView /> is undefined');
-        return <></>;
+        return null;
     }
     const class_level_id = params.class_level_id;
 
@@ -412,14 +412,14 @@ function SchoolClassView() {
     if (params.school_class_id === undefined) {
         // should not happen
         console.error('Attribute school_class_id of <ClassLevelView /> is undefined');
-        return <></>;
+        return null;
     }
     const school_class_id = params.school_class_id;
 
     const loginInfo = React.useContext(LoginContext);
     if (loginInfo === null) {
         // not connected
-        return <></>;
+        return null;
     }
     const canUseWaitlist = loginInfo.user.is_admin;
 
@@ -516,7 +516,7 @@ function StudentWidget(props: StudentWidgetProps) {
 
     const loginInfo = React.useContext(LoginContext);
     if (loginInfo === null) {
-        return <></>;
+        return null;
     }
     const canUseWaitlist = loginInfo.user.is_admin || loginInfo.student?.id == student_id;
 
@@ -631,7 +631,7 @@ function StudentView() {
     if (params.student_id === undefined) {
         // should not happen
         console.error('Attribute student_id of <StudentView /> is undefined');
-        return <></>;
+        return null;
     }
     const student_id = parseInt(params.student_id);
     return <StudentWidget student_id={student_id} />;

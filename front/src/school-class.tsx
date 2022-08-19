@@ -261,11 +261,11 @@ interface SchoolClassWaitlistProps {
     waitlist_entries: WaitlistEntry[],
 }
 
-export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): ReactElement {
+export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElement | null) {
     const { students, skill_domains, belts, waitlist_entries } = props;
 
     if (!waitlist_entries) {
-        return <></>;
+        return null;
     }
 
     const { t } = useTranslation();
@@ -299,7 +299,7 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): ReactEleme
                     const student = student_by_id[student_id];
                     if (student === undefined) {
                         console.error('student ' + student_id + ' not found');
-                        return <></>;
+                        return null;
                     }
                     return (
                         <li key={student_id}>
@@ -309,12 +309,12 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): ReactEleme
                                     const skill_domain = skill_domain_by_id[skill_domain_id];
                                     if (skill_domain === undefined) {
                                         console.error('skill domain ' + skill_domain_id + ' not found');
-                                        return <></>;
+                                        return null;
                                     }
                                     const belt = belt_by_id[belt_id];
                                     if (belt === undefined) {
                                         console.error('belt ' + belt_id + ' not found');
-                                        return <></>;
+                                        return null;
                                     }
                                     return <span key={skill_domain_id}>
                                         {skill_domain.name} ({belt.name})
