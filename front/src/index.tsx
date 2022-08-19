@@ -416,6 +416,13 @@ function SchoolClassView() {
     }
     const school_class_id = params.school_class_id;
 
+    const loginInfo = React.useContext(LoginContext);
+    if (loginInfo === null) {
+        // not connected
+        return <></>;
+    }
+    const canUseWaitlist = loginInfo.user.is_admin;
+
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [studentList, setStudentList] = useState<null | StudentList>(null);
@@ -432,13 +439,15 @@ function SchoolClassView() {
             .getSchoolClassStudentBeltsResource(parseInt(school_class_id))
             .then(setSchoolClassStudentBelts)
             .catch(error => { setErrorMessage(getAPIError(error)); });
-        SchoolClassesService
-            .getSchoolClassWaitlistResource(parseInt(school_class_id))
-            .then(setWaitlistEntryList)
-            .catch(error => { setErrorMessage(getAPIError(error)); });
+        if (canUseWaitlist) {
+            SchoolClassesService
+                .getSchoolClassWaitlistResource(parseInt(school_class_id))
+                .then(setWaitlistEntryList)
+                .catch(error => { setErrorMessage(getAPIError(error)); });
+        }
     }, [school_class_id]);
 
-    if (studentList === null || schoolClassStudentBelts === null || waitlistEntryList === null) {
+    if (studentList === null || schoolClassStudentBelts === null || (canUseWaitlist && waitlistEntryList === null)) {
         return <>
             <AdminOnly>
                 <Breadcrumb>
@@ -456,7 +465,6 @@ function SchoolClassView() {
     const { class_level, school_class, students } = studentList;
     //const { class_level, school_class, belts, skill_domains, student_belts } = schoolClassStudentBelts;
     const { belts, skill_domains, student_belts } = schoolClassStudentBelts;
-    const { waitlist_entries } = waitlistEntryList;
 
     return <>
         <AdminOnly>
@@ -473,7 +481,7 @@ function SchoolClassView() {
                 students={students}
                 skill_domains={skill_domains}
                 belts={belts}
-                waitlist_entries={waitlist_entries}
+                waitlist_entries={waitlistEntryList ? waitlistEntryList.waitlist_entries : []}
             />
             <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
                 setStudentList({ ...studentList, school_class: new_school_class });
