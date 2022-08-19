@@ -476,7 +476,8 @@ export function EvaluationGrid(props: EvaluationGridProps): (ReactElement | null
         },
     ];
 
-    skill_domains.forEach(skill_domain => columns.push({
+    const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
+    sorted_skill_domains.forEach(skill_domain => columns.push({
         id: skill_domain.name,
         header: skill_domain.name,
         cell: info => {
