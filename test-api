@@ -142,14 +142,14 @@ def add_belts() -> List[int]:
     print('Testing /belts resource')
 
     belt_names = [
-        'White belt',
-        'White belt',  # changed to 'Yellow belt' later
-        'Orange belt',
-        'Green belt',
-        'Blue belt',
-        'Brown belt',
-        'Black belt',
-        'Transparent belt',  # deleted later
+        'Ceinture blanche',
+        'Ceinture blanche',  # changed to 'Ceinture jaune' later
+        'Ceinture orange',
+        'Ceinture verte',
+        'Ceinture bleue',
+        'Ceinture marron',
+        'Ceinture noire',
+        'Ceinture transparente',  # deleted later
     ]
 
     belt_colors = [
@@ -178,7 +178,7 @@ def add_belts() -> List[int]:
     assert len(ids) == len(belt_names)
 
     # rename belt
-    belt_names[1] = 'Yellow belt'
+    belt_names[1] = 'Ceinture jaune'
     res = requests.put(API_URL + f'/belts/{ids[1]}', json={'name': belt_names[1]})
     res.raise_for_status()
     j = res.json()
@@ -274,12 +274,12 @@ def add_skill_domains() -> List[int]:
     print('Testing resource /skill-domains')
 
     skill_domain_names = [
-        'Algebra',
-        'arithmetic',
-        'Calculus',
-        'Geometry',
-        'Logic',
-        'History',
+        'Algèbre',
+        'arithmétique',
+        'Analyse',
+        'Géométrie',
+        'Logique',
+        'Histoire',
     ]
 
     # add skill domains
@@ -293,7 +293,7 @@ def add_skill_domains() -> List[int]:
         ids.append(j['skill_domain']['id'])
 
     # rename skill domain
-    skill_domain_names[1] = 'Arithmetic'
+    skill_domain_names[1] = 'Arithmétique'
     res = requests.put(API_URL + f'/skill-domains/{ids[1]}', json={'name': skill_domain_names[1]})
     res.raise_for_status()
     j = res.json()
@@ -301,7 +301,6 @@ def add_skill_domains() -> List[int]:
     assert j['skill_domain']['name'] == skill_domain_names[1]
 
     # delete skill domain
-    skill_domain_names[1] = 'Arithmetic'
     res = requests.delete(API_URL + f'/skill-domains/{ids[-1]}')
     res.raise_for_status()
     res = requests.get(API_URL + f'/skill-domains/{ids[-1]}')
