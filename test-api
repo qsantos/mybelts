@@ -595,6 +595,77 @@ def add_evaluations(student_ids: List[int]) -> List[int]:
     return evaluation_ids
 
 
+def add_waitlist_entries(student_ids: List[int]) -> List[int]:
+    print('Testing waitlist endpoint')
+
+    # get belts
+    res = requests.get(API_URL + '/belts')
+    res.raise_for_status()
+    j = res.json()
+    belts = j['belts']
+    belts.sort(key=lambda belt: belt['rank'])
+    belt_by_id = {belt['id']: belt for belt in belts}
+
+    # get skill domains
+    res = requests.get(API_URL + '/skill-domains')
+    res.raise_for_status()
+    j = res.json()
+    skill_domains = j['skill_domains']
+
+    for student_id in student_ids:
+        # get this student's belts
+        res = requests.get(API_URL + f'/students/{student_id}/evaluations')
+        res.raise_for_status()
+        j = res.json()
+        assert j['student']['id'] == student_id
+        assert j['school_class']['id'] == j['student']['school_class_id']
+        assert j['class_level']['id'] == j['school_class']['class_level_id']
+
+        evaluations = j['evaluations']
+        for skill_domain in skill_domains:
+            if randrange(3) != 0:
+                continue
+
+            # find currently achieved belt for this skill domain
+            achieved_belt_id = max(
+                (
+                    evaluation['belt_id']
+                    for evaluation in evaluations
+                    if evaluation['skill_domain_id'] == skill_domain['id']
+                    if evaluation['success']
+                ),
+                default=None,
+            )
+            current_rank = 0 if achieved_belt_id is None else belt_by_id[achieved_belt_id]['rank']
+
+            # register for evaluation of current belt (should fail)
+            if current_rank > 0:
+                res = requests.post(API_URL + f'/students/{student_id}/waitlist', json={
+                    'belt_id': achieved_belt_id,
+                    'skill_domain_id': skill_domain['id'],
+                })
+                assert res.status_code == 409
+
+            # register for evaluation of next belt
+            if current_rank < len(belts):
+                res = requests.post(API_URL + f'/students/{student_id}/waitlist', json={
+                    'belt_id': belts[current_rank]['id'],
+                    'skill_domain_id': skill_domain['id'],
+                })
+                res.raise_for_status()
+
+            # register for evaluation of the belt after (should fail)
+            if current_rank + 1 < len(belts):
+                res = requests.post(API_URL + f'/students/{student_id}/waitlist', json={
+                    'belt_id': belts[current_rank + 1]['id'],
+                    'skill_domain_id': skill_domain['id'],
+                })
+                assert res.status_code == 409
+
+    print('Tested waitlist endpoint')
+
+
+
 def main() -> None:
     seed(42)
     start_api()
@@ -607,6 +678,7 @@ def main() -> None:
     school_class_ids = add_school_classes(class_level_ids)
     student_ids = add_students(school_class_ids)
     add_evaluations(student_ids)
+    add_waitlist_entries(student_ids)
 
 
 if __name__ == '__main__':
