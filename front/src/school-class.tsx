@@ -15,7 +15,8 @@ import Tooltip from 'react-bootstrap/Tooltip';
 
 import { SchoolClass, SchoolClassesService, Student, SkillDomain, Belt, WaitlistEntry } from './api';
 import { AdminOnly } from './auth';
-import { getAPIError } from './lib';
+import { BeltIcon } from './belt';
+import { getAPIError, joinArray } from './lib';
 
 interface CreateSchoolClassButtonProps
 {
@@ -307,7 +308,7 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElem
                             <div className="ms-2 me-auto">
                                 <strong>{student.display_name}:</strong>
                                 {' '}
-                                {student_waitlist_entries.map(({skill_domain_id, belt_id}) => {
+                                {joinArray(student_waitlist_entries.map(({skill_domain_id, belt_id}) => {
                                     const skill_domain = skill_domain_by_id[skill_domain_id];
                                     if (skill_domain === undefined) {
                                         console.error('skill domain ' + skill_domain_id + ' not found');
@@ -318,8 +319,10 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElem
                                         console.error('belt ' + belt_id + ' not found');
                                         return null;
                                     }
-                                    return skill_domain.name + ' (' + belt.name + ')';
-                                }).join(', ')}
+                                    return <>
+                                        {skill_domain.name} <BeltIcon belt={belt} height={20} />
+                                    </>;
+                                }), ' / ')}
                             </div>
                         </li>
                     );

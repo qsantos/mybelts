@@ -18,13 +18,14 @@ import { getAPIError } from './lib';
 
 interface BeltIconProps {
     belt: Belt;
+    height?: number;
 }
 
 export function BeltIcon(props: BeltIconProps): ReactElement {
-    const belt = props.belt;
+    const { belt, height } = props;
     return <>
         <OverlayTrigger overlay={<Tooltip>{belt.name}</Tooltip>}>
-            <BeltImage height={40} fill={belt.color} />
+            <BeltImage height={height || 40} fill={belt.color} />
         </OverlayTrigger>
     </>;
 }

@@ -35,3 +35,14 @@ export function formatDate(date: string): string {
         day: 'numeric',
     });
 }
+
+// inspired from https://stackoverflow.com/a/65914484/4457767
+export function joinArray<T, S>(array: Array<T>, separator: S): Array<T | S> {
+    return array.reduce<(T | S)[]>((p, c, idx) => {
+        if (idx === 0) {
+            return [c];
+        } else {
+            return [...p, separator, c];
+        }
+    }, []);
+}
