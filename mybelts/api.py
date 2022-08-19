@@ -1063,6 +1063,43 @@ class StudentWaitlistResource(Resource):
             skill_domain = session.query(SkillDomain).get(skill_domain_id)
             if skill_domain is None:
                 abort(404, f'Skill domain {skill_domain_id} not found')
+
+            session.query(Evaluation).filter(Evaluation.success).subquery()
+
+            achieved_belt = (
+                session  # type: ignore
+                .query(Belt)
+                .select_from(Evaluation)
+                .outerjoin(Student)
+                .outerjoin(Belt)
+                .outerjoin(SkillDomain)
+                .filter(Student.id == student_id)
+                .filter(SkillDomain.id == skill_domain.id)
+                .filter(Evaluation.success)
+                .order_by(Belt.rank.desc())
+                .limit(1)
+                .one_or_none()
+            )
+            if achieved_belt:
+                if belt.rank > achieved_belt.rank + 1:
+                    abort(409, (
+                        f'Registering for evaluation of {belt.name} (rank: {belt.rank}) '
+                        f'in {skill_domain.name} but only reached '
+                        f'{achieved_belt.name} (rank: {achieved_belt.rank}) so far'
+                    ))
+                if belt.rank < achieved_belt.rank + 1:
+                    abort(409, (
+                        f'Registering for evaluation of {belt.name} (rank: {belt.rank}) '
+                        f'in {skill_domain.name} but already achieved '
+                        f'{achieved_belt.name} (rank: {achieved_belt.rank})'
+                    ))
+            else:
+                if belt.rank > 1:
+                    abort(409, (
+                        f'Registering for evaluation of {belt.name} (rank: {belt.rank}) '
+                        f'in {skill_domain.name} but no previous belt achieved yet'
+                    ))
+
             waitlist_entry = WaitlistEntry(
                 student_id=student_id,
                 belt_id=belt_id,
