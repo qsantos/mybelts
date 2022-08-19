@@ -486,6 +486,7 @@ class UserResource(Resource):
                 'user': user.json(),
             }
 
+    @api.response(204, 'Success')
     def delete(self, user_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
@@ -495,6 +496,7 @@ class UserResource(Resource):
                 abort(404, f'User {user_id} not found')
             session.query(User).filter(User.id == user_id).delete()
             session.commit()
+            return None, 204
 
 
 @class_level_ns.route('/class-levels')
@@ -564,6 +566,7 @@ class ClassLevelResource(Resource):
                 'class_level': class_level.json(),
             }
 
+    @api.response(204, 'Success')
     def delete(self, class_level_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
@@ -573,6 +576,7 @@ class ClassLevelResource(Resource):
                 abort(404, f'Class level {class_level_id} not found')
             session.query(ClassLevel).filter(ClassLevel.id == class_level.id).delete()
             session.commit()
+            return None, 204
 
 
 @class_level_ns.route('/class-levels/<int:class_level_id>/school-classes')
@@ -666,6 +670,7 @@ class SchoolClassResource(Resource):
                 'school_class': school_class.json(),
             }
 
+    @api.response(204, 'Success')
     def delete(self, school_class_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
@@ -675,6 +680,7 @@ class SchoolClassResource(Resource):
                 abort(404, f'School class {school_class_id} not found')
             session.query(SchoolClass).filter(SchoolClass.id == school_class.id).delete()
             session.commit()
+            return None, 204
 
 
 @school_class_ns.route('/school-classes/<int:school_class_id>/students')
@@ -937,6 +943,7 @@ class StudentResource(Resource):
                 'student': student.json(),
             }
 
+    @api.response(204, 'Success')
     def delete(self, student_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
@@ -946,6 +953,7 @@ class StudentResource(Resource):
                 abort(404, f'Student {student_id} not found')
             session.query(Student).filter(Student.id == student.id).delete()
             session.commit()
+            return None, 204
 
 
 @students_ns.route('/students/<int:student_id>/evaluations')
@@ -1187,6 +1195,7 @@ class SkillDomainResource(Resource):
                 'skill_domain': skill_domain.json(),
             }
 
+    @api.response(204, 'Success')
     def delete(self, skill_domain_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
@@ -1196,6 +1205,7 @@ class SkillDomainResource(Resource):
                 abort(404, f'Skill domain {skill_domain_id} not found')
             session.query(SkillDomain).filter(SkillDomain.id == skill_domain.id).delete()
             session.commit()
+            return None, 204
 
 
 @belts_ns.route('/belts')
@@ -1277,6 +1287,7 @@ class BeltResource(Resource):
                 'belt': belt.json(),
             }
 
+    @api.response(204, 'Success')
     def delete(self, belt_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
@@ -1292,6 +1303,7 @@ class BeltResource(Resource):
             )
             session.query(Belt).filter(Belt.id == belt.id).delete()
             session.commit()
+            return None, 204
 
 
 @belts_ns.route('/belts/<int:belt_id>/rank')
@@ -1500,6 +1512,7 @@ class EvaluationResource(Resource):
                 'evaluation': evaluation.json(),
             }
 
+    @api.response(204, 'Success')
     def delete(self, evaluation_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
@@ -1509,10 +1522,12 @@ class EvaluationResource(Resource):
                 abort(404, f'Evaluation {evaluation_id} not found')
             session.query(Evaluation).filter(Evaluation.id == evaluation.id).delete()
             session.commit()
+            return None, 204
 
 
 @waitlist_ns.route('/waitlist/<int:waitlist_id>')
 class WaitlistResource(Resource):
+    @api.response(204, 'Success')
     def delete(self, waitlist_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
@@ -1522,6 +1537,7 @@ class WaitlistResource(Resource):
             authorize(me, me.student is not None and me.student.id == waitlist_entry.student_id)
             session.query(WaitlistEntry).filter(WaitlistEntry.id == waitlist_id).delete()
             session.commit()
+            return None, 204
 
 
 def create_app() -> Flask:
