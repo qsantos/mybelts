@@ -50,11 +50,11 @@ export function CreateClassLevelButton(props : CreateClassLevelButtonProps): Rea
     }
 
     return <>
-        <Button onClick={() => setShow(true)}>Add</Button>
+        <Button onClick={() => setShow(true)}>{t('class_level.add.button')}</Button>
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
-                    <Modal.Title>{t('class_level.add.button')}</Modal.Title>
+                    <Modal.Title>{t('class_level.add.title')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}

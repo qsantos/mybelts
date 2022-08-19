@@ -63,7 +63,7 @@ export function CreateBeltButton(props : CreateBeltButtonProps): ReactElement {
     }
 
     return <>
-        <Button onClick={() => setShow(true)}>Add</Button>
+        <Button onClick={() => setShow(true)}>{t('belt.add.button')}</Button>
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
                 <Modal.Header>
