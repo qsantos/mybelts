@@ -322,7 +322,7 @@ class MissingI18nKeyResource(Resource):
 class LoginResource(Resource):
     post_model = api.model('LoginPost', {
         'username': fields.String(example='tartempion', required=True),
-        'password': fields.String(example='correct horse battery stable', required=True),
+        'password': fields.String(example='correct horse battery staple', required=True),
     })
 
     @api.expect(post_model, validate=True)
@@ -816,7 +816,7 @@ class StudentsResource(Resource):
     post_model = api.model('StudentsPost', {
         'school_class_id': fields.Integer(example=42, required=True),
         'username': fields.String(example='tartempion', required=True),
-        'password': fields.String(example='correct horse battery stable', required=True),
+        'password': fields.String(example='correct horse battery staple', required=True),
         'display_name': fields.String(example='John Doe', required=True),
     })
 
@@ -901,7 +901,7 @@ class StudentResource(Resource):
     put_model = api.model('StudentPut', {
         'display_name': fields.String(example='John Doe'),
         'username': fields.String(example='tartempion'),
-        'password': fields.String(example='correct horse battery stable'),
+        'password': fields.String(example='correct horse battery staple'),
         'rank': fields.Integer(example=7),
     })
 
