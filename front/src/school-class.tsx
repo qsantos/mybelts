@@ -289,6 +289,7 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElem
         <Alert>
             <Alert.Heading>
                 <img src="/evaluation.png" height="30" />
+                {' '}
                 {t('waitlist.title', {
                     student_count: Object.keys(waitlist_by_student_id).length,
                     evaluation_count: waitlist_entries.length,
@@ -305,6 +306,7 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElem
                         <li key={student_id}>
                             <div className="ms-2 me-auto">
                                 <strong>{student.display_name}:</strong>
+                                {' '}
                                 {student_waitlist_entries.map(({skill_domain_id, belt_id}) => {
                                     const skill_domain = skill_domain_by_id[skill_domain_id];
                                     if (skill_domain === undefined) {
@@ -316,10 +318,8 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElem
                                         console.error('belt ' + belt_id + ' not found');
                                         return null;
                                     }
-                                    return <span key={skill_domain_id}>
-                                        {skill_domain.name} ({belt.name})
-                                    </span>;
-                                })}
+                                    return skill_domain.name + ' (' + belt.name + ')';
+                                }).join(', ')}
                             </div>
                         </li>
                     );
