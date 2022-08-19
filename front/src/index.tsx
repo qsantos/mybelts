@@ -562,8 +562,6 @@ function StudentWidget(props: StudentWidgetProps) {
     );
     const passed_evaluations = evaluations.filter(evaluation => evaluation.success);
 
-    const sorted_evaluations = evaluations.sort((a, b) => b.date.localeCompare(a.date));
-
     return <>
         <AdminOnly>
             <Breadcrumb>
@@ -661,7 +659,7 @@ function StudentWidget(props: StudentWidgetProps) {
             skill_domains={skill_domains}
             belts={belts}
             student={student}
-            evaluations={sorted_evaluations}
+            evaluations={evaluations}
             setEvaluations={new_evaluations => setEvaluationList({ ...evaluationList, evaluations: new_evaluations })}
         />
     </>;

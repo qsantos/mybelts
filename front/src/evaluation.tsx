@@ -429,7 +429,12 @@ export function EvaluationListing(props: EvaluationListingProps): ReactElement {
         });
     }
 
-    return <SortTable data={evaluations} columns={columns} />;
+    const sorting = [{
+        id: 'date',
+        desc: true,
+    }];
+
+    return <SortTable data={evaluations} columns={columns} initialSorting={sorting} />;
 }
 
 
