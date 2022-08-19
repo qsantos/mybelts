@@ -1485,6 +1485,17 @@ class EvaluationResource(Resource):
             session.commit()
 
 
+@waitlist_ns.route('/waitlist/<int:waitlist_id>')
+class WaitlistResource(Resource):
+    def delete(self, waitlist_id: int) -> Any:
+        with session_context() as session:
+            me = authenticate(session)
+            waitlist_entry = session.query(WaitlistEntry).get(waitlist_id)
+            authorize(me, me.student is not None and me.student.id == waitlist_entry.student_id)
+            session.query(WaitlistEntry).filter(WaitlistEntry.id == waitlist_id).delete()
+            session.commit()
+
+
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config['ERROR_404_HELP'] = False

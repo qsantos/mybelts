@@ -37,11 +37,11 @@ import './index.css';
 import { AdminOnly, LoginFormWidget, LogoutButton, LoginContext, is_admin } from './auth';
 import { CreateUserButton, UserListing } from './user';
 import { CreateSkillDomainButton, SkillDomainListing } from './skill-domain';
-import { BeltIcon, CreateBeltButton, BeltListing } from './belt';
+import { CreateBeltButton, BeltListing } from './belt';
 import { CreateClassLevelButton, EditClassLevelButton, DeleteClassLevelButton, ClassLevelListing } from './class-level';
 import { CreateSchoolClassButton, EditSchoolClassButton, DeleteSchoolClassButton, SchoolClassListing, SchoolClassWaitlist } from './school-class';
-import { CreateStudentButton, EditStudentButton, DeleteStudentButton, UpdateStudentRanks } from './student';
-import { CreateEvaluationButton, EvaluationListing, EvaluationGrid,  } from './evaluation';
+import { CreateStudentButton, EditStudentButton, DeleteStudentButton, UpdateStudentRanks, StudentBelts } from './student';
+import { CreateEvaluationButton, EvaluationListing, EvaluationGrid  } from './evaluation';
 
 function BreadcrumbItem({ children, href, active }: { children: ReactNode, href?: string, active?: boolean }) {
     if (href) {
@@ -481,7 +481,7 @@ function SchoolClassView() {
                 students={students}
                 skill_domains={skill_domains}
                 belts={belts}
-                waitlist_entries={waitlistEntryList ? waitlistEntryList.waitlist_entries : []}
+                waitlist_entries={waitlistEntryList?.waitlist_entries || []}
             />
             <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
                 setStudentList({ ...studentList, school_class: new_school_class });
@@ -514,11 +514,18 @@ interface StudentWidgetProps {
 function StudentWidget(props: StudentWidgetProps) {
     const { student_id } = props;
 
+    const loginInfo = React.useContext(LoginContext);
+    if (loginInfo === null) {
+        return <></>;
+    }
+    const canUseWaitlist = loginInfo.user.is_admin || loginInfo.student?.id == student_id;
+
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [beltList, setBeltList] = useState<null | BeltList>(null);
     const [skillDomainList, setSkillDomainList] = useState<null | SkillDomainList>(null);
     const [evaluationList, setEvaluationList] = useState<null | EvaluationList>(null);
+    const [waitlistEntryList, setWaitlistEntryList] = useState<null | WaitlistEntryList>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -534,9 +541,15 @@ function StudentWidget(props: StudentWidgetProps) {
             .getStudentEvaluationsResource(student_id)
             .then(setEvaluationList)
             .catch(error => { setErrorMessage(getAPIError(error)); });
+        if (canUseWaitlist) {
+            StudentsService
+                .getStudentWaitlistResource(student_id)
+                .then(setWaitlistEntryList)
+                .catch(error => { setErrorMessage(getAPIError(error)); });
+        }
     }, [student_id]);
 
-    if (beltList === null || skillDomainList === null || evaluationList === null) {
+    if (beltList === null || skillDomainList === null || evaluationList === null || (canUseWaitlist && waitlistEntryList === null)) {
         return <>
             <AdminOnly>
                 <Breadcrumb>
@@ -557,10 +570,7 @@ function StudentWidget(props: StudentWidgetProps) {
     const { belts } = beltList;
     const { class_level, school_class, student, evaluations } = evaluationList;
 
-    const belt_by_id = Object.fromEntries(
-        belts.map(belt => [belt.id, belt])
-    );
-    const passed_evaluations = evaluations.filter(evaluation => evaluation.success);
+    const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
 
     return <>
         <AdminOnly>
@@ -587,68 +597,19 @@ function StudentWidget(props: StudentWidgetProps) {
             <DeleteStudentButton student={student} deletedCallback={() => navigate('/school-classes/' + school_class.id)} />
         </AdminOnly>
         <h4>{t('student.belts.title')}</h4>
-        <Table>
-            <thead>
-                <tr>
-                    <th>{t('student.belts.skill_domain.title')}</th>
-                    <th>{t('student.belts.achieved_belt.title')}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {skill_domains.map(skill_domain => {
-                    const domain_evaluations = passed_evaluations.filter(evaluation => evaluation.skill_domain_id == skill_domain.id);
-                    if (domain_evaluations.length == 0) {
-                        // no successful evaluation yet
-                        const belt = belts[0];
-                        if (belt === undefined) {
-                            // should not happen
-                            console.error('no belt found');
-                            return <></>;
-                        }
-                        return (
-                            <tr key={skill_domain.id}>
-                                <th>{skill_domain.name}</th>
-                                <td>{t('student.belts.no_belt')}</td>
-                            </tr>
-                        );
-                    }
-                    const sorted_domain_evaluations = domain_evaluations.sort((a, b) => {
-                        const belt_a = belt_by_id[a.belt_id];
-                        if (belt_a === undefined) {
-                            // should not happen
-                            console.error('belt ' + belt_a + ' not found');
-                            return 0;
-                        }
-                        const belt_b = belt_by_id[b.belt_id];
-                        if (belt_b === undefined) {
-                            // should not happen
-                            console.error('belt ' + belt_a + ' not found');
-                            return 0;
-                        }
-                        return belt_b.rank - belt_a.rank;
-                    });
-                    const best_evaluation = sorted_domain_evaluations[0];
-                    if (best_evaluation === undefined) {
-                        // should not happen
-                        console.error('no belt evaluation found');
-                        return <></>;
-                    }
-                    const belt_id = best_evaluation.belt_id;
-                    const belt = belt_by_id[belt_id];
-                    if (belt === undefined) {
-                        // should not happen
-                        console.error('belt ' + belt_id + ' not found');
-                        return <></>;
-                    }
-                    return (
-                        <tr key={skill_domain.id}>
-                            <th>{skill_domain.name}</th>
-                            <td><BeltIcon belt={belt} /></td>
-                        </tr>
-                    );
-                })}
-            </tbody>
-        </Table>
+        <StudentBelts
+            skill_domains={sorted_skill_domains}
+            belts={belts}
+            student={student}
+            evaluations={evaluations}
+            canUseWaitlist={canUseWaitlist}
+            waitlist_entries={waitlistEntryList?.waitlist_entries || []}
+            setWaitlistEntries={new_waitlist_entries => {
+                if (waitlistEntryList) {
+                    setWaitlistEntryList({ ...waitlistEntryList, waitlist_entries: new_waitlist_entries});
+                }
+            }}
+        />
         <h4>{t('evaluation.list.title.secondary')}</h4>
         <AdminOnly>
             <CreateEvaluationButton student={student} skill_domains={skill_domains} belts={belts} createdCallback={new_evaluation => {

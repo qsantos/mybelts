@@ -67,3 +67,4 @@ export { SchoolClassesService } from './services/SchoolClassesService';
 export { SkillDomainsService } from './services/SkillDomainsService';
 export { StudentsService } from './services/StudentsService';
 export { UsersService } from './services/UsersService';
+export { WaitlistService } from './services/WaitlistService';
