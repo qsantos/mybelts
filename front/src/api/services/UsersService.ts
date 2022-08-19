@@ -48,23 +48,6 @@ export class UsersService {
     }
 
     /**
-     * @param xFields An optional fields mask
-     * @returns UserOne Success
-     * @throws ApiError
-     */
-    public static getUsersMeResource(
-        xFields?: string,
-    ): CancelablePromise<UserOne> {
-        return __request({
-            method: 'GET',
-            path: `/users/me`,
-            headers: {
-                'X-Fields': xFields,
-            },
-        });
-    }
-
-    /**
      * @param userId
      * @returns any Success
      * @throws ApiError
