@@ -1020,7 +1020,7 @@ class StudentWaitlistResource(Resource):
 
             things = (
                 session  # type: ignore
-                .query(WaitlistEntry, SkillDomain, Belt, Student)
+                .query(WaitlistEntry, SkillDomain, Belt)
                 .select_from(WaitlistEntry)
                 .outerjoin(SkillDomain)
                 .outerjoin(Belt)
@@ -1034,7 +1034,7 @@ class StudentWaitlistResource(Resource):
             belt_ids: Set[int] = set()
             skill_domains = []
             skill_domain_ids: Set[int] = set()
-            for waitlist_entry, skill_domain, belt, student in things:
+            for waitlist_entry, skill_domain, belt in things:
                 waitlist_entries.append(waitlist_entry)
                 if belt.id not in belt_ids:
                     belt_ids.add(belt.id)
