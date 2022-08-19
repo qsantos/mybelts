@@ -396,7 +396,10 @@ export function AddToWaitlistButton(props: AddToWaitlistButtonProps): ReactEleme
                         skill_domain: skill_domain.name.toLowerCase(),
                     })}
                     <br />
+                    <br />
                     <BeltIcon belt={belt} />
+                    {' '}
+                    <strong>{skill_domain.name}</strong>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShow(false)}>{t('student.waitlist.add.cancel')}</Button>
@@ -465,7 +468,10 @@ export function RemoveFromWaitlistButton(props: RemoveFromWaitlistButtonProps): 
                         skill_domain: skill_domain.name.toLowerCase(),
                     })}
                     <br />
+                    <br />
                     <BeltIcon belt={belt} />
+                    {' '}
+                    <strong>{skill_domain.name}</strong>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShow(false)}>{t('student.waitlist.remove.cancel')}</Button>
