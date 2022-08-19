@@ -85,19 +85,6 @@ def add_users() -> None:
 
     # add first user
     res = requests.post(API_URL + '/users', json={
-        'username': 'me',
-        'password': 'me',
-        'is_admin': True,
-    })
-    res.raise_for_status()
-    j = res.json()
-    print(j)
-    assert j['user']['username'] == 'me'
-    assert j['user']['is_admin']
-    user_id1 = j['user']['id']
-
-    # add second user
-    res = requests.post(API_URL + '/users', json={
         'username': 'tartempion',
         'password': 'correct horse battery staple',
         'is_admin': True,
@@ -107,9 +94,22 @@ def add_users() -> None:
     print(j)
     assert j['user']['username'] == 'tartempion'
     assert j['user']['is_admin']
+    user_id1 = j['user']['id']
+
+    # add temporary user
+    res = requests.post(API_URL + '/users', json={
+        'username': 'temporary',
+        'password': 'temporary',
+        'is_admin': False,
+    })
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    assert j['user']['username'] == 'temporary'
+    assert not j['user']['is_admin']
     user_id2 = j['user']['id']
 
-    # update second user
+    # update temporary user
     res = requests.put(API_URL + f'/users/{user_id2}', json={
         'is_admin': False,
     })
@@ -117,10 +117,10 @@ def add_users() -> None:
     j = res.json()
     print(j)
     assert j['user']['id'] == user_id2
-    assert j['user']['username'] == 'tartempion'
+    assert j['user']['username'] == 'temporary'
     assert not j['user']['is_admin']
 
-    # delete second user
+    # delete temporary user
     res = requests.delete(API_URL + f'/users/{user_id2}')
     res.raise_for_status()
     res = requests.get(API_URL + f'/users/{user_id2}')
@@ -132,7 +132,7 @@ def add_users() -> None:
     j = res.json()
     print(j)
     assert j['user']['id'] == user_id1
-    assert j['user']['username'] == 'me'
+    assert j['user']['username'] == 'tartempion'
     assert j['user']['is_admin']
 
     print('Tested /users resource')
