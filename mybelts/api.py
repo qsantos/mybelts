@@ -1491,6 +1491,8 @@ class WaitlistResource(Resource):
         with session_context() as session:
             me = authenticate(session)
             waitlist_entry = session.query(WaitlistEntry).get(waitlist_id)
+            if waitlist_entry is None:
+                abort(404, f'Waitlist entry {waitlist_id} not found')
             authorize(me, me.student is not None and me.student.id == waitlist_entry.student_id)
             session.query(WaitlistEntry).filter(WaitlistEntry.id == waitlist_id).delete()
             session.commit()
