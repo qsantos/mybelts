@@ -228,9 +228,9 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElem
                                         console.error('belt ' + belt_id + ' not found');
                                         return null;
                                     }
-                                    return <>
+                                    return <span key={skill_domain_id}>
                                         {skill_domain.name} <BeltIcon belt={belt} height={20} />
-                                    </>;
+                                    </span>;
                                 }), ' / ')}
                             </div>
                         </li>
