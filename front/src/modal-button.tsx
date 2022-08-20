@@ -54,7 +54,7 @@ export function ModalButton<T>(props: ModalButtonProps<T>): ReactElement {
                 __html: t(i18nPrefix + '.button', i18nArgs),
             }}></Button>
         </OverlayTrigger>
-        <Modal show={show}>
+        <Modal show={show} onHide={() => setShow(false)}>
             <Form onSubmit={handleSubmit} ref={formRef}>
                 <Modal.Header>
                     <Modal.Title>{t(i18nPrefix + '.title', i18nArgs)}</Modal.Title>
