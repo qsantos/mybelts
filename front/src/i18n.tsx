@@ -185,14 +185,14 @@ const resources = {
             'student.belts.achieved_belt.title': 'Achieved belt',
             'student.belts.actions.title': 'Actions',
             'student.belts.no_belt': 'No passed belt yet',
-            'student.waitlist.add.button': '<img src="/evaluation.png" height="30" />',  // TODO
+            'student.waitlist.add.button': '<img src="/evaluation.png" height="30" />',
             'student.waitlist.add.button.tooltip': 'Register to the next evaluation',
             'student.waitlist.add.title': 'Registration to the next evaluation',
             'student.waitlist.add.message': 'Are you sure you want to register to the next {{belt}} evaluation in {{skill_domain}}?',
             'student.waitlist.add.cancel': 'Cancel',
             'student.waitlist.add.confirm': 'Register',
             'student.waitlist.add.in_process': 'Registering',
-            'student.waitlist.remove.button': '<img src="/evaluation.png" height="30" />',  // TODO
+            'student.waitlist.remove.button': '<img src="/evaluation.png" height="30" />',
             'student.waitlist.remove.button.tooltip': 'Unregister from the next evaluation',
             'student.waitlist.remove.title': 'Unregistration from the next evaluation',
             'student.waitlist.remove.message': 'Are you sure you want to unregister from the next {{belt}} evaluation in {{skill_domain}}?',
@@ -453,14 +453,14 @@ const resources = {
             'student.belts.achieved_belt.title': 'Ceinture obtenue',
             'student.belts.actions.title': 'Actions',
             'student.belts.no_belt': 'Pas encore de ceinture obtenue',
-            'student.waitlist.add.button': '<img src="/evaluation.png" height="30" />',  // TODO
+            'student.waitlist.add.button': '<img src="/evaluation.png" height="30" />',
             'student.waitlist.add.button.tooltip': 'S\'inscire à la prochaine évaluation',
             'student.waitlist.add.title': 'Inscription à la prochaine évaluation',
             'student.waitlist.add.message': 'Êtes-vous sûr de vouloir vous inscrire à la prochaine évaluation pour la {{belt}} en {{skill_domain}} ?',
             'student.waitlist.add.cancel': 'Annuler',
             'student.waitlist.add.confirm': 'S\'inscire',
             'student.waitlist.add.in_process': 'Inscription',
-            'student.waitlist.remove.button': '<img src="/evaluation.png" height="30" />',  // TODO
+            'student.waitlist.remove.button': '<img src="/evaluation.png" height="30" />',
             'student.waitlist.remove.button.tooltip': 'Se désinscrire de la prochaine évaluation',
             'student.waitlist.remove.title': 'Désinscription de la prochaine évaluation',
             'student.waitlist.remove.message': 'Êtes-vous sûr de vouloir vous désinscrire de la prochaine évaluation pour la {{belt}} en {{skill_domain}} ?',

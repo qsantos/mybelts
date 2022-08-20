@@ -46,7 +46,9 @@ export function ModalButton<T>(props: ModalButtonProps<T>): ReactElement {
 
     return <>
         <OverlayTrigger overlay={<Tooltip>{t(i18nPrefix + '.button.tooltip')}</Tooltip>}>
-            <Button variant={variant || 'primary'} onClick={() => setShow(true)}>{t(i18nPrefix + '.button')}</Button>
+            <Button variant={variant || 'primary'} onClick={() => setShow(true)} dangerouslySetInnerHTML={{
+                __html: t(i18nPrefix + '.button'),
+            }}></Button>
         </OverlayTrigger>
         <Modal show={show}>
             <Form onSubmit={handleSubmit}>
