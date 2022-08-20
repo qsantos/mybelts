@@ -75,10 +75,10 @@ export function CreateEvaluationButton(props : CreateEvaluationButtonProps): Rea
                 </Form.Text>
             </Form.Group>
             <Form.Group controlId="date">
-                <Form.Label>{t('evaluation.add_edit.belt.help')}</Form.Label>
+                <Form.Label>{t('evaluation.add_edit.date.help')}</Form.Label>
                 <Form.Control type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
                 <Form.Text className="text-muted">
-                    {t('evaluation.add_edit.belt.help')}
+                    {t('evaluation.add_edit.date.help')}
                 </Form.Text>
             </Form.Group>
             <Form.Group controlId="success">
