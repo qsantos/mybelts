@@ -29,6 +29,9 @@ export function ModalButton<T>(props: ModalButtonProps<T>): ReactElement {
     const [errorMessage, setErrorMessage] = useState('');
     const [in_process, setIn_process] = useState(false);
 
+    const formRef = React.useRef<HTMLFormElement>(null);
+    React.useEffect(() => formRef.current?.querySelector('input')?.focus(), [show]);
+
     const handleSubmit = (event: FormEvent) => {
         setIn_process(true);
         event.preventDefault();
@@ -51,7 +54,7 @@ export function ModalButton<T>(props: ModalButtonProps<T>): ReactElement {
             }}></Button>
         </OverlayTrigger>
         <Modal show={show}>
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} ref={formRef}>
                 <Modal.Header>
                     <Modal.Title>{t(i18nPrefix + '.title')}</Modal.Title>
                 </Modal.Header>
