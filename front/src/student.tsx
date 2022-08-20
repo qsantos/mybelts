@@ -7,6 +7,8 @@ import Table from 'react-bootstrap/Table';
 
 import { BeltIcon } from './belt';
 import {
+    ClassLevel,
+    SchoolClass,
     Student, StudentsService,
     Evaluation, SkillDomain, Belt,
     WaitlistEntry, WaitlistService
@@ -14,17 +16,19 @@ import {
 import { ModalButton } from './modal-button';
 
 interface CreateStudentButtonProps {
-    school_class_id: number;
+    school_class: SchoolClass;
+    class_level: ClassLevel;
     createdCallback?: (student: Student) => void;
 }
 
 export function CreateStudentButton(props : CreateStudentButtonProps): ReactElement {
-    const { school_class_id, createdCallback } = props;
+    const { school_class, class_level, createdCallback } = props;
     const { t } = useTranslation();
 
     return (
         <ModalButton
             i18nPrefix="student.add"
+            i18nArgs={{ class_level, school_class }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     display_name: {value: string};
@@ -32,7 +36,7 @@ export function CreateStudentButton(props : CreateStudentButtonProps): ReactElem
                     password: {value: string};
                 };
                 return StudentsService.postStudentsResource({
-                    school_class_id: school_class_id,
+                    school_class_id: school_class.id,
                     display_name: typed_form.display_name.value,
                     username: typed_form.username.value,
                     password: typed_form.password.value,
@@ -77,6 +81,7 @@ export function EditStudentButton(props : EditStudentButtonProps): ReactElement 
     return (
         <ModalButton
             i18nPrefix="student.edit"
+            i18nArgs={{ student }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     display_name: {value: string};
@@ -138,10 +143,11 @@ export function DeleteStudentButton(props : DeleteStudentButtonProps): ReactElem
         <ModalButton
             variant="danger"
             i18nPrefix="student.delete"
+            i18nArgs={{ student }}
             onSubmit={() => StudentsService.deleteStudentResource(student.id)}
             onResponse={() => deletedCallback?.()}
         >
-            {t('student.delete.message')}
+            {t('student.delete.message', { student })}
         </ModalButton>
     );
 }
@@ -203,6 +209,7 @@ export function AddToWaitlistButton(props: AddToWaitlistButtonProps): ReactEleme
         <ModalButton
             variant="success"
             i18nPrefix="student.waitlist.add"
+            i18nArgs={{ student, skill_domain, belt }}
             onSubmit={() => StudentsService.postStudentWaitlistResource(student.id, {
                 skill_domain_id: skill_domain.id,
                 belt_id: belt.id,
@@ -239,6 +246,7 @@ export function RemoveFromWaitlistButton(props: RemoveFromWaitlistButtonProps): 
         <ModalButton
             variant="danger"
             i18nPrefix="student.waitlist.remove"
+            i18nArgs={{ student, skill_domain, belt }}
             onSubmit={() => WaitlistService.deleteWaitlistResource(waitlist_entry.id)}
             onResponse={() => removedCallback?.()}
         >

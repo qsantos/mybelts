@@ -8,30 +8,31 @@ import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Table from 'react-bootstrap/Table';
 
-import { SchoolClass, SchoolClassesService, Student, SkillDomain, Belt, WaitlistEntry } from './api';
+import { ClassLevel, SchoolClass, SchoolClassesService, Student, SkillDomain, Belt, WaitlistEntry } from './api';
 import { AdminOnly } from './auth';
 import { BeltIcon } from './belt';
 import { joinArray } from './lib';
 import { ModalButton } from './modal-button';
 
 interface CreateSchoolClassButtonProps {
-    class_level_id: number;
+    class_level: ClassLevel;
     createdCallback?: (school_class: SchoolClass) => void;
 }
 
 export function CreateSchoolClassButton(props : CreateSchoolClassButtonProps): ReactElement {
-    const { class_level_id, createdCallback } = props;
+    const { class_level, createdCallback } = props;
     const { t } = useTranslation();
 
     return <>
         <ModalButton
             i18nPrefix="school_class.add"
+            i18nArgs={{ class_level }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     suffix: {value: string};
                 };
                 return SchoolClassesService.postSchoolClassesResource({
-                    class_level_id: class_level_id,
+                    class_level_id: class_level.id,
                     suffix: typed_form.suffix.value,
                 });
             }}
@@ -49,17 +50,19 @@ export function CreateSchoolClassButton(props : CreateSchoolClassButtonProps): R
 }
 
 interface EditSchoolClassButtonProps {
+    class_level: ClassLevel;
     school_class: SchoolClass;
     changedCallback?: (changed_school_class: SchoolClass) => void;
 }
 
 export function EditSchoolClassButton(props : EditSchoolClassButtonProps): ReactElement {
-    const { school_class, changedCallback } = props;
+    const { class_level, school_class, changedCallback } = props;
     const { t } = useTranslation();
 
     return (
         <ModalButton
             i18nPrefix="school_class.edit"
+            i18nArgs={{ class_level, school_class }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     suffix: {value: string};
@@ -82,33 +85,36 @@ export function EditSchoolClassButton(props : EditSchoolClassButtonProps): React
 }
 
 interface DeleteSchoolClassButtonProps {
+    class_level: ClassLevel;
     school_class: SchoolClass;
     deletedCallback?: () => void;
 }
 
 export function DeleteSchoolClassButton(props : DeleteSchoolClassButtonProps): ReactElement {
-    const { school_class, deletedCallback } = props;
+    const { class_level, school_class, deletedCallback } = props;
     const { t } = useTranslation();
 
     return (
         <ModalButton
             variant="danger"
             i18nPrefix="school_class.delete"
+            i18nArgs={{ class_level, school_class }}
             onSubmit={() => SchoolClassesService.deleteSchoolClassResource(school_class.id)}
             onResponse={() => deletedCallback?.()}
         >
-            {t('school_class.delete.message')}
+            {t('school_class.delete.message', { class_level, school_class })}
         </ModalButton>
     );
 }
 
 interface SchoolClassListingProps {
+    class_level: ClassLevel,
     school_classes: SchoolClass[];
     setSchoolClasses: (school_classes: SchoolClass[]) => void;
 }
 
 export function SchoolClassListing(props: SchoolClassListingProps): ReactElement {
-    const { school_classes, setSchoolClasses } = props;
+    const { class_level, school_classes, setSchoolClasses } = props;
     const { t } = useTranslation();
     return <>
         <Table>
@@ -130,17 +136,25 @@ export function SchoolClassListing(props: SchoolClassListingProps): ReactElement
                         </td>
                         <AdminOnly>
                             <td>
-                                <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
-                                    const new_school_classes = [...school_classes];
-                                    new_school_classes[index] = new_school_class;
-                                    setSchoolClasses(new_school_classes);
-                                }} />
+                                <EditSchoolClassButton
+                                    class_level={class_level}
+                                    school_class={school_class}
+                                    changedCallback={new_school_class => {
+                                        const new_school_classes = [...school_classes];
+                                        new_school_classes[index] = new_school_class;
+                                        setSchoolClasses(new_school_classes);
+                                    }}
+                                />
                                 {' '}
-                                <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => {
-                                    const new_school_classes = [...school_classes];
-                                    new_school_classes.splice(index, 1);
-                                    setSchoolClasses(new_school_classes);
-                                }} />
+                                <DeleteSchoolClassButton
+                                    class_level={class_level}
+                                    school_class={school_class}
+                                    deletedCallback={() => {
+                                        const new_school_classes = [...school_classes];
+                                        new_school_classes.splice(index, 1);
+                                        setSchoolClasses(new_school_classes);
+                                    }}
+                                />
                             </td>
                         </AdminOnly>
                     </tr>

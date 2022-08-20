@@ -126,6 +126,7 @@ export function EditBeltButton(props : EditBeltButtonProps): ReactElement {
     return (
         <ModalButton
             i18nPrefix="belt.edit"
+            i18nArgs={{ belt }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     name: {value: string};
@@ -169,10 +170,11 @@ export function DeleteBeltButton(props : DeleteBeltButtonProps): ReactElement {
         <ModalButton
             variant="danger"
             i18nPrefix="belt.delete"
+            i18nArgs={{ belt }}
             onSubmit={() => BeltsService.deleteBeltResource(belt.id)}
             onResponse={() => deletedCallback?.()}
         >
-            {t('belt.delete.message')}
+            {t('belt.delete.message', { belt })}
         </ModalButton>
     );
 }

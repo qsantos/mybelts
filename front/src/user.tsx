@@ -69,6 +69,7 @@ export function EditUserButton(props : EditUserButtonProps): ReactElement {
     return (
         <ModalButton
             i18nPrefix="user.edit"
+            i18nArgs={{ user }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     username: {value: string};
@@ -117,11 +118,14 @@ export function DeleteUserButton(props : DeleteUserButtonProps): ReactElement {
     const { t } = useTranslation();
 
     return (
-        <ModalButton variant="danger" i18nPrefix="user.delete"
+        <ModalButton
+            variant="danger"
+            i18nPrefix="user.delete"
+            i18nArgs={{ user }}
             onSubmit={() => UsersService.deleteUserResource(user.id)}
             onResponse={() => deletedCallback?.()}
         >
-            {t('user.delete.message')}
+            {t('user.delete.message', { user })}
         </ModalButton>
     );
 }

@@ -55,6 +55,7 @@ export function EditClassLevelButton(props : EditClassLevelButtonProps): ReactEl
     return (
         <ModalButton
             i18nPrefix="class_level.edit"
+            i18nArgs={{ class_level }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     prefix: {value: string};
@@ -89,10 +90,11 @@ export function DeleteClassLevelButton(props : DeleteClassLevelButtonProps): Rea
         <ModalButton
             variant="danger"
             i18nPrefix="class_level.delete"
+            i18nArgs={{ class_level }}
             onSubmit={() => ClassLevelsService.deleteClassLevelResource(class_level.id)}
             onResponse={() => deletedCallback?.()}
         >
-            {t('class_level.delete.message')}
+            {t('class_level.delete.message', { class_level })}
         </ModalButton>
     );
 }

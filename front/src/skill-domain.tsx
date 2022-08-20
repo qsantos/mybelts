@@ -53,6 +53,7 @@ export function EditSkillDomainButton(props : EditSkillDomainButtonProps): React
     return (
         <ModalButton
             i18nPrefix="skill_domain.edit"
+            i18nArgs={{ skill_domain }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     name: {value: string};
@@ -87,10 +88,11 @@ export function DeleteSkillDomainButton(props : DeleteSkillDomainButtonProps): R
         <ModalButton
             variant="danger"
             i18nPrefix="skill_domain.delete"
+            i18nArgs={{ skill_domain }}
             onSubmit={() => SkillDomainsService.deleteSkillDomainResource(skill_domain.id)}
             onResponse={() => deletedCallback?.()}
         >
-            {t('skill_domain.delete.message')}
+            {t('skill_domain.delete.message', { skill_domain })}
         </ModalButton>
     );
 }

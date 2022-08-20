@@ -396,11 +396,15 @@ function ClassLevelView() {
         </AdminOnly>
         <h4>{t('school_class.list.title.secondary')}</h4>
         <AdminOnly>
-            <CreateSchoolClassButton class_level_id={class_level.id} createdCallback={new_school_class => {
-                setSchoolClassList({ ...schoolClassList, school_classes: [...school_classes, new_school_class] });
-            }} />
+            <CreateSchoolClassButton
+                class_level={class_level}
+                createdCallback={new_school_class => {
+                    setSchoolClassList({ ...schoolClassList, school_classes: [...school_classes, new_school_class] });
+                }}
+            />
         </AdminOnly>
         <SchoolClassListing
+            class_level={class_level}
             school_classes={sorted_school_classes}
             setSchoolClasses={new_school_classes => setSchoolClassList({ ...schoolClassList, school_classes: new_school_classes })}
         />
@@ -485,15 +489,27 @@ function SchoolClassView() {
                     waitlist_entries={waitlistEntryList.waitlist_entries}
                 />
             }
-            <EditSchoolClassButton school_class={school_class} changedCallback={new_school_class => {
-                setStudentList({ ...studentList, school_class: new_school_class });
-            }} />
+            <EditSchoolClassButton
+                class_level={class_level}
+                school_class={school_class}
+                changedCallback={new_school_class => {
+                    setStudentList({ ...studentList, school_class: new_school_class });
+                }}
+            />
             {' '}
-            <DeleteSchoolClassButton school_class={school_class} deletedCallback={() => navigate('/class-levels/' + class_level.id)} />
+            <DeleteSchoolClassButton
+                class_level={class_level}
+                school_class={school_class}
+                deletedCallback={() => navigate('/class-levels/' + class_level.id)}
+            />
             <h4>{t('student.list.title.secondary')}</h4>
-            <CreateStudentButton school_class_id={school_class.id} createdCallback={new_student => {
-                setStudentList({ ...studentList, students: [...students, new_student] });
-            }} />
+            <CreateStudentButton
+                school_class={school_class}
+                class_level={class_level}
+                createdCallback={new_student => {
+                    setStudentList({ ...studentList, students: [...students, new_student] });
+                }}
+            />
             {' '}
             <UpdateStudentRanks students={students} changedCallback={new_students => {
                 setStudentList({ ...studentList, students: new_students });

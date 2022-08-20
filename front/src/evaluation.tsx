@@ -43,6 +43,7 @@ export function CreateEvaluationButton(props : CreateEvaluationButtonProps): Rea
     return (
         <ModalButton
             i18nPrefix="evaluation.add"
+            i18nArgs={{ student }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     skill_domain: {value: string};
@@ -113,6 +114,7 @@ export function EditEvaluationButton(props : EditEvaluationButtonProps): ReactEl
     return (
         <ModalButton
             i18nPrefix="evaluation.edit"
+            i18nArgs={{ student, skill_domain, belt }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     skill_domain: {value: string};
@@ -178,22 +180,25 @@ export function EditEvaluationButton(props : EditEvaluationButtonProps): ReactEl
 
 interface DeleteEvaluationButtonProps {
     student: Student;
+    skill_domain: SkillDomain;
+    belt: Belt;
     evaluation: Evaluation;
     deletedCallback?: () => void;
 }
 
 export function DeleteEvaluationButton(props : DeleteEvaluationButtonProps): ReactElement {
-    const { student, evaluation, deletedCallback } = props;
+    const { student, skill_domain, belt, evaluation, deletedCallback } = props;
     const { t } = useTranslation();
 
     return (
         <ModalButton
+            i18nArgs={{ student, skill_domain, belt }}
             variant="danger"
             i18nPrefix="evaluation.delete"
             onSubmit={() => EvaluationsService.deleteEvaluationResource(evaluation.id)}
             onResponse={() => deletedCallback?.()}
         >
-            {t('evaluation.delete.message')}
+            {t('evaluation.delete.message', { student, skill_domain, belt })}
         </ModalButton>
     );
 }
@@ -316,11 +321,17 @@ export function EvaluationListing(props: EvaluationListingProps): ReactElement {
                         }}
                     />
                     {' '}
-                    <DeleteEvaluationButton evaluation={evaluation} student={student} deletedCallback={() => {
-                        const new_evaluations = [...evaluations];
-                        new_evaluations.splice(info.row.index, 1);
-                        setEvaluations(new_evaluations);
-                    }} />
+                    <DeleteEvaluationButton
+                        evaluation={evaluation}
+                        student={student}
+                        skill_domain={skill_domain}
+                        belt={belt}
+                        deletedCallback={() => {
+                            const new_evaluations = [...evaluations];
+                            new_evaluations.splice(info.row.index, 1);
+                            setEvaluations(new_evaluations);
+                        }}
+                    />
                 </>;
             },
         });
