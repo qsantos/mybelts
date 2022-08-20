@@ -1,11 +1,9 @@
 import React from 'react';
-import { FormEvent, ReactElement, useState } from 'react';
+import { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Spinner from 'react-bootstrap/Spinner';
 import Table from 'react-bootstrap/Table';
@@ -15,6 +13,7 @@ import { Belt, BeltsService } from './api';
 import { AdminOnly } from './auth';
 import { ReactComponent as BeltImage } from './belt.svg';
 import { getAPIError } from './lib';
+import { ModalButton } from './modal-button';
 
 interface BeltIconProps {
     belt: Belt;
@@ -37,61 +36,29 @@ interface CreateBeltButtonProps {
 export function CreateBeltButton(props : CreateBeltButtonProps): ReactElement {
     const { createdCallback } = props;
     const { t } = useTranslation();
-    const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [creating, setCreating] = useState(false);
 
-    function handleSubmit(event: FormEvent) {
-        setCreating(true);
-        event.preventDefault();
-        const target = event.target as typeof event.target & {
-            name: {value: string};
-        };
-        BeltsService.postBeltsResource({
-            name: target.name.value,
-        }).then(({ belt }) => {
-            setShow(false);
-            setCreating(false);
-            if (createdCallback !== undefined) {
-                createdCallback(belt);
-            }
-        }).catch(error => {
-            setCreating(false);
-            setErrorMessage(getAPIError(error));
-        });
-    }
-
-    return <>
-        <Button onClick={() => setShow(true)}>{t('belt.add.button')}</Button>
-        <Modal show={show}>
-            <Form onSubmit={handleSubmit}>
-                <Modal.Header>
-                    <Modal.Title>{t('belt.add.title')}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-                    <Form.Group controlId="name">
-                        <Form.Label>{t('belt.add_edit.name.title')}</Form.Label>
-                        <Form.Control type="text" placeholder={t('belt.add_edit.name.placeholder')}/>
-                        <Form.Text className="text-muted">
-                            {t('belt.add_edit.name.help')}
-                        </Form.Text>
-                    </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>{t('belt.add.cancel')}</Button>
-                    {creating
-                        ? <Button disabled type="submit">
-                            <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">{t('belt.add.in_process')}</span>
-                            </Spinner>
-                        </Button>
-                        : <Button type="submit">{t('belt.add.confirm')}</Button>
-                    }
-                </Modal.Footer>
-            </Form>
-        </Modal>
-    </>;
+    return (
+        <ModalButton
+            i18nPrefix="belt.add"
+            onSubmit={(form: EventTarget) => {
+                const typed_form = form as typeof form & {
+                    name: {value: string};
+                };
+                return BeltsService.postBeltsResource({
+                    name: typed_form.name.value,
+                });
+            }}
+            onResponse={({ belt }) => createdCallback?.(belt)}
+        >
+            <Form.Group controlId="name">
+                <Form.Label>{t('belt.add_edit.name.title')}</Form.Label>
+                <Form.Control type="text" placeholder={t('belt.add_edit.name.placeholder')}/>
+                <Form.Text className="text-muted">
+                    {t('belt.add_edit.name.help')}
+                </Form.Text>
+            </Form.Group>
+        </ModalButton>
+    );
 }
 
 interface MoveBeltButtonProps {
@@ -155,72 +122,38 @@ interface EditBeltButtonProps {
 export function EditBeltButton(props : EditBeltButtonProps): ReactElement {
     const { belt, changedCallback } = props;
     const { t } = useTranslation();
-    const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [changing, setChanging] = useState(false);
 
-    function handleSubmit(event: FormEvent) {
-        setChanging(true);
-        event.preventDefault();
-        const target = event.target as typeof event.target & {
-            name: {value: string};
-            color: {value: string};
-        };
-        BeltsService.putBeltResource(belt.id, {
-            name: target.name.value,
-            color: target.color.value,
-        }).then(({ belt: changed_belt }) => {
-            setChanging(false);
-            setShow(false);
-            if (changedCallback !== undefined) {
-                changedCallback(changed_belt);
-            }
-        }).catch(error => {
-            setChanging(false);
-            setErrorMessage(getAPIError(error));
-        });
-    }
-
-    return <>
-        <OverlayTrigger overlay={<Tooltip>{t('belt.edit.button')}</Tooltip>}>
-            <Button onClick={() => setShow(true)}>✏️</Button>
-        </OverlayTrigger>
-        <Modal show={show}>
-            <Form onSubmit={handleSubmit}>
-                <Modal.Header>
-                    <Modal.Title>{t('belt.edit.title')}: {belt.name}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {errorMessage && <Alert variant="danger">{t('error')}l: {errorMessage}</Alert>}
-                    <Form.Group controlId="name">
-                        <Form.Label>{t('belt.add_edit.name.title')}</Form.Label>
-                        <Form.Control type="text" placeholder={t('belt.add_edit.name.placeholder')} defaultValue={belt.name} />
-                        <Form.Text className="text-muted">
-                            {t('belt.add_edit.name.help')}
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group controlId="color">
-                        <Form.Label>{t('belt.add_edit.color.title')}</Form.Label>
-                        <Form.Control type="color" defaultValue={belt.color} title="{t('belt.add_edit.color.help')}" />
-                        <Form.Text className="text-muted">
-                            {t('belt.add_edit.color.help')}
-                        </Form.Text>
-                    </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>{t('belt.edit.cancel')}</Button>
-                    {changing
-                        ? <Button type="submit" disabled>
-                            <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">{t('belt.edit.in_process')}</span>
-                            </Spinner>
-                        </Button>
-                        : <Button type="submit">{t('belt.edit.confirm')}</Button>
-                    }
-                </Modal.Footer>
-            </Form>
-        </Modal>
-    </>;
+    return (
+        <ModalButton
+            i18nPrefix="belt.edit"
+            onSubmit={(form: EventTarget) => {
+                const typed_form = form as typeof form & {
+                    name: {value: string};
+                    color: {value: string};
+                };
+                return BeltsService.putBeltResource(belt.id, {
+                    name: typed_form.name.value,
+                    color: typed_form.color.value,
+                });
+            }}
+            onResponse={({ belt: changed_belt }) => changedCallback?.(changed_belt)}
+        >
+            <Form.Group controlId="name">
+                <Form.Label>{t('belt.add_edit.name.title')}</Form.Label>
+                <Form.Control type="text" placeholder={t('belt.add_edit.name.placeholder')} defaultValue={belt.name} />
+                <Form.Text className="text-muted">
+                    {t('belt.add_edit.name.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="color">
+                <Form.Label>{t('belt.add_edit.color.title')}</Form.Label>
+                <Form.Control type="color" defaultValue={belt.color} title="{t('belt.add_edit.color.help')}" />
+                <Form.Text className="text-muted">
+                    {t('belt.add_edit.color.help')}
+                </Form.Text>
+            </Form.Group>
+        </ModalButton>
+    );
 }
 
 interface DeleteBeltButtonProps {
@@ -231,49 +164,17 @@ interface DeleteBeltButtonProps {
 export function DeleteBeltButton(props : DeleteBeltButtonProps): ReactElement {
     const { belt, deletedCallback } = props;
     const { t } = useTranslation();
-    const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [deleting, setDeleting] = useState(false);
 
-    function handleDelete() {
-        setDeleting(true);
-        BeltsService.deleteBeltResource(belt.id).then(() => {
-            setShow(false);
-            setDeleting(false);
-            if (deletedCallback !== undefined ){
-                deletedCallback();
-            }
-        }).catch(error => {
-            setDeleting(false);
-            setErrorMessage(getAPIError(error));
-        });
-    }
-
-    return <>
-        <OverlayTrigger overlay={<Tooltip>{t('belt.delete.button')}</Tooltip>}>
-            <Button variant="danger" onClick={() => setShow(true)}>🗑️</Button>
-        </OverlayTrigger>
-        <Modal show={show}>
-            <Modal.Header>
-                <Modal.Title>{t('belt.delete.title')}: {belt.name}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-                {t('belt.delete.message')}
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShow(false)}>{t('belt.delete.cancel')}</Button>
-                {deleting
-                    ? <Button disabled variant="danger">
-                        <Spinner animation="border" role="status" size="sm">
-                            <span className="visually-hidden">{t('belt.delete.in_process')}</span>
-                        </Spinner>
-                    </Button>
-                    : <Button variant="danger" onClick={handleDelete}>{t('belt.delete.confirm')}</Button>
-                }
-            </Modal.Footer>
-        </Modal>
-    </>;
+    return (
+        <ModalButton
+            variant="danger"
+            i18nPrefix="belt.delete"
+            onSubmit={() => BeltsService.deleteBeltResource(belt.id)}
+            onResponse={() => deletedCallback?.()}
+        >
+            {t('belt.delete.message')}
+        </ModalButton>
+    );
 }
 
 interface BeltListingProps {

@@ -1,18 +1,12 @@
 import React from 'react';
-import { FormEvent, ReactElement, useState } from 'react';
+import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Alert from 'react-bootstrap/Alert';
-import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Spinner from 'react-bootstrap/Spinner';
 import Table from 'react-bootstrap/Table';
-import Tooltip from 'react-bootstrap/Tooltip';
 
 import { User, UsersService } from './api';
-import { getAPIError } from './lib';
+import { ModalButton }from './modal-button';
 
 interface CreateUserButtonProps {
     createdCallback?: (user: User) => void;
@@ -21,78 +15,46 @@ interface CreateUserButtonProps {
 export function CreateUserButton(props : CreateUserButtonProps): ReactElement {
     const { createdCallback } = props;
     const { t } = useTranslation();
-    const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [creating, setCreating] = useState(false);
 
-    function handleSubmit(event: FormEvent) {
-        setCreating(true);
-        event.preventDefault();
-        const target = event.target as typeof event.target & {
-            username: {value: string};
-            password: {value: string};
-            is_admin: {checked: boolean};
-        };
-        UsersService.postUsersResource({
-            username: target.username.value,
-            password: target.password.value,
-            is_admin: target.is_admin.checked,
-        }).then(({ user }) => {
-            setShow(false);
-            setCreating(false);
-            if (createdCallback !== undefined) {
-                createdCallback(user);
-            }
-        }).catch(error => {
-            setCreating(false);
-            setErrorMessage(getAPIError(error));
-        });
-    }
-
-    return <>
-        <Button onClick={() => setShow(true)}>{t('user.add.button')}</Button>
-        <Modal show={show}>
-            <Form onSubmit={handleSubmit}>
-                <Modal.Header>
-                    <Modal.Title>{t('user.add.title')}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-                    <Form.Group controlId="username">
-                        <Form.Label>{t('user.add_edit.username.title')}</Form.Label>
-                        <Form.Control type="text" placeholder={t('user.add_edit.username.placeholder')}/>
-                        <Form.Text className="text-muted">
-                            {t('user.add_edit.username.help')}
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group controlId="password">
-                        <Form.Label>{t('user.add_edit.password.title')}</Form.Label>
-                        <Form.Control type="password" />
-                        <Form.Text className="text-muted">
-                            {t('user.add_edit.password.help')}
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group controlId="is_admin">
-                        <Form.Check label={t('user.add_edit.is_admin.title')}/>
-                        <Form.Text className="text-muted">
-                            {t('user.add_edit.is_admin.help')}
-                        </Form.Text>
-                    </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>{t('user.add.cancel')}</Button>
-                    {creating
-                        ? <Button disabled type="submit">
-                            <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">{t('user.add.in_process')}</span>
-                            </Spinner>
-                        </Button>
-                        : <Button type="submit">{t('user.add.confirm')}</Button>
-                    }
-                </Modal.Footer>
-            </Form>
-        </Modal>
-    </>;
+    return (
+        <ModalButton
+            i18nPrefix="user.add"
+            onSubmit={(form: EventTarget) => {
+                const typed_form = form as typeof form & {
+                    username: {value: string};
+                    password: {value: string};
+                    is_admin: {checked: boolean};
+                };
+                return UsersService.postUsersResource({
+                    username: typed_form.username.value,
+                    password: typed_form.password.value,
+                    is_admin: typed_form.is_admin.checked,
+                });
+            }}
+            onResponse={({ user }) => createdCallback?.(user)}
+        >
+            <Form.Group controlId="username">
+                <Form.Label>{t('user.add_edit.username.title')}</Form.Label>
+                <Form.Control type="text" placeholder={t('user.add_edit.username.placeholder')}/>
+                <Form.Text className="text-muted">
+                    {t('user.add_edit.username.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="password">
+                <Form.Label>{t('user.add_edit.password.title')}</Form.Label>
+                <Form.Control type="password" />
+                <Form.Text className="text-muted">
+                    {t('user.add_edit.password.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="is_admin">
+                <Form.Check label={t('user.add_edit.is_admin.title')}/>
+                <Form.Text className="text-muted">
+                    {t('user.add_edit.is_admin.help')}
+                </Form.Text>
+            </Form.Group>
+        </ModalButton>
+    );
 }
 
 interface EditUserButtonProps {
@@ -153,49 +115,15 @@ interface DeleteUserButtonProps {
 export function DeleteUserButton(props : DeleteUserButtonProps): ReactElement {
     const { user, deletedCallback } = props;
     const { t } = useTranslation();
-    const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [deleting, setDeleting] = useState(false);
 
-    function handleDelete() {
-        setDeleting(true);
-        UsersService.deleteUserResource(user.id).then(() => {
-            setShow(false);
-            setDeleting(false);
-            if (deletedCallback !== undefined ){
-                deletedCallback();
-            }
-        }).catch(error => {
-            setDeleting(false);
-            setErrorMessage(getAPIError(error));
-        });
-    }
-
-    return <>
-        <OverlayTrigger overlay={<Tooltip>{t('user.delete.button')}</Tooltip>}>
-            <Button variant="danger" onClick={() => setShow(true)}>🗑️</Button>
-        </OverlayTrigger>
-        <Modal show={show}>
-            <Modal.Header>
-                <Modal.Title>{t('user.delete.title')}: {user.username}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-                {t('user.delete.message')}
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShow(false)}>{t('user.delete.cancel')}</Button>
-                {deleting
-                    ? <Button disabled variant="danger">
-                        <Spinner animation="border" role="status" size="sm">
-                            <span className="visually-hidden">{t('user.delete.in_process')}</span>
-                        </Spinner>
-                    </Button>
-                    : <Button variant="danger" onClick={handleDelete}>{t('user.delete.confirm')}</Button>
-                }
-            </Modal.Footer>
-        </Modal>
-    </>;
+    return (
+        <ModalButton variant="danger" i18nPrefix="user.delete"
+            onSubmit={() => UsersService.deleteUserResource(user.id)}
+            onResponse={() => deletedCallback?.()}
+        >
+            {t('user.delete.message')}
+        </ModalButton>
+    );
 }
 
 interface UserListingProps {

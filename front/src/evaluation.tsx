@@ -1,23 +1,18 @@
 import React from 'react';
-import { FormEvent, ReactElement, useState } from 'react';
+import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import Select from 'react-select';
 import { Link } from 'react-router-dom';
 
-import Alert from 'react-bootstrap/Alert';
-import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
 import Nav from 'react-bootstrap/Nav';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Spinner from 'react-bootstrap/Spinner';
-import Tooltip from 'react-bootstrap/Tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { Belt, SkillDomain, Student, Evaluation, EvaluationsService, SchoolClassStudentBeltsStudentBelts } from './api';
 import { LoginContext, is_admin } from './auth';
 import { BeltIcon } from './belt';
-import { formatDate, formatDatetime, getAPIError } from './lib';
+import { formatDate, formatDatetime } from './lib';
+import { ModalButton } from './modal-button';
 import { SortTable } from './sort-table';
 import { EditStudentButton, DeleteStudentButton } from './student';
 
@@ -31,36 +26,6 @@ interface CreateEvaluationButtonProps {
 export function CreateEvaluationButton(props : CreateEvaluationButtonProps): ReactElement {
     const { student, skill_domains, belts, createdCallback } = props;
     const { t } = useTranslation();
-    const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [creating, setCreating] = useState(false);
-
-    function handleSubmit(event: FormEvent) {
-        setCreating(true);
-        event.preventDefault();
-        const target = event.target as typeof event.target & {
-            skill_domain: {value: string};
-            belt: {value: string};
-            date: {value: string};
-            success: {checked: boolean};
-        };
-        EvaluationsService.postEvaluationsResource({
-            student_id: student.id,
-            skill_domain_id: parseInt(target.skill_domain.value),
-            belt_id: parseInt(target.belt.value),
-            date: target.date.value,
-            success: target.success.checked,
-        }).then(({ evaluation }) => {
-            setShow(false);
-            setCreating(false);
-            if (createdCallback !== undefined) {
-                createdCallback(evaluation);
-            }
-        }).catch(error => {
-            setCreating(false);
-            setErrorMessage(getAPIError(error));
-        });
-    }
 
     const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
     const sorted_belts = belts.sort((a, b) => a.rank - b.rank);
@@ -75,57 +40,55 @@ export function CreateEvaluationButton(props : CreateEvaluationButtonProps): Rea
         label: belt.name,
     }));
 
-    return <>
-        <Button onClick={() => setShow(true)}>{t('evaluation.add.button')}</Button>
-        <Modal show={show}>
-            <Form onSubmit={handleSubmit}>
-                <Modal.Header>
-                    <Modal.Title>{t('evaluation.add.title')} {student.display_name}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-                    <Form.Group controlId="skill_domain">
-                        <Form.Label>{t('evaluation.add_edit.skill_domain.title')}</Form.Label>
-                        <Select id="skill_domain" name="skill_domain" options={skill_domain_options} />
-                        <Form.Text className="text-muted">
-                            {t('evaluation.add_edit.skill_domain.help')}
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group controlId="belt">
-                        <Form.Label>{t('evaluation.add_edit.belt.title')}</Form.Label>
-                        <Select id="belt" name="belt" options={belt_options} />
-                        <Form.Text className="text-muted">
-                            {t('evaluation.add_edit.belt.help')}
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group controlId="date">
-                        <Form.Label>{t('evaluation.add_edit.belt.help')}</Form.Label>
-                        <Form.Control type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
-                        <Form.Text className="text-muted">
-                            {t('evaluation.add_edit.belt.help')}
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group controlId="success">
-                        <Form.Check label={t('evaluation.add_edit.passed.title')} />
-                        <Form.Text className="text-muted">
-                            {t('evaluation.add_edit.passed.help')}
-                        </Form.Text>
-                    </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>{t('evaluation.add.cancel')}</Button>
-                    {creating
-                        ? <Button disabled type="submit">
-                            <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">{t('evaluation.add.in_process')}</span>
-                            </Spinner>
-                        </Button>
-                        : <Button type="submit">{t('evaluation.add.confirm')}</Button>
-                    }
-                </Modal.Footer>
-            </Form>
-        </Modal>
-    </>;
+    return (
+        <ModalButton
+            i18nPrefix="evaluation.add"
+            onSubmit={(form: EventTarget) => {
+                const typed_form = form as typeof form & {
+                    skill_domain: {value: string};
+                    belt: {value: string};
+                    date: {value: string};
+                    success: {checked: boolean};
+                };
+                return EvaluationsService.postEvaluationsResource({
+                    student_id: student.id,
+                    skill_domain_id: parseInt(typed_form.skill_domain.value),
+                    belt_id: parseInt(typed_form.belt.value),
+                    date: typed_form.date.value,
+                    success: typed_form.success.checked,
+                });
+            }}
+            onResponse={({ evaluation }) => createdCallback?.(evaluation)}
+        >
+            <Form.Group controlId="skill_domain">
+                <Form.Label>{t('evaluation.add_edit.skill_domain.title')}</Form.Label>
+                <Select id="skill_domain" name="skill_domain" options={skill_domain_options} />
+                <Form.Text className="text-muted">
+                    {t('evaluation.add_edit.skill_domain.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="belt">
+                <Form.Label>{t('evaluation.add_edit.belt.title')}</Form.Label>
+                <Select id="belt" name="belt" options={belt_options} />
+                <Form.Text className="text-muted">
+                    {t('evaluation.add_edit.belt.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="date">
+                <Form.Label>{t('evaluation.add_edit.belt.help')}</Form.Label>
+                <Form.Control type="date" defaultValue={new Date().toISOString().slice(0, 10)} />
+                <Form.Text className="text-muted">
+                    {t('evaluation.add_edit.belt.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="success">
+                <Form.Check label={t('evaluation.add_edit.passed.title')} />
+                <Form.Text className="text-muted">
+                    {t('evaluation.add_edit.passed.help')}
+                </Form.Text>
+            </Form.Group>
+        </ModalButton>
+    );
 }
 
 interface Option {
@@ -146,105 +109,71 @@ interface EditEvaluationButtonProps {
 export function EditEvaluationButton(props : EditEvaluationButtonProps): ReactElement {
     const { evaluation, student, skill_domain, belt, skill_domain_options, belt_options, changedCallback } = props;
     const { t } = useTranslation();
-    const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [changing, setChanging] = useState(false);
 
-    function handleSubmit(event: FormEvent) {
-        setChanging(true);
-        event.preventDefault();
-        const target = event.target as typeof event.target & {
-            skill_domain: {value: string};
-            belt: {value: string};
-            date: {value: string};
-            success: {checked: boolean};
-        };
-        EvaluationsService.putEvaluationResource(evaluation.id, {
-            skill_domain_id: parseInt(target.skill_domain.value),
-            belt_id: parseInt(target.belt.value),
-            date: target.date.value,
-            success: target.success.checked,
-        }).then(({ evaluation: changed_evaluation }) => {
-            setChanging(false);
-            setShow(false);
-            if (changedCallback !== undefined) {
-                changedCallback(changed_evaluation);
-            }
-        }).catch(error => {
-            setChanging(false);
-            setErrorMessage(getAPIError(error));
-        });
-    }
-
-    return <>
-        <OverlayTrigger overlay={<Tooltip>{t('evaluation.edit.button')}</Tooltip>}>
-            <Button onClick={() => setShow(true)}>✏️</Button>
-        </OverlayTrigger>
-        <Modal show={show}>
-            <Form onSubmit={handleSubmit}>
-                <Modal.Header>
-                    <Modal.Title>{t('evaluation.edit.title')}: {student.display_name}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-                    <Form.Group controlId="skill_domain">
-                        <Form.Label>{t('evaluation.add_edit.skill_domain.title')}</Form.Label>
-                        <Select
-                            id="skill_domain"
-                            name="skill_domain"
-                            options={skill_domain_options}
-                            defaultValue={{
-                                value: evaluation.skill_domain_id,
-                                label: skill_domain.name,
-                            }}
-                        />
-                        <Form.Text className="text-muted">
-                            {t('evaluation.add_edit.skill_domain.help')}
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group controlId="belt">
-                        <Form.Label>{t('evaluation.add_edit.belt.title')}</Form.Label>
-                        <Select
-                            id="belt"
-                            name="belt"
-                            options={belt_options}
-                            defaultValue={{
-                                value: evaluation.belt_id,
-                                label: belt.name,
-                            }}
-                        />
-                        <Form.Text className="text-muted">
-                            {t('evaluation.add_edit.belt.help')}
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group controlId="date">
-                        <Form.Label>{t('evaluation.add_edit.date.title')}</Form.Label>
-                        <Form.Control type="date" defaultValue={evaluation.date} />
-                        <Form.Text className="text-muted">
-                            {t('evaluation.add_edit.date.help')}
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group controlId="success">
-                        <Form.Check label={t('evaluation.add_edit.passed.title')} defaultChecked={evaluation.success} />
-                        <Form.Text className="text-muted">
-                            {t('evaluation.add_edit.passed.help')}
-                        </Form.Text>
-                    </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>{t('evaluation.edit.cancel')}</Button>
-                    {changing
-                        ? <Button type="submit" disabled>
-                            <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">{t('evaluation.edit.in_process')}</span>
-                            </Spinner>
-                        </Button>
-                        : <Button type="submit">{t('evaluation.edit.confirm')}</Button>
-                    }
-                </Modal.Footer>
-            </Form>
-        </Modal>
-    </>;
+    return (
+        <ModalButton
+            i18nPrefix="evaluation.edit"
+            onSubmit={(form: EventTarget) => {
+                const typed_form = form as typeof form & {
+                    skill_domain: {value: string};
+                    belt: {value: string};
+                    date: {value: string};
+                    success: {checked: boolean};
+                };
+                return EvaluationsService.putEvaluationResource(evaluation.id, {
+                    skill_domain_id: parseInt(typed_form.skill_domain.value),
+                    belt_id: parseInt(typed_form.belt.value),
+                    date: typed_form.date.value,
+                    success: typed_form.success.checked,
+                });
+            }}
+            onResponse={({ evaluation: changed_evaluation }) => changedCallback?.(changed_evaluation)}
+        >
+            <Form.Group controlId="skill_domain">
+                <Form.Label>{t('evaluation.add_edit.skill_domain.title')}</Form.Label>
+                <Select
+                    id="skill_domain"
+                    name="skill_domain"
+                    options={skill_domain_options}
+                    defaultValue={{
+                        value: evaluation.skill_domain_id,
+                        label: skill_domain.name,
+                    }}
+                />
+                <Form.Text className="text-muted">
+                    {t('evaluation.add_edit.skill_domain.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="belt">
+                <Form.Label>{t('evaluation.add_edit.belt.title')}</Form.Label>
+                <Select
+                    id="belt"
+                    name="belt"
+                    options={belt_options}
+                    defaultValue={{
+                        value: evaluation.belt_id,
+                        label: belt.name,
+                    }}
+                />
+                <Form.Text className="text-muted">
+                    {t('evaluation.add_edit.belt.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="date">
+                <Form.Label>{t('evaluation.add_edit.date.title')}</Form.Label>
+                <Form.Control type="date" defaultValue={evaluation.date} />
+                <Form.Text className="text-muted">
+                    {t('evaluation.add_edit.date.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="success">
+                <Form.Check label={t('evaluation.add_edit.passed.title')} defaultChecked={evaluation.success} />
+                <Form.Text className="text-muted">
+                    {t('evaluation.add_edit.passed.help')}
+                </Form.Text>
+            </Form.Group>
+        </ModalButton>
+    );
 }
 
 interface DeleteEvaluationButtonProps {
@@ -256,49 +185,17 @@ interface DeleteEvaluationButtonProps {
 export function DeleteEvaluationButton(props : DeleteEvaluationButtonProps): ReactElement {
     const { student, evaluation, deletedCallback } = props;
     const { t } = useTranslation();
-    const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [deleting, setDeleting] = useState(false);
 
-    function handleDelete() {
-        setDeleting(true);
-        EvaluationsService.deleteEvaluationResource(evaluation.id).then(() => {
-            setShow(false);
-            setDeleting(false);
-            if (deletedCallback !== undefined ){
-                deletedCallback();
-            }
-        }).catch(error => {
-            setDeleting(false);
-            setErrorMessage(getAPIError(error));
-        });
-    }
-
-    return <>
-        <OverlayTrigger overlay={<Tooltip>{t('evaluation.delete.button')}</Tooltip>}>
-            <Button variant="danger" onClick={() => setShow(true)}>🗑️</Button>
-        </OverlayTrigger>
-        <Modal show={show}>
-            <Modal.Header>
-                <Modal.Title>{t('evaluation.delete.title')}: {student.display_name}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-                {t('evaluation.delete.message')}
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShow(false)}>{t('evaluation.delete.confirm')}</Button>
-                {deleting
-                    ? <Button disabled variant="danger">
-                        <Spinner animation="border" role="status" size="sm">
-                            <span className="visually-hidden">{t('evaluation.delete.in_process')}</span>
-                        </Spinner>
-                    </Button>
-                    : <Button variant="danger" onClick={handleDelete}>{t('evaluation.delete.confirm')}</Button>
-                }
-            </Modal.Footer>
-        </Modal>
-    </>;
+    return (
+        <ModalButton
+            variant="danger"
+            i18nPrefix="evaluation.delete"
+            onSubmit={() => EvaluationsService.deleteEvaluationResource(evaluation.id)}
+            onResponse={() => deletedCallback?.()}
+        >
+            {t('evaluation.delete.message')}
+        </ModalButton>
+    );
 }
 
 interface EvaluationListingProps {
