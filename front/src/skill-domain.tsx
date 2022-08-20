@@ -15,8 +15,7 @@ import { SkillDomain, SkillDomainsService } from './api';
 import { AdminOnly } from './auth';
 import { getAPIError } from './lib';
 
-interface CreateSkillDomainButtonProps
-{
+interface CreateSkillDomainButtonProps {
     createdCallback?: (skill_domain: SkillDomain) => void;
 }
 
@@ -80,8 +79,7 @@ export function CreateSkillDomainButton(props : CreateSkillDomainButtonProps): R
     </>;
 }
 
-interface EditSkillDomainButtonProps
-{
+interface EditSkillDomainButtonProps {
     skill_domain: SkillDomain;
     changedCallback?: (changed_skill_domain: SkillDomain) => void;
 }
@@ -148,8 +146,7 @@ export function EditSkillDomainButton(props : EditSkillDomainButtonProps): React
     </>;
 }
 
-interface DeleteSkillDomainButtonProps
-{
+interface DeleteSkillDomainButtonProps {
     skill_domain: SkillDomain;
     deletedCallback?: () => void;
 }

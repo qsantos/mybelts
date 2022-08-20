@@ -30,8 +30,7 @@ export function BeltIcon(props: BeltIconProps): ReactElement {
     </>;
 }
 
-interface CreateBeltButtonProps
-{
+interface CreateBeltButtonProps {
     createdCallback?: (belt: Belt) => void;
 }
 
@@ -148,8 +147,7 @@ export function MoveBeltButton(props : MoveBeltButtonProps): ReactElement {
     </>;
 }
 
-interface EditBeltButtonProps
-{
+interface EditBeltButtonProps {
     belt: Belt;
     changedCallback?: (changed_belt: Belt) => void;
 }
@@ -225,8 +223,7 @@ export function EditBeltButton(props : EditBeltButtonProps): ReactElement {
     </>;
 }
 
-interface DeleteBeltButtonProps
-{
+interface DeleteBeltButtonProps {
     belt: Belt;
     deletedCallback?: () => void;
 }

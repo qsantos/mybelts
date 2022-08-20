@@ -14,8 +14,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { User, UsersService } from './api';
 import { getAPIError } from './lib';
 
-interface CreateUserButtonProps
-{
+interface CreateUserButtonProps {
     createdCallback?: (user: User) => void;
 }
 
@@ -96,8 +95,7 @@ export function CreateUserButton(props : CreateUserButtonProps): ReactElement {
     </>;
 }
 
-interface EditUserButtonProps
-{
+interface EditUserButtonProps {
     user: User;
     changedCallback?: (changed_user: User) => void;
 }
@@ -105,84 +103,49 @@ interface EditUserButtonProps
 export function EditUserButton(props : EditUserButtonProps): ReactElement {
     const { user, changedCallback } = props;
     const { t } = useTranslation();
-    const [show, setShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [changing, setChanging] = useState(false);
 
-    function handleSubmit(event: FormEvent) {
-        setChanging(true);
-        event.preventDefault();
-        const target = event.target as typeof event.target & {
-            username: {value: string};
-            password: {value: string};
-            is_admin: {checked: boolean};
-        };
-        UsersService.putUserResource(user.id, {
-            username: target.username.value,
-            password: target.password.value,
-            is_admin: target.is_admin.checked,
-        }).then(({ user: changed_user }) => {
-            setChanging(false);
-            setShow(false);
-            if (changedCallback !== undefined) {
-                changedCallback(changed_user);
-            }
-        }).catch(error => {
-            setChanging(false);
-            setErrorMessage(getAPIError(error));
-        });
-    }
-
-    return <>
-        <OverlayTrigger overlay={<Tooltip>{t('user.edit.button')}</Tooltip>}>
-            <Button onClick={() => setShow(true)}>✏️</Button>
-        </OverlayTrigger>
-        <Modal show={show}>
-            <Form onSubmit={handleSubmit}>
-                <Modal.Header>
-                    <Modal.Title>{t('user.edit.title')}: {user.username}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-                    <Form.Group controlId="username">
-                        <Form.Label>{t('user.add_edit.username.title')}</Form.Label>
-                        <Form.Control type="text" placeholder={t('user.add_edit.username.placeholder')} defaultValue={user.username} />
-                        <Form.Text className="text-muted">
-                            {t('user.add_edit.username.help')}
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group controlId="password">
-                        <Form.Label>{t('user.add_edit.password.title')}</Form.Label>
-                        <Form.Control type="password" />
-                        <Form.Text className="text-muted">
-                            {t('user.add_edit.password.help')}
-                        </Form.Text>
-                    </Form.Group>
-                    <Form.Group controlId="is_admin">
-                        <Form.Check label={t('user.add_edit.is_admin.title')} defaultChecked={user.is_admin} />
-                        <Form.Text className="text-muted">
-                            {t('user.add_edit.is_admin.help')}
-                        </Form.Text>
-                    </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShow(false)}>{t('user.edit.cancel')}</Button>
-                    {changing
-                        ? <Button type="submit" disabled>
-                            <Spinner animation="border" role="status" size="sm">
-                                <span className="visually-hidden">{t('user.edit.in_process')}</span>
-                            </Spinner>
-                        </Button>
-                        : <Button type="submit">{t('user.edit.confirm')}</Button>
-                    }
-                </Modal.Footer>
-            </Form>
-        </Modal>
-    </>;
+    return (
+        <ModalButton
+            i18nPrefix="user.edit"
+            onSubmit={(form: EventTarget) => {
+                const typed_form = form as typeof form & {
+                    username: {value: string};
+                    password: {value: string};
+                    is_admin: {checked: boolean};
+                };
+                return UsersService.putUserResource(user.id, {
+                    username: typed_form.username.value,
+                    password: typed_form.password.value,
+                    is_admin: typed_form.is_admin.checked,
+                });
+            }}
+            onResponse={({ user: changed_user }) => changedCallback?.(changed_user)}
+        >
+            <Form.Group controlId="username">
+                <Form.Label>{t('user.add_edit.username.title')}</Form.Label>
+                <Form.Control type="text" placeholder={t('user.add_edit.username.placeholder')} defaultValue={user.username} />
+                <Form.Text className="text-muted">
+                    {t('user.add_edit.username.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="password">
+                <Form.Label>{t('user.add_edit.password.title')}</Form.Label>
+                <Form.Control type="password" />
+                <Form.Text className="text-muted">
+                    {t('user.add_edit.password.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="is_admin">
+                <Form.Check label={t('user.add_edit.is_admin.title')} defaultChecked={user.is_admin} />
+                <Form.Text className="text-muted">
+                    {t('user.add_edit.is_admin.help')}
+                </Form.Text>
+            </Form.Group>
+        </ModalButton>
+    );
 }
 
-interface DeleteUserButtonProps
-{
+interface DeleteUserButtonProps {
     user: User;
     deletedCallback?: () => void;
 }

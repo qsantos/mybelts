@@ -18,8 +18,7 @@ import { AdminOnly } from './auth';
 import { BeltIcon } from './belt';
 import { getAPIError, joinArray } from './lib';
 
-interface CreateSchoolClassButtonProps
-{
+interface CreateSchoolClassButtonProps {
     class_level_id: number;
     createdCallback?: (school_class: SchoolClass) => void;
 }
@@ -85,8 +84,7 @@ export function CreateSchoolClassButton(props : CreateSchoolClassButtonProps): R
     </>;
 }
 
-interface EditSchoolClassButtonProps
-{
+interface EditSchoolClassButtonProps {
     school_class: SchoolClass;
     changedCallback?: (changed_school_class: SchoolClass) => void;
 }
@@ -153,8 +151,7 @@ export function EditSchoolClassButton(props : EditSchoolClassButtonProps): React
     </>;
 }
 
-interface DeleteSchoolClassButtonProps
-{
+interface DeleteSchoolClassButtonProps {
     school_class: SchoolClass;
     deletedCallback?: () => void;
 }

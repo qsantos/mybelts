@@ -105,8 +105,7 @@ export function CreateStudentButton(props : CreateStudentButtonProps): ReactElem
     </>;
 }
 
-interface EditStudentButtonProps
-{
+interface EditStudentButtonProps {
     student: Student;
     changedCallback?: (changed_student: Student) => void
 }
@@ -200,8 +199,7 @@ export function EditStudentButton(props : EditStudentButtonProps): ReactElement 
     </>;
 }
 
-interface DeleteStudentButtonProps
-{
+interface DeleteStudentButtonProps {
     student: Student;
     deletedCallback?: () => void;
 }

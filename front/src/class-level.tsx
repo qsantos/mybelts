@@ -17,8 +17,7 @@ import { ClassLevel, ClassLevelsService } from './api';
 import { AdminOnly } from './auth';
 import { getAPIError } from './lib';
 
-interface CreateClassLevelButtonProps
-{
+interface CreateClassLevelButtonProps {
     createdCallback?: (class_level: ClassLevel) => void;
 }
 
@@ -82,8 +81,7 @@ export function CreateClassLevelButton(props : CreateClassLevelButtonProps): Rea
     </>;
 }
 
-interface EditClassLevelButtonProps
-{
+interface EditClassLevelButtonProps {
     class_level: ClassLevel;
     changedCallback?: (changed_class_level: ClassLevel) => void;
 }
@@ -150,8 +148,7 @@ export function EditClassLevelButton(props : EditClassLevelButtonProps): ReactEl
     </>;
 }
 
-interface DeleteClassLevelButtonProps
-{
+interface DeleteClassLevelButtonProps {
     class_level: ClassLevel;
     deletedCallback?: () => void;
 }
