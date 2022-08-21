@@ -72,7 +72,9 @@ export function ModalButton<T>(props: ModalButtonProps<T>): ReactElement {
                                 <span className="visually-hidden">{t(i18nPrefix + '.in_process', i18nArgs)}</span>
                             </Spinner>
                         </Button>
-                        : <Button type="submit" variant={variant || 'primary'}>{t(i18nPrefix + '.confirm', i18nArgs)}</Button>
+                        : <Button type="submit" variant={variant || 'primary'}>
+                            {t(i18nPrefix + '.confirm', i18nArgs)}
+                        </Button>
                     }
                 </Modal.Footer>
             </Form>

@@ -1,24 +1,34 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ReactElement } from 'react';
+import { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
 import Nav from 'react-bootstrap/Nav';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Spinner from 'react-bootstrap/Spinner';
 import Table from 'react-bootstrap/Table';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { ColumnDef } from '@tanstack/react-table';
 
 import {
     ClassLevel,
     SchoolClass, SchoolClassesService,
-    Student, SkillDomain, Belt,
-    WaitlistEntry, WaitlistService,
+    Student, StudentsService,
+    SkillDomain, Belt,
+    WaitlistEntry, WaitlistEntryList, WaitlistService,
+    SchoolClassStudentBeltsStudentBelts,
 } from './api';
+import { getAPIError } from './lib';
 import { AdminOnly } from './auth';
 import { BeltIcon } from './belt';
 import { joinArray } from './lib';
 import { ModalButton } from './modal-button';
+import { SortTable } from './sort-table';
 
 interface CreateSchoolClassButtonProps {
     class_level: ClassLevel;
@@ -364,4 +374,219 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElem
             </ModalButton>
         </Alert>
     );
+}
+
+interface ManageClassWaitlistButtonProps {
+    student: Student;
+    skill_domain: SkillDomain;
+    belt: Belt;
+    waitlist_entry?: WaitlistEntry;
+    setErrorMessage: (error: string) => void;
+    onCreate?: (waitlistEntryList: WaitlistEntry) => void;
+    onDelete?: () => void;
+}
+
+export function ManageClassWaitlistButton(props: ManageClassWaitlistButtonProps): ReactElement {
+    const { student, skill_domain, belt, waitlist_entry, setErrorMessage, onCreate, onDelete } = props;
+    const { t } = useTranslation();
+
+    const className = waitlist_entry ? 'selected-waitlist' : 'unselected-waitlist';
+    const [in_process, setIn_process] = useState(false);
+    function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+        setIn_process(true);
+        event.preventDefault();
+        if (waitlist_entry) {
+            WaitlistService.deleteWaitlistResource(waitlist_entry.id)
+                .then(() => {
+                    setIn_process(false);
+                    onDelete?.();
+                })
+                .catch(error => {
+                    setIn_process(false);
+                    setErrorMessage(getAPIError(error));
+                });
+        } else {
+            StudentsService.postStudentWaitlistResource(student.id, {
+                skill_domain_id: skill_domain.id,
+                belt_id: belt.id,
+            })
+                .then(({waitlist_entry: new_waitlist_entry}) => {
+                    setIn_process(false);
+                    onCreate?.(new_waitlist_entry);
+                })
+                .catch(error => {
+                    setIn_process(false);
+                    setErrorMessage(getAPIError(error));
+                });
+        }
+    }
+    if (in_process) {
+        return <Spinner animation="border" role="status" size="sm">
+            <span className="visually-hidden">{t('waitlist.manage.in_process')}</span>
+        </Spinner>;
+    } else {
+        return <div className={className} onClick={handleClick}>
+            <BeltIcon belt={belt} />
+        </div>;
+    }
+}
+
+interface ManageClassWaitlistProps {
+    class_level: ClassLevel;
+    school_class: SchoolClass;
+    students: Student[];
+    skill_domains: SkillDomain[];
+    belts: Belt[];
+    student_belts: SchoolClassStudentBeltsStudentBelts[];
+    waitlistEntryList: WaitlistEntryList;
+    setWaitlistEntryList: (waitlistEntryList: WaitlistEntryList) => void;
+}
+
+export function ManageClassWaitlist(props: ManageClassWaitlistProps): ReactElement {
+    const {
+        class_level, school_class, students, skill_domains, belts,
+        student_belts, waitlistEntryList, setWaitlistEntryList,
+    } = props;
+    const { t } = useTranslation();
+
+    const { waitlist_entries } = waitlistEntryList;
+
+    const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
+    const belt_by_rank = Object.fromEntries(belts.map(belt => [belt.rank, belt]));
+    const student_belts_by_student_id = Object.fromEntries(student_belts.map(
+        ({student, belts: xbelts}) => [student.id, xbelts]
+    ));
+    const waitlist_index_by_id = Object.fromEntries(waitlist_entries.map(
+        (waitlist_entry, index) => [waitlist_entry.id, index]
+    ));
+
+    const waitlist_by_student_id: {[index: number]: WaitlistEntry[]} = {};
+    waitlist_entries.forEach(waitlist_entry => {
+        const student_id = waitlist_entry.student_id;
+        const student_waitlist = waitlist_by_student_id[student_id];
+        if (student_waitlist === undefined) {
+            waitlist_by_student_id[student_id] = [waitlist_entry];
+        } else {
+            student_waitlist.push(waitlist_entry);
+        }
+    });
+
+    const waitlist_entry_by_domain_by_student: {[index: number]: {
+        [index: number]: WaitlistEntry,
+    }} = {};
+    students.forEach(student => {
+        const student_waitlist = waitlist_by_student_id[student.id];
+        let waitlist_by_domain = {};
+        if (student_waitlist) {
+            waitlist_by_domain = Object.fromEntries(student_waitlist.map(
+                waitlist_entry => [waitlist_entry.skill_domain_id, waitlist_entry]
+            ));
+        }
+        waitlist_entry_by_domain_by_student[student.id] = waitlist_by_domain;
+    });
+
+    const columns: ColumnDef<Student>[] = [
+        {
+            id: 'rank',
+            header: t('waitlist.manage.columns.rank'),
+            accessorKey: 'rank',
+        },
+        {
+            id: 'display_name',
+            accessorKey: 'display_name',
+            header: t('waitlist.manage.columns.display_name'),
+            cell: info => {
+                const student = info.row.original;
+                return student.display_name;
+            }
+        },
+    ];
+
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
+    sorted_skill_domains.forEach(skill_domain => columns.push({
+        id: skill_domain.name,
+        header: skill_domain.name,
+        cell: info => {
+            const student = info.row.original;
+            const this_belts = student_belts_by_student_id[student.id];
+            let belt_id = undefined;
+            if (this_belts !== undefined) {
+                this_belts.forEach(({belt_id: xbelt_id, skill_domain_id}) => {
+                    if (skill_domain_id == skill_domain.id) {
+                        belt_id = xbelt_id;
+                    }
+                });
+            }
+
+            const belt = belt_id ? belt_by_id[belt_id] : undefined;
+            const next_belt = belt ? belt_by_rank[belt.rank + 1] : belt_by_rank[1];
+            if (!next_belt) {
+                return null;
+            }
+            const waitlist_entry_bydomain = waitlist_entry_by_domain_by_student[student.id];
+            const waitlist_entry = waitlist_entry_bydomain?.[skill_domain.id];
+            return <ManageClassWaitlistButton
+                student={student}
+                belt={next_belt}
+                skill_domain={skill_domain}
+                waitlist_entry={waitlist_entry}
+                setErrorMessage={setErrorMessage}
+                onCreate={(new_waitlist_entry) => {
+                    const new_waitlist_entries = [...waitlist_entries];
+                    new_waitlist_entries.push(new_waitlist_entry);
+                    setWaitlistEntryList({...waitlistEntryList, waitlist_entries: new_waitlist_entries});
+                }}
+                onDelete={() => {
+                    if (waitlist_entry === undefined) {
+                        return;
+                    }
+                    const index = waitlist_index_by_id[waitlist_entry.id];
+                    if (index === undefined) {
+                        return;
+                    }
+                    const new_waitlist_entries = [...waitlist_entries];
+                    new_waitlist_entries.splice(index, 1);
+                    setWaitlistEntryList({...waitlistEntryList, waitlist_entries: new_waitlist_entries});
+                }}
+            />;
+        },
+    }));
+
+    const sorting = [
+        {
+            id: 'rank',
+            desc: false,
+        },
+        {
+            id: 'display_name',
+            desc: false,
+        }
+    ];
+
+    // similar to ModalButton, except no form or cancel/confirm buttons
+    const i18nPrefix = 'waitlist.manage';
+    const i18nArgs = {class_level, school_class};
+    const [show, setShow] = useState(false);
+
+    return <>
+        <OverlayTrigger overlay={<Tooltip>{t(i18nPrefix + '.button.tooltip', i18nArgs)}</Tooltip>}>
+            <Button onClick={() => setShow(true)}>{t(i18nPrefix + '.button', i18nArgs)}</Button>
+        </OverlayTrigger>
+        <Modal size="xl" show={show} onHide={() => setShow(false)}>
+            <Modal.Header>
+                <Modal.Title>{t(i18nPrefix + '.title', i18nArgs)}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
+                <SortTable data={students} columns={columns} initialSorting={sorting} />
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShow(false)}>
+                    {t(i18nPrefix + '.close', i18nArgs)}
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    </>;
 }

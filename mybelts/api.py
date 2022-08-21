@@ -1126,7 +1126,7 @@ class StudentWaitlistResource(Resource):
                 if isinstance(e.orig, UniqueViolation):
                     abort(409, (
                         f'Already existing waitlist entry for student {student_id}, '
-                        'belt {belt_id} and skill domain {skill_domain_id}'
+                        f'belt {belt_id} and skill domain {skill_domain_id}'
                     ))
                 else:
                     raise
