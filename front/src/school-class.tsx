@@ -266,7 +266,8 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElem
                         success: HTMLInputElement[],
                     };
                     const completed_evaluations = [];
-                    for (let i = 0; i < typed_form.waitlist_entry_id.length; i++) {
+                    // the index 0 of these variable is a DUMMY ENTRY
+                    for (let i = 1; i < typed_form.waitlist_entry_id.length; i++) {
                         const waitlist_entry_id = typed_form.waitlist_entry_id[i]?.value;
                         const completed = typed_form.completed[i]?.checked;
                         const date = typed_form.date[i]?.value;
@@ -301,7 +302,13 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElem
                         {t('waitlist.convert.common_date.help')}
                     </Form.Text>
                 </Form.Group>
-
+                {/* ensure the fields are always arrays, even with a single waitlist_entry *}
+                {/* BEGIN DUMMY ENTRY  */}
+                <input type="hidden" id="waitlist_entry_id" />
+                <input type="hidden" id="completed" />
+                <input type="hidden" id="date" />
+                <input type="hidden" id="success" />
+                {/* END DUMMY ENTRY */}
                 <Table>
                     <thead>
                         <tr>
