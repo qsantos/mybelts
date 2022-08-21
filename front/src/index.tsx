@@ -430,6 +430,7 @@ function SchoolClassView() {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [beltList, setBeltList] = useState<null | BeltList>(null);
+    const [skillDomainList, setSkillDomainList] = useState<null | SkillDomainList>(null);
     const [studentList, setStudentList] = useState<null | StudentList>(null);
     const [schoolClassStudentBelts, setSchoolClassStudentBelts] = useState<null | SchoolClassStudentBelts>(null);
     const [waitlistEntryList, setWaitlistEntryList] = useState<null | WaitlistEntryList>(null);
@@ -439,6 +440,10 @@ function SchoolClassView() {
         BeltsService
             .getBeltsResource()
             .then(setBeltList)
+            .catch(error => { setErrorMessage(getAPIError(error)); });
+        SkillDomainsService
+            .getSkillDomainsResource()
+            .then(setSkillDomainList)
             .catch(error => { setErrorMessage(getAPIError(error)); });
         SchoolClassesService
             .getSchoolClassResource(parseInt(school_class_id))
@@ -456,7 +461,7 @@ function SchoolClassView() {
         }
     }, [school_class_id]);
 
-    if (beltList === null || studentList === null || schoolClassStudentBelts === null || (canUseWaitlist && waitlistEntryList === null)) {
+    if (beltList === null || skillDomainList === null || studentList === null || schoolClassStudentBelts === null || (canUseWaitlist && waitlistEntryList === null)) {
         return <>
             <AdminOnly>
                 <Breadcrumb>
@@ -472,9 +477,10 @@ function SchoolClassView() {
     }
 
     const { belts } = beltList;
+    const { skill_domains } = skillDomainList;
     const { class_level, school_class, students } = studentList;
     //const { class_level, school_class, belts, skill_domains, student_belts } = schoolClassStudentBelts;
-    const { skill_domains, student_belts } = schoolClassStudentBelts;
+    const { student_belts } = schoolClassStudentBelts;
 
     return <>
         <AdminOnly>
@@ -489,9 +495,9 @@ function SchoolClassView() {
         <AdminOnly>
             {waitlistEntryList &&
                 <SchoolClassWaitlist
-                    students={waitlistEntryList.students}
-                    skill_domains={waitlistEntryList.skill_domains}
-                    belts={waitlistEntryList.belts}
+                    students={students}
+                    skill_domains={skill_domains}
+                    belts={belts}
                     waitlist_entries={waitlistEntryList.waitlist_entries}
                 />
             }
