@@ -439,7 +439,7 @@ interface ManageClassWaitlistProps {
     belts: Belt[];
     student_belts: SchoolClassStudentBeltsStudentBelts[];
     waitlistEntryList: WaitlistEntryList;
-    setWaitlistEntryList: (waitlistEntryList: WaitlistEntryList) => void;
+    setWaitlistEntryList: (func: (waitlistEntryList: WaitlistEntryList | null) => WaitlistEntryList | null) => void;
 }
 
 export function ManageClassWaitlist(props: ManageClassWaitlistProps): ReactElement {
@@ -455,9 +455,6 @@ export function ManageClassWaitlist(props: ManageClassWaitlistProps): ReactEleme
     const belt_by_rank = Object.fromEntries(belts.map(belt => [belt.rank, belt]));
     const student_belts_by_student_id = Object.fromEntries(student_belts.map(
         ({student, belts: xbelts}) => [student.id, xbelts]
-    ));
-    const waitlist_index_by_id = Object.fromEntries(waitlist_entries.map(
-        (waitlist_entry, index) => [waitlist_entry.id, index]
     ));
 
     const waitlist_by_student_id: {[index: number]: WaitlistEntry[]} = {};
@@ -534,21 +531,33 @@ export function ManageClassWaitlist(props: ManageClassWaitlistProps): ReactEleme
                 waitlist_entry={waitlist_entry}
                 setErrorMessage={setErrorMessage}
                 onCreate={(new_waitlist_entry) => {
-                    const new_waitlist_entries = [...waitlist_entries];
-                    new_waitlist_entries.push(new_waitlist_entry);
-                    setWaitlistEntryList({...waitlistEntryList, waitlist_entries: new_waitlist_entries});
+                    setWaitlistEntryList(lastWaitlistEntryList => {
+                        if (lastWaitlistEntryList === null) {
+                            return null;
+                        }
+                        const { waitlist_entries: last_waitlist_entries } = lastWaitlistEntryList;
+                        const new_waitlist_entries = [...last_waitlist_entries];
+                        new_waitlist_entries.push(new_waitlist_entry);
+                        return {...lastWaitlistEntryList, waitlist_entries: new_waitlist_entries};
+                    });
                 }}
                 onDelete={() => {
-                    if (waitlist_entry === undefined) {
-                        return;
-                    }
-                    const index = waitlist_index_by_id[waitlist_entry.id];
-                    if (index === undefined) {
-                        return;
-                    }
-                    const new_waitlist_entries = [...waitlist_entries];
-                    new_waitlist_entries.splice(index, 1);
-                    setWaitlistEntryList({...waitlistEntryList, waitlist_entries: new_waitlist_entries});
+                    setWaitlistEntryList(lastWaitlistEntryList => {
+                        if (lastWaitlistEntryList === null) {
+                            return null;
+                        }
+                        if (waitlist_entry === undefined) {
+                            return null;
+                        }
+                        const { waitlist_entries: last_waitlist_entries } = lastWaitlistEntryList;
+                        const index = last_waitlist_entries.findIndex(candidate => candidate.id == waitlist_entry.id);
+                        if (index === undefined) {
+                            return null;
+                        }
+                        const new_waitlist_entries = [...last_waitlist_entries];
+                        new_waitlist_entries.splice(index, 1);
+                        return {...waitlistEntryList, waitlist_entries: new_waitlist_entries};
+                    });
                 }}
             />;
         },
