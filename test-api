@@ -507,8 +507,8 @@ def add_evaluations(student_ids: List[int]) -> List[int]:
     j = res.json()
     skill_domains = j['skill_domains']
 
-    school_year_start = date(2022, 9, 1)
-    school_year_stop = date(2023, 7, 8)
+    school_year_start = date(2021, 9, 1)
+    school_year_stop = date(2022, 7, 8)
     school_year_days = (school_year_stop - school_year_start).days
 
     # add belt evaluations
