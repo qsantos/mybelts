@@ -1555,6 +1555,47 @@ class WaitlistResource(Resource):
             return None, 204
 
 
+@waitlist_ns.route('/waitlist/convert')
+class WaitlistConvertResource(Resource):
+    post_model_evaluation = api.model('CompletedEvaluation', {
+        'waitlist_entry_id': fields.Integer(example=42, required=True),
+        'date': fields.Date(example='2021-11-13', required=True),
+        'success': fields.Boolean(example=True, required=True),
+    })
+    post_model = api.model('CompletedEvaluationList', {
+        'completed_evaluations': fields.List(fields.Nested(post_model_evaluation, required=True)),
+    })
+
+    @api.expect(post_model, validate=True)
+    @api.response(204, 'Success')
+    def post(self) -> Any:
+        with session_context() as session:
+            me = authenticate(session)
+            need_admin(me)
+            completed_evaluations = request.json['completed_evaluations']
+            for completed_evaluation in completed_evaluations:
+                date_string = completed_evaluation['date']
+                try:
+                    date_value = date.fromisoformat(date_string)
+                except ValueError:
+                    abort(400, f'Invalid date {date_string}')
+                waitlist_entry_id = completed_evaluation['waitlist_entry_id']
+                waitlist_entry = session.query(WaitlistEntry).get(waitlist_entry_id)
+                if waitlist_entry is None:
+                    abort(404, f'Waitlist entry {waitlist_entry_id} not found')
+                evaluation = Evaluation(
+                    student_id=waitlist_entry.student_id,
+                    belt_id=waitlist_entry.belt_id,
+                    skill_domain_id=waitlist_entry.skill_domain_id,
+                    date=date_value,
+                    success=completed_evaluation['success'],
+                )
+                session.add(evaluation)
+                session.delete(waitlist_entry)
+            session.commit()
+            return None, 204
+
+
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config['ERROR_404_HELP'] = False

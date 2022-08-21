@@ -15,16 +15,17 @@ import Spinner from 'react-bootstrap/Spinner';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 interface ModalButtonProps<T> {
-    variant?: string;
+    variant?: string,
+    size?: 'sm' | 'lg' | 'xl',
     i18nPrefix: string,
     i18nArgs?: Record<string, unknown>,
     onSubmit: (form: EventTarget) => CancelablePromise<T>,
     onResponse: (json: T) => void,
-    children: ReactNode | ReactNode[];
+    children: ReactNode | ReactNode[],
 }
 
 export function ModalButton<T>(props: ModalButtonProps<T>): ReactElement {
-    const { variant, i18nPrefix, i18nArgs, onSubmit, onResponse, children } = props;
+    const { variant, size, i18nPrefix, i18nArgs, onSubmit, onResponse, children } = props;
     const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
@@ -54,7 +55,7 @@ export function ModalButton<T>(props: ModalButtonProps<T>): ReactElement {
                 __html: t(i18nPrefix + '.button', i18nArgs),
             }}></Button>
         </OverlayTrigger>
-        <Modal show={show} onHide={() => setShow(false)}>
+        <Modal size={size} show={show} onHide={() => setShow(false)}>
             <Form onSubmit={handleSubmit} ref={formRef}>
                 <Modal.Header>
                     <Modal.Title>{t(i18nPrefix + '.title', i18nArgs)}</Modal.Title>

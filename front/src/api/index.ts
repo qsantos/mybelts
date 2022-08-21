@@ -16,6 +16,8 @@ export type { ClassLevelList } from './models/ClassLevelList';
 export type { ClassLevelOne } from './models/ClassLevelOne';
 export type { ClassLevelPut } from './models/ClassLevelPut';
 export type { ClassLevelsPost } from './models/ClassLevelsPost';
+export type { CompletedEvaluation } from './models/CompletedEvaluation';
+export type { CompletedEvaluationList } from './models/CompletedEvaluationList';
 export type { Evaluation } from './models/Evaluation';
 export type { EvaluationList } from './models/EvaluationList';
 export type { EvaluationOne } from './models/EvaluationOne';

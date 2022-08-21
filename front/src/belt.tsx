@@ -148,7 +148,7 @@ export function EditBeltButton(props : EditBeltButtonProps): ReactElement {
             </Form.Group>
             <Form.Group controlId="color">
                 <Form.Label>{t('belt.add_edit.color.title')}</Form.Label>
-                <Form.Control type="color" defaultValue={belt.color} title="{t('belt.add_edit.color.help')}" />
+                <Form.Control type="color" defaultValue={belt.color} title="{t('belt.add_edit.color.placeholder')}" />
                 <Form.Text className="text-muted">
                     {t('belt.add_edit.color.help')}
                 </Form.Text>
