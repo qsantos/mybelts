@@ -64,25 +64,6 @@ export class BeltsService {
 
     /**
      * @param beltId
-     * @param xFields An optional fields mask
-     * @returns BeltOne Success
-     * @throws ApiError
-     */
-    public static getBeltResource(
-        beltId: number,
-        xFields?: string,
-    ): CancelablePromise<BeltOne> {
-        return __request({
-            method: 'GET',
-            path: `/belts/${beltId}`,
-            headers: {
-                'X-Fields': xFields,
-            },
-        });
-    }
-
-    /**
-     * @param beltId
      * @param payload
      * @param xFields An optional fields mask
      * @returns BeltOne Success

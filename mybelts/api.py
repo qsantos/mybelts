@@ -994,17 +994,6 @@ class SkillDomainsResource(Resource):
 
 @skill_domains_ns.route('/skill-domains/<int:skill_domain_id>')
 class SkillDomainResource(Resource):
-    @api.marshal_with(api_model_skill_domain_one)
-    def get(self, skill_domain_id: int) -> Any:
-        with session_context() as session:
-            authenticate(session)
-            skill_domain = session.query(SkillDomain).get(skill_domain_id)
-            if skill_domain is None:
-                abort(404, f'Skill domain {skill_domain_id} not found')
-            return {
-                'skill_domain': skill_domain.json(),
-            }
-
     put_model = api.model('SkillDomainPut', {
         'name': fields.String(example='Algebra'),
     })
@@ -1082,17 +1071,6 @@ class BeltsResource(Resource):
 
 @belts_ns.route('/belts/<int:belt_id>')
 class BeltResource(Resource):
-    @api.marshal_with(api_model_belt_one)
-    def get(self, belt_id: int) -> Any:
-        with session_context() as session:
-            authenticate(session)
-            belt = session.query(Belt).get(belt_id)
-            if belt is None:
-                abort(404, f'Belt {belt_id} not found')
-            return {
-                'belt': belt.json(),
-            }
-
     put_model = api.model('BeltPut', {
         'name': fields.String(example='White belt'),
         'color': fields.String(example='#012345'),
@@ -1258,28 +1236,6 @@ class EvaluationsResource(Resource):
 
 @evaluations_ns.route('/evaluations/<int:evaluation_id>')
 class EvaluationResource(Resource):
-    @api.marshal_with(api_model_evaluation_one)
-    def get(self, evaluation_id: int) -> Any:
-        with session_context() as session:
-            me = authenticate(session)
-            need_admin(me)
-            evaluation = session.query(Evaluation).get(evaluation_id)
-            if evaluation is None:
-                abort(404, f'Evaluation {evaluation_id} not found')
-            skill_domain = evaluation.skill_domain
-            belt = evaluation.belt
-            student = evaluation.student
-            school_class = student.school_class
-            class_level = school_class.class_level
-            return {
-                'class_level': class_level.json(),
-                'school_class': school_class.json(),
-                'student': student.json(),
-                'skill_domain': skill_domain.json(),
-                'belt': belt.json(),
-                'evaluation': evaluation.json(),
-            }
-
     put_model = api.model('EvaluationPut', {
         'student_id': fields.Integer(example=42),
         'belt_id': fields.Integer(example=42),

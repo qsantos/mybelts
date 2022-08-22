@@ -63,25 +63,6 @@ export class SkillDomainsService {
 
     /**
      * @param skillDomainId
-     * @param xFields An optional fields mask
-     * @returns SkillDomainOne Success
-     * @throws ApiError
-     */
-    public static getSkillDomainResource(
-        skillDomainId: number,
-        xFields?: string,
-    ): CancelablePromise<SkillDomainOne> {
-        return __request({
-            method: 'GET',
-            path: `/skill-domains/${skillDomainId}`,
-            headers: {
-                'X-Fields': xFields,
-            },
-        });
-    }
-
-    /**
-     * @param skillDomainId
      * @param payload
      * @param xFields An optional fields mask
      * @returns SkillDomainOne Success

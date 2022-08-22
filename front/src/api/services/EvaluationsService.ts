@@ -45,25 +45,6 @@ export class EvaluationsService {
 
     /**
      * @param evaluationId
-     * @param xFields An optional fields mask
-     * @returns EvaluationOne Success
-     * @throws ApiError
-     */
-    public static getEvaluationResource(
-        evaluationId: number,
-        xFields?: string,
-    ): CancelablePromise<EvaluationOne> {
-        return __request({
-            method: 'GET',
-            path: `/evaluations/${evaluationId}`,
-            headers: {
-                'X-Fields': xFields,
-            },
-        });
-    }
-
-    /**
-     * @param evaluationId
      * @param payload
      * @param xFields An optional fields mask
      * @returns EvaluationOne Success
