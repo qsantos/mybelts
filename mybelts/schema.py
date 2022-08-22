@@ -156,18 +156,6 @@ class Student(Base):
         back_populates='students',
     )
 
-    evaluations = relationship(
-        'Evaluation',
-        foreign_keys='Evaluation.student_id',
-        back_populates='student',
-    )
-
-    waitlist_entries = relationship(
-        'WaitlistEntry',
-        foreign_keys='WaitlistEntry.student_id',
-        back_populates='student',
-    )
-
     def json(self) -> Dict:
         return {
             'id': self.id,
@@ -189,18 +177,6 @@ class Belt(Base):
     name = Column(String, nullable=False, index=True)
     color = Column(String, nullable=False, index=True, server_default='')
 
-    evaluations = relationship(
-        'Evaluation',
-        foreign_keys='Evaluation.belt_id',
-        back_populates='belt',
-    )
-
-    waitlist_entries = relationship(
-        'WaitlistEntry',
-        foreign_keys='WaitlistEntry.belt_id',
-        back_populates='belt',
-    )
-
     def json(self) -> Dict:
         return {
             'id': self.id,
@@ -220,18 +196,6 @@ class SkillDomain(Base):
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     name = Column(String, index=True, nullable=False)
 
-    evaluations = relationship(
-        'Evaluation',
-        foreign_keys='Evaluation.skill_domain_id',
-        back_populates='skill_domain',
-    )
-
-    waitlist_entries = relationship(
-        'WaitlistEntry',
-        foreign_keys='WaitlistEntry.skill_domain_id',
-        back_populates='skill_domain',
-    )
-
     def json(self) -> Dict:
         return {
             'id': self.id,
@@ -250,23 +214,9 @@ class Evaluation(Base):
     date = Column(Date, nullable=False, index=True, server_default=func.current_date())
     success = Column(Boolean, index=True, nullable=False)
 
-    student = relationship(
-        'Student',
-        foreign_keys=student_id,
-        back_populates='evaluations',
-    )
-
-    skill_domain = relationship(
-        'SkillDomain',
-        foreign_keys=skill_domain_id,
-        back_populates='evaluations',
-    )
-
-    belt = relationship(
-        'Belt',
-        foreign_keys=belt_id,
-        back_populates='evaluations',
-    )
+    student = relationship('Student', foreign_keys=student_id)
+    skill_domain = relationship('SkillDomain', foreign_keys=skill_domain_id)
+    belt = relationship('Belt', foreign_keys=belt_id)
 
     def json(self) -> Dict:
         return {
@@ -292,23 +242,9 @@ class WaitlistEntry(Base):
         UniqueConstraint('student_id', 'skill_domain_id'),
     )
 
-    student = relationship(
-        'Student',
-        foreign_keys=student_id,
-        back_populates='waitlist_entries',
-    )
-
-    skill_domain = relationship(
-        'SkillDomain',
-        foreign_keys=skill_domain_id,
-        back_populates='waitlist_entries',
-    )
-
-    belt = relationship(
-        'Belt',
-        foreign_keys=belt_id,
-        back_populates='waitlist_entries',
-    )
+    student = relationship('Student', foreign_keys=student_id)
+    skill_domain = relationship('SkillDomain', foreign_keys=skill_domain_id)
+    belt = relationship('Belt', foreign_keys=belt_id)
 
     def json(self) -> Dict:
         return {
