@@ -408,7 +408,7 @@ const resources = {
             'belt.list.name.title': 'Nom',
             'belt.list.color.title': 'Couleur',
             'belt.list.actions.title': 'Actions',
-            'class_level.view.title': 'Niveaux',
+            'class_level.view.title': 'Niveau',
             'class_level.add.button': 'Ajouter',
             'class_level.add.button.tooltip': 'Ajouter un nouveau niveau',
             'class_level.add.title': 'Ajouter un niveau',
