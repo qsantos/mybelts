@@ -546,21 +546,11 @@ function StudentWidget(props: StudentWidgetProps) {
 
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
-    const [beltList, setBeltList] = useState<null | BeltList>(null);
-    const [skillDomainList, setSkillDomainList] = useState<null | SkillDomainList>(null);
     const [evaluationList, setEvaluationList] = useState<null | EvaluationList>(null);
     const [waitlistEntryList, setWaitlistEntryList] = useState<null | WaitlistEntryList>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        BeltsService
-            .getBeltsResource()
-            .then(setBeltList)
-            .catch(error => { setErrorMessage(getAPIError(error)); });
-        SkillDomainsService
-            .getSkillDomainsResource()
-            .then(setSkillDomainList)
-            .catch(error => { setErrorMessage(getAPIError(error)); });
         StudentsService
             .getStudentEvaluationsResource(student_id)
             .then(setEvaluationList)
@@ -573,7 +563,7 @@ function StudentWidget(props: StudentWidgetProps) {
         }
     }, [student_id]);
 
-    if (beltList === null || skillDomainList === null || evaluationList === null || (canUseWaitlist && waitlistEntryList === null)) {
+    if (evaluationList === null || (canUseWaitlist && waitlistEntryList === null)) {
         return <>
             <AdminOnly>
                 <Breadcrumb>
@@ -590,9 +580,7 @@ function StudentWidget(props: StudentWidgetProps) {
     }
 
     // skill domains and belts must be fetched separately to make sure we have them all
-    const { skill_domains } = skillDomainList;
-    const { belts } = beltList;
-    const { class_level, school_class, student, evaluations } = evaluationList;
+    const { belts, skill_domains, class_level, school_class, student, evaluations } = evaluationList;
 
     const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
 

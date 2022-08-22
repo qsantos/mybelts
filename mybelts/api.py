@@ -928,29 +928,9 @@ class StudentEvaluationsResource(Resource):
             if student is None:
                 abort(404, f'Student {student_id} not found')
 
-            things = (
-                session  # type: ignore
-                .query(Evaluation, SkillDomain, Belt)
-                .select_from(Evaluation)
-                .outerjoin(SkillDomain)
-                .outerjoin(Belt)
-                .filter(Evaluation.student_id == student.id)
-                .all()
-            )
-
-            belts = []
-            belt_ids: Set[int] = set()
-            skill_domains = []
-            skill_domain_ids: Set[int] = set()
-            evaluations = []
-            for evaluation, skill_domain, belt in things:
-                evaluations.append(evaluation)
-                if belt.id not in belt_ids:
-                    belt_ids.add(belt.id)
-                    belts.append(belt)
-                if skill_domain.id not in skill_domain_ids:
-                    skill_domain_ids.add(skill_domain.id)
-                    skill_domains.append(skill_domain)
+            belts = session.query(Belt).all()
+            skill_domains = session.query(SkillDomain).all()
+            evaluations = session.query(Evaluation).filter(Evaluation.student_id == student.id).all()
             school_class = student.school_class
             class_level = school_class.class_level
             return {
