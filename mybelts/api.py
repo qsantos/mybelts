@@ -1591,7 +1591,7 @@ class WaitlistConvertResource(Resource):
                     success=completed_evaluation['success'],
                 )
                 session.add(evaluation)
-                session.delete(waitlist_entry)
+                session.delete(waitlist_entry)  # type: ignore
             session.commit()
             return None, 204
 
