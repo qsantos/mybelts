@@ -454,7 +454,7 @@ export function ManageClassWaitlist(props: ManageClassWaitlistProps): ReactEleme
     const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
     const belt_by_rank = Object.fromEntries(belts.map(belt => [belt.rank, belt]));
     const student_belts_by_student_id = Object.fromEntries(student_belts.map(
-        ({student, belts: xbelts}) => [student.id, xbelts]
+        ({student_id, belts: xbelts}) => [student_id, xbelts]
     ));
 
     const waitlist_by_student_id: {[index: number]: WaitlistEntry[]} = {};

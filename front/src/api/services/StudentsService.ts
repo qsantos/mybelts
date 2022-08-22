@@ -57,12 +57,12 @@ export class StudentsService {
 
     /**
      * @param studentId
-     * @returns any Success
+     * @returns void
      * @throws ApiError
      */
     public static deleteStudentResource(
         studentId: number,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<void> {
         return __request({
             method: 'DELETE',
             path: `/students/${studentId}`,

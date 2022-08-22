@@ -50,12 +50,12 @@ export class ClassLevelsService {
 
     /**
      * @param classLevelId
-     * @returns any Success
+     * @returns void
      * @throws ApiError
      */
     public static deleteClassLevelResource(
         classLevelId: number,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<void> {
         return __request({
             method: 'DELETE',
             path: `/class-levels/${classLevelId}`,

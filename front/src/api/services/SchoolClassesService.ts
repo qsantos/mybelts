@@ -34,12 +34,12 @@ export class SchoolClassesService {
 
     /**
      * @param schoolClassId
-     * @returns any Success
+     * @returns void
      * @throws ApiError
      */
     public static deleteSchoolClassResource(
         schoolClassId: number,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<void> {
         return __request({
             method: 'DELETE',
             path: `/school-classes/${schoolClassId}`,

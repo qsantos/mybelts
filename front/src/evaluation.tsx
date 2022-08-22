@@ -364,7 +364,7 @@ export function EvaluationGrid(props: EvaluationGridProps): (ReactElement | null
     const user = loginInfo.user;
     const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
     const student_belts_by_student_id = Object.fromEntries(student_belts.map(
-        ({student, belts: xbelts}) => [student.id, xbelts]
+        ({student_id, belts: xbelts}) => [student_id, xbelts]
     ));
 
     const columns: ColumnDef<Student>[] = [

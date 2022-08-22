@@ -24,12 +24,12 @@ export class WaitlistService {
 
     /**
      * @param waitlistId
-     * @returns any Success
+     * @returns void
      * @throws ApiError
      */
     public static deleteWaitlistResource(
         waitlistId: number,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<void> {
         return __request({
             method: 'DELETE',
             path: `/waitlist/${waitlistId}`,

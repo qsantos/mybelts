@@ -49,12 +49,12 @@ export class SkillDomainsService {
 
     /**
      * @param skillDomainId
-     * @returns any Success
+     * @returns void
      * @throws ApiError
      */
     public static deleteSkillDomainResource(
         skillDomainId: number,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<void> {
         return __request({
             method: 'DELETE',
             path: `/skill-domains/${skillDomainId}`,

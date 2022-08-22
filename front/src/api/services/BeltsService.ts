@@ -50,12 +50,12 @@ export class BeltsService {
 
     /**
      * @param beltId
-     * @returns any Success
+     * @returns void
      * @throws ApiError
      */
     public static deleteBeltResource(
         beltId: number,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<void> {
         return __request({
             method: 'DELETE',
             path: `/belts/${beltId}`,

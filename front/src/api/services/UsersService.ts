@@ -49,12 +49,12 @@ export class UsersService {
 
     /**
      * @param userId
-     * @returns any Success
+     * @returns void
      * @throws ApiError
      */
     public static deleteUserResource(
         userId: number,
-    ): CancelablePromise<any> {
+    ): CancelablePromise<void> {
         return __request({
             method: 'DELETE',
             path: `/users/${userId}`,

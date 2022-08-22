@@ -261,7 +261,7 @@ api_model_school_class_student_belts = api.model('SchoolClassStudentBelts', {
     'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
     'belts': fields.List(fields.Nested(api_model_belt), required=True),
     'student_belts': fields.List(fields.Nested(api.model('SchoolClassStudentBeltsStudentBelts', {
-        'student': fields.Nested(api_model_student, required=True),
+        'student_id': fields.Integer(example=42, required=True),
         'belts': fields.List(fields.Nested(api.model('SchoolClassStudentBeltsBelts', {
             'skill_domain_id': fields.Integer(example=42, required=True),
             'belt_id': fields.Integer(example=42, required=True),
@@ -763,7 +763,7 @@ class SchoolClassStudentBeltsResource(Resource):
                 ],
                 'student_belts': [
                     {
-                        'student': student.json(),
+                        'student_id': student.id,
                         'belts': belts_of_students[student.id],
                     }
                     for student in students.values()
