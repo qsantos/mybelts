@@ -360,7 +360,7 @@ function ClassLevelView() {
 
     useEffect(() => {
         ClassLevelsService
-            .getClassLevelSchoolClassesResource(parseInt(class_level_id))
+            .getClassLevelResource(parseInt(class_level_id))
             .then(setSchoolClassList)
             .catch(error => { setErrorMessage(getAPIError(error)); });
     }, [class_level_id]);

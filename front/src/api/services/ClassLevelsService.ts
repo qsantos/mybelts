@@ -65,13 +65,13 @@ export class ClassLevelsService {
     /**
      * @param classLevelId
      * @param xFields An optional fields mask
-     * @returns ClassLevelOne Success
+     * @returns SchoolClassList Success
      * @throws ApiError
      */
     public static getClassLevelResource(
         classLevelId: number,
         xFields?: string,
-    ): CancelablePromise<ClassLevelOne> {
+    ): CancelablePromise<SchoolClassList> {
         return __request({
             method: 'GET',
             path: `/class-levels/${classLevelId}`,
@@ -100,25 +100,6 @@ export class ClassLevelsService {
                 'X-Fields': xFields,
             },
             body: payload,
-        });
-    }
-
-    /**
-     * @param classLevelId
-     * @param xFields An optional fields mask
-     * @returns SchoolClassList Success
-     * @throws ApiError
-     */
-    public static getClassLevelSchoolClassesResource(
-        classLevelId: number,
-        xFields?: string,
-    ): CancelablePromise<SchoolClassList> {
-        return __request({
-            method: 'GET',
-            path: `/class-levels/${classLevelId}/school-classes`,
-            headers: {
-                'X-Fields': xFields,
-            },
         });
     }
 

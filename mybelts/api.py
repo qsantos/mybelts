@@ -524,7 +524,7 @@ class ClassLevelsResource(Resource):
 
 @class_level_ns.route('/class-levels/<int:class_level_id>')
 class ClassLevelResource(Resource):
-    @api.marshal_with(api_model_class_level_one)
+    @api.marshal_with(api_model_school_class_list)
     def get(self, class_level_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
@@ -534,6 +534,10 @@ class ClassLevelResource(Resource):
                 abort(404, f'Class level {class_level_id} not found')
             return {
                 'class_level': class_level.json(),
+                'school_classes': [
+                    school_class.json()
+                    for school_class in class_level.school_classes
+                ],
             }
 
     put_model = api.model('ClassLevelPut', {
@@ -568,25 +572,6 @@ class ClassLevelResource(Resource):
             session.query(ClassLevel).filter(ClassLevel.id == class_level.id).delete()
             session.commit()
             return None, 204
-
-
-@class_level_ns.route('/class-levels/<int:class_level_id>/school-classes')
-class ClassLevelSchoolClassesResource(Resource):
-    @api.marshal_with(api_model_school_class_list)
-    def get(self, class_level_id: int) -> Any:
-        with session_context() as session:
-            me = authenticate(session)
-            need_admin(me)
-            class_level = session.query(ClassLevel).get(class_level_id)
-            if class_level is None:
-                abort(404, f'Class level {class_level_id} not found')
-            return {
-                'class_level': class_level.json(),
-                'school_classes': [
-                    school_class.json()
-                    for school_class in class_level.school_classes
-                ],
-            }
 
 
 @school_class_ns.route('/school-classes')
