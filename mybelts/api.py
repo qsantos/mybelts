@@ -734,17 +734,14 @@ class SchoolClassStudentBeltsResource(Resource):
                 .all()
             )
 
+            belts = session.query(Belt).all()
+            skill_domains = session.query(SkillDomain).all()
+
             # collect results
-            belts = {}
-            skill_domains = {}
             belts_of_students: Dict[int, List[Dict[str, int]]] = {}
-            students = {}
             for student, belt, skill_domain in students_belts_skill_domains:
-                students[student.id] = student
                 belts_of_student = belts_of_students.setdefault(student.id, [])
                 if belt is not None and skill_domain is not None:
-                    belts[belt.id] = belt
-                    skill_domains[skill_domain.id] = skill_domain
                     belts_of_student.append({
                         'skill_domain_id': skill_domain.id,
                         'belt_id': belt.id,
@@ -755,18 +752,18 @@ class SchoolClassStudentBeltsResource(Resource):
                 'school_class': school_class.json(),
                 'belts': [
                     belt.json()
-                    for belt in belts.values()
+                    for belt in belts
                 ],
                 'skill_domains': [
                     skill_domain.json()
-                    for skill_domain in skill_domains.values()
+                    for skill_domain in skill_domains
                 ],
                 'student_belts': [
                     {
-                        'student_id': student.id,
-                        'belts': belts_of_students[student.id],
+                        'student_id': student_id,
+                        'belts': belts,
                     }
-                    for student in students.values()
+                    for student_id, belts in belts_of_students.items()
                 ],
             }
 

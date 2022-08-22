@@ -429,22 +429,12 @@ function SchoolClassView() {
 
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
-    const [beltList, setBeltList] = useState<null | BeltList>(null);
-    const [skillDomainList, setSkillDomainList] = useState<null | SkillDomainList>(null);
     const [studentList, setStudentList] = useState<null | StudentList>(null);
     const [schoolClassStudentBelts, setSchoolClassStudentBelts] = useState<null | SchoolClassStudentBelts>(null);
     const [waitlistEntryList, setWaitlistEntryList] = useState<null | WaitlistEntryList>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        BeltsService
-            .getBeltsResource()
-            .then(setBeltList)
-            .catch(error => { setErrorMessage(getAPIError(error)); });
-        SkillDomainsService
-            .getSkillDomainsResource()
-            .then(setSkillDomainList)
-            .catch(error => { setErrorMessage(getAPIError(error)); });
         SchoolClassesService
             .getSchoolClassResource(parseInt(school_class_id))
             .then(setStudentList)
@@ -461,7 +451,7 @@ function SchoolClassView() {
         }
     }, [school_class_id]);
 
-    if (beltList === null || skillDomainList === null || studentList === null || schoolClassStudentBelts === null || (canUseWaitlist && waitlistEntryList === null)) {
+    if (studentList === null || schoolClassStudentBelts === null || (canUseWaitlist && waitlistEntryList === null)) {
         return <>
             <AdminOnly>
                 <Breadcrumb>
@@ -476,11 +466,9 @@ function SchoolClassView() {
         </>;
     }
 
-    const { belts } = beltList;
-    const { skill_domains } = skillDomainList;
     const { class_level, school_class, students } = studentList;
-    //const { class_level, school_class, belts, skill_domains, student_belts } = schoolClassStudentBelts;
-    const { student_belts } = schoolClassStudentBelts;
+    //const { class_level, school_class, student_belts } = schoolClassStudentBelts;
+    const { belts, skill_domains, student_belts } = schoolClassStudentBelts;
 
     return <>
         <AdminOnly>
