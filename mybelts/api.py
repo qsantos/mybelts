@@ -630,14 +630,11 @@ class SchoolClassResource(Resource):
                 abort(404, f'School class {school_class_id} not found')
             class_level = school_class.class_level
 
-            success_evaluations = session.query(Evaluation).filter(Evaluation.success).subquery()
-            students_belts_skill_domains = (
-                session  # type: ignore
-                .query(Student, Belt, SkillDomain)
-                .select_from(Student)
-                .outerjoin(success_evaluations)
-                .outerjoin(Belt)
-                .outerjoin(SkillDomain)
+            evaluations = (
+                session
+                .query(Evaluation)
+                .filter(Evaluation.success)
+                .outerjoin(Student)
                 .filter(Student.school_class_id == school_class_id)
                 .all()
             )
@@ -648,13 +645,11 @@ class SchoolClassResource(Resource):
 
             # collect results
             belts_of_students: Dict[int, List[Dict[str, int]]] = {}
-            for student, belt, skill_domain in students_belts_skill_domains:
-                belts_of_student = belts_of_students.setdefault(student.id, [])
-                if belt is not None and skill_domain is not None:
-                    belts_of_student.append({
-                        'skill_domain_id': skill_domain.id,
-                        'belt_id': belt.id,
-                    })
+            for evaluation in evaluations:
+                belts_of_students.setdefault(evaluation.student_id, []).append({
+                    'skill_domain_id': evaluation.skill_domain_id,
+                    'belt_id': evaluation.belt_id,
+                })
 
             return {
                 'belts': [
@@ -730,7 +725,6 @@ class SchoolClassWaitlistResource(Resource):
             waitlist_entries = (
                 session
                 .query(WaitlistEntry)
-                .select_from(WaitlistEntry)
                 .outerjoin(Student)
                 .filter(Student.school_class_id == school_class_id)
                 .all()
@@ -951,10 +945,9 @@ class StudentWaitlistResource(Resource):
             achieved_belt = (
                 session  # type: ignore
                 .query(Belt)
-                .select_from(Evaluation)
-                .outerjoin(Belt)
+                .outerjoin(Evaluation)
                 .filter(Evaluation.student_id == student_id)
-                .filter(Evaluation.skillDomain_id == skill_domain.id)
+                .filter(Evaluation.skill_domain_id == skill_domain.id)
                 .filter(Evaluation.success)
                 .order_by(Belt.rank.desc())
                 .limit(1)
