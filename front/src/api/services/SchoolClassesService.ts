@@ -109,25 +109,6 @@ export class SchoolClassesService {
     /**
      * @param schoolClassId
      * @param xFields An optional fields mask
-     * @returns StudentList Success
-     * @throws ApiError
-     */
-    public static getSchoolClassStudentsResource(
-        schoolClassId: number,
-        xFields?: string,
-    ): CancelablePromise<StudentList> {
-        return __request({
-            method: 'GET',
-            path: `/school-classes/${schoolClassId}/students`,
-            headers: {
-                'X-Fields': xFields,
-            },
-        });
-    }
-
-    /**
-     * @param schoolClassId
-     * @param xFields An optional fields mask
      * @returns WaitlistEntryList Success
      * @throws ApiError
      */

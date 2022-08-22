@@ -689,27 +689,6 @@ class SchoolClassResource(Resource):
             return None, 204
 
 
-@school_class_ns.route('/school-classes/<int:school_class_id>/students')
-class SchoolClassStudentsResource(Resource):
-    @api.marshal_with(api_model_student_list)
-    def get(self, school_class_id: int) -> Any:
-        with session_context() as session:
-            me = authenticate(session)
-            need_admin(me)
-            school_class = session.query(SchoolClass).get(school_class_id)
-            if school_class is None:
-                abort(404, f'School class {school_class_id} not found')
-            class_level = school_class.class_level
-            return {
-                'class_level': class_level.json(),
-                'school_class': school_class.json(),
-                'students': [
-                    student.json()
-                    for student in school_class.students
-                ],
-            }
-
-
 @school_class_ns.route('/school-classes/<int:school_class_id>/student-belts')
 class SchoolClassStudentBeltsResource(Resource):
     @api.marshal_with(api_model_school_class_student_belts)
