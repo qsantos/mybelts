@@ -952,11 +952,9 @@ class StudentWaitlistResource(Resource):
                 session  # type: ignore
                 .query(Belt)
                 .select_from(Evaluation)
-                .outerjoin(Student)
                 .outerjoin(Belt)
-                .outerjoin(SkillDomain)
-                .filter(Student.id == student_id)
-                .filter(SkillDomain.id == skill_domain.id)
+                .filter(Evaluation.student_id == student_id)
+                .filter(Evaluation.skillDomain_id == skill_domain.id)
                 .filter(Evaluation.success)
                 .order_by(Belt.rank.desc())
                 .limit(1)
