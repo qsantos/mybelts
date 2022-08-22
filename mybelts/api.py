@@ -789,7 +789,7 @@ class StudentsResource(Resource):
 
 @students_ns.route('/students/<int:student_id>')
 class StudentResource(Resource):
-    @api.marshal_with(api_model_student_one)
+    @api.marshal_with(api_model_evaluation_list)
     def get(self, student_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
@@ -797,14 +797,19 @@ class StudentResource(Resource):
             student = session.query(Student).get(student_id)
             if student is None:
                 abort(404, f'Student {student_id} not found')
+
+            belts = session.query(Belt).all()
+            skill_domains = session.query(SkillDomain).all()
+            evaluations = session.query(Evaluation).filter(Evaluation.student_id == student.id).all()
             school_class = student.school_class
             class_level = school_class.class_level
-            user = student.user
             return {
                 'class_level': class_level.json(),
                 'school_class': school_class.json(),
-                'user': user.json(),
                 'student': student.json(),
+                'belts': [belt.json() for belt in belts],
+                'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
+                'evaluations': [evaluation.json() for evaluation in evaluations],
             }
 
     put_model = api.model('StudentPut', {
@@ -857,32 +862,6 @@ class StudentResource(Resource):
             session.query(Student).filter(Student.id == student.id).delete()
             session.commit()
             return None, 204
-
-
-@students_ns.route('/students/<int:student_id>/evaluations')
-class StudentEvaluationsResource(Resource):
-    @api.marshal_with(api_model_evaluation_list)
-    def get(self, student_id: int) -> Any:
-        with session_context() as session:
-            me = authenticate(session)
-            authorize(me, me.student is not None and me.student.id == student_id)
-            student = session.query(Student).get(student_id)
-            if student is None:
-                abort(404, f'Student {student_id} not found')
-
-            belts = session.query(Belt).all()
-            skill_domains = session.query(SkillDomain).all()
-            evaluations = session.query(Evaluation).filter(Evaluation.student_id == student.id).all()
-            school_class = student.school_class
-            class_level = school_class.class_level
-            return {
-                'class_level': class_level.json(),
-                'school_class': school_class.json(),
-                'student': student.json(),
-                'belts': [belt.json() for belt in belts],
-                'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
-                'evaluations': [evaluation.json() for evaluation in evaluations],
-            }
 
 
 @students_ns.route('/students/<int:student_id>/waitlist')

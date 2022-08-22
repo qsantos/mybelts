@@ -552,7 +552,7 @@ function StudentWidget(props: StudentWidgetProps) {
 
     useEffect(() => {
         StudentsService
-            .getStudentEvaluationsResource(student_id)
+            .getStudentResource(student_id)
             .then(setEvaluationList)
             .catch(error => { setErrorMessage(getAPIError(error)); });
         if (canUseWaitlist) {

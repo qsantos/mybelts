@@ -72,13 +72,13 @@ export class StudentsService {
     /**
      * @param studentId
      * @param xFields An optional fields mask
-     * @returns StudentOne Success
+     * @returns EvaluationList Success
      * @throws ApiError
      */
     public static getStudentResource(
         studentId: number,
         xFields?: string,
-    ): CancelablePromise<StudentOne> {
+    ): CancelablePromise<EvaluationList> {
         return __request({
             method: 'GET',
             path: `/students/${studentId}`,
@@ -107,25 +107,6 @@ export class StudentsService {
                 'X-Fields': xFields,
             },
             body: payload,
-        });
-    }
-
-    /**
-     * @param studentId
-     * @param xFields An optional fields mask
-     * @returns EvaluationList Success
-     * @throws ApiError
-     */
-    public static getStudentEvaluationsResource(
-        studentId: number,
-        xFields?: string,
-    ): CancelablePromise<EvaluationList> {
-        return __request({
-            method: 'GET',
-            path: `/students/${studentId}/evaluations`,
-            headers: {
-                'X-Fields': xFields,
-            },
         });
     }
 
