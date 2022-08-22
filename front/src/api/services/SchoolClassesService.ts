@@ -4,7 +4,6 @@
 import type { SchoolClassesPost } from '../models/SchoolClassesPost';
 import type { SchoolClassOne } from '../models/SchoolClassOne';
 import type { SchoolClassPut } from '../models/SchoolClassPut';
-import type { SchoolClassStudentBelts } from '../models/SchoolClassStudentBelts';
 import type { StudentList } from '../models/StudentList';
 import type { WaitlistEntryList } from '../models/WaitlistEntryList';
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -84,25 +83,6 @@ export class SchoolClassesService {
                 'X-Fields': xFields,
             },
             body: payload,
-        });
-    }
-
-    /**
-     * @param schoolClassId
-     * @param xFields An optional fields mask
-     * @returns SchoolClassStudentBelts Success
-     * @throws ApiError
-     */
-    public static getSchoolClassStudentBeltsResource(
-        schoolClassId: number,
-        xFields?: string,
-    ): CancelablePromise<SchoolClassStudentBelts> {
-        return __request({
-            method: 'GET',
-            path: `/school-classes/${schoolClassId}/student-belts`,
-            headers: {
-                'X-Fields': xFields,
-            },
         });
     }
 

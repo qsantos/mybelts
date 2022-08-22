@@ -35,7 +35,6 @@ export type { SchoolClassesPost } from './models/SchoolClassesPost';
 export type { SchoolClassList } from './models/SchoolClassList';
 export type { SchoolClassOne } from './models/SchoolClassOne';
 export type { SchoolClassPut } from './models/SchoolClassPut';
-export type { SchoolClassStudentBelts } from './models/SchoolClassStudentBelts';
 export type { SchoolClassStudentBeltsBelts } from './models/SchoolClassStudentBeltsBelts';
 export type { SchoolClassStudentBeltsStudentBelts } from './models/SchoolClassStudentBeltsStudentBelts';
 export type { SkillDomain } from './models/SkillDomain';

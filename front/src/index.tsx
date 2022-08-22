@@ -22,7 +22,7 @@ import {
     UserList, UsersService,
     BeltList, BeltsService,
     ClassLevelList, ClassLevelsService,
-    SchoolClassList, SchoolClassesService, SchoolClassStudentBelts,
+    SchoolClassList, SchoolClassesService,
     SkillDomainList, SkillDomainsService,
     StudentList, StudentsService,
     EvaluationList,
@@ -430,7 +430,6 @@ function SchoolClassView() {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [studentList, setStudentList] = useState<null | StudentList>(null);
-    const [schoolClassStudentBelts, setSchoolClassStudentBelts] = useState<null | SchoolClassStudentBelts>(null);
     const [waitlistEntryList, setWaitlistEntryList] = useState<null | WaitlistEntryList>(null);
     const navigate = useNavigate();
 
@@ -438,10 +437,6 @@ function SchoolClassView() {
         SchoolClassesService
             .getSchoolClassResource(parseInt(school_class_id))
             .then(setStudentList)
-            .catch(error => { setErrorMessage(getAPIError(error)); });
-        SchoolClassesService
-            .getSchoolClassStudentBeltsResource(parseInt(school_class_id))
-            .then(setSchoolClassStudentBelts)
             .catch(error => { setErrorMessage(getAPIError(error)); });
         if (canUseWaitlist) {
             SchoolClassesService
@@ -451,7 +446,7 @@ function SchoolClassView() {
         }
     }, [school_class_id]);
 
-    if (studentList === null || schoolClassStudentBelts === null || (canUseWaitlist && waitlistEntryList === null)) {
+    if (studentList === null || (canUseWaitlist && waitlistEntryList === null)) {
         return <>
             <AdminOnly>
                 <Breadcrumb>
@@ -466,9 +461,7 @@ function SchoolClassView() {
         </>;
     }
 
-    const { class_level, school_class, students } = studentList;
-    //const { class_level, school_class, student_belts } = schoolClassStudentBelts;
-    const { belts, skill_domains, student_belts } = schoolClassStudentBelts;
+    const { belts, skill_domains, class_level, school_class, students, student_belts } = studentList;
 
     return <>
         <AdminOnly>

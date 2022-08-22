@@ -187,9 +187,18 @@ api_model_school_class_one = api.model('SchoolClassOne', {
 })
 
 api_model_student_list = api.model('StudentList', {
+    'belts': fields.List(fields.Nested(api_model_belt), required=True),
+    'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
     'class_level': fields.Nested(api_model_class_level, required=True),
     'school_class': fields.Nested(api_model_school_class, required=True),
     'students': fields.List(fields.Nested(api_model_student), required=True),
+    'student_belts': fields.List(fields.Nested(api.model('SchoolClassStudentBeltsStudentBelts', {
+        'student_id': fields.Integer(example=42, required=True),
+        'belts': fields.List(fields.Nested(api.model('SchoolClassStudentBeltsBelts', {
+            'skill_domain_id': fields.Integer(example=42, required=True),
+            'belt_id': fields.Integer(example=42, required=True),
+        })), required=True),
+    })), required=True),
 })
 
 api_model_student_list_bare = api.model('StudentListBare', {
@@ -253,20 +262,6 @@ api_model_waitlist_entry_list = api.model('WaitlistEntryList', {
     'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
     'belts': fields.List(fields.Nested(api_model_belt), required=True),
     'waitlist_entries': fields.List(fields.Nested(api_model_waitlist_entry), required=True),
-})
-
-api_model_school_class_student_belts = api.model('SchoolClassStudentBelts', {
-    'class_level': fields.Nested(api_model_class_level, required=True),
-    'school_class': fields.Nested(api_model_school_class, required=True),
-    'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
-    'belts': fields.List(fields.Nested(api_model_belt), required=True),
-    'student_belts': fields.List(fields.Nested(api.model('SchoolClassStudentBeltsStudentBelts', {
-        'student_id': fields.Integer(example=42, required=True),
-        'belts': fields.List(fields.Nested(api.model('SchoolClassStudentBeltsBelts', {
-            'skill_domain_id': fields.Integer(example=42, required=True),
-            'belt_id': fields.Integer(example=42, required=True),
-        })), required=True),
-    })), required=True),
 })
 
 
@@ -644,12 +639,54 @@ class SchoolClassResource(Resource):
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
             class_level = school_class.class_level
+
+            success_evaluations = session.query(Evaluation).filter(Evaluation.success).subquery()
+            students_belts_skill_domains = (
+                session  # type: ignore
+                .query(Student, Belt, SkillDomain)
+                .select_from(Student)
+                .outerjoin(success_evaluations)
+                .outerjoin(Belt)
+                .outerjoin(SkillDomain)
+                .filter(Student.school_class_id == school_class_id)
+                .all()
+            )
+
+            belts = session.query(Belt).all()
+            skill_domains = session.query(SkillDomain).all()
+            students = school_class.students
+
+            # collect results
+            belts_of_students: Dict[int, List[Dict[str, int]]] = {}
+            for student, belt, skill_domain in students_belts_skill_domains:
+                belts_of_student = belts_of_students.setdefault(student.id, [])
+                if belt is not None and skill_domain is not None:
+                    belts_of_student.append({
+                        'skill_domain_id': skill_domain.id,
+                        'belt_id': belt.id,
+                    })
+
             return {
-                'class_level': class_level.json(),
-                'school_class': school_class.json(),
+                'belts': [
+                    belt.json()
+                    for belt in belts
+                ],
+                'skill_domains': [
+                    skill_domain.json()
+                    for skill_domain in skill_domains
+                ],
                 'students': [
                     student.json()
-                    for student in school_class.students
+                    for student in students
+                ],
+                'class_level': class_level.json(),
+                'school_class': school_class.json(),
+                'student_belts': [
+                    {
+                        'student_id': student_id,
+                        'belts': belts,
+                    }
+                    for student_id, belts in belts_of_students.items()
                 ],
             }
 
@@ -687,64 +724,6 @@ class SchoolClassResource(Resource):
             session.query(SchoolClass).filter(SchoolClass.id == school_class.id).delete()
             session.commit()
             return None, 204
-
-
-@school_class_ns.route('/school-classes/<int:school_class_id>/student-belts')
-class SchoolClassStudentBeltsResource(Resource):
-    @api.marshal_with(api_model_school_class_student_belts)
-    def get(self, school_class_id: int) -> Any:
-        with session_context() as session:
-            me = authenticate(session)
-            authorize(me, me.student is not None and me.student.school_class_id == school_class_id)
-            school_class = session.query(SchoolClass).get(school_class_id)
-            if school_class is None:
-                abort(404, f'School class {school_class_id} not found')
-            class_level = school_class.class_level
-
-            success_evaluations = session.query(Evaluation).filter(Evaluation.success).subquery()
-            students_belts_skill_domains = (
-                session  # type: ignore
-                .query(Student, Belt, SkillDomain)
-                .select_from(Student)
-                .outerjoin(success_evaluations)
-                .outerjoin(Belt)
-                .outerjoin(SkillDomain)
-                .filter(Student.school_class_id == school_class_id)
-                .all()
-            )
-
-            belts = session.query(Belt).all()
-            skill_domains = session.query(SkillDomain).all()
-
-            # collect results
-            belts_of_students: Dict[int, List[Dict[str, int]]] = {}
-            for student, belt, skill_domain in students_belts_skill_domains:
-                belts_of_student = belts_of_students.setdefault(student.id, [])
-                if belt is not None and skill_domain is not None:
-                    belts_of_student.append({
-                        'skill_domain_id': skill_domain.id,
-                        'belt_id': belt.id,
-                    })
-
-            return {
-                'class_level': class_level.json(),
-                'school_class': school_class.json(),
-                'belts': [
-                    belt.json()
-                    for belt in belts
-                ],
-                'skill_domains': [
-                    skill_domain.json()
-                    for skill_domain in skill_domains
-                ],
-                'student_belts': [
-                    {
-                        'student_id': student_id,
-                        'belts': belts,
-                    }
-                    for student_id, belts in belts_of_students.items()
-                ],
-            }
 
 
 @school_class_ns.route('/school-classes/<int:school_class_id>/waitlist')
