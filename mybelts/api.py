@@ -261,8 +261,7 @@ class MissingI18nKeyResource(Resource):
     @api.marshal_with(api_model_missing_i18n_key_event_list)
     def get(self) -> Any:
         with session_context() as session:
-            # me = authenticate(session)
-            # need_admin(me)
+            authenticate(session)
             group_by = (
                 MissingI18nKey.language,
                 MissingI18nKey.namespace,
