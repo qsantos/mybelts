@@ -617,7 +617,7 @@ class SchoolClassResource(Resource):
             class_level = school_class.class_level
 
             evaluations = (
-                session
+                session  # type: ignore
                 .query(Evaluation)
                 .filter(Evaluation.success)
                 .outerjoin(Student)
@@ -709,7 +709,7 @@ class SchoolClassWaitlistResource(Resource):
                 abort(404, f'School class {school_class_id} not found')
 
             waitlist_entries = (
-                session
+                session  # type: ignore
                 .query(WaitlistEntry)
                 .outerjoin(Student)
                 .filter(Student.school_class_id == school_class_id)
