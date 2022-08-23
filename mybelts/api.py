@@ -1,13 +1,12 @@
 import logging
 from datetime import date, datetime, timedelta, timezone
 from time import sleep
-from typing import Any, Dict, List, NoReturn
+from typing import TYPE_CHECKING, Any, Dict, List, NoReturn
 
 import jwt
 from flask import Blueprint, Flask, Response, request, url_for
 from flask_restx import fields  # type: ignore
 from flask_restx import Api, Resource
-from flask_restx import abort as flask_restx_abort
 from flask_restx.apidoc import apidoc  # type: ignore
 from jsonschema import FormatChecker
 from psycopg2.errors import UniqueViolation  # type: ignore
@@ -22,9 +21,12 @@ from mybelts.schema import (
     SkillDomain, Student, User, WaitlistEntry, session_context,
 )
 
-
-def abort(code: int, message: str) -> NoReturn:  # type: ignore
-    flask_restx_abort(code, message)
+# add typing to flask_restx.abort()
+if TYPE_CHECKING:
+    def abort(code: int, message: str) -> NoReturn:
+        ...
+else:
+    from flask_restx import abort
 
 
 # fix for location of SwaggerUI not at root
