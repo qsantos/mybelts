@@ -200,7 +200,7 @@ async function getResponseBody(response: Response): Promise<any> {
                 if (isJSON) {
                     return await response.json();
                 } else {
-                    return await response.text();
+                    return await response.blob();
                 }
             }
         } catch (error) {

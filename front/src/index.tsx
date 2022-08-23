@@ -377,7 +377,7 @@ function ClassLevelView() {
         </>;
     }
 
-    const { belts, skill_domains, class_level, school_classes } = schoolClassList;
+    const { belts, skill_domains, class_level, school_classes, exams } = schoolClassList;
 
     const sorted_school_classes = school_classes.sort((a, b) => a.suffix.localeCompare(b.suffix));
 
@@ -410,7 +410,7 @@ function ClassLevelView() {
             setSchoolClasses={new_school_classes => setSchoolClassList({ ...schoolClassList, school_classes: new_school_classes })}
         />
         <h4>{t('exam.title')}</h4>
-        <ClassLevelExams belts={belts} skill_domains={skill_domains} class_level={class_level} />
+        <ClassLevelExams belts={belts} skill_domains={skill_domains} class_level={class_level} exams={exams} />
     </>;
 }
 

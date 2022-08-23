@@ -1,10 +1,11 @@
 import logging
 from datetime import date, datetime, timedelta, timezone
+from io import BytesIO
 from time import sleep
 from typing import TYPE_CHECKING, Any, Dict, List, NoReturn
 
 import jwt
-from flask import Blueprint, Flask, Response, request, url_for
+from flask import Blueprint, Flask, Response, request, send_file, url_for
 from flask_restx import fields  # type: ignore
 from flask_restx import Api, Resource
 from flask_restx.apidoc import apidoc  # type: ignore
@@ -68,6 +69,7 @@ skill_domains_ns = api.namespace('Skill Domains', path='/')
 belts_ns = api.namespace('Belts', path='/')
 evaluations_ns = api.namespace('Evaluations', path='/')
 waitlist_ns = api.namespace('Waitlist', path='/')
+exam_ns = api.namespace('Exams', path='/')
 
 
 api_model_user = api.model('User', {
@@ -192,6 +194,7 @@ api_model_school_class_list = api.model('SchoolClassList', {
     'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
     'class_level': fields.Nested(api_model_class_level, required=True),
     'school_classes': fields.List(fields.Nested(api_model_school_class), required=True),
+    'exams': fields.List(fields.Nested(api_model_exam), required=True),
 })
 
 api_model_school_class_one = api.model('SchoolClassOne', {
@@ -557,6 +560,10 @@ class ClassLevelResource(Resource):
                 'school_classes': [
                     school_class.json()
                     for school_class in class_level.school_classes
+                ],
+                'exams': [
+                    exam.json()
+                    for exam in class_level.exams
                 ],
             }
 
@@ -1424,6 +1431,23 @@ class WaitlistConvertResource(Resource):
                 session.delete(waitlist_entry)  # type: ignore
             session.commit()
             return None, 204
+
+
+@exam_ns.route('/exams/<int:exam_id>')
+class ExamsResource(Resource):
+    @api.response(200, 'Success')
+    def get(self, exam_id: int) -> Any:
+        with session_context() as session:
+            me = authenticate(session)
+            need_admin(me)
+            exam = session.query(Exam).get(exam_id)
+            if exam is None:
+                abort(404, f'Exam {exam_id} not found')
+            return send_file(
+                BytesIO(exam.file),
+                as_attachment=True,
+                attachment_filename='exam.pdf',
+            )
 
 
 def create_app() -> Flask:

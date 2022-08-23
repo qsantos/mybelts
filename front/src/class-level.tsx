@@ -3,11 +3,12 @@ import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
+import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Table from 'react-bootstrap/Table';
 
-import { Belt, SkillDomain, ClassLevel, ClassLevelsService } from './api';
+import { Belt, SkillDomain, ClassLevel, ClassLevelsService, Exam, ExamsService } from './api';
 import { AdminOnly } from './auth';
 import { ModalButton } from './modal-button';
 import { BeltIcon } from './belt';
@@ -148,6 +149,35 @@ export function ClassLevelListing(props: ClassLevelListingProps): ReactElement {
     </>;
 }
 
+function download_exam(exam_id: number): Promise<void> {
+    return ExamsService.getExamsResource(exam_id)
+        .then((blob: Blob) => {
+            const url = URL.createObjectURL(blob);
+            try {
+                const link = document.createElement('A') as HTMLAnchorElement;
+                link.href = url;
+                link.download = 'exam.pdf';
+                link.click();
+            } finally {
+                URL.revokeObjectURL(url);
+            }
+        });
+}
+
+interface ExamButtonProps {
+    exam: Exam,
+}
+
+
+function ExamButton(props: ExamButtonProps): ReactElement {
+    const { exam } = props;
+    return (
+        <Button onClick={() => download_exam(exam.id)}>
+            {exam.id}
+        </Button>
+    );
+}
+
 interface UploadExamButtonProps {
     belt: Belt,
     skill_domain: SkillDomain,
@@ -162,7 +192,6 @@ function UploadExamButton(props: UploadExamButtonProps): ReactElement {
             i18nPrefix="exam.upload"
             i18nArgs={{ belt, skill_domain, class_level }}
             onSubmit={(form: EventTarget) => {
-                console.log(form);
                 const typed_form = form as typeof form & {
                     file: HTMLInputElement;
                 };
@@ -191,15 +220,30 @@ interface ClassLevelExamsProps {
     belts: Belt[],
     skill_domains: SkillDomain[],
     class_level: ClassLevel,
+    exams: Exam[],
 }
 
 export function ClassLevelExams(props: ClassLevelExamsProps): ReactElement {
-    const { belts, skill_domains, class_level } = props;
+    const { belts, skill_domains, class_level, exams } = props;
     const { t } = useTranslation();
 
     const sorted_belts = belts.sort((a, b) => (a.rank - b.rank));
     const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
 
+    const exams_by_belt_by_domain: { [index: number]: { [index: number]: Exam[] }} = {};
+    for (const exam of exams) {
+        const domain_id = exam.skill_domain_id;
+        const belt_id = exam.belt_id;
+        const exams_by_belt = exams_by_belt_by_domain[domain_id];
+        if (exams_by_belt === undefined) {
+            exams_by_belt_by_domain[domain_id] = {[belt_id]: [exam]};
+        } else {
+            const lexams = exams_by_belt[belt_id];
+            if (lexams === undefined) {
+                exams_by_belt[belt_id] = [exam];
+            }
+        }
+    }
     return (
         <Table>
             <thead>
@@ -220,11 +264,15 @@ export function ClassLevelExams(props: ClassLevelExamsProps): ReactElement {
                         <th>
                             {skill_domain.name}
                         </th>
-                        {sorted_belts.map(belt =>
-                            <td key={belt.id}>
-                                <UploadExamButton belt={belt} skill_domain={skill_domain} class_level={class_level} />
-                            </td>
-                        )}
+                        {sorted_belts.map(belt => {
+                            const lexams = exams_by_belt_by_domain[skill_domain.id]?.[belt.id];
+                            return (
+                                <td key={belt.id}>
+                                    {lexams && lexams.map(exam => <ExamButton key={exam.id} exam={exam} />)}
+                                    <UploadExamButton belt={belt} skill_domain={skill_domain} class_level={class_level} />
+                                </td>
+                            );
+                        })}
                     </tr>
                 )}
             </tbody>

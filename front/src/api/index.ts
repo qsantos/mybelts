@@ -66,6 +66,7 @@ export { BeltsService } from './services/BeltsService';
 export { ClassLevelsService } from './services/ClassLevelsService';
 export { DefaultService } from './services/DefaultService';
 export { EvaluationsService } from './services/EvaluationsService';
+export { ExamsService } from './services/ExamsService';
 export { SchoolClassesService } from './services/SchoolClassesService';
 export { SkillDomainsService } from './services/SkillDomainsService';
 export { StudentsService } from './services/StudentsService';

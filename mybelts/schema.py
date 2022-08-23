@@ -109,6 +109,12 @@ class ClassLevel(Base):
         back_populates='class_level',
     )
 
+    exams: List['Exam'] = relationship(  # type: ignore
+        'Exam',
+        foreign_keys='Exam.class_level_id',
+        back_populates='class_level',
+    )
+
     def json(self) -> Dict:
         return {
             'id': self.id,
@@ -275,7 +281,11 @@ class Exam(Base):
     skill_domain_id = Column(Integer, ForeignKey('skill_domain.id', ondelete='CASCADE'), nullable=False)
     file = deferred(Column(LargeBinary, nullable=False))
 
-    class_level = relationship('ClassLevel', foreign_keys=class_level_id)
+    class_level = relationship(
+        'ClassLevel',
+        foreign_keys=class_level_id,
+        back_populates='exams',
+    )
     skill_domain = relationship('SkillDomain', foreign_keys=skill_domain_id)
     belt = relationship('Belt', foreign_keys=belt_id)
 
