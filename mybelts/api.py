@@ -134,6 +134,14 @@ api_model_waitlist_entry = api.model('WaitlistEntry', {
     'belt_id': fields.Integer(example=42, required=True),
 })
 
+api_model_exam = api.model('Exam', {
+    'id': fields.Integer(example=42, required=True),
+    'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
+    'class_level_id': fields.Integer(example=42, required=True),
+    'skill_domain_id': fields.Integer(example=42, required=True),
+    'belt_id': fields.Integer(example=42, required=True),
+})
+
 api_model_login_payload = api.model('LoginPayload', {
     'user_id': fields.Integer(example=42, required=True),
     'exp': fields.Float(example=1659261001.276245, required=True, help='Timestamp of the expiration'),
@@ -257,6 +265,10 @@ api_model_waitlist_entry_one = api.model('WaitlistEntryOne', {
 
 api_model_waitlist_entry_list = api.model('WaitlistEntryList', {
     'waitlist_entries': fields.List(fields.Nested(api_model_waitlist_entry), required=True),
+})
+
+api_model_exam_one = api.model('ExamOne', {
+    'exam': fields.Nested(api_model_exam, required=True),
 })
 
 
@@ -589,7 +601,7 @@ class ClassLevelExamsResource(Resource):
     parser.add_argument('belt_id', type=int, location='form', required=True)
     parser.add_argument('file', type=FileStorage, location='files', required=True)
 
-    @api.marshal_with(api_model_school_class_list)  # TODO
+    @api.marshal_with(api_model_exam_one)
     @api.expect(parser)
     def post(self, class_level_id: int) -> Any:
         with session_context() as session:
@@ -627,7 +639,9 @@ class ClassLevelExamsResource(Resource):
             )
             session.add(exam)
             session.commit()
-            return  # TODO
+            return {
+                'exam': exam.json(),
+            }
 
 
 @school_class_ns.route('/school-classes')

@@ -5,6 +5,7 @@ import type { ClassLevelList } from '../models/ClassLevelList';
 import type { ClassLevelOne } from '../models/ClassLevelOne';
 import type { ClassLevelPut } from '../models/ClassLevelPut';
 import type { ClassLevelsPost } from '../models/ClassLevelsPost';
+import type { ExamOne } from '../models/ExamOne';
 import type { SchoolClassList } from '../models/SchoolClassList';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { request as __request } from '../core/request';
@@ -109,7 +110,7 @@ export class ClassLevelsService {
      * @param beltId
      * @param file
      * @param xFields An optional fields mask
-     * @returns SchoolClassList Success
+     * @returns ExamOne Success
      * @throws ApiError
      */
     public static postClassLevelExamsResource(
@@ -118,7 +119,7 @@ export class ClassLevelsService {
         beltId: number,
         file: Blob,
         xFields?: string,
-    ): CancelablePromise<SchoolClassList> {
+    ): CancelablePromise<ExamOne> {
         return __request({
             method: 'POST',
             path: `/class-levels/${classLevelId}/exams`,

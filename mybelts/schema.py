@@ -278,3 +278,12 @@ class Exam(Base):
     class_level = relationship('ClassLevel', foreign_keys=class_level_id)
     skill_domain = relationship('SkillDomain', foreign_keys=skill_domain_id)
     belt = relationship('Belt', foreign_keys=belt_id)
+
+    def json(self) -> Dict:
+        return {
+            'id': self.id,
+            'created': self.created.isoformat(),
+            'class_level_id': self.class_level_id,
+            'skill_domain_id': self.skill_domain_id,
+            'belt_id': self.belt_id,
+        }

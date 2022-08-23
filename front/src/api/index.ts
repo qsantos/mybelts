@@ -23,6 +23,8 @@ export type { EvaluationList } from './models/EvaluationList';
 export type { EvaluationOne } from './models/EvaluationOne';
 export type { EvaluationPut } from './models/EvaluationPut';
 export type { EvaluationsPost } from './models/EvaluationsPost';
+export type { Exam } from './models/Exam';
+export type { ExamOne } from './models/ExamOne';
 export type { LoginInfo } from './models/LoginInfo';
 export type { LoginPayload } from './models/LoginPayload';
 export type { LoginPost } from './models/LoginPost';
