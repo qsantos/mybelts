@@ -147,6 +147,16 @@ const resources = {
             'class_level.list.title.secondary': 'List of available class levels',
             'class_level.list.prefix.title': 'Prefix',
             'class_level.list.actions.title': 'Actions',
+            'exam.title': 'Test sheets',
+            'exam.skill_domain.title': 'Domain',
+            'exam.upload.button': '<img src="/upload.svg" height="30" />',
+            'exam.upload.button.tooltip': 'Upload a new test sheet',
+            'exam.upload.title': 'New test sheet for {{belt.name}} in {{skill_domain.name}} ({{class_level.prefix}})',
+            'exam.upload.cancel': 'Cancel',
+            'exam.upload.confirm': 'Upload',
+            'exam.upload.in_process': 'Uploading',
+            'exam.upload.file.title': 'Test sheet',
+            'exam.upload.file.help': 'Select the PDF file containing the test',
             'school_class.view.title': 'School Class',
             'school_class.add.button': 'Add',
             'school_class.add.button.tooltip': 'Create a new class in this level',
@@ -435,6 +445,16 @@ const resources = {
             'class_level.list.title.secondary': 'Liste des niveaux disponibles',
             'class_level.list.prefix.title': 'Préfixe',
             'class_level.list.actions.title': 'Actions',
+            'exam.title': 'Sujet d\'évaluations',
+            'exam.skill_domain.title': 'Domaine',
+            'exam.upload.button': '<img src="/upload.svg" height="25" />',
+            'exam.upload.button.tooltip': 'Téléverser un nouveau sujet',
+            'exam.upload.title': 'Nouveau sujet de {{belt.name}} en {{skill_domain.name}} ({{class_level.prefix}})',
+            'exam.upload.cancel': 'Annuler',
+            'exam.upload.confirm': 'Téléverser',
+            'exam.upload.in_process': 'Téléversement',
+            'exam.upload.file.title': 'Sujet d\'évaluation',
+            'exam.upload.file.help': 'Choisir le document PDF correspondant à l\'évaluation',
             'school_class.view.title': 'Classe',
             'school_class.add.button': 'Ajouter',
             'school_class.add.button.tooltip': 'Ajouter une nouvelle classe à ce niveau',
@@ -589,6 +609,8 @@ function missingKeyHandler(
     namespace: string,
     key: string,
 ) {
+    console.log(_languages, namespace, key);
+    alert(key);
     DefaultService.postMissingI18NKeyResource({language: i18n.language, namespace, key});
 }
 
@@ -596,7 +618,7 @@ i18n
     .use(initReactI18next)
     .use(LanguageDetector)
     .init({
-        fallbackLng: 'en',
+        //fallbackLng: 'en',
         resources,
         interpolation: {
             escapeValue: false,

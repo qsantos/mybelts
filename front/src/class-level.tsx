@@ -7,9 +7,10 @@ import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Table from 'react-bootstrap/Table';
 
-import { ClassLevel, ClassLevelsService } from './api';
+import { Belt, SkillDomain, ClassLevel, ClassLevelsService } from './api';
 import { AdminOnly } from './auth';
 import { ModalButton } from './modal-button';
+import { BeltIcon } from './belt';
 
 interface CreateClassLevelButtonProps {
     createdCallback?: (class_level: ClassLevel) => void;
@@ -145,4 +146,88 @@ export function ClassLevelListing(props: ClassLevelListingProps): ReactElement {
             </tbody>
         </Table>
     </>;
+}
+
+interface UploadExamButtonProps {
+    belt: Belt,
+    skill_domain: SkillDomain,
+    class_level: ClassLevel,
+}
+
+function UploadExamButton(props: UploadExamButtonProps): ReactElement {
+    const { belt, skill_domain, class_level } = props;
+    const { t } = useTranslation();
+    return (
+        <ModalButton
+            i18nPrefix="exam.upload"
+            i18nArgs={{ belt, skill_domain, class_level }}
+            onSubmit={(form: EventTarget) => {
+                console.log(form);
+                const typed_form = form as typeof form & {
+                    file: HTMLInputElement;
+                };
+                return new Promise<void>(resolve => {
+                    typed_form.file.files?.[0]?.arrayBuffer().then(
+                        data => ClassLevelsService.postClassLevelExamsResource(
+                            class_level.id, skill_domain.id, belt.id, new Blob([data]),
+                        ).then(() => resolve())
+                    );
+                });
+            }}
+            onResponse={() => console.log('ok')}
+        >
+            <Form.Group controlId="file">
+                <Form.Label>{t('exam.upload.file.title')}</Form.Label>
+                <Form.Control type="file" />
+                <Form.Text className="text-muted">
+                    {t('exam.upload.file.help')}
+                </Form.Text>
+            </Form.Group>
+        </ModalButton>
+    );
+}
+
+interface ClassLevelExamsProps {
+    belts: Belt[],
+    skill_domains: SkillDomain[],
+    class_level: ClassLevel,
+}
+
+export function ClassLevelExams(props: ClassLevelExamsProps): ReactElement {
+    const { belts, skill_domains, class_level } = props;
+    const { t } = useTranslation();
+
+    const sorted_belts = belts.sort((a, b) => (a.rank - b.rank));
+    const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
+
+    return (
+        <Table>
+            <thead>
+                <tr>
+                    <th>
+                        {t('exam.skill_domain.title')}
+                    </th>
+                    {sorted_belts.map(belt =>
+                        <th key={belt.id}>
+                            <BeltIcon belt={belt} height={25} />
+                        </th>
+                    )}
+                </tr>
+            </thead>
+            <tbody>
+                {sorted_skill_domains.map(skill_domain =>
+                    <tr key={skill_domain.id}>
+                        <th>
+                            {skill_domain.name}
+                        </th>
+                        {sorted_belts.map(belt =>
+                            <td key={belt.id}>
+                                <UploadExamButton belt={belt} skill_domain={skill_domain} class_level={class_level} />
+                            </td>
+                        )}
+                    </tr>
+                )}
+            </tbody>
+        </Table>
+    );
 }

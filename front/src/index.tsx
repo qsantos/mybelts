@@ -38,7 +38,7 @@ import { AdminOnly, LoginFormWidget, LogoutButton, LoginContext, is_admin } from
 import { CreateUserButton, UserListing } from './user';
 import { CreateSkillDomainButton, SkillDomainListing } from './skill-domain';
 import { CreateBeltButton, BeltListing } from './belt';
-import { CreateClassLevelButton, EditClassLevelButton, DeleteClassLevelButton, ClassLevelListing } from './class-level';
+import { CreateClassLevelButton, EditClassLevelButton, DeleteClassLevelButton, ClassLevelListing, ClassLevelExams } from './class-level';
 import { CreateSchoolClassButton, EditSchoolClassButton, DeleteSchoolClassButton, SchoolClassListing, SchoolClassWaitlist, ManageClassWaitlist } from './school-class';
 import { CreateStudentButton, EditStudentButton, DeleteStudentButton, UpdateStudentRanks, StudentBelts } from './student';
 import { CreateEvaluationButton, EvaluationListing, EvaluationGrid  } from './evaluation';
@@ -377,7 +377,8 @@ function ClassLevelView() {
         </>;
     }
 
-    const { class_level, school_classes } = schoolClassList;
+    const { belts, skill_domains, class_level, school_classes } = schoolClassList;
+
     const sorted_school_classes = school_classes.sort((a, b) => a.suffix.localeCompare(b.suffix));
 
     return <>
@@ -408,6 +409,8 @@ function ClassLevelView() {
             school_classes={sorted_school_classes}
             setSchoolClasses={new_school_classes => setSchoolClassList({ ...schoolClassList, school_classes: new_school_classes })}
         />
+        <h4>{t('exam.title')}</h4>
+        <ClassLevelExams belts={belts} skill_domains={skill_domains} class_level={class_level} />
     </>;
 }
 

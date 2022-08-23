@@ -103,4 +103,34 @@ export class ClassLevelsService {
         });
     }
 
+    /**
+     * @param classLevelId
+     * @param skillDomainId
+     * @param beltId
+     * @param file
+     * @param xFields An optional fields mask
+     * @returns SchoolClassList Success
+     * @throws ApiError
+     */
+    public static postClassLevelExamsResource(
+        classLevelId: number,
+        skillDomainId: number,
+        beltId: number,
+        file: Blob,
+        xFields?: string,
+    ): CancelablePromise<SchoolClassList> {
+        return __request({
+            method: 'POST',
+            path: `/class-levels/${classLevelId}/exams`,
+            headers: {
+                'X-Fields': xFields,
+            },
+            formData: {
+                'skill_domain_id': skillDomainId,
+                'belt_id': beltId,
+                'file': file,
+            },
+        });
+    }
+
 }

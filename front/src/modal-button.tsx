@@ -4,7 +4,6 @@ import { FormEvent, ReactElement, ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getAPIError } from './lib';
-import type { CancelablePromise } from './api/core/CancelablePromise';
 
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -19,7 +18,7 @@ interface ModalButtonProps<T> {
     size?: 'sm' | 'lg' | 'xl',
     i18nPrefix: string,
     i18nArgs?: Record<string, unknown>,
-    onSubmit: (form: EventTarget) => CancelablePromise<T>,
+    onSubmit: (form: EventTarget) => Promise<T>,
     onResponse: (json: T) => void,
     children: ReactNode | ReactNode[],
 }

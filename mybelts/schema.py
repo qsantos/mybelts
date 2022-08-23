@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Dict, Iterator, List
+from typing import TYPE_CHECKING, Dict, Iterator, List, TypeVar
 
 from sqlalchemy import (
     Boolean, Column, Date, DateTime, ForeignKey, Integer, LargeBinary, String,
@@ -16,6 +16,16 @@ from mybelts.config import POSTGRES_URI
 engine = create_engine(POSTGRES_URI)
 session_factory = scoped_session(sessionmaker(bind=engine))
 Base = declarative_base(bind=engine)
+
+
+if TYPE_CHECKING:
+    # deferred() is not properly typed in sqlalchemy-stubs
+    U = TypeVar('U')
+
+    def deferred(x: U) -> U:
+        ...
+else:
+    from sqlalchemy.orm import deferred
 
 
 @contextmanager
@@ -254,3 +264,17 @@ class WaitlistEntry(Base):
             'skill_domain_id': self.skill_domain_id,
             'belt_id': self.belt_id,
         }
+
+
+class Exam(Base):
+    __tablename__ = 'exam'
+    id = Column(Integer, primary_key=True)
+    created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
+    class_level_id = Column(Integer, ForeignKey('class_level.id', ondelete='CASCADE'), nullable=False)
+    belt_id = Column(Integer, ForeignKey('belt.id', ondelete='CASCADE'), nullable=False)
+    skill_domain_id = Column(Integer, ForeignKey('skill_domain.id', ondelete='CASCADE'), nullable=False)
+    file = deferred(Column(LargeBinary, nullable=False))
+
+    class_level = relationship('ClassLevel', foreign_keys=class_level_id)
+    skill_domain = relationship('SkillDomain', foreign_keys=skill_domain_id)
+    belt = relationship('Belt', foreign_keys=belt_id)

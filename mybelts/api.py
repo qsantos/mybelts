@@ -8,6 +8,7 @@ from flask import Blueprint, Flask, Response, request, url_for
 from flask_restx import fields  # type: ignore
 from flask_restx import Api, Resource
 from flask_restx.apidoc import apidoc  # type: ignore
+from flask_restx.reqparse import FileStorage  # type: ignore
 from jsonschema import FormatChecker
 from psycopg2.errors import UniqueViolation  # type: ignore
 from sqlalchemy import and_
@@ -17,8 +18,8 @@ from sqlalchemy.sql.expression import func
 
 from mybelts.config import SECRET
 from mybelts.schema import (
-    Belt, ClassLevel, Evaluation, HTTPRequest, MissingI18nKey, SchoolClass,
-    SkillDomain, Student, User, WaitlistEntry, session_context,
+    Belt, ClassLevel, Evaluation, Exam, HTTPRequest, MissingI18nKey,
+    SchoolClass, SkillDomain, Student, User, WaitlistEntry, session_context,
 )
 
 # add typing to flask_restx.abort()
@@ -179,6 +180,8 @@ api_model_class_level_one = api.model('ClassLevelOne', {
 })
 
 api_model_school_class_list = api.model('SchoolClassList', {
+    'belts': fields.List(fields.Nested(api_model_belt), required=True),
+    'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
     'class_level': fields.Nested(api_model_class_level, required=True),
     'school_classes': fields.List(fields.Nested(api_model_school_class), required=True),
 })
@@ -533,7 +536,11 @@ class ClassLevelResource(Resource):
             class_level = session.query(ClassLevel).get(class_level_id)
             if class_level is None:
                 abort(404, f'Class level {class_level_id} not found')
+            belts = session.query(Belt).all()
+            skill_domains = session.query(SkillDomain).all()
             return {
+                'belts': [belt.json() for belt in belts],
+                'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
                 'class_level': class_level.json(),
                 'school_classes': [
                     school_class.json()
@@ -573,6 +580,54 @@ class ClassLevelResource(Resource):
             session.query(ClassLevel).filter(ClassLevel.id == class_level.id).delete()
             session.commit()
             return None, 204
+
+
+@class_level_ns.route('/class-levels/<int:class_level_id>/exams')
+class ClassLevelExamsResource(Resource):
+    parser = api.parser()
+    parser.add_argument('skill_domain_id', type=int, location='form', required=True)
+    parser.add_argument('belt_id', type=int, location='form', required=True)
+    parser.add_argument('file', type=FileStorage, location='files', required=True)
+
+    @api.marshal_with(api_model_school_class_list)  # TODO
+    @api.expect(parser)
+    def post(self, class_level_id: int) -> Any:
+        with session_context() as session:
+            me = authenticate(session)
+            need_admin(me)
+            class_level = session.query(ClassLevel).get(class_level_id)
+            if class_level is None:
+                abort(404, f'Class level {class_level_id} not found')
+
+            try:
+                belt_id = int(request.form['belt_id'])
+            except (KeyError, ValueError):
+                abort(400, 'Invalid belt id')
+            try:
+                skill_domain_id = int(request.form['skill_domain_id'])
+            except (KeyError, ValueError):
+                abort(400, 'Invalid skill domain id')
+            try:
+                file = request.files['file']
+            except (KeyError, ValueError):
+                abort(400, 'Invalid file')
+
+            belt = session.query(Belt).get(belt_id)
+            if belt is None:
+                abort(404, f'Belt {belt_id} not found')
+            skill_domain = session.query(SkillDomain).get(skill_domain_id)
+            if skill_domain is None:
+                abort(404, f'Skill domain {skill_domain_id} not found')
+
+            exam = Exam(
+                class_level_id=class_level.id,
+                belt_id=belt.id,
+                skill_domain_id=skill_domain.id,
+                file=file.read(),
+            )
+            session.add(exam)
+            session.commit()
+            return  # TODO
 
 
 @school_class_ns.route('/school-classes')
@@ -638,18 +693,9 @@ class SchoolClassResource(Resource):
                 })
 
             return {
-                'belts': [
-                    belt.json()
-                    for belt in belts
-                ],
-                'skill_domains': [
-                    skill_domain.json()
-                    for skill_domain in skill_domains
-                ],
-                'students': [
-                    student.json()
-                    for student in students
-                ],
+                'belts': [belt.json() for belt in belts],
+                'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
+                'students': [student.json() for student in students],
                 'class_level': class_level.json(),
                 'school_class': school_class.json(),
                 'student_belts': [
@@ -1036,10 +1082,7 @@ class BeltsResource(Resource):
         with session_context() as session:
             authenticate(session)
             return {
-                'belts': [
-                    belt.json()
-                    for belt in session.query(Belt)
-                ],
+                'belts': [belt.json() for belt in session.query(Belt)],
             }
 
     post_model = api.model('BeltsPost', {
