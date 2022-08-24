@@ -280,7 +280,7 @@ class Exam(Base):
     belt_id = Column(Integer, ForeignKey('belt.id', ondelete='CASCADE'), nullable=False)
     skill_domain_id = Column(Integer, ForeignKey('skill_domain.id', ondelete='CASCADE'), nullable=False)
     filename = Column(String, nullable=False, index=True)
-    code = Column(String, nullable=False, index=True)
+    code = Column(String, nullable=False, index=True, server_default='')
     file = deferred(Column(LargeBinary, nullable=False))
 
     class_level = relationship(

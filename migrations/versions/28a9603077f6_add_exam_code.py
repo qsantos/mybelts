@@ -8,7 +8,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column('exam', sa.Column('code', sa.String(), nullable=False))
+    op.add_column('exam', sa.Column('code', sa.String(), server_default='', nullable=False))
     op.create_index(op.f('ix_exam_code'), 'exam', ['code'], unique=False)
 
 
