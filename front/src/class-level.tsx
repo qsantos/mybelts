@@ -7,6 +7,7 @@ import Select from 'react-select';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
+import Spinner from 'react-bootstrap/Spinner';
 import Table from 'react-bootstrap/Table';
 
 import { Belt, SkillDomain, ClassLevel, ClassLevelsService, Exam, ExamOne, ExamsService } from './api';
@@ -423,13 +424,14 @@ interface ClassLevelExamBulkUploadProps {
     belts: Belt[],
     skill_domains: SkillDomain[],
     class_level: ClassLevel,
+    createdCallback: (new_exam: Exam) => void,
 }
 
 export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): ReactElement {
-    const { belts, skill_domains } = props;
+    const { belts, skill_domains, class_level, createdCallback } = props;
     const { t } = useTranslation();
 
-    const [ files, setFiles ] = useState<File[]>([]);
+    const [ files, setFiles ] = useState<{file: File, uploading: boolean}[]>([]);
 
     const skill_domain_options = skill_domains.map(skill_domain => ({
         value: skill_domain.id,
@@ -444,7 +446,7 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
         setFiles(old_files => {
             const new_files = [...old_files];
             for (const file of event.dataTransfer.files) {
-                new_files.push(file);
+                new_files.push({file, uploading: false});
             }
             return new_files;
         });
@@ -455,11 +457,60 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
         event.preventDefault();
     }
 
+    function removeFile(file: File) {
+        setFiles(old_files => {
+            const new_files = [...old_files];
+            const new_index = new_files.findIndex(x => x.file == file);
+            new_files.splice(new_index, 1);
+            return new_files;
+        });
+    }
+
+    function uploadFile(index: number) {
+        const file = files[index]?.file;
+        const skill_domain_id = document.querySelectorAll<HTMLInputElement>('#bulk-upload [name=skill_domain]')[index]?.value;
+        const belt_id = document.querySelectorAll<HTMLInputElement>('#bulk-upload [name=belt]')[index]?.value;
+        const exam_code = document.querySelectorAll<HTMLInputElement>('#bulk-upload [name=exam_code]')[index]?.value;
+        if (!skill_domain_id || !belt_id || !exam_code) {
+            return;
+        }
+        file?.arrayBuffer().then(
+            data => ClassLevelsService.postClassLevelExamsResource(
+                class_level.id,
+                parseInt(skill_domain_id),
+                parseInt(belt_id),
+                exam_code,
+                file.name,
+                new Blob([data]),
+            ).then(({exam}) => {
+                removeFile(file);
+                createdCallback(exam);
+            })
+        );
+        setFiles(old_files => {
+            const new_files = [...old_files];
+            const new_index = new_files.findIndex(x => x.file == file);
+            const new_file = new_files[new_index];
+            if (new_file) {
+                new_file.uploading = true;
+            }
+            return new_files;
+        });
+    }
+
+    function uploadAll() {
+        for (let index = 0; index < files.length; index+= 1) {
+            uploadFile(index);
+        }
+    }
+
+    const allUploading = files.reduce((previous, {uploading}) => previous && uploading, true);
+
     const filename_pattern = /^(.*?)-eval_ceinture-(.*?)_s(.*?)-eleve/i;
 
     return <>
         {files.length != 0 &&
-            <Table>
+            <Table id="bulk-upload">
                 <thead>
                     <tr>
                         <th></th>
@@ -470,9 +521,16 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
                             <Button onClick={() => setFiles([])}>
                                 ❌
                             </Button>
-                            <Button>
-                                ✅
-                            </Button>
+                            {allUploading
+                                ? <Button disabled>
+                                    <Spinner animation="border" role="status" size="sm">
+                                        <span className="visually-hidden">⟳</span>
+                                    </Spinner>
+                                </Button>
+                                : <Button onClick={() => uploadAll()}>
+                                    ✅
+                                </Button>
+                            }
                         </th>
                     </tr>
                     <tr>
@@ -484,7 +542,7 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
                     </tr>
                 </thead>
                 <tbody>
-                    {files.map(file => {
+                    {files.map(({file, uploading}, index) => {
                         const match = file.name.toLowerCase().match(filename_pattern);
                         let skill_domain;
                         let belt;
@@ -521,22 +579,22 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
                                     />
                                 </td>
                                 <td>
-                                    <input type="text" className="form-control" defaultValue={exam_code} />
+                                    <input type="text" name="exam_code" className="form-control" defaultValue={exam_code} />
                                 </td>
                                 <td>
-                                    <Button onClick={() => {
-                                        setFiles(old_files => {
-                                            const new_files = [...old_files];
-                                            const index = new_files.findIndex(x => x == file);
-                                            new_files.splice(index, 1);
-                                            return new_files;
-                                        });
-                                    }}>
+                                    <Button onClick={() => removeFile(file)}>
                                         ❌
                                     </Button>
-                                    <Button>
-                                        ✅
-                                    </Button>
+                                    {uploading
+                                        ? <Button disabled>
+                                            <Spinner animation="border" role="status" size="sm">
+                                                <span className="visually-hidden">⟳</span>
+                                            </Spinner>
+                                        </Button>
+                                        : <Button onClick={() => uploadFile(index)}>
+                                            ✅
+                                        </Button>
+                                    }
                                 </td>
                             </tr>
                         );

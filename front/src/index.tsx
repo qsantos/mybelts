@@ -444,6 +444,15 @@ function ClassLevelView() {
             belts={belts}
             skill_domains={skill_domains}
             class_level={class_level}
+            createdCallback={new_exam =>
+                setSchoolClassList(oldSchoolClassList => {
+                    if (!oldSchoolClassList) {
+                        return null;
+                    }
+                    const { exams: oldExams } = oldSchoolClassList;
+                    return { ...oldSchoolClassList, exams: [...oldExams, new_exam]};
+                })
+            }
         />
     </>;
 }
