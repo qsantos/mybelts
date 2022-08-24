@@ -279,6 +279,7 @@ class Exam(Base):
     class_level_id = Column(Integer, ForeignKey('class_level.id', ondelete='CASCADE'), nullable=False)
     belt_id = Column(Integer, ForeignKey('belt.id', ondelete='CASCADE'), nullable=False)
     skill_domain_id = Column(Integer, ForeignKey('skill_domain.id', ondelete='CASCADE'), nullable=False)
+    filename = Column(String, nullable=False, index=True)
     file = deferred(Column(LargeBinary, nullable=False))
 
     class_level = relationship(
@@ -296,4 +297,5 @@ class Exam(Base):
             'class_level_id': self.class_level_id,
             'skill_domain_id': self.skill_domain_id,
             'belt_id': self.belt_id,
+            'filename': self.filename,
         }

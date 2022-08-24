@@ -108,6 +108,7 @@ export class ClassLevelsService {
      * @param classLevelId
      * @param skillDomainId
      * @param beltId
+     * @param filename
      * @param file
      * @param xFields An optional fields mask
      * @returns ExamOne Success
@@ -117,6 +118,7 @@ export class ClassLevelsService {
         classLevelId: number,
         skillDomainId: number,
         beltId: number,
+        filename: string,
         file: Blob,
         xFields?: string,
     ): CancelablePromise<ExamOne> {
@@ -129,6 +131,7 @@ export class ClassLevelsService {
             formData: {
                 'skill_domain_id': skillDomainId,
                 'belt_id': beltId,
+                'filename': filename,
                 'file': file,
             },
         });

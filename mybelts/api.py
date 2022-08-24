@@ -142,6 +142,7 @@ api_model_exam = api.model('Exam', {
     'class_level_id': fields.Integer(example=42, required=True),
     'skill_domain_id': fields.Integer(example=42, required=True),
     'belt_id': fields.Integer(example=42, required=True),
+    'filename': fields.String(example='exam.pdf', required=True),
 })
 
 api_model_login_payload = api.model('LoginPayload', {
@@ -606,6 +607,7 @@ class ClassLevelExamsResource(Resource):
     parser = api.parser()
     parser.add_argument('skill_domain_id', type=int, location='form', required=True)
     parser.add_argument('belt_id', type=int, location='form', required=True)
+    parser.add_argument('filename', type=str, location='form', required=True)
     parser.add_argument('file', type=FileStorage, location='files', required=True)
 
     @api.marshal_with(api_model_exam_one)
@@ -642,6 +644,7 @@ class ClassLevelExamsResource(Resource):
                 class_level_id=class_level.id,
                 belt_id=belt.id,
                 skill_domain_id=skill_domain.id,
+                filename=request.form['filename'],
                 file=file.read(),
             )
             session.add(exam)

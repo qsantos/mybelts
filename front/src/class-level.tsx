@@ -149,14 +149,14 @@ export function ClassLevelListing(props: ClassLevelListingProps): ReactElement {
     </>;
 }
 
-function download_exam(exam_id: number): Promise<void> {
-    return ExamsService.getExamsResource(exam_id)
+function download_exam(exam: Exam): Promise<void> {
+    return ExamsService.getExamsResource(exam.id)
         .then((blob: Blob) => {
             const url = URL.createObjectURL(blob);
             try {
                 const link = document.createElement('A') as HTMLAnchorElement;
                 link.href = url;
-                link.download = 'exam.pdf';
+                link.download = exam.filename;
                 link.click();
             } finally {
                 URL.revokeObjectURL(url);
@@ -172,7 +172,7 @@ interface ExamButtonProps {
 function ExamButton(props: ExamButtonProps): ReactElement {
     const { exam } = props;
     return (
-        <Button onClick={() => download_exam(exam.id)}>
+        <Button onClick={() => download_exam(exam)}>
             {exam.id}
         </Button>
     );
@@ -196,9 +196,13 @@ function UploadExamButton(props: UploadExamButtonProps): ReactElement {
                     file: HTMLInputElement;
                 };
                 return new Promise<void>(resolve => {
-                    typed_form.file.files?.[0]?.arrayBuffer().then(
+                    const file = typed_form.file.files?.[0];
+                    if (!file) {
+                        return;
+                    }
+                    file.arrayBuffer().then(
                         data => ClassLevelsService.postClassLevelExamsResource(
-                            class_level.id, skill_domain.id, belt.id, new Blob([data]),
+                            class_level.id, skill_domain.id, belt.id, file.name, new Blob([data]),
                         ).then(() => resolve())
                     );
                 });
