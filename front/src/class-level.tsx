@@ -467,7 +467,7 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
                         <th></th>
                         <th></th>
                         <th style={{width:'100px'}}>
-                            <Button>
+                            <Button onClick={() => setFiles([])}>
                                 ❌
                             </Button>
                             <Button>
@@ -524,7 +524,14 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
                                     <input type="text" className="form-control" defaultValue={exam_code} />
                                 </td>
                                 <td>
-                                    <Button>
+                                    <Button onClick={() => {
+                                        setFiles(old_files => {
+                                            const new_files = [...old_files];
+                                            const index = new_files.findIndex(x => x == file);
+                                            new_files.splice(index, 1);
+                                            return new_files;
+                                        });
+                                    }}>
                                         ❌
                                     </Button>
                                     <Button>
