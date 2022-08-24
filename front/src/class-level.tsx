@@ -6,7 +6,9 @@ import { Link } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Table from 'react-bootstrap/Table';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 import { Belt, SkillDomain, ClassLevel, ClassLevelsService, Exam, ExamOne, ExamsService } from './api';
 import { AdminOnly } from './auth';
@@ -172,9 +174,11 @@ interface ExamButtonProps {
 function ExamButton(props: ExamButtonProps): ReactElement {
     const { exam } = props;
     return (
-        <Button onClick={() => download_exam(exam)}>
-            {exam.id}
-        </Button>
+        <OverlayTrigger overlay={<Tooltip>{exam.filename}</Tooltip>}>
+            <Button onClick={() => download_exam(exam)}>
+                {exam.id}
+            </Button>
+        </OverlayTrigger>
     );
 }
 
