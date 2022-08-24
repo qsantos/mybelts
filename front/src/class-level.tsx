@@ -361,6 +361,8 @@ export function ClassLevelExams(props: ClassLevelExamsProps): ReactElement {
             const lexams = exams_by_belt[belt_id];
             if (lexams === undefined) {
                 exams_by_belt[belt_id] = [exam];
+            } else {
+                lexams.push(exam);
             }
         }
     }
