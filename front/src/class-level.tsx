@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import Select from 'react-select';
 
+import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
@@ -11,6 +12,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import Table from 'react-bootstrap/Table';
 
 import { Belt, SkillDomain, ClassLevel, ClassLevelsService, Exam, ExamOne, ExamsService } from './api';
+import { getAPIError } from './lib';
 import { AdminOnly } from './auth';
 import { ModalButton, ModalButtonButton, ModalButtonModal } from './modal-button';
 import { BeltIcon } from './belt';
@@ -184,6 +186,7 @@ interface ExamButtonProps {
 function ExamButton(props: ExamButtonProps): ReactElement {
     const { exam, belt, skill_domain, belt_options, skill_domain_options, changedCallback, deletedCallback } = props;
     const { t } = useTranslation();
+    const [errorMessage, setErrorMessage] = useState('');
     const [ showDelete, setShowDelete ] = useState(false);
     const deleteModalButtonProps = {
         variant: 'danger',
@@ -217,7 +220,8 @@ function ExamButton(props: ExamButtonProps): ReactElement {
             }}
             onResponse={({ exam: changed_exam }) => changedCallback?.(changed_exam)}
         >
-            <Button onClick={() => download_exam(exam)}>
+            {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
+            <Button onClick={() => download_exam(exam).catch(error => setErrorMessage(getAPIError(error)))}>
                 {t('exam.add_edit.open')}
             </Button>
             <ModalButtonButton {...deleteModalButtonProps} />
@@ -288,21 +292,26 @@ function UploadExamButton(props: UploadExamButtonProps): ReactElement {
                     code: {value: string};
                     file: HTMLInputElement;
                 };
-                return new Promise<ExamOne>(resolve => {
+                return new Promise<ExamOne>((resolve, reject) => {
                     const file = typed_form.file.files?.[0];
                     if (!file) {
                         return;
                     }
-                    file.arrayBuffer().then(
-                        data => ClassLevelsService.postClassLevelExamsResource(
-                            class_level.id,
-                            skill_domain.id,
-                            belt.id,
-                            typed_form.code.value,
-                            file.name,
-                            new Blob([data]),
-                        ).then(resolve)
-                    );
+                    file.arrayBuffer()
+                        .then(
+                            data => ClassLevelsService.postClassLevelExamsResource(
+                                class_level.id,
+                                skill_domain.id,
+                                belt.id,
+                                typed_form.code.value,
+                                file.name,
+                                new Blob([data]),
+                            )
+                                .then(resolve)
+                                .catch(reject)
+                        )
+                        .catch(reject)
+                    ;
                 });
             }}
             onResponse={({ exam }) => createdCallback(exam)}
@@ -432,6 +441,7 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
     const { t } = useTranslation();
 
     const [ files, setFiles ] = useState<{file: File, uploading: boolean}[]>([]);
+    const [ errorMessage, setErrorMessage ] = useState('');
 
     const skill_domain_options = skill_domains.map(skill_domain => ({
         value: skill_domain.id,
@@ -457,6 +467,18 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
         event.preventDefault();
     }
 
+    function setUploading(file: File, uploading: boolean) {
+        setFiles(old_files => {
+            const new_files = [...old_files];
+            const new_index = new_files.findIndex(x => x.file == file);
+            const new_file = old_files[new_index];
+            if (new_file) {
+                new_file.uploading = uploading;
+            }
+            return new_files;
+        });
+    }
+
     function removeFile(file: File) {
         setFiles(old_files => {
             const new_files = [...old_files];
@@ -471,31 +493,33 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
         const skill_domain_id = document.querySelectorAll<HTMLInputElement>('#bulk-upload [name=skill_domain]')[index]?.value;
         const belt_id = document.querySelectorAll<HTMLInputElement>('#bulk-upload [name=belt]')[index]?.value;
         const exam_code = document.querySelectorAll<HTMLInputElement>('#bulk-upload [name=exam_code]')[index]?.value;
-        if (!skill_domain_id || !belt_id || !exam_code) {
+        if (!file || !skill_domain_id || !belt_id || !exam_code) {
             return;
         }
-        file?.arrayBuffer().then(
-            data => ClassLevelsService.postClassLevelExamsResource(
-                class_level.id,
-                parseInt(skill_domain_id),
-                parseInt(belt_id),
-                exam_code,
-                file.name,
-                new Blob([data]),
-            ).then(({exam}) => {
-                removeFile(file);
-                createdCallback(exam);
-            })
-        );
-        setFiles(old_files => {
-            const new_files = [...old_files];
-            const new_index = new_files.findIndex(x => x.file == file);
-            const new_file = new_files[new_index];
-            if (new_file) {
-                new_file.uploading = true;
-            }
-            return new_files;
-        });
+        file.arrayBuffer()
+            .then(
+                data => ClassLevelsService.postClassLevelExamsResource(
+                    class_level.id,
+                    parseInt(skill_domain_id),
+                    parseInt(belt_id),
+                    exam_code,
+                    file.name,
+                    new Blob([data]),
+                )
+                    .then(({exam}) => {
+                        removeFile(file);
+                        createdCallback(exam);
+                    })
+                    .catch(error => {
+                        setUploading(file, false);
+                        setErrorMessage(getAPIError(error));
+                    })
+            )
+            .catch(error => {
+                setUploading(file, false);
+                setErrorMessage(getAPIError(error));
+            });
+        setUploading(file, true);
     }
 
     function uploadAll() {
@@ -509,6 +533,7 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
     const filename_pattern = /^(.*?)-eval_ceinture-(.*?)_s(.*?)-eleve/i;
 
     return <>
+        {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
         {files.length != 0 &&
             <Table id="bulk-upload">
                 <thead>
