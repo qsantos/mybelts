@@ -701,14 +701,17 @@ class SchoolClassResource(Resource):
                 abort(404, f'School class {school_class_id} not found')
             class_level = school_class.class_level
 
-            evaluations = (
+            base_query = (
                 session  # type: ignore
                 .query(Evaluation)
                 .filter(Evaluation.success)
                 .outerjoin(Student)
-                .filter(Student.school_class_id == school_class_id)
-                .all()
             )
+
+            if me.is_admin:
+                evaluations = base_query.filter(Student.school_class_id == school_class_id).all()
+            else:
+                evaluations = base_query.filter(Student.id == me.student.id).all()
 
             belts = session.query(Belt).all()
             skill_domains = session.query(SkillDomain).all()
