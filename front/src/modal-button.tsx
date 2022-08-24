@@ -20,13 +20,30 @@ interface ModalButtonProps<T> {
     i18nArgs?: Record<string, unknown>,
     onSubmit: (form: EventTarget) => Promise<T>,
     onResponse: (json: T) => void,
-    children: ReactNode | ReactNode[],
+    children?: ReactNode | ReactNode[],
 }
 
-export function ModalButton<T>(props: ModalButtonProps<T>): ReactElement {
-    const { variant, size, i18nPrefix, i18nArgs, onSubmit, onResponse, children } = props;
+interface ModalButtonWidgetProps<T> extends ModalButtonProps<T> {
+    show: boolean,
+    setShow: (show: boolean) => void,
+}
+
+export function ModalButtonButton<T>(props: ModalButtonWidgetProps<T>): ReactElement {
+    const { variant, i18nPrefix, i18nArgs, setShow } = props;
     const { t } = useTranslation();
-    const [show, setShow] = useState(false);
+
+    return (
+        <OverlayTrigger overlay={<Tooltip>{t(i18nPrefix + '.button.tooltip', i18nArgs)}</Tooltip>}>
+            <Button variant={variant || 'primary'} onClick={() => setShow(true)} dangerouslySetInnerHTML={{
+                __html: t(i18nPrefix + '.button', i18nArgs),
+            }}></Button>
+        </OverlayTrigger>
+    );
+}
+
+export function ModalButtonModal<T>(props: ModalButtonWidgetProps<T>): ReactElement {
+    const { variant, size, i18nPrefix, i18nArgs, show, setShow, onSubmit, onResponse, children } = props;
+    const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [in_process, setIn_process] = useState(false);
 
@@ -48,12 +65,7 @@ export function ModalButton<T>(props: ModalButtonProps<T>): ReactElement {
             });
     };
 
-    return <>
-        <OverlayTrigger overlay={<Tooltip>{t(i18nPrefix + '.button.tooltip', i18nArgs)}</Tooltip>}>
-            <Button variant={variant || 'primary'} onClick={() => setShow(true)} dangerouslySetInnerHTML={{
-                __html: t(i18nPrefix + '.button', i18nArgs),
-            }}></Button>
-        </OverlayTrigger>
+    return (
         <Modal size={size} show={show} onHide={() => setShow(false)}>
             <Form onSubmit={handleSubmit} ref={formRef}>
                 <Modal.Header>
@@ -78,5 +90,14 @@ export function ModalButton<T>(props: ModalButtonProps<T>): ReactElement {
                 </Modal.Footer>
             </Form>
         </Modal>
+    );
+}
+
+export function ModalButton<T>(props: ModalButtonProps<T>): ReactElement {
+    const [show, setShow] = useState(false);
+
+    return <>
+        <ModalButtonButton {...props} show={show} setShow={setShow} />
+        <ModalButtonModal {...props} show={show} setShow={setShow} />
     </>;
 }

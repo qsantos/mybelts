@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactElement } from 'react';
+import { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import Select from 'react-select';
@@ -11,7 +11,7 @@ import Table from 'react-bootstrap/Table';
 
 import { Belt, SkillDomain, ClassLevel, ClassLevelsService, Exam, ExamOne, ExamsService } from './api';
 import { AdminOnly } from './auth';
-import { ModalButton } from './modal-button';
+import { ModalButton, ModalButtonButton, ModalButtonModal } from './modal-button';
 import { BeltIcon } from './belt';
 
 interface CreateClassLevelButtonProps {
@@ -183,7 +183,20 @@ interface ExamButtonProps {
 function ExamButton(props: ExamButtonProps): ReactElement {
     const { exam, belt, skill_domain, belt_options, skill_domain_options, changedCallback, deletedCallback } = props;
     const { t } = useTranslation();
-    return (
+    const [ showDelete, setShowDelete ] = useState(false);
+    const deleteModalButtonProps = {
+        variant: 'danger',
+        i18nPrefix: 'exam.delete',
+        i18nArgs: {exam},
+        onSubmit: () => ExamsService.deleteExamsResource(exam.id),
+        onResponse: () => deletedCallback?.(exam.id),
+        show: showDelete,
+        setShow: setShowDelete,
+    };
+    return <>
+        <ModalButtonModal {...deleteModalButtonProps}>
+            {t('exam.delete.message')}
+        </ModalButtonModal>
         <ModalButton
             i18nPrefix="exam.add_edit"
             i18nArgs={{ exam }}
@@ -204,15 +217,7 @@ function ExamButton(props: ExamButtonProps): ReactElement {
             <Button onClick={() => download_exam(exam)}>
                 {t('exam.add_edit.open')}
             </Button>
-            <ModalButton
-                variant="danger"
-                i18nPrefix="exam.delete"
-                i18nArgs={{ exam }}
-                onSubmit={() => ExamsService.deleteExamsResource(exam.id)}
-                onResponse={() => deletedCallback?.(exam.id)}
-            >
-                {t('exam.delete.message')}
-            </ModalButton>
+            <ModalButtonButton {...deleteModalButtonProps} />
             <Form.Group controlId="filename">
                 <Form.Label>{t('exam.add_edit.filename.title')}</Form.Label>
                 <Form.Control type="text" placeholder={t('exam.add_edit.filename.placeholder')} defaultValue={exam.filename} />
@@ -251,7 +256,7 @@ function ExamButton(props: ExamButtonProps): ReactElement {
                 </Form.Text>
             </Form.Group>
         </ModalButton>
-    );
+    </>;
 }
 
 interface UploadExamButtonProps {
