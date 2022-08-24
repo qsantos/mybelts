@@ -27,7 +27,7 @@ export function CreateEvaluationButton(props : CreateEvaluationButtonProps): Rea
     const { student, skill_domains, belts, createdCallback } = props;
     const { t } = useTranslation();
 
-    const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
+    const sorted_skill_domains = skill_domains.sort((a, b) => a.code.localeCompare(b.code));
     const sorted_belts = belts.sort((a, b) => a.rank - b.rank);
 
     const skill_domain_options = sorted_skill_domains.map(skill_domain => ({
@@ -384,7 +384,7 @@ export function EvaluationGrid(props: EvaluationGridProps): (ReactElement | null
         },
     ];
 
-    const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
+    const sorted_skill_domains = skill_domains.sort((a, b) => a.code.localeCompare(b.code));
     sorted_skill_domains.forEach(skill_domain => columns.push({
         id: skill_domain.name,
         header: skill_domain.name,

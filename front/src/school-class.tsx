@@ -501,7 +501,7 @@ export function ManageClassWaitlist(props: ManageClassWaitlistProps): ReactEleme
 
     const [errorMessage, setErrorMessage] = useState('');
 
-    const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
+    const sorted_skill_domains = skill_domains.sort((a, b) => a.code.localeCompare(b.code));
     sorted_skill_domains.forEach(skill_domain => columns.push({
         id: skill_domain.name,
         header: skill_domain.name,

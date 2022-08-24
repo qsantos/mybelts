@@ -358,7 +358,7 @@ export function ClassLevelExams(props: ClassLevelExamsProps): ReactElement {
     }));
 
     const sorted_belts = belts.sort((a, b) => (a.rank - b.rank));
-    const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
+    const sorted_skill_domains = skill_domains.sort((a, b) => a.code.localeCompare(b.code));
 
     const exams_by_belt_by_domain: { [index: number]: { [index: number]: Exam[] }} = {};
     for (const exam of exams) {

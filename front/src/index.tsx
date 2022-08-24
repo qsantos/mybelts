@@ -270,7 +270,7 @@ function SkillDomainsView() {
     }
 
     const { skill_domains } = skillDomainList;
-    const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
+    const sorted_skill_domains = skill_domains.sort((a, b) => a.code.localeCompare(b.code));
 
     return <>
         <Breadcrumb>
@@ -625,10 +625,9 @@ function StudentWidget(props: StudentWidgetProps) {
         </>;
     }
 
-    // skill domains and belts must be fetched separately to make sure we have them all
     const { belts, skill_domains, class_level, school_class, student, evaluations } = evaluationList;
 
-    const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
+    const sorted_skill_domains = skill_domains.sort((a, b) => a.code.localeCompare(b.code));
 
     return <>
         <AdminOnly>
