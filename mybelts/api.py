@@ -1452,6 +1452,57 @@ class ExamsResource(Resource):
                 attachment_filename='exam.pdf',
             )
 
+    put_model = api.model('ExamPut', {
+        'filename': fields.String(example='exam.pdf'),
+        'belt_id': fields.Integer(example=42),
+        'skill_domain_id': fields.Integer(example=42),
+    })
+
+    @api.expect(put_model, validate=True)
+    @api.marshal_with(api_model_exam_one)
+    def put(self, exam_id: int) -> Any:
+        with session_context() as session:
+            me = authenticate(session)
+            need_admin(me)
+            exam = session.query(Exam).get(exam_id)
+            if exam is None:
+                abort(404, f'Exam {exam_id} not found')
+
+            filename = request.json.get('filename')
+            if filename is not None:
+                exam.filename = filename
+
+            belt_id = request.json.get('belt_id')
+            if belt_id is not None:
+                belt = session.query(Belt).get(belt_id)
+                if belt is None:
+                    abort(404, f'Belt {belt_id} not found')
+                exam.belt_id = belt_id
+
+            skill_domain_id = request.json.get('skill_domain_id')
+            if skill_domain_id is not None:
+                skill_domain = session.query(SkillDomain).get(skill_domain_id)
+                if skill_domain is None:
+                    abort(404, f'Skill domain {skill_domain_id} not found')
+                exam.skill_domain_id = skill_domain_id
+
+            session.commit()
+            return {
+                'exam': exam.json(),
+            }
+
+    @api.response(204, 'Success')
+    def delete(self, exam_id: int) -> Any:
+        with session_context() as session:
+            me = authenticate(session)
+            need_admin(me)
+            exam = session.query(Exam).get(exam_id)
+            if exam is None:
+                abort(404, f'Exam {exam_id} not found')
+            session.delete(exam)
+            session.commit()
+            return None, 204
+
 
 def create_app() -> Flask:
     app = Flask(__name__)

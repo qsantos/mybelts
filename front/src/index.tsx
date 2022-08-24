@@ -418,6 +418,27 @@ function ClassLevelView() {
             createdCallback={new_exam => {
                 setSchoolClassList({ ...schoolClassList, exams: [...exams, new_exam]});
             }}
+            changedCallback={changed_exam => {
+                console.log('ok');
+                const index = exams.findIndex(exam => exam.id == changed_exam.id);
+                console.log(index);
+                console.log(changed_exam);
+                if (index === null) {
+                    return;
+                }
+                const new_exams = [...exams];
+                new_exams[index] = changed_exam;
+                setSchoolClassList({ ...schoolClassList, exams: new_exams });
+            }}
+            deletedCallback={(exam_id) => {
+                const index = exams.findIndex(exam => exam.id == exam_id);
+                if (index === null) {
+                    return;
+                }
+                const new_exams = [...exams];
+                new_exams.splice(index, 1);
+                setSchoolClassList({ ...schoolClassList, exams: new_exams });
+            }}
         />
     </>;
 }

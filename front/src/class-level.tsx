@@ -2,13 +2,12 @@ import React from 'react';
 import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import Select from 'react-select';
 
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Table from 'react-bootstrap/Table';
-import Tooltip from 'react-bootstrap/Tooltip';
 
 import { Belt, SkillDomain, ClassLevel, ClassLevelsService, Exam, ExamOne, ExamsService } from './api';
 import { AdminOnly } from './auth';
@@ -166,19 +165,92 @@ function download_exam(exam: Exam): Promise<void> {
         });
 }
 
-interface ExamButtonProps {
-    exam: Exam,
+interface Option {
+    value: number;
+    label: string;
 }
 
+interface ExamButtonProps {
+    exam: Exam,
+    belt: Belt;
+    skill_domain: SkillDomain;
+    belt_options: Option[];
+    skill_domain_options: Option[];
+    changedCallback?: (changed_exam: Exam) => void;
+    deletedCallback?: (exam_id: number) => void;
+}
 
 function ExamButton(props: ExamButtonProps): ReactElement {
-    const { exam } = props;
+    const { exam, belt, skill_domain, belt_options, skill_domain_options, changedCallback, deletedCallback } = props;
+    const { t } = useTranslation();
     return (
-        <OverlayTrigger overlay={<Tooltip>{exam.filename}</Tooltip>}>
+        <ModalButton
+            i18nPrefix="exam.add_edit"
+            i18nArgs={{ exam }}
+            onSubmit={(form: EventTarget) => {
+                const typed_form = form as typeof form & {
+                    filename: {value: string};
+                    belt: {value: string};
+                    skill_domain: {value: string};
+                };
+                return ExamsService.putExamsResource(exam.id, {
+                    filename: typed_form.filename.value,
+                    skill_domain_id: parseInt(typed_form.skill_domain.value),
+                    belt_id: parseInt(typed_form.belt.value),
+                });
+            }}
+            onResponse={({ exam: changed_exam }) => changedCallback?.(changed_exam)}
+        >
             <Button onClick={() => download_exam(exam)}>
-                {exam.id}
+                {t('exam.add_edit.open')}
             </Button>
-        </OverlayTrigger>
+            <ModalButton
+                variant="danger"
+                i18nPrefix="exam.delete"
+                i18nArgs={{ exam }}
+                onSubmit={() => ExamsService.deleteExamsResource(exam.id)}
+                onResponse={() => deletedCallback?.(exam.id)}
+            >
+                {t('exam.delete.message')}
+            </ModalButton>
+            <Form.Group controlId="filename">
+                <Form.Label>{t('exam.add_edit.filename.title')}</Form.Label>
+                <Form.Control type="text" placeholder={t('exam.add_edit.filename.placeholder')} defaultValue={exam.filename} />
+                <Form.Text className="text-muted">
+                    {t('exam.add_edit.filename.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="skill_domain">
+                <Form.Label>{t('exam.add_edit.skill_domain.title')}</Form.Label>
+                <Select
+                    id="skill_domain"
+                    name="skill_domain"
+                    options={skill_domain_options}
+                    defaultValue={{
+                        value: skill_domain.id,
+                        label: skill_domain.name,
+                    }}
+                />
+                <Form.Text className="text-muted">
+                    {t('exam.add_edit.skill_domain.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="belt">
+                <Form.Label>{t('exam.add_edit.belt.title')}</Form.Label>
+                <Select
+                    id="belt"
+                    name="belt"
+                    options={belt_options}
+                    defaultValue={{
+                        value: belt.id,
+                        label: belt.name,
+                    }}
+                />
+                <Form.Text className="text-muted">
+                    {t('exam.add_edit.belt.help')}
+                </Form.Text>
+            </Form.Group>
+        </ModalButton>
     );
 }
 
@@ -231,11 +303,22 @@ interface ClassLevelExamsProps {
     class_level: ClassLevel,
     exams: Exam[],
     createdCallback: (new_exam: Exam) => void,
+    changedCallback?: (changed_exam: Exam) => void;
+    deletedCallback?: (exam_id: number) => void;
 }
 
 export function ClassLevelExams(props: ClassLevelExamsProps): ReactElement {
-    const { belts, skill_domains, class_level, exams, createdCallback } = props;
+    const { belts, skill_domains, class_level, exams, createdCallback, changedCallback, deletedCallback } = props;
     const { t } = useTranslation();
+
+    const skill_domain_options = skill_domains.map(skill_domain => ({
+        value: skill_domain.id,
+        label: skill_domain.name,
+    }));
+    const belt_options = belts.map(belt => ({
+        value: belt.id,
+        label: belt.name,
+    }));
 
     const sorted_belts = belts.sort((a, b) => (a.rank - b.rank));
     const sorted_skill_domains = skill_domains.sort((a, b) => a.name.localeCompare(b.name));
@@ -278,7 +361,18 @@ export function ClassLevelExams(props: ClassLevelExamsProps): ReactElement {
                             const lexams = exams_by_belt_by_domain[skill_domain.id]?.[belt.id];
                             return (
                                 <td key={belt.id}>
-                                    {lexams && lexams.map(exam => <ExamButton key={exam.id} exam={exam} />)}
+                                    {lexams && lexams.map(exam =>
+                                        <ExamButton
+                                            key={exam.id}
+                                            exam={exam}
+                                            skill_domain={skill_domain}
+                                            belt={belt}
+                                            skill_domain_options={skill_domain_options}
+                                            belt_options={belt_options}
+                                            changedCallback={changedCallback}
+                                            deletedCallback={deletedCallback}
+                                        />
+                                    )}
                                     <UploadExamButton
                                         belt={belt}
                                         skill_domain={skill_domain}
