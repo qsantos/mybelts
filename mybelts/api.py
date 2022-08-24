@@ -1521,7 +1521,7 @@ class ExamsResource(Resource):
             exam = session.query(Exam).get(exam_id)
             if exam is None:
                 abort(404, f'Exam {exam_id} not found')
-            session.delete(exam)
+            session.delete(exam)  # type: ignore
             session.commit()
             return None, 204
 
