@@ -315,7 +315,8 @@ def add_skill_domains() -> List[int]:
         'Espace et géométrie',
         'Grandeurs et mesures',
         'Raisonnement',
-        'Numérique',  # deleted later
+        'Numérique',
+        'Histoire',  # deleted later
     ]
 
     skill_domain_codes = [
