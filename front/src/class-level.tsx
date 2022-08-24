@@ -388,9 +388,10 @@ export function ClassLevelExams(props: ClassLevelExamsProps): ReactElement {
                         </th>
                         {sorted_belts.map(belt => {
                             const lexams = exams_by_belt_by_domain[skill_domain.id]?.[belt.id];
+                            const sorted_lexams = lexams?.sort((a, b) => a.code.localeCompare(b.code));
                             return (
                                 <td key={belt.id}>
-                                    {lexams && lexams.map(exam =>
+                                    {sorted_lexams && sorted_lexams.map(exam =>
                                         <ExamButton
                                             key={exam.id}
                                             exam={exam}
