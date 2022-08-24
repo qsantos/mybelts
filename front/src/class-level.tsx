@@ -418,3 +418,136 @@ export function ClassLevelExams(props: ClassLevelExamsProps): ReactElement {
         </Table>
     );
 }
+
+interface ClassLevelExamBulkUploadProps {
+    belts: Belt[],
+    skill_domains: SkillDomain[],
+    class_level: ClassLevel,
+}
+
+export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): ReactElement {
+    const { belts, skill_domains } = props;
+    const { t } = useTranslation();
+
+    const [ files, setFiles ] = useState<File[]>([]);
+
+    const skill_domain_options = skill_domains.map(skill_domain => ({
+        value: skill_domain.id,
+        label: skill_domain.name,
+    }));
+    const belt_options = belts.map(belt => ({
+        value: belt.id,
+        label: belt.name,
+    }));
+
+    function dropHandler(event: React.DragEvent<HTMLDivElement>) {
+        setFiles(old_files => {
+            const new_files = [...old_files];
+            for (const file of event.dataTransfer.files) {
+                new_files.push(file);
+            }
+            return new_files;
+        });
+        event.preventDefault();
+    }
+
+    function dragOverHandler(event: React.DragEvent<HTMLDivElement>) {
+        event.preventDefault();
+    }
+
+    const filename_pattern = /^(.*?)-eval_ceinture-(.*?)_s(.*?)-eleve/i;
+
+    return <>
+        {files.length != 0 &&
+            <Table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th style={{width:'100px'}}>
+                            <Button>
+                                ❌
+                            </Button>
+                            <Button>
+                                ✅
+                            </Button>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>{t('exam.bulk_upload.filename.title')}</th>
+                        <th>{t('exam.bulk_upload.skill_domain.title')}</th>
+                        <th>{t('exam.bulk_upload.belt.title')}</th>
+                        <th>{t('exam.bulk_upload.exam_code.title')}</th>
+                        <th>{t('exam.bulk_upload.actions.title')}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {files.map(file => {
+                        const match = file.name.toLowerCase().match(filename_pattern);
+                        let skill_domain;
+                        let belt;
+                        let exam_code;
+                        if (match) {
+                            const [, skill_domain_code, belt_code, exam_code_match] = match;
+                            skill_domain = skill_domains.find(x => x.code.toLowerCase() == skill_domain_code);
+                            belt = belts.find(x => x.code.toLowerCase() == belt_code);
+                            exam_code = exam_code_match?.toUpperCase();
+                        }
+                        return (
+                            <tr key={file.name}>
+                                <th>{file.name}</th>
+                                <td>
+                                    <Select
+                                        id="skill_domain"
+                                        name="skill_domain"
+                                        options={skill_domain_options}
+                                        defaultValue={skill_domain && {
+                                            value: skill_domain.id,
+                                            label: skill_domain.name,
+                                        }}
+                                    />
+                                </td>
+                                <td>
+                                    <Select
+                                        id="belt"
+                                        name="belt"
+                                        options={belt_options}
+                                        defaultValue={belt && {
+                                            value: belt.id,
+                                            label: belt.name,
+                                        }}
+                                    />
+                                </td>
+                                <td>
+                                    <input type="text" className="form-control" defaultValue={exam_code} />
+                                </td>
+                                <td>
+                                    <Button>
+                                        ❌
+                                    </Button>
+                                    <Button>
+                                        ✅
+                                    </Button>
+                                </td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </Table>
+        }
+        <div onDrop={dropHandler} onDragOver={dragOverHandler} style={{
+            border: '5px dashed grey',
+            borderRadius: '10px',
+            textAlign: 'center',
+            padding: '2em',
+            margin: '2em',
+            fontFamily: 'sans',
+        }}>
+            <img src="/upload.svg" height="80" />
+            <br />
+            {t('exam.bulk_upload.prompt')}
+        </div>
+    </>;
+}
