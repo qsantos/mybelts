@@ -8,7 +8,7 @@ import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Table from 'react-bootstrap/Table';
 
-import { Belt, SkillDomain, ClassLevel, ClassLevelsService, Exam, ExamsService } from './api';
+import { Belt, SkillDomain, ClassLevel, ClassLevelsService, Exam, ExamOne, ExamsService } from './api';
 import { AdminOnly } from './auth';
 import { ModalButton } from './modal-button';
 import { BeltIcon } from './belt';
@@ -182,10 +182,11 @@ interface UploadExamButtonProps {
     belt: Belt,
     skill_domain: SkillDomain,
     class_level: ClassLevel,
+    createdCallback: (new_exam: Exam) => void,
 }
 
 function UploadExamButton(props: UploadExamButtonProps): ReactElement {
-    const { belt, skill_domain, class_level } = props;
+    const { belt, skill_domain, class_level, createdCallback } = props;
     const { t } = useTranslation();
     return (
         <ModalButton
@@ -195,7 +196,7 @@ function UploadExamButton(props: UploadExamButtonProps): ReactElement {
                 const typed_form = form as typeof form & {
                     file: HTMLInputElement;
                 };
-                return new Promise<void>(resolve => {
+                return new Promise<ExamOne>(resolve => {
                     const file = typed_form.file.files?.[0];
                     if (!file) {
                         return;
@@ -203,11 +204,11 @@ function UploadExamButton(props: UploadExamButtonProps): ReactElement {
                     file.arrayBuffer().then(
                         data => ClassLevelsService.postClassLevelExamsResource(
                             class_level.id, skill_domain.id, belt.id, file.name, new Blob([data]),
-                        ).then(() => resolve())
+                        ).then(resolve)
                     );
                 });
             }}
-            onResponse={() => console.log('ok')}
+            onResponse={({ exam }) => createdCallback(exam)}
         >
             <Form.Group controlId="file">
                 <Form.Label>{t('exam.upload.file.title')}</Form.Label>
@@ -225,10 +226,11 @@ interface ClassLevelExamsProps {
     skill_domains: SkillDomain[],
     class_level: ClassLevel,
     exams: Exam[],
+    createdCallback: (new_exam: Exam) => void,
 }
 
 export function ClassLevelExams(props: ClassLevelExamsProps): ReactElement {
-    const { belts, skill_domains, class_level, exams } = props;
+    const { belts, skill_domains, class_level, exams, createdCallback } = props;
     const { t } = useTranslation();
 
     const sorted_belts = belts.sort((a, b) => (a.rank - b.rank));
@@ -273,7 +275,12 @@ export function ClassLevelExams(props: ClassLevelExamsProps): ReactElement {
                             return (
                                 <td key={belt.id}>
                                     {lexams && lexams.map(exam => <ExamButton key={exam.id} exam={exam} />)}
-                                    <UploadExamButton belt={belt} skill_domain={skill_domain} class_level={class_level} />
+                                    <UploadExamButton
+                                        belt={belt}
+                                        skill_domain={skill_domain}
+                                        class_level={class_level}
+                                        createdCallback={createdCallback}
+                                    />
                                 </td>
                             );
                         })}

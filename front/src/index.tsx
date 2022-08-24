@@ -410,7 +410,15 @@ function ClassLevelView() {
             setSchoolClasses={new_school_classes => setSchoolClassList({ ...schoolClassList, school_classes: new_school_classes })}
         />
         <h4>{t('exam.title')}</h4>
-        <ClassLevelExams belts={belts} skill_domains={skill_domains} class_level={class_level} exams={exams} />
+        <ClassLevelExams
+            belts={belts}
+            skill_domains={skill_domains}
+            class_level={class_level}
+            exams={exams}
+            createdCallback={new_exam => {
+                setSchoolClassList({ ...schoolClassList, exams: [...exams, new_exam]});
+            }}
+        />
     </>;
 }
 
