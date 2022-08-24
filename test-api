@@ -163,17 +163,33 @@ def add_belts() -> List[int]:
         '#dc8add'  # deleted later
     ]
 
+    belt_codes = [
+        '1blanche',
+        '1blanche',  # changed to '2jaune' later
+        '3orange',
+        '4verte',
+        '5bleue',
+        '6marron',
+        '7noire',
+        '8transparente',  # deleted later
+    ]
+
     assert len(belt_names) == len(belt_colors)
 
     # add belts
     ids = []
-    for i, (belt_name, belt_color) in enumerate(zip(belt_names, belt_colors)):
-        res = requests.post(API_URL + '/belts', json={'name': belt_name, 'color': belt_color})
+    for i, (belt_name, belt_code, belt_color) in enumerate(zip(belt_names, belt_codes, belt_colors)):
+        res = requests.post(API_URL + '/belts', json={
+            'name': belt_name,
+            'code': belt_code,
+            'color': belt_color,
+        })
         res.raise_for_status()
         j = res.json()
         belt = j['belt']
         assert belt['name'] == belt_name
         assert belt['rank'] == i + 1
+        assert belt['code'] == belt_code
         ids.append(j['belt']['id'])
     assert len(ids) == len(belt_names)
 
@@ -185,6 +201,18 @@ def add_belts() -> List[int]:
     belt = j['belt']
     assert belt['id'] == ids[1]
     assert belt['name'] == belt_names[1]
+    assert belt['code'] == belt_codes[1]
+    assert belt['rank'] == 2
+
+    # change belt's code
+    belt_codes[1] = '2jaune'
+    res = requests.put(API_URL + f'/belts/{ids[1]}', json={'code': belt_codes[1]})
+    res.raise_for_status()
+    j = res.json()
+    belt = j['belt']
+    assert belt['id'] == ids[1]
+    assert belt['name'] == belt_names[1]
+    assert belt['code'] == belt_codes[1]
     assert belt['rank'] == 2
 
     # change belt's color
@@ -195,6 +223,7 @@ def add_belts() -> List[int]:
     belt = j['belt']
     assert belt['id'] == ids[1]
     assert belt['name'] == belt_names[1]
+    assert belt['code'] == belt_codes[1]
     assert belt['rank'] == 2
 
     # delete belt
@@ -204,6 +233,7 @@ def add_belts() -> List[int]:
     res.raise_for_status()
     belts = {belt['id']: belt for belt in res.json()['belts']}
     assert ids[-1] not in belts
+    belt_codes.pop()
     belt_names.pop()
     ids.pop()
 
@@ -214,6 +244,7 @@ def add_belts() -> List[int]:
     belt = j['belt']
     assert belt['id'] == ids[1]
     assert belt['name'] == belt_names[1]
+    assert belt['code'] == belt_codes[1]
     assert belt['rank'] == 3
 
     # check rank of other belt
@@ -223,6 +254,7 @@ def add_belts() -> List[int]:
     belt = belts[ids[2]]
     assert belt['id'] == ids[2]
     assert belt['name'] == belt_names[2]
+    assert belt['code'] == belt_codes[2]
     assert belt['rank'] == 2
 
     # increase rank by 2
@@ -232,6 +264,7 @@ def add_belts() -> List[int]:
     belt = j['belt']
     assert belt['id'] == ids[1]
     assert belt['name'] == belt_names[1]
+    assert belt['code'] == belt_codes[1]
     assert belt['rank'] == 5
 
     # check rank of the other two belts
@@ -241,10 +274,11 @@ def add_belts() -> List[int]:
     belt = belts[ids[3]]
     assert belt['id'] == ids[3]
     assert belt['name'] == belt_names[3]
+    assert belt['code'] == belt_codes[3]
     assert belt['rank'] == 3
     belt = belts[ids[4]]
     assert belt['id'] == ids[4]
-    assert belt['name'] == belt_names[4]
+    assert belt['code'] == belt_codes[4]
     assert belt['rank'] == 4
 
     # move back to initial position
@@ -254,15 +288,18 @@ def add_belts() -> List[int]:
     belt = j['belt']
     assert belt['id'] == ids[1]
     assert belt['name'] == belt_names[1]
+    assert belt['code'] == belt_codes[1]
     assert belt['rank'] == 2
 
     # check final state
     res = requests.get(API_URL + '/belts')
     res.raise_for_status()
     belts = {belt['id']: belt for belt in res.json()['belts']}
-    for i, belt_name in reversed(list(enumerate(belt_names))):
+    for i, (belt_name, belt_code, belt_color) in reversed(list(enumerate(zip(belt_names, belt_codes, belt_colors)))):
         belt = belts[ids[i]]
         assert belt['name'] == belt_name
+        assert belt['code'] == belt_code
+        assert belt['color'] == belt_color
         assert belt['rank'] == i + 1
 
     print('Tested /belts resource')
@@ -273,31 +310,55 @@ def add_skill_domains() -> List[int]:
     print('Testing resource /skill-domains')
 
     skill_domain_names = [
-        'Algèbre',
-        'arithmétique',
-        'Analyse',
-        'Géométrie',
-        'Logique',
-        'Histoire',
+        'Numération',
+        'calculs',  # changed to 'Calculs' later
+        'Espace et géométrie',
+        'Grandeurs et mesures',
+        'Raisonnement',
+        'Numérique',  # deleted later
+    ]
+
+    skill_domain_codes = [
+        'D1',
+        'D1',  # changed to 'D2' later
+        'D3',
+        'D4',
+        'D5',
+        'D6',
+        'D7',  # deleted later
     ]
 
     # add skill domains
     ids = []
-    for skill_domain_name in skill_domain_names:
-        res = requests.post(API_URL + '/skill-domains', json={'name': skill_domain_name})
+    for skill_domain_name, skill_domain_code in zip(skill_domain_names, skill_domain_codes):
+        res = requests.post(API_URL + '/skill-domains', json={
+            'name': skill_domain_name,
+            'code': skill_domain_code,
+        })
         res.raise_for_status()
         j = res.json()
         skill_domain = j['skill_domain']
         assert skill_domain['name'] == skill_domain_name
+        assert skill_domain['code'] == skill_domain_code
         ids.append(j['skill_domain']['id'])
 
     # rename skill domain
-    skill_domain_names[1] = 'Arithmétique'
+    skill_domain_names[1] = 'Calculs'
     res = requests.put(API_URL + f'/skill-domains/{ids[1]}', json={'name': skill_domain_names[1]})
     res.raise_for_status()
     j = res.json()
     skill_domain = j['skill_domain']
     assert skill_domain['name'] == skill_domain_names[1]
+    assert skill_domain['code'] == skill_domain_codes[1]
+
+    # change skill domain's code
+    skill_domain_codes[1] = 'D2'
+    res = requests.put(API_URL + f'/skill-domains/{ids[1]}', json={'code': skill_domain_codes[1]})
+    res.raise_for_status()
+    j = res.json()
+    skill_domain = j['skill_domain']
+    assert skill_domain['name'] == skill_domain_names[1]
+    assert skill_domain['code'] == skill_domain_codes[1]
 
     # delete skill domain
     res = requests.delete(API_URL + f'/skill-domains/{ids[-1]}')
@@ -309,11 +370,13 @@ def add_skill_domains() -> List[int]:
     assert ids[-1] not in skill_domains
     ids.pop()
     skill_domain_names.pop()
+    skill_domain_codes.pop()
 
     # check final state
-    for i, skill_domain_name in reversed(list(enumerate(skill_domain_names))):
+    for i, (skill_domain_name, skill_domain_code) in reversed(list(enumerate(zip(skill_domain_names, skill_domain_codes)))):
         skill_domain = skill_domains[ids[i]]
         assert skill_domain['name'] == skill_domain_name
+        assert skill_domain['code'] == skill_domain_code
 
     print('Tested resource /skill-domains')
     return ids

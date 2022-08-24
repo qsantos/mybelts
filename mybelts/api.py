@@ -1089,9 +1089,9 @@ class SkillDomainResource(Resource):
             name = request.json.get('name')
             if name is not None:
                 skill_domain.name = name
-            code = request.json.get('name')
+            code = request.json.get('code')
             if code is not None:
-                skill_domain.name = code
+                skill_domain.code = code
             session.commit()
             return {
                 'skill_domain': skill_domain.json(),
