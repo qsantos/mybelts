@@ -23,9 +23,11 @@ export function CreateSkillDomainButton(props : CreateSkillDomainButtonProps): R
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     name: {value: string};
+                    code: {value: string};
                 };
                 return SkillDomainsService.postSkillDomainsResource({
                     name: typed_form.name.value,
+                    code: typed_form.code.value,
                 });
             }}
             onResponse={({ skill_domain }) => createdCallback?.(skill_domain)}
@@ -35,6 +37,13 @@ export function CreateSkillDomainButton(props : CreateSkillDomainButtonProps): R
                 <Form.Control type="text" placeholder={t('skill_domain.add_edit.name.placeholder')}/>
                 <Form.Text className="text-muted">
                     {t('skill_domain.add_edit.name.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="code">
+                <Form.Label>{t('skill_domain.add_edit.name.title')}</Form.Label>
+                <Form.Control type="text" placeholder={t('skill_domain.add_edit.code.placeholder')}/>
+                <Form.Text className="text-muted">
+                    {t('skill_domain.add_edit.code.help')}
                 </Form.Text>
             </Form.Group>
         </ModalButton>
@@ -57,9 +66,11 @@ export function EditSkillDomainButton(props : EditSkillDomainButtonProps): React
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     name: {value: string};
+                    code: {value: string};
                 };
                 return SkillDomainsService.putSkillDomainResource(skill_domain.id, {
                     name: typed_form.name.value,
+                    code: typed_form.code.value,
                 });
             }}
             onResponse={({ skill_domain: changed_skill_domain }) => changedCallback?.(changed_skill_domain)}
@@ -69,6 +80,13 @@ export function EditSkillDomainButton(props : EditSkillDomainButtonProps): React
                 <Form.Control type="text" placeholder={t('skill_domain.add_edit.name.placeholder')} defaultValue={skill_domain.name} />
                 <Form.Text className="text-muted">
                     {t('skill_domain.add_edit.name.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="code">
+                <Form.Label>{t('skill_domain.add_edit.code.title')}</Form.Label>
+                <Form.Control type="text" placeholder={t('skill_domain.add_edit.code.placeholder')} defaultValue={skill_domain.code} />
+                <Form.Text className="text-muted">
+                    {t('skill_domain.add_edit.code.help')}
                 </Form.Text>
             </Form.Group>
         </ModalButton>
@@ -110,6 +128,7 @@ export function SkillDomainListing(props: SkillDomainListingProps): ReactElement
             <thead>
                 <tr>
                     <th>{t('skill_domain.list.name.title')}</th>
+                    <th>{t('skill_domain.list.code.title')}</th>
                     <AdminOnly>
                         <th>{t('skill_domain.list.actions.title')}</th>
                     </AdminOnly>
@@ -119,6 +138,7 @@ export function SkillDomainListing(props: SkillDomainListingProps): ReactElement
                 {skill_domains.map((skill_domain, index) =>
                     <tr key={skill_domain.id}>
                         <td>{skill_domain.name}</td>
+                        <td>{skill_domain.code}</td>
                         <AdminOnly>
                             <td>
                                 <EditSkillDomainButton skill_domain={skill_domain} changedCallback={new_skill_domain => {

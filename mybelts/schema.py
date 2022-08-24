@@ -191,6 +191,7 @@ class Belt(Base):
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     rank = Column(Integer, nullable=False, index=True)
     name = Column(String, nullable=False, index=True)
+    code = Column(String, nullable=False, index=True, server_default='')
     color = Column(String, nullable=False, index=True, server_default='')
 
     def json(self) -> Dict:
@@ -200,6 +201,7 @@ class Belt(Base):
             'rank': self.rank,
             'name': self.name,
             'color': self.color,
+            'code': self.code,
         }
 
     def exchange_ranks(self, other: 'Belt') -> None:
@@ -211,12 +213,14 @@ class SkillDomain(Base):
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     name = Column(String, index=True, nullable=False)
+    code = Column(String, nullable=False, index=True, server_default='')
 
     def json(self) -> Dict:
         return {
             'id': self.id,
             'created': self.created.isoformat(),
             'name': self.name,
+            'code': self.code,
         }
 
 

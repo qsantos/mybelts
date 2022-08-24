@@ -4,7 +4,7 @@
 import type { SkillDomainList } from '../models/SkillDomainList';
 import type { SkillDomainOne } from '../models/SkillDomainOne';
 import type { SkillDomainPut } from '../models/SkillDomainPut';
-import type { SKillDomainsPost } from '../models/SKillDomainsPost';
+import type { SkillDomainsPost } from '../models/SkillDomainsPost';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { request as __request } from '../core/request';
 
@@ -34,7 +34,7 @@ export class SkillDomainsService {
      * @throws ApiError
      */
     public static postSkillDomainsResource(
-        payload: SKillDomainsPost,
+        payload: SkillDomainsPost,
         xFields?: string,
     ): CancelablePromise<SkillDomainOne> {
         return __request({

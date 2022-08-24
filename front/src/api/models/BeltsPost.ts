@@ -3,6 +3,7 @@
 /* eslint-disable */
 
 export type BeltsPost = {
+    code?: string;
     color?: string;
     name: string;
 }

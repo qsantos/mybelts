@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type SKillDomainsPost = {
+export type SkillDomainsPost = {
+    code: string;
     name: string;
 }

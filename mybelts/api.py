@@ -109,6 +109,7 @@ api_model_belt = api.model('Belt', {
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
     'rank': fields.Integer(example=5, required=True),
     'name': fields.String(example='White belt', required=True),
+    'code': fields.String(example='1white', required=True),
     'color': fields.String(example='#012345', required=True),
 })
 
@@ -116,6 +117,7 @@ api_model_skill_domain = api.model('SkillDomain', {
     'id': fields.Integer(example=42, required=True),
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
     'name': fields.String(example='Algebra', required=True),
+    'code': fields.String(example='D1', required=True),
 })
 
 api_model_evaluation = api.model('Evaluation', {
@@ -1046,8 +1048,9 @@ class SkillDomainsResource(Resource):
                 ],
             }
 
-    post_model = api.model('SKillDomainsPost', {
+    post_model = api.model('SkillDomainsPost', {
         'name': fields.String(example='Algebra', required=True),
+        'code': fields.String(example='D1', required=True),
     })
 
     @api.expect(post_model, validate=True)
@@ -1058,6 +1061,7 @@ class SkillDomainsResource(Resource):
             need_admin(me)
             skill_domain = SkillDomain(
                 name=request.json['name'],
+                code=request.json['code'],
             )
             session.add(skill_domain)
             session.commit()
@@ -1070,6 +1074,7 @@ class SkillDomainsResource(Resource):
 class SkillDomainResource(Resource):
     put_model = api.model('SkillDomainPut', {
         'name': fields.String(example='Algebra'),
+        'code': fields.String(example='D1'),
     })
 
     @api.expect(put_model, validate=True)
@@ -1084,6 +1089,9 @@ class SkillDomainResource(Resource):
             name = request.json.get('name')
             if name is not None:
                 skill_domain.name = name
+            code = request.json.get('name')
+            if code is not None:
+                skill_domain.name = code
             session.commit()
             return {
                 'skill_domain': skill_domain.json(),
@@ -1114,7 +1122,8 @@ class BeltsResource(Resource):
 
     post_model = api.model('BeltsPost', {
         'name': fields.String(example='White belt', required=True),
-        'color': fields.String(example='#012345', required=False),
+        'code': fields.String(example='1white', required=True),
+        'color': fields.String(example='#012345', required=True),
     })
 
     @api.expect(post_model, validate=True)
@@ -1131,6 +1140,7 @@ class BeltsResource(Resource):
             belt = Belt(
                 name=request.json['name'],
                 rank=max_rank + 1,
+                code=request.json.get('code', ''),
                 color=request.json.get('color', ''),
             )
             session.add(belt)
@@ -1144,6 +1154,7 @@ class BeltsResource(Resource):
 class BeltResource(Resource):
     put_model = api.model('BeltPut', {
         'name': fields.String(example='White belt'),
+        'code': fields.String(example='1white'),
         'color': fields.String(example='#012345'),
     })
 
@@ -1159,6 +1170,9 @@ class BeltResource(Resource):
             name = request.json.get('name')
             if name is not None:
                 belt.name = name
+            code = request.json.get('code')
+            if code is not None:
+                belt.code = code
             color = request.json.get('color')
             if color is not None:
                 belt.color = color

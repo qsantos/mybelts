@@ -44,7 +44,7 @@ export type { SkillDomain } from './models/SkillDomain';
 export type { SkillDomainList } from './models/SkillDomainList';
 export type { SkillDomainOne } from './models/SkillDomainOne';
 export type { SkillDomainPut } from './models/SkillDomainPut';
-export type { SKillDomainsPost } from './models/SKillDomainsPost';
+export type { SkillDomainsPost } from './models/SkillDomainsPost';
 export type { Student } from './models/Student';
 export type { StudentList } from './models/StudentList';
 export type { StudentListBare } from './models/StudentListBare';
