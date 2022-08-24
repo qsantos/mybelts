@@ -202,11 +202,13 @@ function ExamButton(props: ExamButtonProps): ReactElement {
             i18nArgs={{ exam }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
+                    code: {value: string};
                     filename: {value: string};
                     belt: {value: string};
                     skill_domain: {value: string};
                 };
                 return ExamsService.putExamsResource(exam.id, {
+                    code: typed_form.code.value,
                     filename: typed_form.filename.value,
                     skill_domain_id: parseInt(typed_form.skill_domain.value),
                     belt_id: parseInt(typed_form.belt.value),
@@ -218,6 +220,13 @@ function ExamButton(props: ExamButtonProps): ReactElement {
                 {t('exam.add_edit.open')}
             </Button>
             <ModalButtonButton {...deleteModalButtonProps} />
+            <Form.Group controlId="code">
+                <Form.Label>{t('exam.add_edit.code.title')}</Form.Label>
+                <Form.Control type="text" placeholder={t('exam.add_edit.code.placeholder')} defaultValue={exam.code} />
+                <Form.Text className="text-muted">
+                    {t('exam.add_edit.code.help')}
+                </Form.Text>
+            </Form.Group>
             <Form.Group controlId="filename">
                 <Form.Label>{t('exam.add_edit.filename.title')}</Form.Label>
                 <Form.Control type="text" placeholder={t('exam.add_edit.filename.placeholder')} defaultValue={exam.filename} />
@@ -275,6 +284,7 @@ function UploadExamButton(props: UploadExamButtonProps): ReactElement {
             i18nArgs={{ belt, skill_domain, class_level }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
+                    code: {value: string};
                     file: HTMLInputElement;
                 };
                 return new Promise<ExamOne>(resolve => {
@@ -284,13 +294,25 @@ function UploadExamButton(props: UploadExamButtonProps): ReactElement {
                     }
                     file.arrayBuffer().then(
                         data => ClassLevelsService.postClassLevelExamsResource(
-                            class_level.id, skill_domain.id, belt.id, file.name, new Blob([data]),
+                            class_level.id,
+                            skill_domain.id,
+                            belt.id,
+                            typed_form.code.value,
+                            file.name,
+                            new Blob([data]),
                         ).then(resolve)
                     );
                 });
             }}
             onResponse={({ exam }) => createdCallback(exam)}
         >
+            <Form.Group controlId="code">
+                <Form.Label>{t('exam.add_edit.code.title')}</Form.Label>
+                <Form.Control type="text" placeholder={t('exam.add_edit.code.placeholder')} />
+                <Form.Text className="text-muted">
+                    {t('exam.add_edit.code.help')}
+                </Form.Text>
+            </Form.Group>
             <Form.Group controlId="file">
                 <Form.Label>{t('exam.upload.file.title')}</Form.Label>
                 <Form.Control type="file" />

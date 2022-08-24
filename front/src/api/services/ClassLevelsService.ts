@@ -108,6 +108,7 @@ export class ClassLevelsService {
      * @param classLevelId
      * @param skillDomainId
      * @param beltId
+     * @param code
      * @param filename
      * @param file
      * @param xFields An optional fields mask
@@ -118,6 +119,7 @@ export class ClassLevelsService {
         classLevelId: number,
         skillDomainId: number,
         beltId: number,
+        code: string,
         filename: string,
         file: Blob,
         xFields?: string,
@@ -131,6 +133,7 @@ export class ClassLevelsService {
             formData: {
                 'skill_domain_id': skillDomainId,
                 'belt_id': beltId,
+                'code': code,
                 'filename': filename,
                 'file': file,
             },

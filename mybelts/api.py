@@ -142,6 +142,7 @@ api_model_exam = api.model('Exam', {
     'class_level_id': fields.Integer(example=42, required=True),
     'skill_domain_id': fields.Integer(example=42, required=True),
     'belt_id': fields.Integer(example=42, required=True),
+    'code': fields.String(example='B', required=True),
     'filename': fields.String(example='exam.pdf', required=True),
 })
 
@@ -607,6 +608,7 @@ class ClassLevelExamsResource(Resource):
     parser = api.parser()
     parser.add_argument('skill_domain_id', type=int, location='form', required=True)
     parser.add_argument('belt_id', type=int, location='form', required=True)
+    parser.add_argument('code', type=str, location='form', required=True)
     parser.add_argument('filename', type=str, location='form', required=True)
     parser.add_argument('file', type=FileStorage, location='files', required=True)
 
@@ -644,6 +646,7 @@ class ClassLevelExamsResource(Resource):
                 class_level_id=class_level.id,
                 belt_id=belt.id,
                 skill_domain_id=skill_domain.id,
+                code=request.form['code'],
                 filename=request.form['filename'],
                 file=file.read(),
             )
@@ -1453,6 +1456,7 @@ class ExamsResource(Resource):
             )
 
     put_model = api.model('ExamPut', {
+        'code': fields.String(example='B'),
         'filename': fields.String(example='exam.pdf'),
         'belt_id': fields.Integer(example=42),
         'skill_domain_id': fields.Integer(example=42),
@@ -1467,6 +1471,10 @@ class ExamsResource(Resource):
             exam = session.query(Exam).get(exam_id)
             if exam is None:
                 abort(404, f'Exam {exam_id} not found')
+
+            code = request.json.get('code')
+            if code is not None:
+                exam.code = code
 
             filename = request.json.get('filename')
             if filename is not None:
