@@ -266,6 +266,17 @@ class WaitlistEntry(Base):
     skill_domain = relationship('SkillDomain', foreign_keys=skill_domain_id)
     belt = relationship('Belt', foreign_keys=belt_id)
 
+    evaluations = relationship(
+        'Evaluation',
+        foreign_keys=(student_id, skill_domain_id, belt_id),
+        primaryjoin=(
+            (student_id == Evaluation.student_id) &
+            (skill_domain_id == Evaluation.skill_domain_id) &
+            (belt_id == Evaluation.belt_id)
+        ),
+        viewonly=True,
+    )
+
     def json(self) -> Dict:
         return {
             'id': self.id,

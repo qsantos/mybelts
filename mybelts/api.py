@@ -1,6 +1,7 @@
 import logging
 from datetime import date, datetime, timedelta, timezone
 from io import BytesIO
+from tempfile import NamedTemporaryFile
 from time import sleep
 from typing import TYPE_CHECKING, Any, Dict, List, NoReturn
 
@@ -18,6 +19,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
 from mybelts.config import SECRET
+from mybelts.exams2pdf import exams_to_print, print_exams_as_pdf
 from mybelts.schema import (
     Belt, ClassLevel, Evaluation, Exam, HTTPRequest, MissingI18nKey,
     SchoolClass, SkillDomain, Student, User, WaitlistEntry, session_context,
@@ -798,6 +800,32 @@ class SchoolClassWaitlistResource(Resource):
             return {
                 'waitlist_entries': [waitlist_entry.json() for waitlist_entry in waitlist_entries],
             }
+
+
+@school_class_ns.route('/school-classes/<int:school_class_id>/exam-pdf')
+class SchoolClassExamPDFResource(Resource):
+    @api.response(200, 'Success')
+    def get(self, school_class_id: int) -> Any:
+        with session_context() as session:
+            me = authenticate(session)
+            need_admin(me)
+            school_class = session.query(SchoolClass).get(school_class_id)
+            if school_class is None:
+                abort(404, f'School class {school_class_id} not found')
+
+            class_level = school_class.class_level
+            full_class_name = class_level.prefix + school_class.suffix
+
+            exams_with_names, errors = exams_to_print(session, school_class_id)
+            if errors:
+                abort(422, '\n'.join(errors))
+            with NamedTemporaryFile(suffix='pdf') as tmpfile:
+                print_exams_as_pdf(full_class_name, exams_with_names, tmpfile.name)
+                return send_file(
+                    BytesIO(tmpfile.read()),
+                    as_attachment=True,
+                    attachment_filename='exam.pdf',
+                )
 
 
 @students_ns.route('/students')
