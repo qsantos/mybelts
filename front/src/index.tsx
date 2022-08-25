@@ -522,6 +522,7 @@ function SchoolClassView() {
         <AdminOnly>
             {waitlistEntryList &&
                 <SchoolClassWaitlist
+                    school_class={school_class}
                     students={students}
                     skill_domains={skill_domains}
                     belts={belts}

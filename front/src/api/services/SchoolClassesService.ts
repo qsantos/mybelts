@@ -88,6 +88,20 @@ export class SchoolClassesService {
 
     /**
      * @param schoolClassId
+     * @returns any Success
+     * @throws ApiError
+     */
+    public static getSchoolClassExamPdfResource(
+        schoolClassId: number,
+    ): CancelablePromise<any> {
+        return __request({
+            method: 'GET',
+            path: `/school-classes/${schoolClassId}/exam-pdf`,
+        });
+    }
+
+    /**
+     * @param schoolClassId
      * @param xFields An optional fields mask
      * @returns WaitlistEntryList Success
      * @throws ApiError

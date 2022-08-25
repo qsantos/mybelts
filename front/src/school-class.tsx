@@ -180,7 +180,54 @@ export function SchoolClassListing(props: SchoolClassListingProps): ReactElement
     </>;
 }
 
+interface SchoolClassExamsPDFButtonProps {
+    school_class: SchoolClass,
+    setErrorMessage: (v: string) => void,
+}
+
+export function SchoolClassExamsPDFButton(props: SchoolClassExamsPDFButtonProps): ReactElement {
+    const { school_class, setErrorMessage } = props;
+
+    const [in_process, setIn_process] = useState(false);
+
+    function downloadExamsPDF() {
+        return SchoolClassesService.getSchoolClassExamPdfResource(school_class.id)
+            .then((blob: Blob) => {
+                const url = URL.createObjectURL(blob);
+                try {
+                    const link = document.createElement('A') as HTMLAnchorElement;
+                    link.href = url;
+                    link.download = 'exam.pdf';
+                    link.click();
+                } finally {
+                    URL.revokeObjectURL(url);
+                }
+                setIn_process(false);
+            })
+            .catch(error => setErrorMessage(getAPIError(error)))
+        ;
+        setIn_process(true);
+    }
+
+    if (in_process) {
+        return (
+            <Button disabled>
+                <Spinner animation="border" role="status" size="sm">
+                    <span className="visually-hidden"></span>
+                </Spinner>
+            </Button>
+        );
+    } else {
+        return (
+            <Button onClick={downloadExamsPDF}>
+                <img src="/pdf.svg" height="20" />
+            </Button>
+        );
+    }
+}
+
 interface SchoolClassWaitlistProps {
+    school_class: SchoolClass,
     students: Student[],
     skill_domains: SkillDomain[],
     belts: Belt[],
@@ -188,7 +235,7 @@ interface SchoolClassWaitlistProps {
 }
 
 export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElement | null) {
-    const { students, skill_domains, belts, waitlist_entries } = props;
+    const { school_class, students, skill_domains, belts, waitlist_entries } = props;
 
     if (waitlist_entries.length == 0) {
         return null;
@@ -196,6 +243,8 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElem
 
     const { t } = useTranslation();
     const navigate = useNavigate();
+
+    const [errorMessage, setErrorMessage] = useState('');
 
     const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
     const skill_domain_by_id = Object.fromEntries(skill_domains.map(skill_domain => [skill_domain.id, skill_domain]));
@@ -233,6 +282,7 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElem
                     evaluation_count: waitlist_entries.length,
                 })}
             </Alert.Heading>
+            {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
             <ul>
                 {sorted_waitlists.map(([student_id, student_waitlist_entries]) => {
                     const student = student_by_id[student_id];
@@ -372,6 +422,8 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElem
                     </tbody>
                 </Table>
             </ModalButton>
+            {' '}
+            <SchoolClassExamsPDFButton school_class={school_class} setErrorMessage={setErrorMessage} />
         </Alert>
     );
 }
