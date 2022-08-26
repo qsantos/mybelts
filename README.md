@@ -47,7 +47,7 @@
 
 - start the system services (`sudo systemctl start nginx postgresql`)
 - activate the Python virtual environment (`source env/bin/activate`)
-- start the back-end (`FLASK_DEBUG=1 FLASK_APP=mybelts.api flask run`)
+- start the back-end (`FLASK_DEBUG=1 flask run`)
 - start the front (`npm start`)
 - open the web app (`firefox http://127.0.0.1/`)
 - login as `root` with password `root`
