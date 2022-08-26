@@ -48,7 +48,7 @@
 - start the system services (`sudo systemctl start nginx postgresql`)
 - activate the Python virtual environment (`source env/bin/activate`)
 - start the back-end (`FLASK_DEBUG=1 FLASK_APP=mybelts.api flask run`)
-- start the front (`cd front; npm start`)
+- start the front (`npm start`)
 - open the web app (`firefox http://127.0.0.1/`)
 - login as `root` with password `root`
 
@@ -58,7 +58,6 @@
 flake8 .
 mypy .
 ./test-api
-cd front
 npx eslint src/*tsx
 ```
 
@@ -69,7 +68,6 @@ npx eslint src/*tsx
 Assuming the API is listening locally on port 80, run the following commands.
 
 ```
-cd front
 wget http://127.0.0.1/api/swagger.json -O - | python3 -m json.tool --sort-keys >swagger.json
 npx openapi-typescript-codegen --input swagger.json --request request.ts -o src/api
 rm -f swagger.json
