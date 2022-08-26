@@ -729,6 +729,10 @@ function Layout() {
         localStorage.removeItem('login_info');
         return <LoginFormWidget loggedInCallback={setLoginInfo} infoMessage={loginMessage} />;
     }
+    if (loginInfo.payload?.exp <= Date.now() / 1000) {
+        setLoginInfo(null);
+        return null;
+    }
 
     OpenAPI.TOKEN = loginInfo.token;
     localStorage.setItem('login_info', JSON.stringify(loginInfo));

@@ -161,7 +161,7 @@ api_model_missing_i18n_key_event_count = api.model('MissingI18nKeyEventCount', {
 })
 
 api_model_login_info = api.model('LoginInfo', {
-    'payload': fields.Nested(api_model_login_payload),
+    'payload': fields.Nested(api_model_login_payload, required=True),
     'token': fields.String(required=True),
     'user': fields.Nested(api_model_user, required=True),
     'student': fields.Nested(api_model_student, skip_none=True),

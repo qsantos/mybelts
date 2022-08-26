@@ -9,7 +9,7 @@ import type { User } from './User';
 
 export type LoginInfo = {
     missing_i18n_key_events_since_last_login?: MissingI18nKeyEventCount;
-    payload?: LoginPayload;
+    payload: LoginPayload;
     student?: Student;
     token: string;
     user: User;
