@@ -20,36 +20,12 @@
 - create tables in the database (`alembic upgrade head`)
 - populate the tables (`./test-api`)
 
-## Nginx
-
-- install Nginx (`sudo apt install nginx`)
-- add a new site configuration in `/etc/nginx/sites-available/mybelts`:
-    ```
-    server {
-        listen 80 default_server;
-        listen 127.0.0.1:80 default_server;
-        server_name _;
-        location /api {
-            proxy_pass http://127.0.0.1:5000/api;
-        }
-        location / {
-            proxy_pass http://127.0.0.1:3000/;
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-        }
-    }
-    ```
-- enable the site (`sudo ln -s /etc/nginx/sites-available/mybelts /etc/nginx/sites-enabled/`)
-- reload Nginx (`sudo systemctl reload nginx`)
-
 # Running
 
-- start the system services (`sudo systemctl start nginx postgresql`)
+- start the system services (`sudo systemctl start postgresql`)
 - activate the Python virtual environment (`source env/bin/activate`)
 - start the back-end (`FLASK_DEBUG=1 flask run`)
 - start the front (`npm start`)
-- open the web app (`firefox http://127.0.0.1/`)
 - login as `root` with password `root`
 
 # Testing
