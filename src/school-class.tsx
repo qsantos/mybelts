@@ -191,6 +191,7 @@ export function SchoolClassExamsPDFButton(props: SchoolClassExamsPDFButtonProps)
     const [in_process, setIn_process] = useState(false);
 
     function downloadExamsPDF() {
+        setIn_process(true);
         return SchoolClassesService.getSchoolClassExamPdfResource(school_class.id)
             .then((blob: Blob) => {
                 const url = URL.createObjectURL(blob);
@@ -206,7 +207,6 @@ export function SchoolClassExamsPDFButton(props: SchoolClassExamsPDFButtonProps)
             })
             .catch(error => setErrorMessage(getAPIError(error)))
         ;
-        setIn_process(true);
     }
 
     if (in_process) {
