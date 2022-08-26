@@ -20,6 +20,10 @@
 - create tables in the database (`alembic upgrade head`)
 - populate the tables (`./test-api`)
 
+## Other Dependencies
+
+`sudo apt install inkscape pdftk texlive-extra-utils`
+
 # Running
 
 - start the system services (`sudo systemctl start postgresql`)
