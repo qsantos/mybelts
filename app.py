@@ -14,8 +14,9 @@ def create_app() -> Flask:
     app.config['SWAGGER_UI_DOC_EXPANSION'] = 'list'
     app.register_blueprint(api_blueprint, url_prefix='/api')
 
+    @app.route('/')
     @app.route('/<x>')
-    def home(x: str) -> Any:
+    def home(x: str = '') -> Any:
         return send_file('build/index.html')
 
     if app.debug:

@@ -44,8 +44,14 @@ flask==2.1.3
     # via flask-restx
 flask-restx==0.5.1
     # via -r requirements.in
+gevent==21.12.0
+    # via gunicorn
 greenlet==1.1.2
-    # via sqlalchemy
+    # via
+    #   gevent
+    #   sqlalchemy
+gunicorn[gevent]==20.1.0
+    # via -r requirements.in
 idna==3.3
     # via requests
 isort==5.10.1
@@ -139,6 +145,10 @@ werkzeug==2.1.2
     #   flask-restx
 wheel==0.37.1
     # via pip-tools
+zope-event==4.5.0
+    # via gevent
+zope-interface==5.4.0
+    # via gevent
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
