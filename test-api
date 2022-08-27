@@ -6,9 +6,9 @@ from time import sleep
 from typing import List
 
 import requests  # type: ignore
-from requests.exceptions import ConnectionError
 from alembic import command
 from alembic.config import Config
+from requests.exceptions import ConnectionError
 
 from app import create_app
 from mybelts.schema import Base, User, session_context
@@ -17,6 +17,7 @@ API_PORT = 5001
 API_URL = f'http://127.0.0.1:{API_PORT}/api'
 
 requests = requests.session()
+
 
 def run_api() -> None:
     app = create_app()
@@ -160,7 +161,7 @@ def add_belts() -> List[int]:
         '#3584e4',
         '#865e3c',
         '#000000',
-        '#dc8add'  # deleted later
+        '#dc8add',  # deleted later
     ]
 
     belt_codes = [
@@ -374,7 +375,8 @@ def add_skill_domains() -> List[int]:
     skill_domain_codes.pop()
 
     # check final state
-    for i, (skill_domain_name, skill_domain_code) in reversed(list(enumerate(zip(skill_domain_names, skill_domain_codes)))):
+    skill_info = zip(skill_domain_names, skill_domain_codes)
+    for i, (skill_domain_name, skill_domain_code) in reversed(list(enumerate(skill_info))):
         skill_domain = skill_domains[ids[i]]
         assert skill_domain['name'] == skill_domain_name
         assert skill_domain['code'] == skill_domain_code
@@ -728,7 +730,6 @@ def add_waitlist_entries(student_ids: List[int]) -> List[int]:
                 assert res.status_code == 409
 
     print('Tested waitlist endpoint')
-
 
 
 def main() -> None:
