@@ -10,7 +10,7 @@ from requests.exceptions import ConnectionError
 from alembic import command
 from alembic.config import Config
 
-from mybelts.api import create_app
+from app import create_app
 from mybelts.schema import Base, User, session_context
 
 API_PORT = 5001
