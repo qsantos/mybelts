@@ -81,6 +81,31 @@ def add_admin() -> None:
     print('Tested /login')
 
 
+def test_missing_i18n_keys() -> None:
+    print('Testing /missing-i18n-key resource')
+
+    # add missing i18n keys
+    for _ in range(3):
+        res = requests.post(API_URL + '/missing-i18n-key', json={
+            'language': 'en',
+            'namespace': 'translation',
+            'key': 'main_title',
+        })
+        res.raise_for_status()
+
+    # check missing keys
+    res = requests.get(API_URL + '/missing-i18n-key')
+    res.raise_for_status()
+    j = res.json()
+    event, = j['events']
+    assert event['language'] == 'en'
+    assert event['namespace'] == 'translation'
+    assert event['key'] == 'main_title'
+    assert event['count'] == 3
+
+    print('Tested /missing-i18n-key resource')
+
+
 def add_users() -> None:
     print('Testing /users resource')
 
@@ -737,6 +762,7 @@ def main() -> None:
     start_api()
     reset_database()
     add_admin()
+    test_missing_i18n_keys()
     add_users()
     add_belts()
     add_skill_domains()
