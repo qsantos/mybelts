@@ -50,6 +50,10 @@ def reset_database() -> None:
 def add_admin() -> None:
     print('Testing /login')
 
+    # test logging in with invalid credentials
+    res = requests.post(API_URL + '/login', json={'username': 'root', 'password': 'root'})
+    assert res.status_code == 401
+
     # create admin user
     with session_context() as session:
         user = User(
@@ -102,6 +106,15 @@ def test_missing_i18n_keys() -> None:
     assert event['namespace'] == 'translation'
     assert event['key'] == 'main_title'
     assert event['count'] == 3
+
+    # check we get the missing i18n keys at next login
+    res = requests.post(API_URL + '/login', json={'username': 'root', 'password': 'root'})
+    res.raise_for_status()
+    j = res.json()
+    print(j)
+    events = j['missing_i18n_key_events_since_last_login']
+    assert events['total'] == 3
+    assert events['unique'] == 1
 
     print('Tested /missing-i18n-key')
 
