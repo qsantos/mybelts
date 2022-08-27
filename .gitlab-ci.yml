@@ -16,4 +16,17 @@ test-api:
     - pip install -r requirements.txt
     - flake8 .
     - mypy .
-    - PGHOST=postgres ./test-api
+    - PGHOST=postgres coverage run ./test-api
+    - coverage report
+    - coverage html
+    - coverage xml
+  artifacts:
+    expose_as: 'Coverage'
+    paths:
+      - "htmlcov/"
+    expire_in: 1 week
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+  coverage: '/^TOTAL.*\s+(\d+\%)\s*$/'

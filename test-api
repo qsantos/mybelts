@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from datetime import date, timedelta
-from multiprocessing import Process
 from random import choice, randrange, seed
+from threading import Thread
 from time import sleep
 from typing import List
 
@@ -25,7 +25,7 @@ def run_api() -> None:
 
 def start_api() -> None:
     # start Flask in a separate process
-    Process(target=run_api, daemon=True).start()
+    Thread(target=run_api, daemon=True).start()
     # wait until the API is ready
     while True:
         try:
