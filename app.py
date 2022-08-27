@@ -15,8 +15,17 @@ def create_app() -> Flask:
     app.register_blueprint(api_blueprint, url_prefix='/api')
 
     @app.route('/')
-    @app.route('/<x>')
-    def home(x: str = '') -> Any:
+    @app.route('/belts')
+    @app.route('/skill-domains')
+    @app.route('/class-levels')
+    @app.route('/class-levels/<path:x>')
+    @app.route('/school-classes')
+    @app.route('/school-classes/<path:x>')
+    @app.route('/students')
+    @app.route('/students/<path:x>')
+    @app.route('/users')
+    @app.route('/i18n')
+    def home(x: str = '', y: str = '', z: str = '') -> Any:
         return send_file('build/index.html')
 
     if app.debug:
