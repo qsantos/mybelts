@@ -351,49 +351,53 @@ export function StudentBelts(props: StudentBeltsProps): ReactElement {
             <tbody>
                 {skill_domains.map(skill_domain => {
                     const belt = belt_of_skill_domain(skill_domain);
-                    return (
-                        <tr key={skill_domain.id}>
-                            <th>{skill_domain.name}</th>
-                            <td>{belt ? <BeltIcon belt={belt} /> : t('student.belts.no_belt')}</td>
-                            {function(){
-                                if (!canUseWaitlist) {
-                                    return null;
-                                }
-                                const next_belt = belt ? belt_by_rank[belt.rank + 1] : belt_by_rank[1];
-                                if (!next_belt) {
-                                    return null;
-                                }
-                                const index_and_entry = waitlist_entries_by_skill_domain[skill_domain.id];
-                                if (index_and_entry) {
-                                    const { index, waitlist_entry } = index_and_entry;
-                                    return <td>
-                                        <RemoveFromWaitlistButton
-                                            student={student}
-                                            skill_domain={skill_domain}
-                                            belt={next_belt}
-                                            waitlist_entry={waitlist_entry}
-                                            removedCallback={() => {
-                                                const new_waitlist_entries = [...waitlist_entries];
-                                                new_waitlist_entries.splice(index, 1);
-                                                setWaitlistEntries(new_waitlist_entries);
-                                            }}
-                                        />
-                                    </td>;
-                                } else {
-                                    return <td>
-                                        <AddToWaitlistButton
-                                            student={student}
-                                            skill_domain={skill_domain}
-                                            belt={next_belt}
-                                            addedCallback={new_waitlist_entry => {
-                                                setWaitlistEntries([...waitlist_entries, new_waitlist_entry]);
-                                            }}
-                                        />
-                                    </td>;
-                                }
-                            }()}
-                        </tr>
-                    );
+                    if (!canUseWaitlist) {
+                        return null;
+                    }
+                    const next_belt = belt ? belt_by_rank[belt.rank + 1] : belt_by_rank[1];
+                    if (!next_belt) {
+                        return null;
+                    }
+                    const index_and_entry = waitlist_entries_by_skill_domain[skill_domain.id];
+                    if (index_and_entry) {
+                        const { index, waitlist_entry } = index_and_entry;
+                        return (
+                            <tr key={skill_domain.id} className="skill-domain-on-waitlist">
+                                <th>{skill_domain.name}</th>
+                                <td>{belt ? <BeltIcon belt={belt} /> : t('student.belts.no_belt')}</td>
+                                <td>
+                                    <RemoveFromWaitlistButton
+                                        student={student}
+                                        skill_domain={skill_domain}
+                                        belt={next_belt}
+                                        waitlist_entry={waitlist_entry}
+                                        removedCallback={() => {
+                                            const new_waitlist_entries = [...waitlist_entries];
+                                            new_waitlist_entries.splice(index, 1);
+                                            setWaitlistEntries(new_waitlist_entries);
+                                        }}
+                                    />
+                                </td>
+                            </tr>
+                        );
+                    } else {
+                        return (
+                            <tr key={skill_domain.id}>
+                                <th>{skill_domain.name}</th>
+                                <td>{belt ? <BeltIcon belt={belt} /> : t('student.belts.no_belt')}</td>
+                                <td>
+                                    <AddToWaitlistButton
+                                        student={student}
+                                        skill_domain={skill_domain}
+                                        belt={next_belt}
+                                        addedCallback={new_waitlist_entry => {
+                                            setWaitlistEntries([...waitlist_entries, new_waitlist_entry]);
+                                        }}
+                                    />
+                                </td>
+                            </tr>
+                        );
+                    }
                 })}
             </tbody>
         </Table>

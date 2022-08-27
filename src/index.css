@@ -22,3 +22,13 @@ code {
 .selected-waitlist {
     border-color: red;
 }
+
+.skill-domain-on-waitlist {
+    background: repeating-linear-gradient(
+      -45deg,
+      white,
+      white 10px,
+      #ccc 10px,
+      #ccc 20px
+    );
+}
