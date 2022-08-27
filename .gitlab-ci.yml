@@ -15,7 +15,7 @@ test-api:
   script:
     - pip install -r requirements.txt
     - flake8 . test-api
-    - mypy .
+    - mypy . test-api
     - PGHOST=postgres coverage run ./test-api
     - coverage report
     - coverage html
