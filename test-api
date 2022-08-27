@@ -82,7 +82,7 @@ def add_admin() -> None:
 
 
 def test_missing_i18n_keys() -> None:
-    print('Testing /missing-i18n-key resource')
+    print('Testing /missing-i18n-key')
 
     # add missing i18n keys
     for _ in range(3):
@@ -103,11 +103,11 @@ def test_missing_i18n_keys() -> None:
     assert event['key'] == 'main_title'
     assert event['count'] == 3
 
-    print('Tested /missing-i18n-key resource')
+    print('Tested /missing-i18n-key')
 
 
 def add_users() -> None:
-    print('Testing /users resource')
+    print('Testing /users')
 
     # add first user
     res = requests.post(API_URL + '/users', json={
@@ -161,11 +161,11 @@ def add_users() -> None:
     assert j['user']['username'] == 'tartempion'
     assert j['user']['is_admin']
 
-    print('Tested /users resource')
+    print('Tested /users')
 
 
 def add_belts() -> List[int]:
-    print('Testing /belts resource')
+    print('Testing /belts')
 
     belt_names = [
         'Ceinture blanche',
@@ -328,12 +328,12 @@ def add_belts() -> List[int]:
         assert belt['color'] == belt_color
         assert belt['rank'] == i + 1
 
-    print('Tested /belts resource')
+    print('Tested /belts')
     return ids
 
 
 def add_skill_domains() -> List[int]:
-    print('Testing resource /skill-domains')
+    print('Testing /skill-domains')
 
     skill_domain_names = [
         'Numération',
@@ -406,12 +406,12 @@ def add_skill_domains() -> List[int]:
         assert skill_domain['name'] == skill_domain_name
         assert skill_domain['code'] == skill_domain_code
 
-    print('Tested resource /skill-domains')
+    print('Tested /skill-domains')
     return ids
 
 
 def add_class_levels() -> List[int]:
-    print('Testing resource /class-levels')
+    print('Testing /class-levels')
 
     class_level_prefixes = [
         '3e',
@@ -455,12 +455,12 @@ def add_class_levels() -> List[int]:
         print(j)
         assert j['class_level']['prefix'] == class_level_prefix
 
-    print('Tested resource /class-levels')
+    print('Tested /class-levels')
     return ids
 
 
 def add_school_classes(class_level_ids: List[int]) -> List[int]:
-    print('Testing resource /school-classes')
+    print('Testing /school-classes')
     assert len(class_level_ids) == 4
     l3, l4, l5, l6 = class_level_ids
 
@@ -508,12 +508,12 @@ def add_school_classes(class_level_ids: List[int]) -> List[int]:
         print(j)
         assert j['school_class']['suffix'] == school_class_suffix
 
-    print('Tested resource /school-classes')
+    print('Tested /school-classes')
     return ids
 
 
 def add_students(school_class_ids: List[int]) -> List[int]:
-    print('Testing resource /students')
+    print('Testing /students')
     a, b, c, d = school_class_ids
     student_classes = [a, a, a, a, a, a, b, b, b, c, c]
     display_names = [
@@ -577,12 +577,12 @@ def add_students(school_class_ids: List[int]) -> List[int]:
         assert j['school_class']['id'] == school_class_id
         assert j['student']['display_name'] == display_name
 
-    print('Tested resource /students')
+    print('Tested /students')
     return ids
 
 
 def add_evaluations(student_ids: List[int]) -> List[int]:
-    print('Testing resource /evaluations')
+    print('Testing /evaluations')
 
     # get belts
     res = requests.get(API_URL + '/belts')
@@ -683,12 +683,12 @@ def add_evaluations(student_ids: List[int]) -> List[int]:
     evaluations = {evaluation['id']: evaluation for evaluation in j['evaluations']}
     assert evaluation_id not in evaluations
 
-    print('Tested resource /evaluations')
+    print('Tested /evaluations')
     return evaluation_ids
 
 
 def add_waitlist_entries(student_ids: List[int]) -> None:
-    print('Testing waitlist endpoint')
+    print('Testing waitlist endpoints')
 
     # get belts
     res = requests.get(API_URL + '/belts')
@@ -754,7 +754,7 @@ def add_waitlist_entries(student_ids: List[int]) -> None:
                 })
                 assert res.status_code == 409
 
-    print('Tested waitlist endpoint')
+    print('Tested waitlist endpoints')
 
 
 def main() -> None:
