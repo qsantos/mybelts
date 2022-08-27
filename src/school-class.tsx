@@ -205,7 +205,10 @@ export function SchoolClassExamsPDFButton(props: SchoolClassExamsPDFButtonProps)
                 }
                 setIn_process(false);
             })
-            .catch(error => setErrorMessage(getAPIError(error)))
+            .catch(error => {
+                setIn_process(false);
+                setErrorMessage(getAPIError(error));
+            })
         ;
     }
 
