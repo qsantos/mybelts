@@ -30,3 +30,14 @@ test-api:
         coverage_format: cobertura
         path: coverage.xml
   coverage: '/^TOTAL.*\s+(\d+\%)\s*$/'
+
+deploy:
+  script:
+    - set -eu
+    - apt-get update && apt-get install --yes --no-install-recommends rsync
+    - mkdir -p ~/.ssh
+    - echo "${DEV_SSH_CONFIG}" >~/.ssh/config
+    - echo "${DEV_SSH_PRIVATE_KEY}" >~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - rsync -PHav --exclude=.git --exclude=env --exclude=node_modules . "target:${DEV_DEPLOY_DIRECTORY}"
+    - ssh target "cd ${DEV_DEPLOY_DIRECTORY}; bash deploy.sh"
