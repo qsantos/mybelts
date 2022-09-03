@@ -40,7 +40,7 @@ export function CreateSkillDomainButton(props : CreateSkillDomainButtonProps): R
                 </Form.Text>
             </Form.Group>
             <Form.Group controlId="code">
-                <Form.Label>{t('skill_domain.add_edit.name.title')}</Form.Label>
+                <Form.Label>{t('skill_domain.add_edit.code.title')}</Form.Label>
                 <Form.Control type="text" placeholder={t('skill_domain.add_edit.code.placeholder')}/>
                 <Form.Text className="text-muted">
                     {t('skill_domain.add_edit.code.help')}
