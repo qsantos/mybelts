@@ -449,6 +449,7 @@ export function ManageClassWaitlistButton(props: ManageClassWaitlistButtonProps)
     const [in_process, setIn_process] = useState(false);
     function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
         setIn_process(true);
+        setErrorMessage('');
         event.preventDefault();
         if (waitlist_entry) {
             WaitlistService.deleteWaitlistResource(waitlist_entry.id)

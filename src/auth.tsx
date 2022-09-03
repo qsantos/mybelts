@@ -47,6 +47,7 @@ export function LoginFormWidget(props: LoginFormWidgetProps): ReactElement {
     function handleSubmit(event: FormEvent) {
         event.preventDefault();
         setLoggingIn(true);
+        setErrorMessage('');
         const target = event.target as typeof event.target & {
             username: {value: string};
             password: {value: string};

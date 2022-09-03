@@ -96,6 +96,7 @@ export function MoveBeltButton(props : MoveBeltButtonProps): ReactElement {
 
     function handleMove() {
         setMoving(true);
+        setErrorMessage('');
         BeltsService.patchBeltRankResource(belt.id, {
             increase_by: direction,
         }).then(() => {

@@ -221,7 +221,14 @@ function ExamButton(props: ExamButtonProps): ReactElement {
             onResponse={({ exam: changed_exam }) => changedCallback?.(changed_exam)}
         >
             {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-            <Button onClick={() => download_exam(exam).catch(error => setErrorMessage(getAPIError(error)))}>
+            <Button onClick={() => {
+                setErrorMessage('');
+                download_exam(exam)
+                    .catch(error => {
+                        setErrorMessage(getAPIError(error));
+                    })
+                ;
+            }}>
                 {t('exam.add_edit.open')}
             </Button>
             <ModalButtonButton {...deleteModalButtonProps} />
@@ -520,6 +527,7 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
                 setErrorMessage(getAPIError(error));
             });
         setUploading(file, true);
+        setErrorMessage('');
     }
 
     function uploadAll() {

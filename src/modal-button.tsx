@@ -52,6 +52,7 @@ export function ModalButtonModal<T>(props: ModalButtonWidgetProps<T>): ReactElem
 
     const handleSubmit = (event: FormEvent) => {
         setIn_process(true);
+        setErrorMessage('');
         event.preventDefault();
         onSubmit(event.target)
             .then(json => {
