@@ -32,6 +32,7 @@ test-api:
   coverage: '/^TOTAL.*\s+(\d+\%)\s*$/'
 
 deploy-dev:
+  environment: dev
   script:
     - set -eu
     - apt-get update && apt-get install --yes --no-install-recommends rsync
@@ -43,6 +44,7 @@ deploy-dev:
     - ssh target "cd ${DEV_DEPLOY_DIRECTORY}; bash deploy.sh"
 
 deploy-prod:
+  environment: prod
   script:
     - set -eu
     - apt-get update && apt-get install --yes --no-install-recommends rsync
