@@ -687,7 +687,6 @@ function missingKeyHandler(
     key: string,
 ) {
     console.log(_languages, namespace, key);
-    alert(key);
     DefaultService.postMissingI18NKeyResource({language: i18n.language, namespace, key});
 }
 
