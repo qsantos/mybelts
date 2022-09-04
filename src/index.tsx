@@ -724,6 +724,10 @@ function Layout() {
     const savedLoginInfo = rawSavedLoginInfo === null ? null : (JSON.parse(rawSavedLoginInfo) as LoginInfo);
     const [loginInfo, setLoginInfo] = useState<LoginInfo | null>(savedLoginInfo);
     const [loginMessage, setLoginMessage] = useState('');
+
+    // NOTE: always reset this, to make sure it is actually cleared when login out
+    (OpenAPI as OpenAPIWithCallback).ERROR_CALLBACK = undefined;
+
     if (loginInfo === null) {
         OpenAPI.TOKEN = undefined;
         localStorage.removeItem('login_info');
