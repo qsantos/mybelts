@@ -412,14 +412,15 @@ export function EvaluationGrid(props: EvaluationGridProps): (ReactElement | null
         },
     }));
 
-    const sorting = [{
-        id: 'display_name',
-        desc: false,
-    }];
+    const sorting = [];
 
     if (is_admin()) {
-        sorting.unshift({
+        sorting.push({
             id: 'rank',
+            desc: false,
+        });
+        sorting.push( {
+            id: 'display_name',
             desc: false,
         });
         columns.unshift({
@@ -454,6 +455,17 @@ export function EvaluationGrid(props: EvaluationGridProps): (ReactElement | null
                     }} />
                 </>;
             }
+        });
+    } else {
+        // ensure the logged student is always the first on in the list
+        students.sort((a, b) => {
+            if (a.display_name == loginInfo.student?.display_name) {
+                return -1;
+            }
+            if (b.display_name == loginInfo.student?.display_name) {
+                return +1;
+            }
+            return a.display_name.localeCompare(b.display_name);
         });
     }
 
