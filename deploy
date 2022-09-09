@@ -15,8 +15,7 @@ source "deploy-info/${ENV}.env"
 set -x
 
 # build front-end
-npm ci
-npm run build
+make
 
 # copy back-end sources, front-end build and migrations
 mkdir tmp
