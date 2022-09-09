@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# parse arguments
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 [dev|prod]"
+  exit 1
+fi
+ENV=$1
+
+# shellcheck source=deploy-info/dev.env
+# shellcheck source=deploy-info/prod.env
+source "deploy-info/${ENV}.env"
+
+set -x
+
+# build front-end
+npm ci
+npm run build
+
+# copy back-end sources, front-end build and migrations
+mkdir tmp
+trap 'rm -Rf tmp' EXIT ERR SIGINT SIGTERM
+rsync -PHav --exclude=__pycache__ --exclude=.mypy_cache alembic.ini app.py build migrations mybelts requirements.txt tmp
+rsync -PHav --delete --exclude=env --rsh="ssh -i 'deploy-info/${ENV}.key' -p '${PORT}'" tmp/ "${USER}@${HOSTNAME}:${WORKDIR}"
+
+# migrate database and deploy back-end
+# shellcheck disable=SC2087
+ssh -i "deploy-info/${ENV}.key" -p "${PORT}" "${USER}@${HOSTNAME}" <<EOF
+set -x
+cd ${WORKDIR}
+ls
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+alembic upgrade head
+pkill gunicorn || true
+gunicorn --daemon --workers=1 --worker-class=gevent --bind=0.0.0.0:20684 'app:create_app()'
+EOF
