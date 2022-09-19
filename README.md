@@ -22,7 +22,8 @@
 
 ## Other Dependencies
 
-`sudo apt install inkscape pdftk texlive-extra-utils`
+`sudo apt install inkscape pdftk texlive-extra-utils texlive-latex-recommended`
+
 
 # Running
 
