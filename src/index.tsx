@@ -83,6 +83,10 @@ function HomeView() {
 }
 
 function I18nView() {
+    // NOTE: this component is only rendered when logged in; the early return
+    // will either always happen or never happen, *except* when switching
+    // between admin and non-admin users in a single session; I do not care
+    // about that use case
     if (!is_admin()) {
         return null;
     }
@@ -142,6 +146,10 @@ function I18nView() {
 }
 
 function UsersView() {
+    // NOTE: this component is only rendered when logged in; the early return
+    // will either always happen or never happen, *except* when switching
+    // between admin and non-admin users in a single session; I do not care
+    // about that use case
     if (!is_admin()) {
         return null;
     }
@@ -292,6 +300,10 @@ function SkillDomainsView() {
 }
 
 function ClassLevelsView() {
+    // NOTE: this component is only rendered when logged in; the early return
+    // will either always happen or never happen, *except* when switching
+    // between admin and non-admin users in a single session; I do not care
+    // about that use case
     if (!is_admin()) {
         return null;
     }
@@ -341,6 +353,10 @@ function ClassLevelsView() {
 }
 
 function ClassLevelView() {
+    // NOTE: this component is only rendered when logged in; the early return
+    // will either always happen or never happen, *except* when switching
+    // between admin and non-admin users in a single session; I do not care
+    // about that use case
     if (!is_admin()) {
         return null;
     }
