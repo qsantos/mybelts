@@ -39,6 +39,7 @@
         ],
         "no-shadow": [
             "error"
-        ]
+        ],
+        "eqeqeq": "warn"
     }
 }

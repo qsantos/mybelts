@@ -477,7 +477,7 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
     function setUploading(file: File, uploading: boolean) {
         setFiles(old_files => {
             const new_files = [...old_files];
-            const new_index = new_files.findIndex(x => x.file == file);
+            const new_index = new_files.findIndex(x => x.file === file);
             const new_file = old_files[new_index];
             if (new_file) {
                 new_file.uploading = uploading;
@@ -489,7 +489,7 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
     function removeFile(file: File) {
         setFiles(old_files => {
             const new_files = [...old_files];
-            const new_index = new_files.findIndex(x => x.file == file);
+            const new_index = new_files.findIndex(x => x.file === file);
             new_files.splice(new_index, 1);
             return new_files;
         });
@@ -542,7 +542,7 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
 
     return <>
         {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-        {files.length != 0 &&
+        {files.length !== 0 &&
             <Table id="bulk-upload">
                 <thead>
                     <tr>
@@ -582,8 +582,8 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
                         let exam_code;
                         if (match) {
                             const [, skill_domain_code, belt_code, exam_code_match] = match;
-                            skill_domain = skill_domains.find(x => x.code.toLowerCase() == skill_domain_code);
-                            belt = belts.find(x => x.code.toLowerCase() == belt_code);
+                            skill_domain = skill_domains.find(x => x.code.toLowerCase() === skill_domain_code);
+                            belt = belts.find(x => x.code.toLowerCase() === belt_code);
                             exam_code = exam_code_match?.toUpperCase();
                         }
                         return (

@@ -374,7 +374,7 @@ export function EvaluationGrid(props: EvaluationGridProps): (ReactElement | null
             header: t('student.list.display_name.title'),
             cell: info => {
                 const student = info.row.original;
-                const enabled = user.is_admin || student.user_id == user.id;
+                const enabled = user.is_admin || student.user_id === user.id;
                 return (
                     <Nav.Link as={Link} to={'/students/' + student.id} disabled={!enabled}>
                         {student.display_name}
@@ -396,7 +396,7 @@ export function EvaluationGrid(props: EvaluationGridProps): (ReactElement | null
             }
             let belt_id = undefined;
             this_belts.forEach(({belt_id: xbelt_id, skill_domain_id}) => {
-                if (skill_domain_id == skill_domain.id) {
+                if (skill_domain_id === skill_domain.id) {
                     belt_id = xbelt_id;
                 }
             });
@@ -459,10 +459,10 @@ export function EvaluationGrid(props: EvaluationGridProps): (ReactElement | null
     } else {
         // ensure the logged student is always the first on in the list
         students.sort((a, b) => {
-            if (a.display_name == loginInfo.student?.display_name) {
+            if (a.display_name === loginInfo.student?.display_name) {
                 return -1;
             }
-            if (b.display_name == loginInfo.student?.display_name) {
+            if (b.display_name === loginInfo.student?.display_name) {
                 return +1;
             }
             return a.display_name.localeCompare(b.display_name);

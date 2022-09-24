@@ -240,7 +240,7 @@ interface SchoolClassWaitlistProps {
 export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElement | null) {
     const { school_class, students, skill_domains, belts, waitlist_entries } = props;
 
-    if (waitlist_entries.length == 0) {
+    if (waitlist_entries.length === 0) {
         return null;
     }
 
@@ -402,7 +402,7 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElem
                                     return null;
                                 }
                                 return <tr key={[student_id,skill_domain_id,belt_id].toString()}>
-                                    {index == 0 &&
+                                    {index === 0 &&
                                         <th rowSpan={student_waitlist_entries.length}>
                                             {student.display_name}
                                         </th>
@@ -567,7 +567,7 @@ export function ManageClassWaitlist(props: ManageClassWaitlistProps): ReactEleme
             let belt_id = undefined;
             if (this_belts !== undefined) {
                 this_belts.forEach(({belt_id: xbelt_id, skill_domain_id}) => {
-                    if (skill_domain_id == skill_domain.id) {
+                    if (skill_domain_id === skill_domain.id) {
                         belt_id = xbelt_id;
                     }
                 });
@@ -606,7 +606,7 @@ export function ManageClassWaitlist(props: ManageClassWaitlistProps): ReactEleme
                             return null;
                         }
                         const { waitlist_entries: last_waitlist_entries } = lastWaitlistEntryList;
-                        const index = last_waitlist_entries.findIndex(candidate => candidate.id == waitlist_entry.id);
+                        const index = last_waitlist_entries.findIndex(candidate => candidate.id === waitlist_entry.id);
                         if (index === undefined) {
                             return null;
                         }

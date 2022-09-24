@@ -295,8 +295,8 @@ export function StudentBelts(props: StudentBeltsProps): ReactElement {
     );
 
     const belt_of_skill_domain = (skill_domain: SkillDomain) => {
-        const domain_evaluations = passed_evaluations.filter(evaluation => evaluation.skill_domain_id == skill_domain.id);
-        if (domain_evaluations.length == 0) {
+        const domain_evaluations = passed_evaluations.filter(evaluation => evaluation.skill_domain_id === skill_domain.id);
+        if (domain_evaluations.length === 0) {
             // no successful evaluation yet
             const belt = belts[0];
             if (belt === undefined) {

@@ -226,7 +226,7 @@ function BeltsView() {
     const sorted_belts = belts.sort((a, b) => (a.rank - b.rank));
     // TODO: handle case where result is false
     sorted_belts.reduce((previous, belt, index) => {
-        if (belt.rank != index + 1) {
+        if (belt.rank !== index + 1) {
             console.error('Inconsistent ranking of belts ' + belt.id + '!');
             return false;
         }
@@ -435,7 +435,7 @@ function ClassLevelView() {
                 setSchoolClassList({ ...schoolClassList, exams: [...exams, new_exam]});
             }}
             changedCallback={changed_exam => {
-                const index = exams.findIndex(exam => exam.id == changed_exam.id);
+                const index = exams.findIndex(exam => exam.id === changed_exam.id);
                 if (index === null) {
                     return;
                 }
@@ -444,7 +444,7 @@ function ClassLevelView() {
                 setSchoolClassList({ ...schoolClassList, exams: new_exams });
             }}
             deletedCallback={(exam_id) => {
-                const index = exams.findIndex(exam => exam.id == exam_id);
+                const index = exams.findIndex(exam => exam.id === exam_id);
                 if (index === null) {
                     return;
                 }
@@ -602,7 +602,7 @@ function StudentWidget(props: StudentWidgetProps) {
     if (loginInfo === null) {
         return null;
     }
-    const canUseWaitlist = loginInfo.user.is_admin || loginInfo.student?.id == student_id;
+    const canUseWaitlist = loginInfo.user.is_admin || loginInfo.student?.id === student_id;
 
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
@@ -710,7 +710,7 @@ function StudentView() {
 
 function LanguageSelector() {
     const currentLanguageCode = i18n.language;
-    const otherLanguageCode = currentLanguageCode == 'en' ? 'fr' : 'en';
+    const otherLanguageCode = currentLanguageCode === 'en' ? 'fr' : 'en';
 
     const languageEmojis = {
         'en': '🇬🇧',
