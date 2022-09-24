@@ -448,12 +448,10 @@ export function ManageClassWaitlistButton(props: ManageClassWaitlistButtonProps)
     const { student, skill_domain, belt, waitlist_entry, setErrorMessage, onCreate, onDelete } = props;
     const { t } = useTranslation();
 
-    const className = waitlist_entry ? 'selected-waitlist' : 'unselected-waitlist';
     const [in_process, setIn_process] = useState(false);
-    function handleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    function handleClick() {
         setIn_process(true);
         setErrorMessage('');
-        event.preventDefault();
         if (waitlist_entry) {
             WaitlistService.deleteWaitlistResource(waitlist_entry.id)
                 .then(() => {
@@ -484,9 +482,10 @@ export function ManageClassWaitlistButton(props: ManageClassWaitlistButtonProps)
             <span className="visually-hidden">{t('waitlist.manage.in_process')}</span>
         </Spinner>;
     } else {
-        return <div className={className} onClick={handleClick}>
+        const variant = waitlist_entry ? 'primary' : 'light';
+        return <Button variant={variant} onClick={handleClick}>
             <BeltIcon belt={belt} />
-        </div>;
+        </Button>;
     }
 }
 
