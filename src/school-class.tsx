@@ -639,7 +639,7 @@ export function ManageClassWaitlist(props: ManageClassWaitlistProps): ReactEleme
         <OverlayTrigger overlay={<Tooltip>{t(i18nPrefix + '.button.tooltip', i18nArgs)}</Tooltip>}>
             <Button onClick={() => setShow(true)}>{t(i18nPrefix + '.button', i18nArgs)}</Button>
         </OverlayTrigger>
-        <Modal size="xl" show={show} onHide={() => setShow(false)}>
+        <Modal size="xl" show={show} onHide={() => setShow(false)} scrollable>
             <Modal.Header>
                 <Modal.Title>{t(i18nPrefix + '.title', i18nArgs)}</Modal.Title>
             </Modal.Header>
