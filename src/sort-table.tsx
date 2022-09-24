@@ -31,27 +31,21 @@ export function SortTable<T>(props: SortTableProps<T>): ReactElement {
             <thead>
                 {table.getHeaderGroups().map(headerGroup => (
                     <tr key={headerGroup.id}>
-                        {headerGroup.headers.map(header => (
-                            <th key={header.id} colSpan={header.colSpan}>
-                                {header.isPlaceholder ? null : (
-                                    <div
-                                        {...{
-                                            className: header.column.getCanSort()
-                                                ? 'cursor-pointer select-none'
-                                                : '',
-                                            onClick: header.column.getToggleSortingHandler(),
-                                        }}
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                        {{
-                                            asc: ' 🔼',
-                                            desc: ' 🔽',
-                                        }[header.column.getIsSorted() as string] ?? null}
-                                    </div>
+                        {headerGroup.headers.map(header => header.isPlaceholder ? null : (
+                            <th
+                                key={header.id}
+                                colSpan={header.colSpan}
+                                className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
+                                onClick={header.column.getToggleSortingHandler()}
+                            >
+                                {flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
                                 )}
+                                {{
+                                    asc: ' 🔼',
+                                    desc: ' 🔽',
+                                }[header.column.getIsSorted() as string] ?? null}
                             </th>
                         ))}
                     </tr>
