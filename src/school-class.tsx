@@ -223,9 +223,11 @@ export function SchoolClassExamsPDFButton(props: SchoolClassExamsPDFButtonProps)
         );
     } else {
         return (
-            <Button onClick={downloadExamsPDF}>
-                <img src="/pdf.svg" height="20" alt={t('waitlist.exam_pdf.image.alt')} />
-            </Button>
+            <OverlayTrigger overlay={<Tooltip>{t('waitlist.exam_pdf.button')}</Tooltip>}>
+                <Button onClick={downloadExamsPDF}>
+                    <img src="/pdf.svg" height="20" alt={t('waitlist.exam_pdf.image.alt')} />
+                </Button>
+            </OverlayTrigger>
         );
     }
 }
