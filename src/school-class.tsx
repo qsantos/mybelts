@@ -188,6 +188,7 @@ interface SchoolClassExamsPDFButtonProps {
 export function SchoolClassExamsPDFButton(props: SchoolClassExamsPDFButtonProps): ReactElement {
     const { school_class, setErrorMessage } = props;
 
+    const { t } = useTranslation();
     const [in_process, setIn_process] = useState(false);
 
     function downloadExamsPDF() {
@@ -223,7 +224,7 @@ export function SchoolClassExamsPDFButton(props: SchoolClassExamsPDFButtonProps)
     } else {
         return (
             <Button onClick={downloadExamsPDF}>
-                <img src="/pdf.svg" height="20" />
+                <img src="/pdf.svg" height="20" alt={t('waitlist.exam_pdf.image.alt')} />
             </Button>
         );
     }
@@ -278,7 +279,7 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElem
     return (
         <Alert>
             <Alert.Heading>
-                <img src="/evaluation.png" height="30" />
+                <img src="/evaluation.png" height="30" alt={t('waitlist.image.alt')} />
                 {' '}
                 {t('waitlist.title', {
                     student_count: sorted_waitlists.length,

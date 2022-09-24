@@ -643,7 +643,7 @@ export function ClassLevelExamBulkUpload(props: ClassLevelExamBulkUploadProps): 
             margin: '2em',
             fontFamily: 'sans',
         }}>
-            <img src="/upload.svg" height="80" />
+            <img src="/upload.svg" height="80" alt={t('exam.bulk_upload.image.alt')} />
             <br />
             {t('exam.bulk_upload.prompt')}
         </div>
