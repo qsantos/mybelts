@@ -19,6 +19,7 @@
     },
     "plugins": [
         "react",
+        "react-hooks",
         "jsx-a11y",
         "@typescript-eslint"
     ],
@@ -42,6 +43,8 @@
         "no-shadow": [
             "error"
         ],
-        "eqeqeq": "warn"
+        "eqeqeq": "warn",
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn"
     }
 }

@@ -34,7 +34,7 @@ import { formatDatetime, getAPIError } from './lib';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 
-import { AdminOnly, LoginFormWidget, LogoutButton, LoginContext, is_admin } from './auth';
+import { AdminOnly, LoginFormWidget, LogoutButton, LoginContext } from './auth';
 import { CreateUserButton, UserListing } from './user';
 import { CreateSkillDomainButton, SkillDomainListing } from './skill-domain';
 import { CreateBeltButton, BeltListing } from './belt';
@@ -42,6 +42,15 @@ import { CreateClassLevelButton, EditClassLevelButton, DeleteClassLevelButton, C
 import { CreateSchoolClassButton, EditSchoolClassButton, DeleteSchoolClassButton, SchoolClassListing, SchoolClassWaitlist, ManageClassWaitlist } from './school-class';
 import { CreateStudentButton, EditStudentButton, DeleteStudentButton, UpdateStudentRanks, StudentBelts } from './student';
 import { CreateEvaluationButton, EvaluationListing, EvaluationGrid  } from './evaluation';
+
+class AssertionError extends Error {
+}
+
+function assert(condition: boolean, msg?: string): asserts condition {
+    if (!condition) {
+        throw new AssertionError(msg);
+    }
+}
 
 function BreadcrumbItem({ children, href, active }: { children: ReactNode, href?: string, active?: boolean }) {
     if (href) {
@@ -83,14 +92,6 @@ function HomeView() {
 }
 
 function I18nView() {
-    // NOTE: this component is only rendered when logged in; the early return
-    // will either always happen or never happen, *except* when switching
-    // between admin and non-admin users in a single session; I do not care
-    // about that use case
-    if (!is_admin()) {
-        return null;
-    }
-
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [eventList, setEventList] = useState<null | MissingI18nKeyEventList>(null);
@@ -146,14 +147,6 @@ function I18nView() {
 }
 
 function UsersView() {
-    // NOTE: this component is only rendered when logged in; the early return
-    // will either always happen or never happen, *except* when switching
-    // between admin and non-admin users in a single session; I do not care
-    // about that use case
-    if (!is_admin()) {
-        return null;
-    }
-
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [userList, setUserList] = useState<null | UserList>(null);
@@ -300,14 +293,6 @@ function SkillDomainsView() {
 }
 
 function ClassLevelsView() {
-    // NOTE: this component is only rendered when logged in; the early return
-    // will either always happen or never happen, *except* when switching
-    // between admin and non-admin users in a single session; I do not care
-    // about that use case
-    if (!is_admin()) {
-        return null;
-    }
-
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [classLevelList, setClassLevelList] = useState<null | ClassLevelList>(null);
@@ -353,21 +338,8 @@ function ClassLevelsView() {
 }
 
 function ClassLevelView() {
-    // NOTE: this component is only rendered when logged in; the early return
-    // will either always happen or never happen, *except* when switching
-    // between admin and non-admin users in a single session; I do not care
-    // about that use case
-    if (!is_admin()) {
-        return null;
-    }
-
-    const params = useParams();
-    if (params.class_level_id === undefined) {
-        // should not happen
-        console.error('Attribute class_level_id of <ClassLevelView /> is undefined');
-        return null;
-    }
-    const class_level_id = params.class_level_id;
+    const { class_level_id } = useParams();
+    assert(class_level_id !== undefined);
 
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
@@ -471,19 +443,12 @@ function ClassLevelView() {
 }
 
 function SchoolClassView() {
-    const params = useParams();
-    if (params.school_class_id === undefined) {
-        // should not happen
-        console.error('Attribute school_class_id of <ClassLevelView /> is undefined');
-        return null;
-    }
-    const school_class_id = params.school_class_id;
+    const { school_class_id } = useParams();
+    assert(school_class_id !== undefined);
 
     const loginInfo = React.useContext(LoginContext);
-    if (loginInfo === null) {
-        // not connected
-        return null;
-    }
+    assert(loginInfo !== null);
+
     const canUseWaitlist = loginInfo.user.is_admin;
 
     const { t } = useTranslation();
@@ -503,7 +468,7 @@ function SchoolClassView() {
                 .then(setWaitlistEntryList)
                 .catch(error => { setErrorMessage(getAPIError(error)); });
         }
-    }, [school_class_id]);
+    }, [school_class_id, canUseWaitlist]);
 
     if (studentList === null || (canUseWaitlist && waitlistEntryList === null)) {
         return <>
@@ -599,9 +564,7 @@ function StudentWidget(props: StudentWidgetProps) {
     const { student_id } = props;
 
     const loginInfo = React.useContext(LoginContext);
-    if (loginInfo === null) {
-        return null;
-    }
+    assert(loginInfo !== null);
     const canUseWaitlist = loginInfo.user.is_admin || loginInfo.student?.id === student_id;
 
     const { t } = useTranslation();
@@ -621,7 +584,7 @@ function StudentWidget(props: StudentWidgetProps) {
                 .then(setWaitlistEntryList)
                 .catch(error => { setErrorMessage(getAPIError(error)); });
         }
-    }, [student_id]);
+    }, [canUseWaitlist, student_id]);
 
     if (evaluationList === null || (canUseWaitlist && waitlistEntryList === null)) {
         return <>
@@ -795,13 +758,13 @@ function App() {
     return <Routes>
         <Route path="/" element={<Layout />}>
             <Route path="" element={<HomeView />} />
-            <Route path="i18n" element={<I18nView />} />
-            <Route path="users" element={<UsersView />} />
+            <Route path="i18n" element={<AdminOnly><I18nView /></AdminOnly>} />
+            <Route path="users" element={<AdminOnly><UsersView /></AdminOnly>} />
             <Route path="belts" element={<BeltsView />} />
             <Route path="skill-domains" element={<SkillDomainsView />} />
             <Route path="class-levels">
-                <Route index element={<ClassLevelsView />} />
-                <Route path=":class_level_id" element={<ClassLevelView />} />
+                <Route index element={<AdminOnly><ClassLevelsView /></AdminOnly>} />
+                <Route path=":class_level_id" element={<AdminOnly><ClassLevelView /></AdminOnly>} />
             </Route>
             <Route path="school-classes/:school_class_id" element={<SchoolClassView />} />
             <Route path="students/:student_id" element={<StudentView />} />

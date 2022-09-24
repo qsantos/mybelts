@@ -243,14 +243,14 @@ interface SchoolClassWaitlistProps {
 export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElement | null) {
     const { school_class, students, skill_domains, belts, waitlist_entries } = props;
 
-    if (waitlist_entries.length === 0) {
-        return null;
-    }
-
     const { t } = useTranslation();
     const navigate = useNavigate();
 
     const [errorMessage, setErrorMessage] = useState('');
+
+    if (waitlist_entries.length === 0) {
+        return null;
+    }
 
     const belt_by_id = Object.fromEntries(belts.map(belt => [belt.id, belt]));
     const skill_domain_by_id = Object.fromEntries(skill_domains.map(skill_domain => [skill_domain.id, skill_domain]));

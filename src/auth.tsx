@@ -13,11 +13,6 @@ import { getAPIError } from './lib';
 
 export const LoginContext = React.createContext<LoginInfo | null>(null);
 
-export function is_admin(): boolean {
-    const loginInfo = React.useContext(LoginContext);
-    return loginInfo !== null && loginInfo.user.is_admin;
-}
-
 interface AdminOnlyProps {
     children: ReactNode | ReactNode[];
 }

@@ -9,7 +9,7 @@ import Nav from 'react-bootstrap/Nav';
 import { ColumnDef } from '@tanstack/react-table';
 
 import { Belt, SkillDomain, Student, Evaluation, EvaluationsService, SchoolClassStudentBeltsStudentBelts } from './api';
-import { LoginContext, is_admin } from './auth';
+import { LoginContext } from './auth';
 import { BeltIcon } from './belt';
 import { formatDate, formatDatetime } from './lib';
 import { ModalButton } from './modal-button';
@@ -211,9 +211,13 @@ interface EvaluationListingProps {
     setEvaluations: (evaluations: Evaluation[]) => void;
 }
 
-export function EvaluationListing(props: EvaluationListingProps): ReactElement {
+export function EvaluationListing(props: EvaluationListingProps): (ReactElement | null) {
     const { skill_domains, belts, student, evaluations, setEvaluations } = props;
     const { t } = useTranslation();
+    const loginInfo = React.useContext(LoginContext);
+    if (!loginInfo) {
+        return null;
+    }
 
     const skill_domain_by_id = Object.fromEntries(
         skill_domains.map(skill_domain => [skill_domain.id, skill_domain])
@@ -286,7 +290,7 @@ export function EvaluationListing(props: EvaluationListingProps): ReactElement {
         },
     ];
 
-    if (is_admin()) {
+    if (loginInfo.user.is_admin) {
         columns.push({
             id: 'actions',
             header: t('evaluation.list.actions.title'),
@@ -414,7 +418,7 @@ export function EvaluationGrid(props: EvaluationGridProps): (ReactElement | null
 
     const sorting = [];
 
-    if (is_admin()) {
+    if (loginInfo.user.is_admin) {
         sorting.push({
             id: 'rank',
             desc: false,
