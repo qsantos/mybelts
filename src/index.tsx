@@ -435,10 +435,7 @@ function ClassLevelView() {
                 setSchoolClassList({ ...schoolClassList, exams: [...exams, new_exam]});
             }}
             changedCallback={changed_exam => {
-                console.log('ok');
                 const index = exams.findIndex(exam => exam.id == changed_exam.id);
-                console.log(index);
-                console.log(changed_exam);
                 if (index === null) {
                     return;
                 }
