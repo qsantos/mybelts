@@ -33,5 +33,5 @@ source env/bin/activate
 pip install -r requirements.txt
 alembic upgrade head
 pkill gunicorn || true
-gunicorn --daemon --workers=1 --worker-class=gevent --bind=0.0.0.0:20684 'app:create_app()'
+gunicorn --daemon --workers=1 --worker-class=gevent --bind=0.0.0.0:20684 'app:create_app()' --error-logfile ~/mybelts-error.log
 EOF
