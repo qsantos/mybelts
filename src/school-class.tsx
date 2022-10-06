@@ -645,7 +645,7 @@ export function ManageClassWaitlist(props: ManageClassWaitlistProps): ReactEleme
             <Modal.Header>
                 <Modal.Title>{t(i18nPrefix + '.title', i18nArgs)}</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="pt-0">
                 {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
                 <SortTable data={students} columns={columns} initialSorting={sorting} />
             </Modal.Body>
