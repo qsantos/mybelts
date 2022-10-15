@@ -2,7 +2,7 @@ import logging
 from time import sleep
 from typing import Any
 
-from flask import Flask, Response, request, send_file
+from flask import Flask, Response, request, send_file, send_from_directory
 
 from mybelts.api import blueprint as api_blueprint
 from mybelts.schema import HTTPRequest, session_context
@@ -27,6 +27,10 @@ def create_app() -> Flask:
     @app.route('/i18n')
     def home(x: str = '', y: str = '', z: str = '') -> Any:
         return send_file('build/index.html')
+
+    @app.route('/.well-known/<path:path>')
+    def well_known(path: str) -> Any:
+        return send_from_directory('.well-known', path)
 
     if app.debug:
         logging.basicConfig()
