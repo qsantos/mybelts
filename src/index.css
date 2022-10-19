@@ -48,3 +48,8 @@ tbody {
     /* cancel out the border set by bootstrap, since we want it on thead */
     border-top: none;
 }
+
+input[type=checkbox] {
+    width: 25px;
+    height: 25px;
+}
