@@ -1002,7 +1002,14 @@ class StudentWaitlistResource(Resource):
     def post(self, student_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
-            authorize(me, me.student is not None and me.student.id == student_id)
+            authorize(
+                me,
+                (
+                    me.student is not None and
+                    me.student.id == student_id and
+                    me.student.can_register_to_waitlist
+                ),
+            )
             student = session.query(Student).get(student_id)
             if student is None:
                 abort(404, f'Student {student_id} not found')
@@ -1441,7 +1448,14 @@ class WaitlistResource(Resource):
             waitlist_entry = session.query(WaitlistEntry).get(waitlist_id)
             if waitlist_entry is None:
                 abort(404, f'Waitlist entry {waitlist_id} not found')
-            authorize(me, me.student is not None and me.student.id == waitlist_entry.student_id)
+            authorize(
+                me,
+                (
+                    me.student is not None and
+                    me.student.id == waitlist_entry.student_id and
+                    me.student.can_register_to_waitlist
+                ),
+            )
             session.query(WaitlistEntry).filter(WaitlistEntry.id == waitlist_id).delete()
             session.commit()
             return None, 204

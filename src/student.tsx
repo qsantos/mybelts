@@ -359,7 +359,7 @@ export function StudentBelts(props: StudentBeltsProps): ReactElement {
                 <tr>
                     <th>{t('student.belts.skill_domain.title')}</th>
                     <th>{t('student.belts.achieved_belt.title')}</th>
-                    {canUseWaitlist &&
+                    {canUseWaitlist && student.can_register_to_waitlist &&
                         <th>{t('student.belts.actions.title')}</th>
                     }
                 </tr>
@@ -381,19 +381,21 @@ export function StudentBelts(props: StudentBeltsProps): ReactElement {
                             <tr key={skill_domain.id} className="skill-domain-on-waitlist">
                                 <th>{skill_domain.name}</th>
                                 <td>{belt ? <BeltIcon belt={belt} /> : t('student.belts.no_belt')}</td>
-                                <td>
-                                    <RemoveFromWaitlistButton
-                                        student={student}
-                                        skill_domain={skill_domain}
-                                        belt={next_belt}
-                                        waitlist_entry={waitlist_entry}
-                                        removedCallback={() => {
-                                            const new_waitlist_entries = [...waitlist_entries];
-                                            new_waitlist_entries.splice(index, 1);
-                                            setWaitlistEntries(new_waitlist_entries);
-                                        }}
-                                    />
-                                </td>
+                                {student.can_register_to_waitlist &&
+                                    <td>
+                                        <RemoveFromWaitlistButton
+                                            student={student}
+                                            skill_domain={skill_domain}
+                                            belt={next_belt}
+                                            waitlist_entry={waitlist_entry}
+                                            removedCallback={() => {
+                                                const new_waitlist_entries = [...waitlist_entries];
+                                                new_waitlist_entries.splice(index, 1);
+                                                setWaitlistEntries(new_waitlist_entries);
+                                            }}
+                                        />
+                                    </td>
+                                }
                             </tr>
                         );
                     } else {
@@ -401,16 +403,18 @@ export function StudentBelts(props: StudentBeltsProps): ReactElement {
                             <tr key={skill_domain.id}>
                                 <th>{skill_domain.name}</th>
                                 <td>{belt ? <BeltIcon belt={belt} /> : t('student.belts.no_belt')}</td>
-                                <td>
-                                    <AddToWaitlistButton
-                                        student={student}
-                                        skill_domain={skill_domain}
-                                        belt={next_belt}
-                                        addedCallback={new_waitlist_entry => {
-                                            setWaitlistEntries([...waitlist_entries, new_waitlist_entry]);
-                                        }}
-                                    />
-                                </td>
+                                {student.can_register_to_waitlist &&
+                                    <td>
+                                        <AddToWaitlistButton
+                                            student={student}
+                                            skill_domain={skill_domain}
+                                            belt={next_belt}
+                                            addedCallback={new_waitlist_entry => {
+                                                setWaitlistEntries([...waitlist_entries, new_waitlist_entry]);
+                                            }}
+                                        />
+                                    </td>
+                                }
                             </tr>
                         );
                     }
