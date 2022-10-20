@@ -102,6 +102,7 @@ api_model_student = api.model('Student', {
     'school_class_id': fields.Integer(example=42, required=True),
     'display_name': fields.String(example='John Doe', required=True),
     'rank': fields.Integer(example=7, required=True),
+    'can_register_to_waitlist': fields.Boolean(example=False, required=True),
 })
 
 api_model_belt = api.model('Belt', {
@@ -830,6 +831,7 @@ class StudentsResource(Resource):
         'username': fields.String(example='tartempion', required=True),
         'password': fields.String(example='correct horse battery staple', required=True),
         'display_name': fields.String(example='John Doe', required=True),
+        'can_register_to_waitlist': fields.Boolean(example=False, required=True),
     })
 
     @api.expect(post_model, validate=True)
@@ -851,6 +853,7 @@ class StudentsResource(Resource):
                 school_class_id=school_class_id,
                 user=user,
                 display_name=request.json['display_name'],
+                can_register_to_waitlist=request.json['can_register_to_waitlist'],
             )
             session.add(student)
             session.commit()
@@ -865,6 +868,7 @@ class StudentsResource(Resource):
         'id': fields.Integer(example=42, required=True),
         'display_name': fields.String(example='John Doe'),
         'rank': fields.Integer(example=7),
+        'can_register_to_waitlist': fields.Boolean(example=False),
     })
     put_model = api.model('StudentsPut', {
         'students': fields.List(fields.Nested(put_model_students, required=True)),
@@ -920,6 +924,7 @@ class StudentResource(Resource):
         'username': fields.String(example='tartempion'),
         'password': fields.String(example='correct horse battery staple'),
         'rank': fields.Integer(example=7),
+        'can_register_to_waitlist': fields.Boolean(example=False),
     })
 
     @api.expect(put_model, validate=True)
@@ -935,6 +940,9 @@ class StudentResource(Resource):
             display_name = request.json.get('display_name')
             if display_name is not None:
                 student.display_name = display_name
+            can_register_to_waitlist = request.json.get('can_register_to_waitlist')
+            if can_register_to_waitlist is not None:
+                student.can_register_to_waitlist = can_register_to_waitlist
             username = request.json.get('username')
             if username is not None:
                 user.username = username

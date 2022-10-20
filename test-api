@@ -555,6 +555,7 @@ def add_students(school_class_ids: List[int]) -> List[int]:
             'display_name': display_name,
             'username': username,
             'password': password,
+            'can_register_to_waitlist': False,
         })
         res.raise_for_status()
         j = res.json()

@@ -159,6 +159,7 @@ class Student(Base):
     school_class_id = Column(Integer, ForeignKey('school_class.id', ondelete='CASCADE'), nullable=False)
     display_name = Column(String, nullable=False, index=True)
     rank = Column(Integer, nullable=False, index=True, server_default='0')
+    can_register_to_waitlist = Column(Boolean, index=True, nullable=False)
 
     user = relationship(
         'User',
@@ -182,6 +183,7 @@ class Student(Base):
             'school_class_id': self.school_class_id,
             'display_name': self.display_name,
             'rank': self.rank,
+            'can_register_to_waitlist': self.can_register_to_waitlist,
         }
 
 

@@ -34,26 +34,34 @@ export function CreateStudentButton(props : CreateStudentButtonProps): ReactElem
                     display_name: {value: string};
                     username: {value: string};
                     password: {value: string};
+                    can_register_to_waitlist: {checked: boolean};
                 };
                 return StudentsService.postStudentsResource({
                     school_class_id: school_class.id,
                     display_name: typed_form.display_name.value,
                     username: typed_form.username.value,
                     password: typed_form.password.value,
+                    can_register_to_waitlist: typed_form.can_register_to_waitlist.checked,
                 });
             }}
             onResponse={({ student }) => createdCallback?.(student)}
         >
             <Form.Group controlId="display_name">
                 <Form.Label>{t('student.add_edit.display_name.title')}</Form.Label>
-                <Form.Control type="text" placeholder={t('student.add_edit.display_name.placeholder')}/>
+                <Form.Control type="text" placeholder={t('student.add_edit.display_name.placeholder')} />
                 <Form.Text className="text-muted">
                     {t('student.add_edit.display_name.help')}
                 </Form.Text>
             </Form.Group>
+            <Form.Group controlId="can_register_to_waitlist">
+                <Form.Check label={t('student.add_edit.can_register_to_waitlist.title')} />
+                <Form.Text className="text-muted">
+                    {t('student.add_edit.can_register_to_waitlist.help')}
+                </Form.Text>
+            </Form.Group>
             <Form.Group controlId="username">
                 <Form.Label>{t('student.add_edit.username.title')}</Form.Label>
-                <Form.Control type="text" placeholder={t('student.add_edit.username.placeholder')}/>
+                <Form.Control type="text" placeholder={t('student.add_edit.username.placeholder')} />
                 <Form.Text className="text-muted">
                     {t('student.add_edit.username.help')}
                 </Form.Text>
@@ -88,12 +96,14 @@ export function EditStudentButton(props : EditStudentButtonProps): ReactElement 
                     username: {value: string};
                     password: {value: string};
                     rank: {value: string};
+                    can_register_to_waitlist: {checked: boolean};
                 };
                 return StudentsService.putStudentResource(student.id, {
                     display_name: typed_form.display_name.value,
                     rank: parseInt(typed_form.rank.value),
                     username: typed_form.username.value,
                     password: typed_form.password.value,
+                    can_register_to_waitlist: typed_form.can_register_to_waitlist.checked,
                 });
             }}
             onResponse={({ student: changed_student }) => changedCallback?.(changed_student)}
@@ -103,6 +113,12 @@ export function EditStudentButton(props : EditStudentButtonProps): ReactElement 
                 <Form.Control type="text" placeholder={t('student.add_edit.display_name.placeholder')} defaultValue={student.display_name} />
                 <Form.Text className="text-muted">
                     {t('student.add_edit.display_name.help')}
+                </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="can_register_to_waitlist">
+                <Form.Check label={t('student.add_edit.can_register_to_waitlist.title')} defaultChecked={student.can_register_to_waitlist} />
+                <Form.Text className="text-muted">
+                    {t('student.add_edit.can_register_to_waitlist.help')}
                 </Form.Text>
             </Form.Group>
             <Form.Group controlId="rank">
