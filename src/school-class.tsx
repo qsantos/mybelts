@@ -414,13 +414,13 @@ export function SchoolClassWaitlist(props: SchoolClassWaitlistProps): (ReactElem
                                     <td><BeltIcon belt={belt} height={20} /></td>
                                     <td>
                                         <input type="hidden" id="waitlist_entry_id" value={id} />
-                                        <input type="checkbox" id="completed" defaultChecked />
+                                        <input type="checkbox" id="completed" className="big-checkbox" defaultChecked />
                                     </td>
                                     <td>
                                         <input type="date" id="date" defaultValue={new Date().toISOString().slice(0, 10)} />
                                     </td>
                                     <td>
-                                        <input type="checkbox" id="success" />
+                                        <input type="checkbox" id="success" className="big-checkbox" />
                                     </td>
                                 </tr>;
                             });

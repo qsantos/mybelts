@@ -49,7 +49,7 @@ tbody {
     border-top: none;
 }
 
-input[type=checkbox] {
+.big-checkbox {
     width: 25px;
     height: 25px;
 }
