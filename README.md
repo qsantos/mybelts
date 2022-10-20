@@ -46,10 +46,4 @@ npx eslint src/*tsx
 
 ## Updating TypeScript Models for the API
 
-Assuming the API is listening locally on port 80, run the following commands.
-
-```
-wget http://127.0.0.1/api/swagger.json -O - | python3 -m json.tool --sort-keys >swagger.json
-npx openapi-typescript-codegen --input swagger.json --request request.ts -o src/api
-rm -f swagger.json
-```
+Assuming the API is listening locally on port 80, just run `./refresh-api-schema`.

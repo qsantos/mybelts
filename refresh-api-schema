@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+trap 'rm -f swagger.json' EXIT SIGINT SIGTERM
+wget http://127.0.0.1:5000/api/swagger.json -O - | python3 -m json.tool --sort-keys >swagger.json
+npx openapi-typescript-codegen --input swagger.json --request request.ts -o src/api
