@@ -210,7 +210,7 @@ async function getResponseBody(response: Response): Promise<any> {
     return;
 }
 
-function catchErrors(options: ApiRequestOptions, result: ApiResult): void {
+function catchErrors(options: ApiRequestOptions, result: ApiResult): boolean {
     const errors: Record<number, string> = {
         400: 'Bad Request',
         401: 'Unauthorized',
@@ -225,7 +225,7 @@ function catchErrors(options: ApiRequestOptions, result: ApiResult): void {
     // custom change: use callback function
     const callback = (OpenAPI as OpenAPIWithCallback).ERROR_CALLBACK;
     if (callback !== undefined && callback(result.status)) {
-        return;
+        return true;
     }
 
     const error = errors[result.status];
@@ -236,6 +236,8 @@ function catchErrors(options: ApiRequestOptions, result: ApiResult): void {
     if (!result.ok) {
         throw new ApiError(result, 'Generic Error');
     }
+
+    return false;
 }
 
 /**
@@ -265,9 +267,11 @@ export function request<T>(options: ApiRequestOptions): CancelablePromise<T> {
                     body: responseHeader || responseBody,
                 };
 
-                catchErrors(options, result);
+                const handled = catchErrors(options, result);
 
-                resolve(result.body);
+                if (! handled) {
+                    resolve(result.body);
+                }
             }
         } catch (error) {
             reject(error);

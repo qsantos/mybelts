@@ -269,7 +269,9 @@ export function request<T>(options: ApiRequestOptions): CancelablePromise<T> {
 
                 const handled = catchErrors(options, result);
 
+                if (! handled) {
                     resolve(result.body);
+                }
             }
         } catch (error) {
             reject(error);
