@@ -8,18 +8,18 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import { StudentsService, EvaluationList, WaitlistEntryList } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly, LoginContext } from './auth';
-import { StudentBelts } from './StudentBelts';
-import { StudentDeleteButton } from './StudentDeleteButton';
-import { StudentEditButton } from './StudentEditButton';
-import { EvaluationListing } from './EvaluationListing';
-import { EvaluationCreateButton } from './EvaluationCreateButton';
+import StudentBelts from './StudentBelts';
+import StudentDeleteButton from './StudentDeleteButton';
+import StudentEditButton from './StudentEditButton';
+import EvaluationListing from './EvaluationListing';
+import EvaluationCreateButton from './EvaluationCreateButton';
 import { assert, BreadcrumbItem, Loader } from './index';
 
 interface Props {
     student_id: number;
 }
 
-export function StudentWidget(props: Props): ReactElement {
+export default function StudentWidget(props: Props): ReactElement {
     const { student_id } = props;
 
     const loginInfo = React.useContext(LoginContext);

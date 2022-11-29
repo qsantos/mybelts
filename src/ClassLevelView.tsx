@@ -7,15 +7,15 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import { ClassLevelsService, SchoolClassList } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly } from './auth';
-import { ClassLevelExamBulkUpload } from './ClassLevelExamBulkUpload';
-import { ClassLevelExams } from './ClassLevelExams';
-import { ClassLevelDeleteButton } from './ClassLevelDeleteButton';
-import { ClassLevelEditButton } from './ClassLevelEditButton';
-import { SchoolClassListing } from './SchoolClassListing';
-import { SchoolClassCreateButton } from './SchoolClassCreateButton';
+import ClassLevelExamBulkUpload from './ClassLevelExamBulkUpload';
+import ClassLevelExams from './ClassLevelExams';
+import ClassLevelDeleteButton from './ClassLevelDeleteButton';
+import ClassLevelEditButton from './ClassLevelEditButton';
+import SchoolClassListing from './SchoolClassListing';
+import SchoolClassCreateButton from './SchoolClassCreateButton';
 import { assert, BreadcrumbItem, Loader } from './index';
 
-export function ClassLevelView(): ReactElement {
+export default function ClassLevelView(): ReactElement {
     const { class_level_id } = useParams();
     assert(class_level_id !== undefined);
 

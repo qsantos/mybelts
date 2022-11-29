@@ -6,11 +6,11 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import { SkillDomainList, SkillDomainsService } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly } from './auth';
-import { SkillDomainListing } from './SkillDomainListing';
-import { SkillDomainCreateButton } from './SkillDomainCreateButton';
+import SkillDomainListing from './SkillDomainListing';
+import SkillDomainCreateButton from './SkillDomainCreateButton';
 import { BreadcrumbItem, Loader } from './index';
 
-export function SkillDomainsView(): ReactElement {
+export default function SkillDomainsView(): ReactElement {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [skillDomainList, setSkillDomainList] =

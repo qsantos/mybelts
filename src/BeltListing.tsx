@@ -5,10 +5,10 @@ import Table from 'react-bootstrap/Table';
 import { AdminOnly } from './auth';
 
 import { Belt } from './api';
-import { BeltIcon } from './BeltIcon';
-import { BeltMoveButton } from './BeltMoveButton';
-import { BeltEditButton } from './BeltEditButton';
-import { BeltDeleteButton } from './BeltDeleteButton';
+import BeltIcon from './BeltIcon';
+import BeltMoveButton from './BeltMoveButton';
+import BeltEditButton from './BeltEditButton';
+import BeltDeleteButton from './BeltDeleteButton';
 
 interface Props {
     belts: Belt[];
@@ -16,7 +16,7 @@ interface Props {
     setErrorMessage: (errorMessage: string) => void;
 }
 
-export function BeltListing(props: Props): ReactElement {
+export default function BeltListing(props: Props): ReactElement {
     const { belts, setBelts, setErrorMessage } = props;
     const { t } = useTranslation();
 

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Form from 'react-bootstrap/Form';
 
 import { ClassLevel, SchoolClass, Student, StudentsService } from './api';
-import { ModalButton } from './ModalButton';
+import ModalButton from './ModalButton';
 
 interface Props {
     school_class: SchoolClass;
@@ -12,7 +12,7 @@ interface Props {
     createdCallback?: (student: Student) => void;
 }
 
-export function StudentCreateButton(props: Props): ReactElement {
+export default function StudentCreateButton(props: Props): ReactElement {
     const { school_class, class_level, createdCallback } = props;
     const { t } = useTranslation();
 

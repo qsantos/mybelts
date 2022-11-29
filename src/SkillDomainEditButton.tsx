@@ -4,14 +4,14 @@ import { useTranslation } from 'react-i18next';
 import Form from 'react-bootstrap/Form';
 
 import { SkillDomain, SkillDomainsService } from './api';
-import { ModalButton } from './ModalButton';
+import ModalButton from './ModalButton';
 
 interface Props {
     skill_domain: SkillDomain;
     changedCallback?: (changed_skill_domain: SkillDomain) => void;
 }
 
-export function SkillDomainEditButton(props: Props): ReactElement {
+export default function SkillDomainEditButton(props: Props): ReactElement {
     const { skill_domain, changedCallback } = props;
     const { t } = useTranslation();
 

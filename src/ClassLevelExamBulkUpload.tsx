@@ -17,7 +17,7 @@ interface Props {
     createdCallback: (new_exam: Exam) => void;
 }
 
-export function ClassLevelExamBulkUpload(props: Props): ReactElement {
+export default function ClassLevelExamBulkUpload(props: Props): ReactElement {
     const { belts, skill_domains, class_level, createdCallback } = props;
     const { t } = useTranslation();
 

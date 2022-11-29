@@ -12,11 +12,11 @@ import {
     Student,
 } from './api';
 import { LoginContext } from './auth';
-import { BeltIcon } from './BeltIcon';
 import { formatDatetime } from './lib';
-import { SortTable } from './SortTable';
-import { StudentDeleteButton } from './StudentDeleteButton';
-import { StudentEditButton } from './StudentEditButton';
+import BeltIcon from './BeltIcon';
+import SortTable from './SortTable';
+import StudentDeleteButton from './StudentDeleteButton';
+import StudentEditButton from './StudentEditButton';
 
 interface Props {
     students: Student[];
@@ -26,7 +26,7 @@ interface Props {
     student_belts: SchoolClassStudentBeltsStudentBelts[];
 }
 
-export function EvaluationGrid(props: Props): ReactElement | null {
+export default function EvaluationGrid(props: Props): ReactElement | null {
     const { students, setStudents, skill_domains, belts, student_belts } =
         props;
     const { t } = useTranslation();

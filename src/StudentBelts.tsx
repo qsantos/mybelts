@@ -3,10 +3,10 @@ import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import Table from 'react-bootstrap/Table';
 
-import { BeltIcon } from './BeltIcon';
 import { Belt, Evaluation, SkillDomain, Student, WaitlistEntry } from './api';
-import { StudentAddToWaitlistButton } from './StudentAddToWaitlistButton';
-import { StudentRemoveFromWaitlistButton } from './StudentRemoveFromWaitlistButton';
+import BeltIcon from './BeltIcon';
+import StudentAddToWaitlistButton from './StudentAddToWaitlistButton';
+import StudentRemoveFromWaitlistButton from './StudentRemoveFromWaitlistButton';
 
 interface Props {
     skill_domains: SkillDomain[];
@@ -18,7 +18,7 @@ interface Props {
     setWaitlistEntries: (waitlist_entries: WaitlistEntry[]) => void;
 }
 
-export function StudentBelts(props: Props): ReactElement {
+export default function StudentBelts(props: Props): ReactElement {
     const {
         skill_domains,
         belts,

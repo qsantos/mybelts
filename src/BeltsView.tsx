@@ -6,11 +6,11 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import { BeltList, BeltsService } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly } from './auth';
-import { BeltListing } from './BeltListing';
-import { BeltCreateButton } from './BeltCreateButton';
+import BeltListing from './BeltListing';
+import BeltCreateButton from './BeltCreateButton';
 import { BreadcrumbItem, Loader } from './index';
 
-export function BeltsView(): ReactElement {
+export default function BeltsView(): ReactElement {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [beltList, setBeltList] = useState<null | BeltList>(null);

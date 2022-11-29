@@ -3,14 +3,14 @@ import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Belt, BeltsService } from './api';
-import { ModalButton } from './ModalButton';
+import ModalButton from './ModalButton';
 
 interface Props {
     belt: Belt;
     deletedCallback?: () => void;
 }
 
-export function BeltDeleteButton(props: Props): ReactElement {
+export default function BeltDeleteButton(props: Props): ReactElement {
     const { belt, deletedCallback } = props;
     const { t } = useTranslation();
 

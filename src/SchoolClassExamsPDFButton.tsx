@@ -9,12 +9,12 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { SchoolClass, SchoolClassesService } from './api';
 import { getAPIError } from './lib';
 
-export interface Props {
+interface Props {
     school_class: SchoolClass;
     setErrorMessage: (v: string) => void;
 }
 
-export function SchoolClassExamsPDFButton(props: Props): ReactElement {
+export default function SchoolClassExamsPDFButton(props: Props): ReactElement {
     const { school_class, setErrorMessage } = props;
 
     const { t } = useTranslation();

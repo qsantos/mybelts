@@ -11,7 +11,7 @@ interface Props {
     height?: number;
 }
 
-export function BeltIcon(props: Props): ReactElement {
+export default function BeltIcon(props: Props): ReactElement {
     const { belt, height } = props;
     return (
         <>

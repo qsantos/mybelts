@@ -5,11 +5,11 @@ import { ColumnDef } from '@tanstack/react-table';
 
 import { Belt, Evaluation, SkillDomain, Student } from './api';
 import { LoginContext } from './auth';
-import { BeltIcon } from './BeltIcon';
 import { formatDate } from './lib';
-import { SortTable } from './SortTable';
-import { EvaluationEditButton } from './EvaluationEditButton';
-import { EvaluationDeleteButton } from './EvaluationDeleteButton';
+import BeltIcon from './BeltIcon';
+import SortTable from './SortTable';
+import EvaluationEditButton from './EvaluationEditButton';
+import EvaluationDeleteButton from './EvaluationDeleteButton';
 
 interface Props {
     skill_domains: SkillDomain[];
@@ -19,7 +19,7 @@ interface Props {
     setEvaluations: (evaluations: Evaluation[]) => void;
 }
 
-export function EvaluationListing(props: Props): ReactElement | null {
+export default function EvaluationListing(props: Props): ReactElement | null {
     const { skill_domains, belts, student, evaluations, setEvaluations } =
         props;
     const { t } = useTranslation();

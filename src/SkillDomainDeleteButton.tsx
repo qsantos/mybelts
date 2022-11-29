@@ -3,14 +3,14 @@ import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SkillDomain, SkillDomainsService } from './api';
-import { ModalButton } from './ModalButton';
+import ModalButton from './ModalButton';
 
 interface Props {
     skill_domain: SkillDomain;
     deletedCallback?: () => void;
 }
 
-export function SkillDomainDeleteButton(props: Props): ReactElement {
+export default function SkillDomainDeleteButton(props: Props): ReactElement {
     const { skill_domain, deletedCallback } = props;
     const { t } = useTranslation();
 

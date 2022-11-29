@@ -8,11 +8,8 @@ import Form from 'react-bootstrap/Form';
 
 import { Belt, Exam, SkillDomain, ExamsService } from './api';
 import { getAPIError } from './lib';
-import {
-    ModalButton,
-    ModalButtonButton,
-    ModalButtonModal,
-} from './ModalButton';
+import ModalButton from './ModalButton';
+import { ModalButtonButton, ModalButtonModal } from './ModalButton';
 
 function download_exam(exam: Exam): Promise<void> {
     return ExamsService.getExamsResource(exam.id).then((blob: Blob) => {
@@ -43,7 +40,7 @@ interface Props {
     deletedCallback?: (exam_id: number) => void;
 }
 
-export function ClassLevelExamEditButton(props: Props): ReactElement {
+export default function ClassLevelExamEditButton(props: Props): ReactElement {
     const {
         exam,
         belt,

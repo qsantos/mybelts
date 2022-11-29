@@ -17,7 +17,7 @@ interface SortTableProps<T> {
     initialSorting?: SortingState;
 }
 
-export function SortTable<T>(props: SortTableProps<T>): ReactElement {
+export default function SortTable<T>(props: SortTableProps<T>): ReactElement {
     const { data, columns, initialSorting } = props;
 
     const [sorting, setSorting] = useState<SortingState>(initialSorting || []);

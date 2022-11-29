@@ -6,11 +6,11 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import { ClassLevelList, ClassLevelsService } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly } from './auth';
-import { ClassLevelListing } from './ClassLevelListing';
-import { ClassLevelCreateButton } from './ClassLevelCreateButton';
+import ClassLevelListing from './ClassLevelListing';
+import ClassLevelCreateButton from './ClassLevelCreateButton';
 import { BreadcrumbItem, Loader } from './index';
 
-export function ClassLevelsView(): ReactElement {
+export default function ClassLevelsView(): ReactElement {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [classLevelList, setClassLevelList] = useState<null | ClassLevelList>(

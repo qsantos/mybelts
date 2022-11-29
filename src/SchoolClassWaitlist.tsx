@@ -14,10 +14,10 @@ import {
     WaitlistEntry,
     WaitlistService,
 } from './api';
-import { BeltIcon } from './BeltIcon';
 import { joinArray } from './lib';
-import { ModalButton } from './ModalButton';
-import { SchoolClassExamsPDFButton } from './SchoolClassExamsPDFButton';
+import BeltIcon from './BeltIcon';
+import ModalButton from './ModalButton';
+import SchoolClassExamsPDFButton from './SchoolClassExamsPDFButton';
 
 interface Props {
     school_class: SchoolClass;
@@ -27,7 +27,7 @@ interface Props {
     waitlist_entries: WaitlistEntry[];
 }
 
-export function SchoolClassWaitlist(props: Props): ReactElement | null {
+export default function SchoolClassWaitlist(props: Props): ReactElement | null {
     const { school_class, students, skill_domains, belts, waitlist_entries } =
         props;
 

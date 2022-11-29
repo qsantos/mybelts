@@ -133,7 +133,9 @@ export function ModalButtonModal<T>(
     );
 }
 
-export function ModalButton<T>(props: ModalButtonProps<T>): ReactElement {
+export default function ModalButton<T>(
+    props: ModalButtonProps<T>
+): ReactElement {
     const [show, setShow] = useState(false);
 
     return (

@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 import Table from 'react-bootstrap/Table';
 
 import { Belt, ClassLevel, Exam, SkillDomain } from './api';
-import { BeltIcon } from './BeltIcon';
-import { ClassLevelExamEditButton } from './ClassLevelExamEditButton';
-import { ClassLevelExamUploadButton } from './ClassLevelExamUploadButton';
+import BeltIcon from './BeltIcon';
+import ClassLevelExamEditButton from './ClassLevelExamEditButton';
+import ClassLevelExamUploadButton from './ClassLevelExamUploadButton';
 
 interface Props {
     belts: Belt[];
@@ -18,7 +18,7 @@ interface Props {
     deletedCallback?: (exam_id: number) => void;
 }
 
-export function ClassLevelExams(props: Props): ReactElement {
+export default function ClassLevelExams(props: Props): ReactElement {
     const {
         belts,
         skill_domains,

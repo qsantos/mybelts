@@ -7,16 +7,16 @@ import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import { SchoolClassesService, StudentList, WaitlistEntryList } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly, LoginContext } from './auth';
-import { SchoolClassManageWaitlist } from './SchoolClassManageWaitlist';
-import { SchoolClassWaitlist } from './SchoolClassWaitlist';
-import { SchoolClassDeleteButton } from './SchoolClassDeleteButton';
-import { SchoolClassEditButton } from './SchoolClassEditButton';
-import { StudentUpdateRanks } from './StudentUpdateRanks';
-import { StudentCreateButton } from './StudentCreateButton';
-import { EvaluationGrid } from './EvaluationGrid';
+import SchoolClassManageWaitlist from './SchoolClassManageWaitlist';
+import SchoolClassWaitlist from './SchoolClassWaitlist';
+import SchoolClassDeleteButton from './SchoolClassDeleteButton';
+import SchoolClassEditButton from './SchoolClassEditButton';
+import StudentUpdateRanks from './StudentUpdateRanks';
+import StudentCreateButton from './StudentCreateButton';
+import EvaluationGrid from './EvaluationGrid';
 import { assert, BreadcrumbItem, Loader } from './index';
 
-export function SchoolClassView(): ReactElement {
+export default function SchoolClassView(): ReactElement {
     const { school_class_id } = useParams();
     assert(school_class_id !== undefined);
 

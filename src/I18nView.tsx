@@ -8,7 +8,7 @@ import { DefaultService, MissingI18nKeyEventList } from './api';
 import { getAPIError } from './lib';
 import { BreadcrumbItem, Loader } from './index';
 
-export function I18nView(): ReactElement {
+export default function I18nView(): ReactElement {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [eventList, setEventList] = useState<null | MissingI18nKeyEventList>(

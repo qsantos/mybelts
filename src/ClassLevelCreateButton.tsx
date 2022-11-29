@@ -4,13 +4,13 @@ import { useTranslation } from 'react-i18next';
 import Form from 'react-bootstrap/Form';
 
 import { ClassLevel, ClassLevelsService } from './api';
-import { ModalButton } from './ModalButton';
+import ModalButton from './ModalButton';
 
 interface Props {
     createdCallback?: (class_level: ClassLevel) => void;
 }
 
-export function ClassLevelCreateButton(props: Props): ReactElement {
+export default function ClassLevelCreateButton(props: Props): ReactElement {
     const { createdCallback } = props;
     const { t } = useTranslation();
 

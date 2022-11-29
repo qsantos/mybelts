@@ -11,7 +11,7 @@ import {
     Student,
     EvaluationsService,
 } from './api';
-import { ModalButton } from './ModalButton';
+import ModalButton from './ModalButton';
 
 interface Props {
     student: Student;
@@ -20,7 +20,7 @@ interface Props {
     createdCallback?: (belt_attempt: Evaluation) => void;
 }
 
-export function EvaluationCreateButton(props: Props): ReactElement {
+export default function EvaluationCreateButton(props: Props): ReactElement {
     const { student, skill_domains, belts, createdCallback } = props;
     const { t } = useTranslation();
 

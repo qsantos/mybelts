@@ -9,7 +9,7 @@ import {
     Student,
     EvaluationsService,
 } from './api';
-import { ModalButton } from './ModalButton';
+import ModalButton from './ModalButton';
 
 interface Props {
     student: Student;
@@ -19,7 +19,7 @@ interface Props {
     deletedCallback?: () => void;
 }
 
-export function EvaluationDeleteButton(props: Props): ReactElement {
+export default function EvaluationDeleteButton(props: Props): ReactElement {
     const { student, skill_domain, belt, evaluation, deletedCallback } = props;
     const { t } = useTranslation();
 

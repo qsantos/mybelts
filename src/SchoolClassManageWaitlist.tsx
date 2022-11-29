@@ -18,8 +18,8 @@ import {
     WaitlistEntry,
     WaitlistEntryList,
 } from './api';
-import { SortTable } from './SortTable';
-import { SchoolClassManageWaitlistButton } from './SchoolClassManageWaitlistButton';
+import SortTable from './SortTable';
+import SchoolClassManageWaitlistButton from './SchoolClassManageWaitlistButton';
 
 interface Props {
     class_level: ClassLevel;
@@ -36,7 +36,7 @@ interface Props {
     ) => void;
 }
 
-export function SchoolClassManageWaitlist(props: Props): ReactElement {
+export default function SchoolClassManageWaitlist(props: Props): ReactElement {
     const {
         class_level,
         school_class,

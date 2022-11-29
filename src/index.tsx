@@ -22,15 +22,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 
 import { AdminOnly, LoginFormWidget, LogoutButton, LoginContext } from './auth';
-import { I18nView } from './I18nView';
-import { UsersView } from './UsersView';
-import { BeltsView } from './BeltsView';
-import { SkillDomainsView } from './SkillDomainsView';
-import { ClassLevelsView } from './ClassLevelsView';
-import { ClassLevelView } from './ClassLevelView';
-import { SchoolClassView } from './SchoolClassView';
-import { StudentWidget } from './StudentWidget';
-import { StudentView } from './StudentView';
+import I18nView from './I18nView';
+import UsersView from './UsersView';
+import BeltsView from './BeltsView';
+import SkillDomainsView from './SkillDomainsView';
+import ClassLevelsView from './ClassLevelsView';
+import ClassLevelView from './ClassLevelView';
+import SchoolClassView from './SchoolClassView';
+import StudentWidget from './StudentWidget';
+import StudentView from './StudentView';
 
 class AssertionError extends Error {}
 

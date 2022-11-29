@@ -4,15 +4,15 @@ import { useTranslation } from 'react-i18next';
 import Table from 'react-bootstrap/Table';
 
 import { User } from './api';
-import { UserEditButton } from './UserEditButton';
-import { UserDeleteButton } from './UserDeleteButton';
+import UserEditButton from './UserEditButton';
+import UserDeleteButton from './UserDeleteButton';
 
 interface Props {
     users: User[];
     setUsers: (users: User[]) => void;
 }
 
-export function UserListing(props: Props): ReactElement {
+export default function UserListing(props: Props): ReactElement {
     const { users, setUsers } = props;
     const { t } = useTranslation();
     return (

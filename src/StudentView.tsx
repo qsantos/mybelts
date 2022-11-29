@@ -1,9 +1,9 @@
 import { useParams } from 'react-router-dom';
 import React from 'react';
 import { ReactElement } from 'react';
-import { StudentWidget } from './StudentWidget';
+import StudentWidget from './StudentWidget';
 
-export function StudentView(): ReactElement {
+export default function StudentView(): ReactElement {
     const params = useParams();
     if (params.student_id === undefined) {
         // should not happen

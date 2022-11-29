@@ -1,7 +1,6 @@
 import React from 'react';
 import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BeltIcon } from './BeltIcon';
 
 import {
     Belt,
@@ -10,7 +9,8 @@ import {
     WaitlistEntry,
     StudentsService,
 } from './api';
-import { ModalButton } from './ModalButton';
+import BeltIcon from './BeltIcon';
+import ModalButton from './ModalButton';
 
 interface Props {
     student: Student;
@@ -19,7 +19,7 @@ interface Props {
     addedCallback: (waitlist_entry: WaitlistEntry) => void;
 }
 
-export function StudentAddToWaitlistButton(props: Props): ReactElement {
+export default function StudentAddToWaitlistButton(props: Props): ReactElement {
     const { student, skill_domain, belt, addedCallback } = props;
     const { t } = useTranslation();
 

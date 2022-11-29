@@ -5,11 +5,11 @@ import Alert from 'react-bootstrap/Alert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import { UserList, UsersService } from './api';
 import { getAPIError } from './lib';
-import { UserListing } from './UserListing';
-import { UserCreateButton } from './UserCreateButton';
+import UserListing from './UserListing';
+import UserCreateButton from './UserCreateButton';
 import { BreadcrumbItem, Loader } from './index';
 
-export function UsersView(): ReactElement {
+export default function UsersView(): ReactElement {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [userList, setUserList] = useState<null | UserList>(null);

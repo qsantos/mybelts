@@ -19,7 +19,7 @@ interface Props {
     setErrorMessage: (errorMessage: string) => void;
 }
 
-export function BeltMoveButton(props: Props): ReactElement {
+export default function BeltMoveButton(props: Props): ReactElement {
     const {
         buttonContent,
         direction_key,

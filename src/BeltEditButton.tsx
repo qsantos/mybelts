@@ -4,14 +4,14 @@ import { useTranslation } from 'react-i18next';
 import Form from 'react-bootstrap/Form';
 
 import { Belt, BeltsService } from './api';
-import { ModalButton } from './ModalButton';
+import ModalButton from './ModalButton';
 
 interface Props {
     belt: Belt;
     changedCallback?: (changed_belt: Belt) => void;
 }
 
-export function BeltEditButton(props: Props): ReactElement {
+export default function BeltEditButton(props: Props): ReactElement {
     const { belt, changedCallback } = props;
     const { t } = useTranslation();
 

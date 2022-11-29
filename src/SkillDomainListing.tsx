@@ -5,15 +5,15 @@ import Table from 'react-bootstrap/Table';
 
 import { SkillDomain } from './api';
 import { AdminOnly } from './auth';
-import { SkillDomainEditButton } from './SkillDomainEditButton';
-import { SkillDomainDeleteButton } from './SkillDomainDeleteButton';
+import SkillDomainEditButton from './SkillDomainEditButton';
+import SkillDomainDeleteButton from './SkillDomainDeleteButton';
 
 interface Props {
     skill_domains: SkillDomain[];
     setSkillDomains: (skill_domains: SkillDomain[]) => void;
 }
 
-export function SkillDomainListing(props: Props): ReactElement {
+export default function SkillDomainListing(props: Props): ReactElement {
     const { skill_domains, setSkillDomains } = props;
     const { t } = useTranslation();
     return (

@@ -7,15 +7,15 @@ import Table from 'react-bootstrap/Table';
 
 import { ClassLevel } from './api';
 import { AdminOnly } from './auth';
-import { ClassLevelEditButton } from './ClassLevelEditButton';
-import { ClassLevelDeleteButton } from './ClassLevelDeleteButton';
+import ClassLevelEditButton from './ClassLevelEditButton';
+import ClassLevelDeleteButton from './ClassLevelDeleteButton';
 
 interface Props {
     class_levels: ClassLevel[];
     setClassLevels: (class_levels: ClassLevel[]) => void;
 }
 
-export function ClassLevelListing(props: Props): ReactElement {
+export default function ClassLevelListing(props: Props): ReactElement {
     const { class_levels, setClassLevels } = props;
     const { t } = useTranslation();
     return (

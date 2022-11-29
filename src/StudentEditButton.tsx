@@ -4,14 +4,14 @@ import { useTranslation } from 'react-i18next';
 import Form from 'react-bootstrap/Form';
 
 import { Student, StudentsService } from './api';
-import { ModalButton } from './ModalButton';
+import ModalButton from './ModalButton';
 
 interface Props {
     student: Student;
     changedCallback?: (changed_student: Student) => void;
 }
 
-export function StudentEditButton(props: Props): ReactElement {
+export default function StudentEditButton(props: Props): ReactElement {
     const { student, changedCallback } = props;
     const { t } = useTranslation();
 

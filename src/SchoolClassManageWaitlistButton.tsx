@@ -13,7 +13,7 @@ import {
     WaitlistService,
 } from './api';
 import { getAPIError } from './lib';
-import { BeltIcon } from './BeltIcon';
+import BeltIcon from './BeltIcon';
 
 interface Props {
     student: Student;
@@ -25,7 +25,9 @@ interface Props {
     onDelete?: () => void;
 }
 
-export function SchoolClassManageWaitlistButton(props: Props): ReactElement {
+export default function SchoolClassManageWaitlistButton(
+    props: Props
+): ReactElement {
     const {
         student,
         skill_domain,

@@ -3,7 +3,7 @@ import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ClassLevel, SchoolClass, SchoolClassesService } from './api';
-import { ModalButton } from './ModalButton';
+import ModalButton from './ModalButton';
 
 interface Props {
     class_level: ClassLevel;
@@ -11,7 +11,7 @@ interface Props {
     deletedCallback?: () => void;
 }
 
-export function SchoolClassDeleteButton(props: Props): ReactElement {
+export default function SchoolClassDeleteButton(props: Props): ReactElement {
     const { class_level, school_class, deletedCallback } = props;
     const { t } = useTranslation();
 

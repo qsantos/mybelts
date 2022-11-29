@@ -3,14 +3,14 @@ import { ReactElement } from 'react';
 import Form from 'react-bootstrap/Form';
 
 import { Student, StudentsService } from './api';
-import { ModalButton } from './ModalButton';
+import ModalButton from './ModalButton';
 
 interface Props {
     students: Student[];
     changedCallback?: (changed_students: Student[]) => void;
 }
 
-export function StudentUpdateRanks(props: Props): ReactElement {
+export default function StudentUpdateRanks(props: Props): ReactElement {
     const { students, changedCallback } = props;
 
     return (

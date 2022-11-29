@@ -7,16 +7,16 @@ import Table from 'react-bootstrap/Table';
 
 import { ClassLevel, SchoolClass } from './api';
 import { AdminOnly } from './auth';
-import { SchoolClassEditButton } from './SchoolClassEditButton';
-import { SchoolClassDeleteButton } from './SchoolClassDeleteButton';
+import SchoolClassEditButton from './SchoolClassEditButton';
+import SchoolClassDeleteButton from './SchoolClassDeleteButton';
 
-export interface Props {
+interface Props {
     class_level: ClassLevel;
     school_classes: SchoolClass[];
     setSchoolClasses: (school_classes: SchoolClass[]) => void;
 }
 
-export function SchoolClassListing(props: Props): ReactElement {
+export default function SchoolClassListing(props: Props): ReactElement {
     const { class_level, school_classes, setSchoolClasses } = props;
     const { t } = useTranslation();
     return (

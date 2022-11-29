@@ -11,7 +11,7 @@ import {
     Student,
     EvaluationsService,
 } from './api';
-import { ModalButton } from './ModalButton';
+import ModalButton from './ModalButton';
 
 interface Option {
     value: number;
@@ -28,7 +28,7 @@ interface Props {
     changedCallback?: (changed_evaluation: Evaluation) => void;
 }
 
-export function EvaluationEditButton(props: Props): ReactElement {
+export default function EvaluationEditButton(props: Props): ReactElement {
     const {
         evaluation,
         student,

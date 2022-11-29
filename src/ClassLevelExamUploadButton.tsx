@@ -11,7 +11,7 @@ import {
     ClassLevelsService,
     ExamOne,
 } from './api';
-import { ModalButton } from './ModalButton';
+import ModalButton from './ModalButton';
 
 interface Props {
     belt: Belt;
@@ -20,7 +20,7 @@ interface Props {
     createdCallback: (new_exam: Exam) => void;
 }
 
-export function ClassLevelExamUploadButton(props: Props): ReactElement {
+export default function ClassLevelExamUploadButton(props: Props): ReactElement {
     const { belt, skill_domain, class_level, createdCallback } = props;
     const { t } = useTranslation();
     return (
