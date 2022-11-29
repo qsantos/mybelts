@@ -13,7 +13,9 @@ interface CreateSkillDomainButtonProps {
     createdCallback?: (skill_domain: SkillDomain) => void;
 }
 
-export function CreateSkillDomainButton(props : CreateSkillDomainButtonProps): ReactElement {
+export function CreateSkillDomainButton(
+    props: CreateSkillDomainButtonProps
+): ReactElement {
     const { createdCallback } = props;
     const { t } = useTranslation();
 
@@ -22,8 +24,8 @@ export function CreateSkillDomainButton(props : CreateSkillDomainButtonProps): R
             i18nPrefix="skill_domain.add"
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
-                    name: {value: string};
-                    code: {value: string};
+                    name: { value: string };
+                    code: { value: string };
                 };
                 return SkillDomainsService.postSkillDomainsResource({
                     name: typed_form.name.value,
@@ -34,14 +36,20 @@ export function CreateSkillDomainButton(props : CreateSkillDomainButtonProps): R
         >
             <Form.Group controlId="name">
                 <Form.Label>{t('skill_domain.add_edit.name.title')}</Form.Label>
-                <Form.Control type="text" placeholder={t('skill_domain.add_edit.name.placeholder')}/>
+                <Form.Control
+                    type="text"
+                    placeholder={t('skill_domain.add_edit.name.placeholder')}
+                />
                 <Form.Text className="text-muted">
                     {t('skill_domain.add_edit.name.help')}
                 </Form.Text>
             </Form.Group>
             <Form.Group controlId="code">
                 <Form.Label>{t('skill_domain.add_edit.code.title')}</Form.Label>
-                <Form.Control type="text" placeholder={t('skill_domain.add_edit.code.placeholder')}/>
+                <Form.Control
+                    type="text"
+                    placeholder={t('skill_domain.add_edit.code.placeholder')}
+                />
                 <Form.Text className="text-muted">
                     {t('skill_domain.add_edit.code.help')}
                 </Form.Text>
@@ -55,7 +63,9 @@ interface EditSkillDomainButtonProps {
     changedCallback?: (changed_skill_domain: SkillDomain) => void;
 }
 
-export function EditSkillDomainButton(props : EditSkillDomainButtonProps): ReactElement {
+export function EditSkillDomainButton(
+    props: EditSkillDomainButtonProps
+): ReactElement {
     const { skill_domain, changedCallback } = props;
     const { t } = useTranslation();
 
@@ -65,26 +75,39 @@ export function EditSkillDomainButton(props : EditSkillDomainButtonProps): React
             i18nArgs={{ skill_domain }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
-                    name: {value: string};
-                    code: {value: string};
+                    name: { value: string };
+                    code: { value: string };
                 };
-                return SkillDomainsService.putSkillDomainResource(skill_domain.id, {
-                    name: typed_form.name.value,
-                    code: typed_form.code.value,
-                });
+                return SkillDomainsService.putSkillDomainResource(
+                    skill_domain.id,
+                    {
+                        name: typed_form.name.value,
+                        code: typed_form.code.value,
+                    }
+                );
             }}
-            onResponse={({ skill_domain: changed_skill_domain }) => changedCallback?.(changed_skill_domain)}
+            onResponse={({ skill_domain: changed_skill_domain }) =>
+                changedCallback?.(changed_skill_domain)
+            }
         >
             <Form.Group controlId="name">
                 <Form.Label>{t('skill_domain.add_edit.name.title')}</Form.Label>
-                <Form.Control type="text" placeholder={t('skill_domain.add_edit.name.placeholder')} defaultValue={skill_domain.name} />
+                <Form.Control
+                    type="text"
+                    placeholder={t('skill_domain.add_edit.name.placeholder')}
+                    defaultValue={skill_domain.name}
+                />
                 <Form.Text className="text-muted">
                     {t('skill_domain.add_edit.name.help')}
                 </Form.Text>
             </Form.Group>
             <Form.Group controlId="code">
                 <Form.Label>{t('skill_domain.add_edit.code.title')}</Form.Label>
-                <Form.Control type="text" placeholder={t('skill_domain.add_edit.code.placeholder')} defaultValue={skill_domain.code} />
+                <Form.Control
+                    type="text"
+                    placeholder={t('skill_domain.add_edit.code.placeholder')}
+                    defaultValue={skill_domain.code}
+                />
                 <Form.Text className="text-muted">
                     {t('skill_domain.add_edit.code.help')}
                 </Form.Text>
@@ -98,7 +121,9 @@ interface DeleteSkillDomainButtonProps {
     deletedCallback?: () => void;
 }
 
-export function DeleteSkillDomainButton(props : DeleteSkillDomainButtonProps): ReactElement {
+export function DeleteSkillDomainButton(
+    props: DeleteSkillDomainButtonProps
+): ReactElement {
     const { skill_domain, deletedCallback } = props;
     const { t } = useTranslation();
 
@@ -107,7 +132,9 @@ export function DeleteSkillDomainButton(props : DeleteSkillDomainButtonProps): R
             variant="danger"
             i18nPrefix="skill_domain.delete"
             i18nArgs={{ skill_domain }}
-            onSubmit={() => SkillDomainsService.deleteSkillDomainResource(skill_domain.id)}
+            onSubmit={() =>
+                SkillDomainsService.deleteSkillDomainResource(skill_domain.id)
+            }
             onResponse={() => deletedCallback?.()}
         >
             {t('skill_domain.delete.message', { skill_domain })}
@@ -120,43 +147,57 @@ interface SkillDomainListingProps {
     setSkillDomains: (skill_domains: SkillDomain[]) => void;
 }
 
-export function SkillDomainListing(props: SkillDomainListingProps): ReactElement {
+export function SkillDomainListing(
+    props: SkillDomainListingProps
+): ReactElement {
     const { skill_domains, setSkillDomains } = props;
     const { t } = useTranslation();
-    return <>
-        <Table>
-            <thead>
-                <tr>
-                    <th>{t('skill_domain.list.name.title')}</th>
-                    <th>{t('skill_domain.list.code.title')}</th>
-                    <AdminOnly>
-                        <th>{t('skill_domain.list.actions.title')}</th>
-                    </AdminOnly>
-                </tr>
-            </thead>
-            <tbody>
-                {skill_domains.map((skill_domain, index) =>
-                    <tr key={skill_domain.id}>
-                        <td>{skill_domain.name}</td>
-                        <td>{skill_domain.code}</td>
+    return (
+        <>
+            <Table>
+                <thead>
+                    <tr>
+                        <th>{t('skill_domain.list.name.title')}</th>
+                        <th>{t('skill_domain.list.code.title')}</th>
                         <AdminOnly>
-                            <td>
-                                <EditSkillDomainButton skill_domain={skill_domain} changedCallback={new_skill_domain => {
-                                    const new_skill_domains = [...skill_domains];
-                                    new_skill_domains[index] = new_skill_domain;
-                                    setSkillDomains(new_skill_domains);
-                                }} />
-                                {' '}
-                                <DeleteSkillDomainButton skill_domain={skill_domain} deletedCallback={() => {
-                                    const new_skill_domains = [...skill_domains];
-                                    new_skill_domains.splice(index, 1);
-                                    setSkillDomains(new_skill_domains);
-                                }} />
-                            </td>
+                            <th>{t('skill_domain.list.actions.title')}</th>
                         </AdminOnly>
                     </tr>
-                )}
-            </tbody>
-        </Table>
-    </>;
+                </thead>
+                <tbody>
+                    {skill_domains.map((skill_domain, index) => (
+                        <tr key={skill_domain.id}>
+                            <td>{skill_domain.name}</td>
+                            <td>{skill_domain.code}</td>
+                            <AdminOnly>
+                                <td>
+                                    <EditSkillDomainButton
+                                        skill_domain={skill_domain}
+                                        changedCallback={(new_skill_domain) => {
+                                            const new_skill_domains = [
+                                                ...skill_domains,
+                                            ];
+                                            new_skill_domains[index] =
+                                                new_skill_domain;
+                                            setSkillDomains(new_skill_domains);
+                                        }}
+                                    />{' '}
+                                    <DeleteSkillDomainButton
+                                        skill_domain={skill_domain}
+                                        deletedCallback={() => {
+                                            const new_skill_domains = [
+                                                ...skill_domains,
+                                            ];
+                                            new_skill_domains.splice(index, 1);
+                                            setSkillDomains(new_skill_domains);
+                                        }}
+                                    />
+                                </td>
+                            </AdminOnly>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+        </>
+    );
 }

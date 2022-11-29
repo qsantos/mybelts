@@ -1,5 +1,13 @@
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Link, Outlet, Route, Routes, useNavigate, useParams } from 'react-router-dom';
+import {
+    BrowserRouter,
+    Link,
+    Outlet,
+    Route,
+    Routes,
+    useNavigate,
+    useParams,
+} from 'react-router-dom';
 import React from 'react';
 import { ReactNode, StrictMode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,13 +26,20 @@ import Table from 'react-bootstrap/Table';
 import {
     OpenAPI,
     LoginInfo,
-    DefaultService, MissingI18nKeyEventList,
-    UserList, UsersService,
-    BeltList, BeltsService,
-    ClassLevelList, ClassLevelsService,
-    SchoolClassList, SchoolClassesService,
-    SkillDomainList, SkillDomainsService,
-    StudentList, StudentsService,
+    DefaultService,
+    MissingI18nKeyEventList,
+    UserList,
+    UsersService,
+    BeltList,
+    BeltsService,
+    ClassLevelList,
+    ClassLevelsService,
+    SchoolClassList,
+    SchoolClassesService,
+    SkillDomainList,
+    SkillDomainsService,
+    StudentList,
+    StudentsService,
     EvaluationList,
     WaitlistEntryList,
 } from './api';
@@ -38,13 +53,36 @@ import { AdminOnly, LoginFormWidget, LogoutButton, LoginContext } from './auth';
 import { CreateUserButton, UserListing } from './user';
 import { CreateSkillDomainButton, SkillDomainListing } from './skill-domain';
 import { CreateBeltButton, BeltListing } from './belt';
-import { CreateClassLevelButton, EditClassLevelButton, DeleteClassLevelButton, ClassLevelListing, ClassLevelExams, ClassLevelExamBulkUpload } from './class-level';
-import { CreateSchoolClassButton, EditSchoolClassButton, DeleteSchoolClassButton, SchoolClassListing, SchoolClassWaitlist, ManageClassWaitlist } from './school-class';
-import { CreateStudentButton, EditStudentButton, DeleteStudentButton, UpdateStudentRanks, StudentBelts } from './student';
-import { CreateEvaluationButton, EvaluationListing, EvaluationGrid  } from './evaluation';
+import {
+    CreateClassLevelButton,
+    EditClassLevelButton,
+    DeleteClassLevelButton,
+    ClassLevelListing,
+    ClassLevelExams,
+    ClassLevelExamBulkUpload,
+} from './class-level';
+import {
+    CreateSchoolClassButton,
+    EditSchoolClassButton,
+    DeleteSchoolClassButton,
+    SchoolClassListing,
+    SchoolClassWaitlist,
+    ManageClassWaitlist,
+} from './school-class';
+import {
+    CreateStudentButton,
+    EditStudentButton,
+    DeleteStudentButton,
+    UpdateStudentRanks,
+    StudentBelts,
+} from './student';
+import {
+    CreateEvaluationButton,
+    EvaluationListing,
+    EvaluationGrid,
+} from './evaluation';
 
-class AssertionError extends Error {
-}
+class AssertionError extends Error {}
 
 function assert(condition: boolean, msg?: string): asserts condition {
     if (!condition) {
@@ -52,19 +90,37 @@ function assert(condition: boolean, msg?: string): asserts condition {
     }
 }
 
-function BreadcrumbItem({ children, href, active }: { children: ReactNode, href?: string, active?: boolean }) {
+function BreadcrumbItem({
+    children,
+    href,
+    active,
+}: {
+    children: ReactNode;
+    href?: string;
+    active?: boolean;
+}) {
     if (href) {
-        return <Breadcrumb.Item linkAs={Link} linkProps={{to: href}}>{children}</Breadcrumb.Item>;
+        return (
+            <Breadcrumb.Item linkAs={Link} linkProps={{ to: href }}>
+                {children}
+            </Breadcrumb.Item>
+        );
     } else {
-        return <Breadcrumb.Item active={active === undefined ? false : active}>{children}</Breadcrumb.Item>;
+        return (
+            <Breadcrumb.Item active={active === undefined ? false : active}>
+                {children}
+            </Breadcrumb.Item>
+        );
     }
 }
 
 function Loader() {
     const { t } = useTranslation();
-    return <Spinner animation="border" role="status">
-        <span className="visually-hidden">{t('loading')}</span>
-    </Spinner>;
+    return (
+        <Spinner animation="border" role="status">
+            <span className="visually-hidden">{t('loading')}</span>
+        </Spinner>
+    );
 }
 
 function HomeView() {
@@ -82,9 +138,12 @@ function HomeView() {
         return <StudentWidget student_id={student.id} />;
     } else if (user.is_admin) {
         // admin
-        return <>
-            Hello {user.username}. You last logged in on {formatDatetime(user.last_login)}.
-        </>;
+        return (
+            <>
+                Hello {user.username}. You last logged in on{' '}
+                {formatDatetime(user.last_login)}.
+            </>
+        );
     } else {
         // other
         return <>Hello {user.username}</>;
@@ -94,56 +153,73 @@ function HomeView() {
 function I18nView() {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
-    const [eventList, setEventList] = useState<null | MissingI18nKeyEventList>(null);
+    const [eventList, setEventList] = useState<null | MissingI18nKeyEventList>(
+        null
+    );
 
     useEffect(() => {
-        DefaultService
-            .getMissingI18NKeyResource()
+        DefaultService.getMissingI18NKeyResource()
             .then(setEventList)
-            .catch(error => { setErrorMessage(getAPIError(error)); });
+            .catch((error) => {
+                setErrorMessage(getAPIError(error));
+            });
     }, []);
 
     if (eventList === null) {
-        return <>
-            <Breadcrumb>
-                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                <BreadcrumbItem active href="/i18n">i18n</BreadcrumbItem>
-            </Breadcrumb>
-            <h3>i18n</h3>
-            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
-        </>;
+        return (
+            <>
+                <Breadcrumb>
+                    <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                    <BreadcrumbItem active href="/i18n">
+                        i18n
+                    </BreadcrumbItem>
+                </Breadcrumb>
+                <h3>i18n</h3>
+                {errorMessage ? (
+                    <Alert variant="danger">
+                        {t('error')}: {errorMessage}
+                    </Alert>
+                ) : (
+                    <Loader />
+                )}
+            </>
+        );
     }
 
     const { events } = eventList;
 
-    return <>
-        <Breadcrumb>
-            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-            <BreadcrumbItem active href="/i18n">i18n</BreadcrumbItem>
-        </Breadcrumb>
-        <h3>i18n</h3>
-        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-        <Table>
-            <thead>
-                <tr>
-                    <th>Language</th>
-                    <th>Namespace</th>
-                    <th>Key</th>
-                    <th>Count</th>
-                </tr>
-            </thead>
-            <tbody>
-                {events.map((event, i) => (
-                    <tr key={i}>
-                        <th>{event.language}</th>
-                        <th>{event.namespace}</th>
-                        <th>{event.key}</th>
-                        <th>{event.count}</th>
+    return (
+        <>
+            <Breadcrumb>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem active href="/i18n">
+                    i18n
+                </BreadcrumbItem>
+            </Breadcrumb>
+            <h3>i18n</h3>
+            {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+            <Table>
+                <thead>
+                    <tr>
+                        <th>Language</th>
+                        <th>Namespace</th>
+                        <th>Key</th>
+                        <th>Count</th>
                     </tr>
-                ))}
-            </tbody>
-        </Table>
-    </>;
+                </thead>
+                <tbody>
+                    {events.map((event, i) => (
+                        <tr key={i}>
+                            <th>{event.language}</th>
+                            <th>{event.namespace}</th>
+                            <th>{event.key}</th>
+                            <th>{event.count}</th>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+        </>
+    );
 }
 
 function UsersView() {
@@ -152,43 +228,64 @@ function UsersView() {
     const [userList, setUserList] = useState<null | UserList>(null);
 
     useEffect(() => {
-        UsersService
-            .getUsersResource()
+        UsersService.getUsersResource()
             .then(setUserList)
-            .catch(error => { setErrorMessage(getAPIError(error)); });
+            .catch((error) => {
+                setErrorMessage(getAPIError(error));
+            });
     }, []);
 
     if (userList === null) {
-        return <>
-            <Breadcrumb>
-                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                <BreadcrumbItem active href="/users">{t('user.list.title.primary')}</BreadcrumbItem>
-            </Breadcrumb>
-            <h3>{t('user.list.title.primary')}</h3>
-            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
-        </>;
+        return (
+            <>
+                <Breadcrumb>
+                    <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                    <BreadcrumbItem active href="/users">
+                        {t('user.list.title.primary')}
+                    </BreadcrumbItem>
+                </Breadcrumb>
+                <h3>{t('user.list.title.primary')}</h3>
+                {errorMessage ? (
+                    <Alert variant="danger">
+                        {t('error')}: {errorMessage}
+                    </Alert>
+                ) : (
+                    <Loader />
+                )}
+            </>
+        );
     }
 
     const { users } = userList;
 
-    const sorted_users = users.sort((a, b) => a.username.localeCompare(b.username));
+    const sorted_users = users.sort((a, b) =>
+        a.username.localeCompare(b.username)
+    );
 
-    return <>
-        <Breadcrumb>
-            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-            <BreadcrumbItem active href="/users">{t('user.list.title.primary')}</BreadcrumbItem>
-        </Breadcrumb>
-        <h3>{t('user.list.title.primary')}</h3>
-        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-        <CreateUserButton createdCallback={new_user => {
-            setUserList({ ...userList, users: [...users, new_user] });
-        }}/>
-        <h4>{t('user.list.title.secondary')}</h4>
-        <UserListing
-            users={sorted_users}
-            setUsers={new_users => setUserList({ ...userList, users: new_users })}
-        />
-    </>;
+    return (
+        <>
+            <Breadcrumb>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem active href="/users">
+                    {t('user.list.title.primary')}
+                </BreadcrumbItem>
+            </Breadcrumb>
+            <h3>{t('user.list.title.primary')}</h3>
+            {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+            <CreateUserButton
+                createdCallback={(new_user) => {
+                    setUserList({ ...userList, users: [...users, new_user] });
+                }}
+            />
+            <h4>{t('user.list.title.secondary')}</h4>
+            <UserListing
+                users={sorted_users}
+                setUsers={(new_users) =>
+                    setUserList({ ...userList, users: new_users })
+                }
+            />
+        </>
+    );
 }
 
 function BeltsView() {
@@ -197,26 +294,37 @@ function BeltsView() {
     const [beltList, setBeltList] = useState<null | BeltList>(null);
 
     useEffect(() => {
-        BeltsService
-            .getBeltsResource()
+        BeltsService.getBeltsResource()
             .then(setBeltList)
-            .catch(error => { setErrorMessage(getAPIError(error)); });
+            .catch((error) => {
+                setErrorMessage(getAPIError(error));
+            });
     }, []);
 
     if (beltList === null) {
-        return <>
-            <Breadcrumb>
-                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                <BreadcrumbItem active href="/belts">{t('belt.list.title.primary')}</BreadcrumbItem>
-            </Breadcrumb>
-            <h3>{t('belt.list.title.primary')}</h3>
-            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
-        </>;
+        return (
+            <>
+                <Breadcrumb>
+                    <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                    <BreadcrumbItem active href="/belts">
+                        {t('belt.list.title.primary')}
+                    </BreadcrumbItem>
+                </Breadcrumb>
+                <h3>{t('belt.list.title.primary')}</h3>
+                {errorMessage ? (
+                    <Alert variant="danger">
+                        {t('error')}: {errorMessage}
+                    </Alert>
+                ) : (
+                    <Loader />
+                )}
+            </>
+        );
     }
 
     const { belts } = beltList;
 
-    const sorted_belts = belts.sort((a, b) => (a.rank - b.rank));
+    const sorted_belts = belts.sort((a, b) => a.rank - b.rank);
     // TODO: handle case where result is false
     sorted_belts.reduce((previous, belt, index) => {
         if (belt.rank !== index + 1) {
@@ -226,115 +334,187 @@ function BeltsView() {
         return previous;
     }, true);
 
-    return <>
-        <Breadcrumb>
-            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-            <BreadcrumbItem active href="/belts">{t('belt.list.title.primary')}</BreadcrumbItem>
-        </Breadcrumb>
-        <h3>{t('belt.list.title.primary')}</h3>
-        {errorMessage && <Alert variant="danger">{t('error')}: {errorMessage}</Alert>}
-        <AdminOnly>
-            <CreateBeltButton createdCallback={new_belt => {
-                setBeltList({ ...beltList, belts: [...belts, new_belt] });
-            }}/>
-        </AdminOnly>
-        <h4>{t('belt.list.title.secondary')}</h4>
-        <BeltListing
-            belts={sorted_belts}
-            setBelts={new_belts => setBeltList({ ...beltList, belts: new_belts })}
-            setErrorMessage={setErrorMessage}
-        />
-    </>;
+    return (
+        <>
+            <Breadcrumb>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem active href="/belts">
+                    {t('belt.list.title.primary')}
+                </BreadcrumbItem>
+            </Breadcrumb>
+            <h3>{t('belt.list.title.primary')}</h3>
+            {errorMessage && (
+                <Alert variant="danger">
+                    {t('error')}: {errorMessage}
+                </Alert>
+            )}
+            <AdminOnly>
+                <CreateBeltButton
+                    createdCallback={(new_belt) => {
+                        setBeltList({
+                            ...beltList,
+                            belts: [...belts, new_belt],
+                        });
+                    }}
+                />
+            </AdminOnly>
+            <h4>{t('belt.list.title.secondary')}</h4>
+            <BeltListing
+                belts={sorted_belts}
+                setBelts={(new_belts) =>
+                    setBeltList({ ...beltList, belts: new_belts })
+                }
+                setErrorMessage={setErrorMessage}
+            />
+        </>
+    );
 }
 
 function SkillDomainsView() {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
-    const [skillDomainList, setSkillDomainList] = useState<null | SkillDomainList>(null);
+    const [skillDomainList, setSkillDomainList] =
+        useState<null | SkillDomainList>(null);
 
     useEffect(() => {
-        SkillDomainsService
-            .getSkillDomainsResource()
+        SkillDomainsService.getSkillDomainsResource()
             .then(setSkillDomainList)
-            .catch(error => { setErrorMessage(getAPIError(error)); });
+            .catch((error) => {
+                setErrorMessage(getAPIError(error));
+            });
     }, []);
 
     if (skillDomainList === null) {
-        return <>
-            <Breadcrumb>
-                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                <BreadcrumbItem active href="/skill-domains">{t('skill_domain.list.title.primary')}</BreadcrumbItem>
-            </Breadcrumb>
-            <h3>{t('skill_domain.list.title.primary')}</h3>
-            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
-        </>;
+        return (
+            <>
+                <Breadcrumb>
+                    <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                    <BreadcrumbItem active href="/skill-domains">
+                        {t('skill_domain.list.title.primary')}
+                    </BreadcrumbItem>
+                </Breadcrumb>
+                <h3>{t('skill_domain.list.title.primary')}</h3>
+                {errorMessage ? (
+                    <Alert variant="danger">
+                        {t('error')}: {errorMessage}
+                    </Alert>
+                ) : (
+                    <Loader />
+                )}
+            </>
+        );
     }
 
     const { skill_domains } = skillDomainList;
-    const sorted_skill_domains = skill_domains.sort((a, b) => a.code.localeCompare(b.code));
+    const sorted_skill_domains = skill_domains.sort((a, b) =>
+        a.code.localeCompare(b.code)
+    );
 
-    return <>
-        <Breadcrumb>
-            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-            <BreadcrumbItem active href="/skill-domains">{t('skill_domain.list.title.primary')}</BreadcrumbItem>
-        </Breadcrumb>
-        <h3>{t('skill_domain.list.title.primary')}</h3>
-        <AdminOnly>
-            <CreateSkillDomainButton createdCallback={new_skill_domain => {
-                setSkillDomainList({ ...skillDomainList, skill_domains: [...skill_domains, new_skill_domain] });
-            }}/>
-        </AdminOnly>
-        <h4>{t('skill_domain.list.title.secondary')}</h4>
-        <SkillDomainListing
-            skill_domains={sorted_skill_domains}
-            setSkillDomains={new_skill_domains => setSkillDomainList({ ...skillDomainList, skill_domains: new_skill_domains })}
-        />
-    </>;
+    return (
+        <>
+            <Breadcrumb>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem active href="/skill-domains">
+                    {t('skill_domain.list.title.primary')}
+                </BreadcrumbItem>
+            </Breadcrumb>
+            <h3>{t('skill_domain.list.title.primary')}</h3>
+            <AdminOnly>
+                <CreateSkillDomainButton
+                    createdCallback={(new_skill_domain) => {
+                        setSkillDomainList({
+                            ...skillDomainList,
+                            skill_domains: [...skill_domains, new_skill_domain],
+                        });
+                    }}
+                />
+            </AdminOnly>
+            <h4>{t('skill_domain.list.title.secondary')}</h4>
+            <SkillDomainListing
+                skill_domains={sorted_skill_domains}
+                setSkillDomains={(new_skill_domains) =>
+                    setSkillDomainList({
+                        ...skillDomainList,
+                        skill_domains: new_skill_domains,
+                    })
+                }
+            />
+        </>
+    );
 }
 
 function ClassLevelsView() {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
-    const [classLevelList, setClassLevelList] = useState<null | ClassLevelList>(null);
+    const [classLevelList, setClassLevelList] = useState<null | ClassLevelList>(
+        null
+    );
 
     useEffect(() => {
-        ClassLevelsService
-            .getClassLevelsResource()
+        ClassLevelsService.getClassLevelsResource()
             .then(setClassLevelList)
-            .catch(error => { setErrorMessage(getAPIError(error)); });
+            .catch((error) => {
+                setErrorMessage(getAPIError(error));
+            });
     }, []);
 
     if (classLevelList === null) {
-        return <>
-            <Breadcrumb>
-                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                <BreadcrumbItem active href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-            </Breadcrumb>
-            <h3>{t('class_level.list.title.primary')}</h3>
-            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
-        </>;
+        return (
+            <>
+                <Breadcrumb>
+                    <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                    <BreadcrumbItem active href="/class-levels">
+                        {t('class_level.list.title.primary')}
+                    </BreadcrumbItem>
+                </Breadcrumb>
+                <h3>{t('class_level.list.title.primary')}</h3>
+                {errorMessage ? (
+                    <Alert variant="danger">
+                        {t('error')}: {errorMessage}
+                    </Alert>
+                ) : (
+                    <Loader />
+                )}
+            </>
+        );
     }
 
     const { class_levels } = classLevelList;
-    const sorted_class_levels = class_levels.sort((a, b) => a.prefix.localeCompare(b.prefix));
+    const sorted_class_levels = class_levels.sort((a, b) =>
+        a.prefix.localeCompare(b.prefix)
+    );
 
-    return <>
-        <Breadcrumb>
-            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-            <BreadcrumbItem active href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-        </Breadcrumb>
-        <h3>{t('class_level.list.title.primary')}</h3>
-        <AdminOnly>
-            <CreateClassLevelButton createdCallback={new_class_level => {
-                setClassLevelList({ ...classLevelList, class_levels: [...class_levels, new_class_level] });
-            }} />
-        </AdminOnly>
-        <h4>{t('class_level.list.title.secondary')}</h4>
-        <ClassLevelListing
-            class_levels={sorted_class_levels}
-            setClassLevels={new_class_levels => setClassLevelList({ ...classLevelList, class_levels: new_class_levels })}
-        />
-    </>;
+    return (
+        <>
+            <Breadcrumb>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem active href="/class-levels">
+                    {t('class_level.list.title.primary')}
+                </BreadcrumbItem>
+            </Breadcrumb>
+            <h3>{t('class_level.list.title.primary')}</h3>
+            <AdminOnly>
+                <CreateClassLevelButton
+                    createdCallback={(new_class_level) => {
+                        setClassLevelList({
+                            ...classLevelList,
+                            class_levels: [...class_levels, new_class_level],
+                        });
+                    }}
+                />
+            </AdminOnly>
+            <h4>{t('class_level.list.title.secondary')}</h4>
+            <ClassLevelListing
+                class_levels={sorted_class_levels}
+                setClassLevels={(new_class_levels) =>
+                    setClassLevelList({
+                        ...classLevelList,
+                        class_levels: new_class_levels,
+                    })
+                }
+            />
+        </>
+    );
 }
 
 function ClassLevelView() {
@@ -343,103 +523,166 @@ function ClassLevelView() {
 
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
-    const [schoolClassList, setSchoolClassList] = useState<null | SchoolClassList>(null);
+    const [schoolClassList, setSchoolClassList] =
+        useState<null | SchoolClassList>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        ClassLevelsService
-            .getClassLevelResource(parseInt(class_level_id))
+        ClassLevelsService.getClassLevelResource(parseInt(class_level_id))
             .then(setSchoolClassList)
-            .catch(error => { setErrorMessage(getAPIError(error)); });
+            .catch((error) => {
+                setErrorMessage(getAPIError(error));
+            });
     }, [class_level_id]);
 
     if (schoolClassList === null) {
-        return <>
-            <Breadcrumb>
-                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-                <BreadcrumbItem active href={'/class-levels/' + class_level_id}>{t('class_level.view.title')} ?</BreadcrumbItem>
-            </Breadcrumb>
-            <h3>{t('class_level.view.title')}: ?</h3>
-            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
-        </>;
+        return (
+            <>
+                <Breadcrumb>
+                    <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                    <BreadcrumbItem href="/class-levels">
+                        {t('class_level.list.title.primary')}
+                    </BreadcrumbItem>
+                    <BreadcrumbItem
+                        active
+                        href={'/class-levels/' + class_level_id}
+                    >
+                        {t('class_level.view.title')} ?
+                    </BreadcrumbItem>
+                </Breadcrumb>
+                <h3>{t('class_level.view.title')}: ?</h3>
+                {errorMessage ? (
+                    <Alert variant="danger">
+                        {t('error')}: {errorMessage}
+                    </Alert>
+                ) : (
+                    <Loader />
+                )}
+            </>
+        );
     }
 
-    const { belts, skill_domains, class_level, school_classes, exams } = schoolClassList;
+    const { belts, skill_domains, class_level, school_classes, exams } =
+        schoolClassList;
 
-    const sorted_school_classes = school_classes.sort((a, b) => a.suffix.localeCompare(b.suffix));
+    const sorted_school_classes = school_classes.sort((a, b) =>
+        a.suffix.localeCompare(b.suffix)
+    );
 
-    return <>
-        <Breadcrumb>
-            <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-            <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-            <BreadcrumbItem active href={'/class-levels/' + class_level.id}>{t('class_level.view.title')} {class_level.prefix}</BreadcrumbItem>
-        </Breadcrumb>
-        <h3>{t('class_level.view.title')}: {class_level.prefix}</h3>
-        <AdminOnly>
-            <EditClassLevelButton class_level={class_level} changedCallback={new_class_level => {
-                setSchoolClassList({ ...schoolClassList, class_level: new_class_level });
-            }} />
-            {' '}
-            <DeleteClassLevelButton class_level={class_level} deletedCallback={() => navigate('/class-levels')} />
-        </AdminOnly>
-        <h4>{t('school_class.list.title.secondary')}</h4>
-        <AdminOnly>
-            <CreateSchoolClassButton
+    return (
+        <>
+            <Breadcrumb>
+                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
+                <BreadcrumbItem href="/class-levels">
+                    {t('class_level.list.title.primary')}
+                </BreadcrumbItem>
+                <BreadcrumbItem active href={'/class-levels/' + class_level.id}>
+                    {t('class_level.view.title')} {class_level.prefix}
+                </BreadcrumbItem>
+            </Breadcrumb>
+            <h3>
+                {t('class_level.view.title')}: {class_level.prefix}
+            </h3>
+            <AdminOnly>
+                <EditClassLevelButton
+                    class_level={class_level}
+                    changedCallback={(new_class_level) => {
+                        setSchoolClassList({
+                            ...schoolClassList,
+                            class_level: new_class_level,
+                        });
+                    }}
+                />{' '}
+                <DeleteClassLevelButton
+                    class_level={class_level}
+                    deletedCallback={() => navigate('/class-levels')}
+                />
+            </AdminOnly>
+            <h4>{t('school_class.list.title.secondary')}</h4>
+            <AdminOnly>
+                <CreateSchoolClassButton
+                    class_level={class_level}
+                    createdCallback={(new_school_class) => {
+                        setSchoolClassList({
+                            ...schoolClassList,
+                            school_classes: [
+                                ...school_classes,
+                                new_school_class,
+                            ],
+                        });
+                    }}
+                />
+            </AdminOnly>
+            <SchoolClassListing
                 class_level={class_level}
-                createdCallback={new_school_class => {
-                    setSchoolClassList({ ...schoolClassList, school_classes: [...school_classes, new_school_class] });
+                school_classes={sorted_school_classes}
+                setSchoolClasses={(new_school_classes) =>
+                    setSchoolClassList({
+                        ...schoolClassList,
+                        school_classes: new_school_classes,
+                    })
+                }
+            />
+            <h4>{t('exam.title')}</h4>
+            <ClassLevelExams
+                belts={belts}
+                skill_domains={skill_domains}
+                class_level={class_level}
+                exams={exams}
+                createdCallback={(new_exam) => {
+                    setSchoolClassList({
+                        ...schoolClassList,
+                        exams: [...exams, new_exam],
+                    });
+                }}
+                changedCallback={(changed_exam) => {
+                    const index = exams.findIndex(
+                        (exam) => exam.id === changed_exam.id
+                    );
+                    if (index === null) {
+                        return;
+                    }
+                    const new_exams = [...exams];
+                    new_exams[index] = changed_exam;
+                    setSchoolClassList({
+                        ...schoolClassList,
+                        exams: new_exams,
+                    });
+                }}
+                deletedCallback={(exam_id) => {
+                    const index = exams.findIndex(
+                        (exam) => exam.id === exam_id
+                    );
+                    if (index === null) {
+                        return;
+                    }
+                    const new_exams = [...exams];
+                    new_exams.splice(index, 1);
+                    setSchoolClassList({
+                        ...schoolClassList,
+                        exams: new_exams,
+                    });
                 }}
             />
-        </AdminOnly>
-        <SchoolClassListing
-            class_level={class_level}
-            school_classes={sorted_school_classes}
-            setSchoolClasses={new_school_classes => setSchoolClassList({ ...schoolClassList, school_classes: new_school_classes })}
-        />
-        <h4>{t('exam.title')}</h4>
-        <ClassLevelExams
-            belts={belts}
-            skill_domains={skill_domains}
-            class_level={class_level}
-            exams={exams}
-            createdCallback={new_exam => {
-                setSchoolClassList({ ...schoolClassList, exams: [...exams, new_exam]});
-            }}
-            changedCallback={changed_exam => {
-                const index = exams.findIndex(exam => exam.id === changed_exam.id);
-                if (index === null) {
-                    return;
+            <ClassLevelExamBulkUpload
+                belts={belts}
+                skill_domains={skill_domains}
+                class_level={class_level}
+                createdCallback={(new_exam) =>
+                    setSchoolClassList((oldSchoolClassList) => {
+                        if (!oldSchoolClassList) {
+                            return null;
+                        }
+                        const { exams: oldExams } = oldSchoolClassList;
+                        return {
+                            ...oldSchoolClassList,
+                            exams: [...oldExams, new_exam],
+                        };
+                    })
                 }
-                const new_exams = [...exams];
-                new_exams[index] = changed_exam;
-                setSchoolClassList({ ...schoolClassList, exams: new_exams });
-            }}
-            deletedCallback={(exam_id) => {
-                const index = exams.findIndex(exam => exam.id === exam_id);
-                if (index === null) {
-                    return;
-                }
-                const new_exams = [...exams];
-                new_exams.splice(index, 1);
-                setSchoolClassList({ ...schoolClassList, exams: new_exams });
-            }}
-        />
-        <ClassLevelExamBulkUpload
-            belts={belts}
-            skill_domains={skill_domains}
-            class_level={class_level}
-            createdCallback={new_exam =>
-                setSchoolClassList(oldSchoolClassList => {
-                    if (!oldSchoolClassList) {
-                        return null;
-                    }
-                    const { exams: oldExams } = oldSchoolClassList;
-                    return { ...oldSchoolClassList, exams: [...oldExams, new_exam]};
-                })
-            }
-        />
-    </>;
+            />
+        </>
+    );
 }
 
 function SchoolClassView() {
@@ -454,110 +697,168 @@ function SchoolClassView() {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [studentList, setStudentList] = useState<null | StudentList>(null);
-    const [waitlistEntryList, setWaitlistEntryList] = useState<null | WaitlistEntryList>(null);
+    const [waitlistEntryList, setWaitlistEntryList] =
+        useState<null | WaitlistEntryList>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        SchoolClassesService
-            .getSchoolClassResource(parseInt(school_class_id))
+        SchoolClassesService.getSchoolClassResource(parseInt(school_class_id))
             .then(setStudentList)
-            .catch(error => { setErrorMessage(getAPIError(error)); });
+            .catch((error) => {
+                setErrorMessage(getAPIError(error));
+            });
         if (canUseWaitlist) {
-            SchoolClassesService
-                .getSchoolClassWaitlistResource(parseInt(school_class_id))
+            SchoolClassesService.getSchoolClassWaitlistResource(
+                parseInt(school_class_id)
+            )
                 .then(setWaitlistEntryList)
-                .catch(error => { setErrorMessage(getAPIError(error)); });
+                .catch((error) => {
+                    setErrorMessage(getAPIError(error));
+                });
         }
     }, [school_class_id, canUseWaitlist]);
 
-    if (studentList === null || (canUseWaitlist && waitlistEntryList === null)) {
-        return <>
+    if (
+        studentList === null ||
+        (canUseWaitlist && waitlistEntryList === null)
+    ) {
+        return (
+            <>
+                <AdminOnly>
+                    <Breadcrumb>
+                        <BreadcrumbItem href="/">
+                            {t('home_page')}
+                        </BreadcrumbItem>
+                        <BreadcrumbItem href="/class-levels">
+                            {t('class_level.list.title.primary')}
+                        </BreadcrumbItem>
+                        <BreadcrumbItem>
+                            {t('class_level.view.title')} ?
+                        </BreadcrumbItem>
+                        <BreadcrumbItem active href="/">
+                            {t('school_class.view.title')} ?
+                        </BreadcrumbItem>
+                    </Breadcrumb>
+                </AdminOnly>
+                <h3>{t('school_class.view.title')}: ?</h3>
+                {errorMessage ? (
+                    <Alert variant="danger">
+                        {t('error')}: {errorMessage}
+                    </Alert>
+                ) : (
+                    <Loader />
+                )}
+            </>
+        );
+    }
+
+    const {
+        belts,
+        skill_domains,
+        class_level,
+        school_class,
+        students,
+        student_belts,
+    } = studentList;
+
+    return (
+        <>
             <AdminOnly>
                 <Breadcrumb>
                     <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                    <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-                    <BreadcrumbItem>{t('class_level.view.title')} ?</BreadcrumbItem>
-                    <BreadcrumbItem active href="/">{t('school_class.view.title')} ?</BreadcrumbItem>
+                    <BreadcrumbItem href="/class-levels">
+                        {t('class_level.list.title.primary')}
+                    </BreadcrumbItem>
+                    <BreadcrumbItem href={'/class-levels/' + class_level.id}>
+                        {t('class_level.view.title')} {class_level.prefix}
+                    </BreadcrumbItem>
+                    <BreadcrumbItem
+                        active
+                        href={'/school-classes/' + school_class.id}
+                    >
+                        {t('school_class.view.title')} {school_class.suffix}
+                    </BreadcrumbItem>
                 </Breadcrumb>
             </AdminOnly>
-            <h3>{t('school_class.view.title')}: ?</h3>
-            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
-        </>;
-    }
-
-    const { belts, skill_domains, class_level, school_class, students, student_belts } = studentList;
-
-    return <>
-        <AdminOnly>
-            <Breadcrumb>
-                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-                <BreadcrumbItem href={'/class-levels/' + class_level.id}>{t('class_level.view.title')} {class_level.prefix}</BreadcrumbItem>
-                <BreadcrumbItem active href={'/school-classes/' + school_class.id}>{t('school_class.view.title')} {school_class.suffix}</BreadcrumbItem>
-            </Breadcrumb>
-        </AdminOnly>
-        <h3>{t('school_class.view.title')}: {class_level.prefix}{school_class.suffix}</h3>
-        <AdminOnly>
-            {waitlistEntryList &&
-                <SchoolClassWaitlist
-                    school_class={school_class}
-                    students={students}
-                    skill_domains={skill_domains}
-                    belts={belts}
-                    waitlist_entries={waitlistEntryList.waitlist_entries}
-                />
-            }
-            <EditSchoolClassButton
-                class_level={class_level}
-                school_class={school_class}
-                changedCallback={new_school_class => {
-                    setStudentList({ ...studentList, school_class: new_school_class });
-                }}
-            />
-            {' '}
-            <DeleteSchoolClassButton
-                class_level={class_level}
-                school_class={school_class}
-                deletedCallback={() => navigate('/class-levels/' + class_level.id)}
-            />
-            <h4>{t('student.list.title.secondary')}</h4>
-            <CreateStudentButton
-                school_class={school_class}
-                class_level={class_level}
-                createdCallback={new_student => {
-                    setStudentList({ ...studentList, students: [...students, new_student] });
-                }}
-            />
-            {' '}
-            <UpdateStudentRanks students={students} changedCallback={new_students => {
-                setStudentList({ ...studentList, students: new_students });
-            }} />
-            {' '}
-            {waitlistEntryList &&
-                <ManageClassWaitlist
+            <h3>
+                {t('school_class.view.title')}: {class_level.prefix}
+                {school_class.suffix}
+            </h3>
+            <AdminOnly>
+                {waitlistEntryList && (
+                    <SchoolClassWaitlist
+                        school_class={school_class}
+                        students={students}
+                        skill_domains={skill_domains}
+                        belts={belts}
+                        waitlist_entries={waitlistEntryList.waitlist_entries}
+                    />
+                )}
+                <EditSchoolClassButton
                     class_level={class_level}
                     school_class={school_class}
-                    students={students}
-                    skill_domains={skill_domains}
-                    belts={belts}
-                    student_belts={student_belts}
-                    waitlistEntryList={waitlistEntryList}
-                    setWaitlistEntryList={setWaitlistEntryList}
+                    changedCallback={(new_school_class) => {
+                        setStudentList({
+                            ...studentList,
+                            school_class: new_school_class,
+                        });
+                    }}
+                />{' '}
+                <DeleteSchoolClassButton
+                    class_level={class_level}
+                    school_class={school_class}
+                    deletedCallback={() =>
+                        navigate('/class-levels/' + class_level.id)
+                    }
                 />
-            }
-        </AdminOnly>
-        <EvaluationGrid
-            students={students}
-            setStudents={new_students => setStudentList({ ...studentList, students: new_students })}
-            skill_domains={skill_domains}
-            belts={belts}
-            student_belts={student_belts}
-        />
-    </>;
+                <h4>{t('student.list.title.secondary')}</h4>
+                <CreateStudentButton
+                    school_class={school_class}
+                    class_level={class_level}
+                    createdCallback={(new_student) => {
+                        setStudentList({
+                            ...studentList,
+                            students: [...students, new_student],
+                        });
+                    }}
+                />{' '}
+                <UpdateStudentRanks
+                    students={students}
+                    changedCallback={(new_students) => {
+                        setStudentList({
+                            ...studentList,
+                            students: new_students,
+                        });
+                    }}
+                />{' '}
+                {waitlistEntryList && (
+                    <ManageClassWaitlist
+                        class_level={class_level}
+                        school_class={school_class}
+                        students={students}
+                        skill_domains={skill_domains}
+                        belts={belts}
+                        student_belts={student_belts}
+                        waitlistEntryList={waitlistEntryList}
+                        setWaitlistEntryList={setWaitlistEntryList}
+                    />
+                )}
+            </AdminOnly>
+            <EvaluationGrid
+                students={students}
+                setStudents={(new_students) =>
+                    setStudentList({ ...studentList, students: new_students })
+                }
+                skill_domains={skill_domains}
+                belts={belts}
+                student_belts={student_belts}
+            />
+        </>
+    );
 }
 
 interface StudentWidgetProps {
-    student_id: number,
+    student_id: number;
 }
 
 function StudentWidget(props: StudentWidgetProps) {
@@ -565,99 +866,176 @@ function StudentWidget(props: StudentWidgetProps) {
 
     const loginInfo = React.useContext(LoginContext);
     assert(loginInfo !== null);
-    const canUseWaitlist = loginInfo.user.is_admin || loginInfo.student?.id === student_id;
+    const canUseWaitlist =
+        loginInfo.user.is_admin || loginInfo.student?.id === student_id;
 
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
-    const [evaluationList, setEvaluationList] = useState<null | EvaluationList>(null);
-    const [waitlistEntryList, setWaitlistEntryList] = useState<null | WaitlistEntryList>(null);
+    const [evaluationList, setEvaluationList] = useState<null | EvaluationList>(
+        null
+    );
+    const [waitlistEntryList, setWaitlistEntryList] =
+        useState<null | WaitlistEntryList>(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        StudentsService
-            .getStudentResource(student_id)
+        StudentsService.getStudentResource(student_id)
             .then(setEvaluationList)
-            .catch(error => { setErrorMessage(getAPIError(error)); });
+            .catch((error) => {
+                setErrorMessage(getAPIError(error));
+            });
         if (canUseWaitlist) {
-            StudentsService
-                .getStudentWaitlistResource(student_id)
+            StudentsService.getStudentWaitlistResource(student_id)
                 .then(setWaitlistEntryList)
-                .catch(error => { setErrorMessage(getAPIError(error)); });
+                .catch((error) => {
+                    setErrorMessage(getAPIError(error));
+                });
         }
     }, [canUseWaitlist, student_id]);
 
-    if (evaluationList === null || (canUseWaitlist && waitlistEntryList === null)) {
-        return <>
+    if (
+        evaluationList === null ||
+        (canUseWaitlist && waitlistEntryList === null)
+    ) {
+        return (
+            <>
+                <AdminOnly>
+                    <Breadcrumb>
+                        <BreadcrumbItem href="/">
+                            {t('home_page')}
+                        </BreadcrumbItem>
+                        <BreadcrumbItem href="/class-levels">
+                            {t('class_level.list.title.primary')}
+                        </BreadcrumbItem>
+                        <BreadcrumbItem>
+                            {t('class_level.view.title')} ?
+                        </BreadcrumbItem>
+                        <BreadcrumbItem active href="/">
+                            {t('school_class.view.title')} ?
+                        </BreadcrumbItem>
+                        <BreadcrumbItem active href={'/students/' + student_id}>
+                            {t('student.view.title')} ?
+                        </BreadcrumbItem>
+                    </Breadcrumb>
+                </AdminOnly>
+                <h3>{t('student.view.title')}: ?</h3>
+                {errorMessage ? (
+                    <Alert variant="danger">
+                        {t('error')}: {errorMessage}
+                    </Alert>
+                ) : (
+                    <Loader />
+                )}
+            </>
+        );
+    }
+
+    const {
+        belts,
+        skill_domains,
+        class_level,
+        school_class,
+        student,
+        evaluations,
+    } = evaluationList;
+
+    const sorted_skill_domains = skill_domains.sort((a, b) =>
+        a.code.localeCompare(b.code)
+    );
+
+    return (
+        <>
             <AdminOnly>
                 <Breadcrumb>
                     <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                    <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-                    <BreadcrumbItem>{t('class_level.view.title')} ?</BreadcrumbItem>
-                    <BreadcrumbItem active href="/">{t('school_class.view.title')} ?</BreadcrumbItem>
-                    <BreadcrumbItem active href={'/students/' + student_id}>{t('student.view.title')} ?</BreadcrumbItem>
+                    <BreadcrumbItem href="/class-levels">
+                        {t('class_level.list.title.primary')}
+                    </BreadcrumbItem>
+                    <BreadcrumbItem href={'/class-levels/' + class_level.id}>
+                        {t('class_level.view.title')} {class_level.prefix}
+                    </BreadcrumbItem>
+                    <BreadcrumbItem
+                        active
+                        href={'/school-classes/' + school_class.id}
+                    >
+                        {t('school_class.view.title')} {school_class.suffix}
+                    </BreadcrumbItem>
+                    <BreadcrumbItem active href={'/students/' + student.id}>
+                        {t('student.view.title')} {student.display_name}
+                    </BreadcrumbItem>
                 </Breadcrumb>
             </AdminOnly>
-            <h3>{t('student.view.title')}: ?</h3>
-            {errorMessage ? <Alert variant="danger">{t('error')}: {errorMessage}</Alert> : <Loader />}
-        </>;
-    }
-
-    const { belts, skill_domains, class_level, school_class, student, evaluations } = evaluationList;
-
-    const sorted_skill_domains = skill_domains.sort((a, b) => a.code.localeCompare(b.code));
-
-    return <>
-        <AdminOnly>
-            <Breadcrumb>
-                <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                <BreadcrumbItem href="/class-levels">{t('class_level.list.title.primary')}</BreadcrumbItem>
-                <BreadcrumbItem href={'/class-levels/' + class_level.id}>{t('class_level.view.title')} {class_level.prefix}</BreadcrumbItem>
-                <BreadcrumbItem active href={'/school-classes/' + school_class.id}>{t('school_class.view.title')} {school_class.suffix}</BreadcrumbItem>
-                <BreadcrumbItem active href={'/students/' + student.id}>{t('student.view.title')} {student.display_name}</BreadcrumbItem>
-            </Breadcrumb>
-        </AdminOnly>
-        <h3>{t('student.view.title')}: {student.display_name}</h3>
-        {t('student.view.school_class')}:
-        {' '}
-        <Link to={'/school-classes/' + school_class.id}>
-            {class_level.prefix}{school_class.suffix}
-        </Link>
-        <AdminOnly>
-            <br />
-            <EditStudentButton student={student} changedCallback={new_student => {
-                setEvaluationList({ ...evaluationList, student: new_student });
-            }} />
-            {' '}
-            <DeleteStudentButton student={student} deletedCallback={() => navigate('/school-classes/' + school_class.id)} />
-        </AdminOnly>
-        <h4>{t('student.belts.title')}</h4>
-        <StudentBelts
-            skill_domains={sorted_skill_domains}
-            belts={belts}
-            student={student}
-            evaluations={evaluations}
-            canUseWaitlist={canUseWaitlist}
-            waitlist_entries={waitlistEntryList?.waitlist_entries || []}
-            setWaitlistEntries={new_waitlist_entries => {
-                if (waitlistEntryList) {
-                    setWaitlistEntryList({ ...waitlistEntryList, waitlist_entries: new_waitlist_entries});
+            <h3>
+                {t('student.view.title')}: {student.display_name}
+            </h3>
+            {t('student.view.school_class')}:{' '}
+            <Link to={'/school-classes/' + school_class.id}>
+                {class_level.prefix}
+                {school_class.suffix}
+            </Link>
+            <AdminOnly>
+                <br />
+                <EditStudentButton
+                    student={student}
+                    changedCallback={(new_student) => {
+                        setEvaluationList({
+                            ...evaluationList,
+                            student: new_student,
+                        });
+                    }}
+                />{' '}
+                <DeleteStudentButton
+                    student={student}
+                    deletedCallback={() =>
+                        navigate('/school-classes/' + school_class.id)
+                    }
+                />
+            </AdminOnly>
+            <h4>{t('student.belts.title')}</h4>
+            <StudentBelts
+                skill_domains={sorted_skill_domains}
+                belts={belts}
+                student={student}
+                evaluations={evaluations}
+                canUseWaitlist={canUseWaitlist}
+                waitlist_entries={waitlistEntryList?.waitlist_entries || []}
+                setWaitlistEntries={(new_waitlist_entries) => {
+                    if (waitlistEntryList) {
+                        setWaitlistEntryList({
+                            ...waitlistEntryList,
+                            waitlist_entries: new_waitlist_entries,
+                        });
+                    }
+                }}
+            />
+            <h4>{t('evaluation.list.title.secondary')}</h4>
+            <AdminOnly>
+                <CreateEvaluationButton
+                    student={student}
+                    skill_domains={skill_domains}
+                    belts={belts}
+                    createdCallback={(new_evaluation) => {
+                        setEvaluationList({
+                            ...evaluationList,
+                            evaluations: [...evaluations, new_evaluation],
+                        });
+                    }}
+                />
+            </AdminOnly>
+            <EvaluationListing
+                skill_domains={skill_domains}
+                belts={belts}
+                student={student}
+                evaluations={evaluations}
+                setEvaluations={(new_evaluations) =>
+                    setEvaluationList({
+                        ...evaluationList,
+                        evaluations: new_evaluations,
+                    })
                 }
-            }}
-        />
-        <h4>{t('evaluation.list.title.secondary')}</h4>
-        <AdminOnly>
-            <CreateEvaluationButton student={student} skill_domains={skill_domains} belts={belts} createdCallback={new_evaluation => {
-                setEvaluationList({ ...evaluationList, evaluations: [...evaluations, new_evaluation] });
-            }} />
-        </AdminOnly>
-        <EvaluationListing
-            skill_domains={skill_domains}
-            belts={belts}
-            student={student}
-            evaluations={evaluations}
-            setEvaluations={new_evaluations => setEvaluationList({ ...evaluationList, evaluations: new_evaluations })}
-        />
-    </>;
+            />
+        </>
+    );
 }
 
 function StudentView() {
@@ -676,29 +1054,34 @@ function LanguageSelector() {
     const otherLanguageCode = currentLanguageCode === 'en' ? 'fr' : 'en';
 
     const languageEmojis = {
-        'en': '🇬🇧',
-        'fr': '🇫🇷',
+        en: '🇬🇧',
+        fr: '🇫🇷',
     };
     const otherLanguageEmoji = languageEmojis[otherLanguageCode];
 
-    return <Button onClick={() => i18n.changeLanguage(otherLanguageCode)}>{otherLanguageEmoji}</Button>;
+    return (
+        <Button onClick={() => i18n.changeLanguage(otherLanguageCode)}>
+            {otherLanguageEmoji}
+        </Button>
+    );
 }
 
 function NotFound() {
     const { t } = useTranslation();
-    return (
-        <Alert variant="warning">
-            {t('not_found')}
-        </Alert>
-    );
+    return <Alert variant="warning">{t('not_found')}</Alert>;
 }
 
 function Layout() {
     const { t } = useTranslation();
 
     const rawSavedLoginInfo = localStorage.getItem('login_info');
-    const savedLoginInfo = rawSavedLoginInfo === null ? null : (JSON.parse(rawSavedLoginInfo) as LoginInfo);
-    const [loginInfo, setLoginInfo] = useState<LoginInfo | null>(savedLoginInfo);
+    const savedLoginInfo =
+        rawSavedLoginInfo === null
+            ? null
+            : (JSON.parse(rawSavedLoginInfo) as LoginInfo);
+    const [loginInfo, setLoginInfo] = useState<LoginInfo | null>(
+        savedLoginInfo
+    );
     const [loginMessage, setLoginMessage] = useState('');
 
     // NOTE: always reset this, to make sure it is actually cleared when login out
@@ -707,7 +1090,12 @@ function Layout() {
     if (loginInfo === null) {
         OpenAPI.TOKEN = undefined;
         localStorage.removeItem('login_info');
-        return <LoginFormWidget loggedInCallback={setLoginInfo} infoMessage={loginMessage} />;
+        return (
+            <LoginFormWidget
+                loggedInCallback={setLoginInfo}
+                infoMessage={loginMessage}
+            />
+        );
     }
     if (loginInfo.payload?.exp <= Date.now() / 1000) {
         setLoginInfo(null);
@@ -725,52 +1113,126 @@ function Layout() {
         return false;
     };
 
-    const missing_i18n_key_events_since_last_login = loginInfo.missing_i18n_key_events_since_last_login;
+    const missing_i18n_key_events_since_last_login =
+        loginInfo.missing_i18n_key_events_since_last_login;
 
-    return <LoginContext.Provider value={loginInfo}>
-        <Navbar>
-            <Navbar.Brand as={Link} to="/">{t('main_title')}</Navbar.Brand>
-            <Nav className="me-auto">
-                <Nav.Item><Nav.Link as={Link} to="/">{t('home_page')}</Nav.Link></Nav.Item>
-                <Nav.Item><Nav.Link as={Link} to="/skill-domains">{t('skill_domain.list.title.primary')}</Nav.Link></Nav.Item>
-                <Nav.Item><Nav.Link as={Link} to="/belts">{t('belt.list.title.primary')}</Nav.Link></Nav.Item>
-                <AdminOnly>
-                    <Nav.Item><Nav.Link as={Link} to="/class-levels">{t('class_level.list.title.primary')}</Nav.Link></Nav.Item>
-                    <Nav.Item><Nav.Link as={Link} to="/users">{t('user.list.title.primary')}</Nav.Link></Nav.Item>
-                    <Nav.Item><Nav.Link as={Link} to="/i18n">i18n</Nav.Link></Nav.Item>
-                </AdminOnly>
-            </Nav>
-            {loginInfo.student ? <Badge bg="info" className="me-2">{loginInfo.student.display_name}</Badge> : null}
-            <LanguageSelector />
-            <Badge bg="info" className="me-2">{loginInfo.user.username}</Badge>
-            <LogoutButton className="me-2" loggedOutCallback={() => setLoginInfo(null)}/>
-        </Navbar>
-        {missing_i18n_key_events_since_last_login &&
-            <Alert variant="danger">
-                {t('missing_i18n_keys', missing_i18n_key_events_since_last_login)}
-            </Alert>
-        }
-        <Outlet />
-    </LoginContext.Provider>;
+    return (
+        <LoginContext.Provider value={loginInfo}>
+            <Navbar>
+                <Navbar.Brand as={Link} to="/">
+                    {t('main_title')}
+                </Navbar.Brand>
+                <Nav className="me-auto">
+                    <Nav.Item>
+                        <Nav.Link as={Link} to="/">
+                            {t('home_page')}
+                        </Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link as={Link} to="/skill-domains">
+                            {t('skill_domain.list.title.primary')}
+                        </Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link as={Link} to="/belts">
+                            {t('belt.list.title.primary')}
+                        </Nav.Link>
+                    </Nav.Item>
+                    <AdminOnly>
+                        <Nav.Item>
+                            <Nav.Link as={Link} to="/class-levels">
+                                {t('class_level.list.title.primary')}
+                            </Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link as={Link} to="/users">
+                                {t('user.list.title.primary')}
+                            </Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link as={Link} to="/i18n">
+                                i18n
+                            </Nav.Link>
+                        </Nav.Item>
+                    </AdminOnly>
+                </Nav>
+                {loginInfo.student ? (
+                    <Badge bg="info" className="me-2">
+                        {loginInfo.student.display_name}
+                    </Badge>
+                ) : null}
+                <LanguageSelector />
+                <Badge bg="info" className="me-2">
+                    {loginInfo.user.username}
+                </Badge>
+                <LogoutButton
+                    className="me-2"
+                    loggedOutCallback={() => setLoginInfo(null)}
+                />
+            </Navbar>
+            {missing_i18n_key_events_since_last_login && (
+                <Alert variant="danger">
+                    {t(
+                        'missing_i18n_keys',
+                        missing_i18n_key_events_since_last_login
+                    )}
+                </Alert>
+            )}
+            <Outlet />
+        </LoginContext.Provider>
+    );
 }
 
 function App() {
-    return <Routes>
-        <Route path="/" element={<Layout />}>
-            <Route path="" element={<HomeView />} />
-            <Route path="i18n" element={<AdminOnly><I18nView /></AdminOnly>} />
-            <Route path="users" element={<AdminOnly><UsersView /></AdminOnly>} />
-            <Route path="belts" element={<BeltsView />} />
-            <Route path="skill-domains" element={<SkillDomainsView />} />
-            <Route path="class-levels">
-                <Route index element={<AdminOnly><ClassLevelsView /></AdminOnly>} />
-                <Route path=":class_level_id" element={<AdminOnly><ClassLevelView /></AdminOnly>} />
+    return (
+        <Routes>
+            <Route path="/" element={<Layout />}>
+                <Route path="" element={<HomeView />} />
+                <Route
+                    path="i18n"
+                    element={
+                        <AdminOnly>
+                            <I18nView />
+                        </AdminOnly>
+                    }
+                />
+                <Route
+                    path="users"
+                    element={
+                        <AdminOnly>
+                            <UsersView />
+                        </AdminOnly>
+                    }
+                />
+                <Route path="belts" element={<BeltsView />} />
+                <Route path="skill-domains" element={<SkillDomainsView />} />
+                <Route path="class-levels">
+                    <Route
+                        index
+                        element={
+                            <AdminOnly>
+                                <ClassLevelsView />
+                            </AdminOnly>
+                        }
+                    />
+                    <Route
+                        path=":class_level_id"
+                        element={
+                            <AdminOnly>
+                                <ClassLevelView />
+                            </AdminOnly>
+                        }
+                    />
+                </Route>
+                <Route
+                    path="school-classes/:school_class_id"
+                    element={<SchoolClassView />}
+                />
+                <Route path="students/:student_id" element={<StudentView />} />
+                <Route path="*" element={<NotFound />} />
             </Route>
-            <Route path="school-classes/:school_class_id" element={<SchoolClassView />} />
-            <Route path="students/:student_id" element={<StudentView />} />
-            <Route path="*" element={<NotFound />} />
-        </Route>
-    </Routes>;
+        </Routes>
+    );
 }
 
 ReactDOM.render(
@@ -779,5 +1241,5 @@ ReactDOM.render(
             <App />
         </BrowserRouter>
     </StrictMode>,
-    document.getElementById('root'),
+    document.getElementById('root')
 );

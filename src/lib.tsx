@@ -1,12 +1,12 @@
 import i18n from 'i18next';
 
 interface APIErrorBody {
-    message?: string,
+    message?: string;
 }
 
 interface APIError {
-    body?: APIErrorBody,
-    message: string,
+    body?: APIErrorBody;
+    message: string;
 }
 
 export function getAPIError(error: APIError): string {
