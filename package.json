@@ -45,7 +45,13 @@
     "@typescript-eslint/parser": "^4.33.0",
     "eslint": "^7.32.0",
     "eslint-plugin-react": "^7.27.0",
-    "openapi-typescript-codegen": "^0.12.1"
+    "openapi-typescript-codegen": "^0.12.1",
+    "prettier": "^2.8.0"
+  },
+  "prettier": {
+    "quoteProps": "consistent",
+    "singleQuote": true,
+    "tabWidth": 4
   },
   "proxy": "http://127.0.0.1:5000"
 }
