@@ -3,7 +3,7 @@ import { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Alert from 'react-bootstrap/Alert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
-import { BeltList, BeltsService } from './api';
+import { Belt, BeltList, BeltsService } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly } from './auth';
 import BeltListing from './BeltListing';
@@ -14,6 +14,16 @@ export default function BeltsView(): ReactElement {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [beltList, setBeltList] = useState<null | BeltList>(null);
+
+    const setBelts = (setStateAction: (prevBelts: Belt[]) => Belt[]) =>
+        setBeltList((prevBeltList) => {
+            if (prevBeltList === null) {
+                return null;
+            }
+            const prevBelts = prevBeltList.belts;
+            const nextBelts = setStateAction(prevBelts);
+            return { ...prevBeltList, belts: nextBelts };
+        });
 
     useEffect(() => {
         BeltsService.getBeltsResource()
@@ -83,9 +93,7 @@ export default function BeltsView(): ReactElement {
             <h4>{t('belt.list.title.secondary')}</h4>
             <BeltListing
                 belts={sorted_belts}
-                setBelts={(new_belts) =>
-                    setBeltList({ ...beltList, belts: new_belts })
-                }
+                setBelts={setBelts}
                 setErrorMessage={setErrorMessage}
             />
         </>

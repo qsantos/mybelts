@@ -15,7 +15,7 @@ interface Props {
     direction: number;
     belt: Belt;
     belts: Belt[];
-    setBelts: Dispatch<Belt[]>;
+    setBelts: Dispatch<(prevBelts: Belt[]) => Belt[]>;
     setErrorMessage: Dispatch<string>;
 }
 
@@ -38,19 +38,22 @@ export default function BeltMoveButton(props: Props): ReactElement {
         BeltsService.patchBeltRankResource(belt.id, {
             increase_by: direction,
         })
-            .then(() => {
-                setMoving(false);
-                const other_belt = belts[belt.rank + direction - 1];
-                if (other_belt === undefined) {
-                    console.error('Failed to find other belt');
-                    return;
-                }
-                // adjust belt list
-                [belt.rank, other_belt.rank] = [other_belt.rank, belt.rank];
-                belts[belt.rank - 1] = belt;
-                belts[other_belt.rank - 1] = other_belt;
-                setBelts(belts);
-            })
+            .then(() =>
+                setBelts((prevBelts) => {
+                    setMoving(false);
+                    const nextBelts = [...prevBelts];
+                    const other_belt = nextBelts[belt.rank + direction - 1];
+                    if (other_belt === undefined) {
+                        console.error('Failed to find other belt');
+                        return nextBelts;
+                    }
+                    // adjust belt list
+                    [belt.rank, other_belt.rank] = [other_belt.rank, belt.rank];
+                    nextBelts[belt.rank - 1] = belt;
+                    nextBelts[other_belt.rank - 1] = other_belt;
+                    return nextBelts;
+                })
+            )
             .catch((error) => {
                 setMoving(false);
                 setErrorMessage(getAPIError(error));

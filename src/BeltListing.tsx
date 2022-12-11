@@ -12,7 +12,7 @@ import BeltDeleteButton from './BeltDeleteButton';
 
 interface Props {
     belts: Belt[];
-    setBelts: Dispatch<Belt[]>;
+    setBelts: Dispatch<(prevBelts: Belt[]) => Belt[]>;
     setErrorMessage: Dispatch<string>;
 }
 
@@ -65,29 +65,40 @@ export default function BeltListing(props: Props): ReactElement {
                                     />{' '}
                                     <BeltEditButton
                                         belt={belt}
-                                        changedCallback={(new_belt) => {
-                                            const new_belts = [...belts];
-                                            new_belts[index] = new_belt;
-                                            setBelts(new_belts);
+                                        changedCallback={(nextBelt) => {
+                                            setBelts((prevBelts) => {
+                                                const nextBelts = [
+                                                    ...prevBelts,
+                                                ];
+                                                nextBelts[index] = nextBelt;
+                                                return nextBelts;
+                                            });
                                         }}
                                     />{' '}
                                     <BeltDeleteButton
                                         belt={belt}
                                         deletedCallback={() => {
-                                            const new_belts = [...belts];
-                                            new_belts.splice(index, 1);
-                                            for (
-                                                let j = index;
-                                                j < new_belts.length;
-                                                j += 1
-                                            ) {
-                                                const other_belt = new_belts[j];
-                                                if (other_belt !== undefined) {
-                                                    // always true
-                                                    other_belt.rank -= 1;
+                                            setBelts((prevBelts) => {
+                                                const nextBelts = [
+                                                    ...prevBelts,
+                                                ];
+                                                nextBelts.splice(index, 1);
+                                                for (
+                                                    let j = index;
+                                                    j < nextBelts.length;
+                                                    j += 1
+                                                ) {
+                                                    const other_belt =
+                                                        nextBelts[j];
+                                                    if (
+                                                        other_belt !== undefined
+                                                    ) {
+                                                        // always true
+                                                        other_belt.rank -= 1;
+                                                    }
                                                 }
-                                            }
-                                            setBelts(new_belts);
+                                                return nextBelts;
+                                            });
                                         }}
                                     />
                                 </td>
