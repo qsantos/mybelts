@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactElement } from 'react';
+import { Dispatch, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import Table from 'react-bootstrap/Table';
 
@@ -10,7 +10,7 @@ import SkillDomainDeleteButton from './SkillDomainDeleteButton';
 
 interface Props {
     skill_domains: SkillDomain[];
-    setSkillDomains: (skill_domains: SkillDomain[]) => void;
+    setSkillDomains: Dispatch<SkillDomain[]>;
 }
 
 export default function SkillDomainListing(props: Props): ReactElement {

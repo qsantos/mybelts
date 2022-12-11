@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactElement } from 'react';
+import { Dispatch, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import Table from 'react-bootstrap/Table';
 
@@ -15,7 +15,7 @@ interface Props {
     evaluations: Evaluation[];
     canUseWaitlist: boolean;
     waitlist_entries: WaitlistEntry[];
-    setWaitlistEntries: (waitlist_entries: WaitlistEntry[]) => void;
+    setWaitlistEntries: Dispatch<WaitlistEntry[]>;
 }
 
 export default function StudentBelts(props: Props): ReactElement {

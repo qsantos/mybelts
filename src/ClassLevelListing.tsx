@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactElement } from 'react';
+import { Dispatch, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import Nav from 'react-bootstrap/Nav';
@@ -12,7 +12,7 @@ import ClassLevelDeleteButton from './ClassLevelDeleteButton';
 
 interface Props {
     class_levels: ClassLevel[];
-    setClassLevels: (class_levels: ClassLevel[]) => void;
+    setClassLevels: Dispatch<ClassLevel[]>;
 }
 
 export default function ClassLevelListing(props: Props): ReactElement {

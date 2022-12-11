@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactElement, useState } from 'react';
+import { Dispatch, ReactElement, SetStateAction, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from 'react-bootstrap/Button';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
@@ -11,7 +11,7 @@ import { getAPIError } from './lib';
 
 interface Props {
     school_class: SchoolClass;
-    setErrorMessage: (v: string) => void;
+    setErrorMessage: Dispatch<SetStateAction<string>>;
 }
 
 export default function SchoolClassExamsPDFButton(props: Props): ReactElement {

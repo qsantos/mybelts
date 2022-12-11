@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactElement } from 'react';
+import { Dispatch, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import Table from 'react-bootstrap/Table';
 
@@ -9,7 +9,7 @@ import UserDeleteButton from './UserDeleteButton';
 
 interface Props {
     users: User[];
-    setUsers: (users: User[]) => void;
+    setUsers: Dispatch<User[]>;
 }
 
 export default function UserListing(props: Props): ReactElement {

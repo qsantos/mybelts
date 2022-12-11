@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactElement, useState } from 'react';
+import { Dispatch, ReactElement, SetStateAction, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
@@ -20,7 +20,7 @@ interface Props {
     skill_domain: SkillDomain;
     belt: Belt;
     waitlist_entry?: WaitlistEntry;
-    setErrorMessage: (error: string) => void;
+    setErrorMessage: Dispatch<SetStateAction<string>>;
     onCreate?: (waitlistEntryList: WaitlistEntry) => void;
     onDelete?: () => void;
 }

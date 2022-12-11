@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactElement } from 'react';
+import { Dispatch, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import Nav from 'react-bootstrap/Nav';
@@ -13,7 +13,7 @@ import SchoolClassDeleteButton from './SchoolClassDeleteButton';
 interface Props {
     class_level: ClassLevel;
     school_classes: SchoolClass[];
-    setSchoolClasses: (school_classes: SchoolClass[]) => void;
+    setSchoolClasses: Dispatch<SchoolClass[]>;
 }
 
 export default function SchoolClassListing(props: Props): ReactElement {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactElement, useState } from 'react';
+import { Dispatch, ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from 'react-bootstrap/Button';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
@@ -15,8 +15,8 @@ interface Props {
     direction: number;
     belt: Belt;
     belts: Belt[];
-    setBelts: (belts: Belt[]) => void;
-    setErrorMessage: (errorMessage: string) => void;
+    setBelts: Dispatch<Belt[]>;
+    setErrorMessage: Dispatch<string>;
 }
 
 export default function BeltMoveButton(props: Props): ReactElement {

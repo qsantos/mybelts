@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactElement } from 'react';
+import { Dispatch, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import Table from 'react-bootstrap/Table';
 import { AdminOnly } from './auth';
@@ -12,8 +12,8 @@ import BeltDeleteButton from './BeltDeleteButton';
 
 interface Props {
     belts: Belt[];
-    setBelts: (belts: Belt[]) => void;
-    setErrorMessage: (errorMessage: string) => void;
+    setBelts: Dispatch<Belt[]>;
+    setErrorMessage: Dispatch<string>;
 }
 
 export default function BeltListing(props: Props): ReactElement {

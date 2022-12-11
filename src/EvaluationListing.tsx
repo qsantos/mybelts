@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactElement } from 'react';
+import { Dispatch, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ColumnDef } from '@tanstack/react-table';
 
@@ -16,7 +16,7 @@ interface Props {
     belts: Belt[];
     student: Student;
     evaluations: Evaluation[];
-    setEvaluations: (evaluations: Evaluation[]) => void;
+    setEvaluations: Dispatch<Evaluation[]>;
 }
 
 export default function EvaluationListing(props: Props): ReactElement | null {

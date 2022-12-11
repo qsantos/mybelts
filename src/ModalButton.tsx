@@ -1,5 +1,12 @@
 import React from 'react';
-import { FormEvent, ReactElement, ReactNode, useState } from 'react';
+import {
+    Dispatch,
+    FormEvent,
+    ReactElement,
+    ReactNode,
+    SetStateAction,
+    useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getAPIError } from './lib';
@@ -24,7 +31,7 @@ interface ModalButtonProps<T> {
 
 interface ModalButtonWidgetProps<T> extends ModalButtonProps<T> {
     show: boolean;
-    setShow: (show: boolean) => void;
+    setShow: Dispatch<SetStateAction<boolean>>;
 }
 
 export function ModalButtonButton<T>(

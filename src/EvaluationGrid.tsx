@@ -1,5 +1,5 @@
 import React from 'react';
-import { ReactElement } from 'react';
+import { Dispatch, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import Nav from 'react-bootstrap/Nav';
@@ -20,7 +20,7 @@ import StudentEditButton from './StudentEditButton';
 
 interface Props {
     students: Student[];
-    setStudents: (students: Student[]) => void;
+    setStudents: Dispatch<Student[]>;
     skill_domains: SkillDomain[];
     belts: Belt[];
     student_belts: SchoolClassStudentBeltsStudentBelts[];
