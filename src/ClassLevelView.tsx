@@ -166,15 +166,15 @@ export default function ClassLevelView(): ReactElement {
                 belts={belts}
                 skill_domains={skill_domains}
                 class_level={class_level}
-                createdCallback={(new_exam) =>
-                    setSchoolClassList((oldSchoolClassList) => {
-                        if (!oldSchoolClassList) {
+                createdCallback={(nextExam) =>
+                    setSchoolClassList((prevSchoolClassList) => {
+                        if (!prevSchoolClassList) {
                             return null;
                         }
-                        const { exams: oldExams } = oldSchoolClassList;
+                        const { exams: prevExams } = prevSchoolClassList;
                         return {
-                            ...oldSchoolClassList,
-                            exams: [...oldExams, new_exam],
+                            ...prevSchoolClassList,
+                            exams: [...prevExams, nextExam],
                         };
                     })
                 }
