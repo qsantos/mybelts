@@ -14,7 +14,7 @@ interface Props {
     direction_key: string;
     direction: number;
     belt: Belt;
-    belts: Belt[];
+    is_last: boolean;
     setBelts: Dispatch<(prevBelts: Belt[]) => Belt[]>;
     setErrorMessage: Dispatch<string>;
 }
@@ -25,7 +25,7 @@ export default function BeltMoveButton(props: Props): ReactElement {
         direction_key,
         direction,
         belt,
-        belts,
+        is_last,
         setBelts,
         setErrorMessage,
     } = props;
@@ -79,10 +79,7 @@ export default function BeltMoveButton(props: Props): ReactElement {
                     </Button>
                 ) : (
                     <Button
-                        disabled={
-                            belt.rank + direction <= 0 ||
-                            belt.rank + direction > belts.length
-                        }
+                        disabled={belt.rank + direction <= 0 || is_last}
                         onClick={handleMove}
                     >
                         {buttonContent}
