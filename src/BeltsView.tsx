@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Alert from 'react-bootstrap/Alert';
@@ -15,15 +15,18 @@ export default function BeltsView(): ReactElement {
     const [errorMessage, setErrorMessage] = useState('');
     const [beltList, setBeltList] = useState<null | BeltList>(null);
 
-    const setBelts = (setStateAction: (prevBelts: Belt[]) => Belt[]) =>
-        setBeltList((prevBeltList) => {
-            if (prevBeltList === null) {
-                return null;
-            }
-            const prevBelts = prevBeltList.belts;
-            const nextBelts = setStateAction(prevBelts);
-            return { ...prevBeltList, belts: nextBelts };
-        });
+    const setBelts = useCallback(
+        (setStateAction: (prevBelts: Belt[]) => Belt[]) =>
+            setBeltList((prevBeltList) => {
+                if (prevBeltList === null) {
+                    return null;
+                }
+                const prevBelts = prevBeltList.belts;
+                const nextBelts = setStateAction(prevBelts);
+                return { ...prevBeltList, belts: nextBelts };
+            }),
+        [setBeltList]
+    );
 
     useEffect(() => {
         BeltsService.getBeltsResource()
