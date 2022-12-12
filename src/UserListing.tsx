@@ -7,9 +7,49 @@ import { User } from './api';
 import UserEditButton from './UserEditButton';
 import UserDeleteButton from './UserDeleteButton';
 
+interface RowProps {
+    index: number;
+    user: User;
+    setUsers: Dispatch<(prevUsers: User[]) => User[]>;
+}
+
+function UserRow_(props: RowProps) {
+    const { index, user, setUsers } = props;
+
+    const changedCallback = (nextUser: User) =>
+        setUsers((prevUsers) => {
+            const nextUsers = [...prevUsers];
+            nextUsers[index] = nextUser;
+            return nextUsers;
+        });
+
+    const deletedCallback = () =>
+        setUsers((prevUsers) => {
+            const nextUsers = [...prevUsers];
+            nextUsers.splice(index, 1);
+            return nextUsers;
+        });
+
+    return (
+        <tr key={user.id}>
+            <td>{user.username}</td>
+            <td>{user.is_admin ? '✅' : '❌'}</td>
+            <td>
+                <UserEditButton user={user} changedCallback={changedCallback} />{' '}
+                <UserDeleteButton
+                    user={user}
+                    deletedCallback={deletedCallback}
+                />
+            </td>
+        </tr>
+    );
+}
+
+const UserRow = React.memo(UserRow_);
+
 interface Props {
     users: User[];
-    setUsers: Dispatch<User[]>;
+    setUsers: Dispatch<(prevUsers: User[]) => User[]>;
 }
 
 export default function UserListing(props: Props): ReactElement {
@@ -27,28 +67,12 @@ export default function UserListing(props: Props): ReactElement {
                 </thead>
                 <tbody>
                     {users.map((user, index) => (
-                        <tr key={user.id}>
-                            <td>{user.username}</td>
-                            <td>{user.is_admin ? '✅' : '❌'}</td>
-                            <td>
-                                <UserEditButton
-                                    user={user}
-                                    changedCallback={(new_user) => {
-                                        const new_users = [...users];
-                                        new_users[index] = new_user;
-                                        setUsers(new_users);
-                                    }}
-                                />{' '}
-                                <UserDeleteButton
-                                    user={user}
-                                    deletedCallback={() => {
-                                        const new_users = [...users];
-                                        new_users.splice(index, 1);
-                                        setUsers(new_users);
-                                    }}
-                                />
-                            </td>
-                        </tr>
+                        <UserRow
+                            key={user.id}
+                            user={user}
+                            index={index}
+                            setUsers={setUsers}
+                        />
                     ))}
                 </tbody>
             </Table>

@@ -1,9 +1,9 @@
 import React from 'react';
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Alert from 'react-bootstrap/Alert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
-import { UserList, UsersService } from './api';
+import { User, UserList, UsersService } from './api';
 import { getAPIError } from './lib';
 import UserListing from './UserListing';
 import UserCreateButton from './UserCreateButton';
@@ -13,6 +13,20 @@ export default function UsersView(): ReactElement {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [userList, setUserList] = useState<null | UserList>(null);
+
+    const setUsers = useCallback(
+        (setStationAction: (prevUsers: User[]) => User[]) => {
+            setUserList((prevUserList) => {
+                if (prevUserList === null) {
+                    return null;
+                }
+                const prevUsers = prevUserList.users;
+                const nextUsers = setStationAction(prevUsers);
+                return { ...prevUserList, users: nextUsers };
+            });
+        },
+        [setUserList]
+    );
 
     useEffect(() => {
         UsersService.getUsersResource()
@@ -65,12 +79,7 @@ export default function UsersView(): ReactElement {
                 }}
             />
             <h4>{t('user.list.title.secondary')}</h4>
-            <UserListing
-                users={sorted_users}
-                setUsers={(new_users) =>
-                    setUserList({ ...userList, users: new_users })
-                }
-            />
+            <UserListing users={sorted_users} setUsers={setUsers} />
         </>
     );
 }
