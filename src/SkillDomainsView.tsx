@@ -1,9 +1,9 @@
 import React from 'react';
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Alert from 'react-bootstrap/Alert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
-import { SkillDomainList, SkillDomainsService } from './api';
+import { SkillDomain, SkillDomainList, SkillDomainsService } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly } from './auth';
 import SkillDomainListing from './SkillDomainListing';
@@ -15,6 +15,22 @@ export default function SkillDomainsView(): ReactElement {
     const [errorMessage, setErrorMessage] = useState('');
     const [skillDomainList, setSkillDomainList] =
         useState<null | SkillDomainList>(null);
+
+    const setSkillDomains = useCallback(
+        (setStateAction: (prevSkillDomains: SkillDomain[]) => SkillDomain[]) =>
+            setSkillDomainList((prevSkillDomainList) => {
+                if (prevSkillDomainList === null) {
+                    return null;
+                }
+                const prevSkillDomains = prevSkillDomainList.skill_domains;
+                const nextSkillDomains = setStateAction(prevSkillDomains);
+                return {
+                    ...prevSkillDomainList,
+                    skill_domains: nextSkillDomains,
+                };
+            }),
+        [setSkillDomainList]
+    );
 
     useEffect(() => {
         SkillDomainsService.getSkillDomainsResource()
@@ -72,12 +88,7 @@ export default function SkillDomainsView(): ReactElement {
             <h4>{t('skill_domain.list.title.secondary')}</h4>
             <SkillDomainListing
                 skill_domains={sorted_skill_domains}
-                setSkillDomains={(new_skill_domains) =>
-                    setSkillDomainList({
-                        ...skillDomainList,
-                        skill_domains: new_skill_domains,
-                    })
-                }
+                setSkillDomains={setSkillDomains}
             />
         </>
     );

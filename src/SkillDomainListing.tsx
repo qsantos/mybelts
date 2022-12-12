@@ -8,14 +8,64 @@ import { AdminOnly } from './auth';
 import SkillDomainEditButton from './SkillDomainEditButton';
 import SkillDomainDeleteButton from './SkillDomainDeleteButton';
 
+interface RowProps {
+    index: number;
+    skill_domain: SkillDomain;
+    setSkillDomains: Dispatch<
+        (prevSkillDomains: SkillDomain[]) => SkillDomain[]
+    >;
+}
+
+function SkillDomainRow_(props: RowProps) {
+    const { index, skill_domain, setSkillDomains } = props;
+
+    const changedCallback = (nextSkillDomain: SkillDomain) =>
+        setSkillDomains((prevSkillDomains) => {
+            const nextSkillDomains = [...prevSkillDomains];
+            nextSkillDomains[index] = nextSkillDomain;
+            return nextSkillDomains;
+        });
+
+    const deletedCallBack = () =>
+        setSkillDomains((prevSkillDomains) => {
+            const nextSkillDomains = [...prevSkillDomains];
+            nextSkillDomains.splice(index, 1);
+            return nextSkillDomains;
+        });
+
+    return (
+        <tr key={skill_domain.id}>
+            <td>{skill_domain.name}</td>
+            <td>{skill_domain.code}</td>
+            <AdminOnly>
+                <td>
+                    <SkillDomainEditButton
+                        skill_domain={skill_domain}
+                        changedCallback={changedCallback}
+                    />{' '}
+                    <SkillDomainDeleteButton
+                        skill_domain={skill_domain}
+                        deletedCallback={deletedCallBack}
+                    />
+                </td>
+            </AdminOnly>
+        </tr>
+    );
+}
+
+const SkillDomainRow = React.memo(SkillDomainRow_);
+
 interface Props {
     skill_domains: SkillDomain[];
-    setSkillDomains: Dispatch<SkillDomain[]>;
+    setSkillDomains: Dispatch<
+        (prevSkillDomains: SkillDomain[]) => SkillDomain[]
+    >;
 }
 
 export default function SkillDomainListing(props: Props): ReactElement {
     const { skill_domains, setSkillDomains } = props;
     const { t } = useTranslation();
+
     return (
         <>
             <Table>
@@ -30,35 +80,12 @@ export default function SkillDomainListing(props: Props): ReactElement {
                 </thead>
                 <tbody>
                     {skill_domains.map((skill_domain, index) => (
-                        <tr key={skill_domain.id}>
-                            <td>{skill_domain.name}</td>
-                            <td>{skill_domain.code}</td>
-                            <AdminOnly>
-                                <td>
-                                    <SkillDomainEditButton
-                                        skill_domain={skill_domain}
-                                        changedCallback={(new_skill_domain) => {
-                                            const new_skill_domains = [
-                                                ...skill_domains,
-                                            ];
-                                            new_skill_domains[index] =
-                                                new_skill_domain;
-                                            setSkillDomains(new_skill_domains);
-                                        }}
-                                    />{' '}
-                                    <SkillDomainDeleteButton
-                                        skill_domain={skill_domain}
-                                        deletedCallback={() => {
-                                            const new_skill_domains = [
-                                                ...skill_domains,
-                                            ];
-                                            new_skill_domains.splice(index, 1);
-                                            setSkillDomains(new_skill_domains);
-                                        }}
-                                    />
-                                </td>
-                            </AdminOnly>
-                        </tr>
+                        <SkillDomainRow
+                            key={skill_domain.id}
+                            index={index}
+                            skill_domain={skill_domain}
+                            setSkillDomains={setSkillDomains}
+                        />
                     ))}
                 </tbody>
             </Table>
