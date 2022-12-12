@@ -5,8 +5,8 @@ import Table from 'react-bootstrap/Table';
 
 import { Belt, ClassLevel, Exam, SkillDomain } from './api';
 import BeltIcon from './BeltIcon';
-import ClassLevelExamEditButton from './ClassLevelExamEditButton';
-import ClassLevelExamUploadButton from './ClassLevelExamUploadButton';
+import ExamEditButton from './ExamEditButton';
+import ExamUploadButton from './ExamUploadButton';
 
 interface Props {
     belts: Belt[];
@@ -18,7 +18,7 @@ interface Props {
     deletedCallback?: (exam_id: number) => void;
 }
 
-export default function ClassLevelExams(props: Props): ReactElement {
+export default function ExamGrid(props: Props): ReactElement {
     const {
         belts,
         skill_domains,
@@ -90,7 +90,7 @@ export default function ClassLevelExams(props: Props): ReactElement {
                                 <td key={belt.id}>
                                     {sorted_lexams &&
                                         sorted_lexams.map((exam) => (
-                                            <ClassLevelExamEditButton
+                                            <ExamEditButton
                                                 key={exam.id}
                                                 exam={exam}
                                                 skill_domain={skill_domain}
@@ -107,7 +107,7 @@ export default function ClassLevelExams(props: Props): ReactElement {
                                                 }
                                             />
                                         ))}
-                                    <ClassLevelExamUploadButton
+                                    <ExamUploadButton
                                         belt={belt}
                                         skill_domain={skill_domain}
                                         class_level={class_level}

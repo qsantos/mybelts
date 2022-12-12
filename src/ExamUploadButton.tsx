@@ -20,7 +20,7 @@ interface Props {
     createdCallback: (new_exam: Exam) => void;
 }
 
-export default function ClassLevelExamUploadButton(props: Props): ReactElement {
+export default function ExamUploadButton(props: Props): ReactElement {
     const { belt, skill_domain, class_level, createdCallback } = props;
     const { t } = useTranslation();
     return (

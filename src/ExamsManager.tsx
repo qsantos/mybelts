@@ -2,8 +2,8 @@ import React from 'react';
 import { Dispatch, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Exam, Belt, SkillDomain, ClassLevel } from './api';
-import ClassLevelExamBulkUpload from './ClassLevelExamBulkUpload';
-import ClassLevelExams from './ClassLevelExams';
+import ExamBulkUpload from './ClassLevelExamBulkUpload';
+import ExamGrid from './ClassLevelExams';
 
 export interface Props {
     exams: Exam[];
@@ -47,7 +47,7 @@ export default function ExamsManager(props: Props): ReactElement {
     return (
         <>
             <h4>{t('exam.title')}</h4>
-            <ClassLevelExams
+            <ExamGrid
                 belts={belts}
                 skill_domains={skill_domains}
                 class_level={class_level}
@@ -56,7 +56,7 @@ export default function ExamsManager(props: Props): ReactElement {
                 changedCallback={changedCallback}
                 deletedCallback={deletedCallback}
             />
-            <ClassLevelExamBulkUpload
+            <ExamBulkUpload
                 belts={belts}
                 skill_domains={skill_domains}
                 class_level={class_level}
