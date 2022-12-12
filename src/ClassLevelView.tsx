@@ -4,16 +4,15 @@ import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Alert from 'react-bootstrap/Alert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
-import { SchoolClass, ClassLevelsService, SchoolClassList } from './api';
+import { Exam, SchoolClass, ClassLevelsService, SchoolClassList } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly } from './auth';
-import ClassLevelExamBulkUpload from './ClassLevelExamBulkUpload';
-import ClassLevelExams from './ClassLevelExams';
 import ClassLevelDeleteButton from './ClassLevelDeleteButton';
 import ClassLevelEditButton from './ClassLevelEditButton';
 import SchoolClassListing from './SchoolClassListing';
 import SchoolClassCreateButton from './SchoolClassCreateButton';
 import { assert, BreadcrumbItem, Loader } from './index';
+import ExamsManager from './ExamsManager';
 
 export default function ClassLevelView(): ReactElement {
     const { class_level_id } = useParams();
@@ -38,6 +37,23 @@ export default function ClassLevelView(): ReactElement {
                 return {
                     ...prevSchoolClassList,
                     school_classes: nextSchoolClasses,
+                };
+            });
+        },
+        [setSchoolClassList]
+    );
+
+    const setExams = useCallback(
+        (setStateAction: (prevExams: Exam[]) => Exam[]) => {
+            setSchoolClassList((prevSchoolClassList) => {
+                if (prevSchoolClassList === null) {
+                    return null;
+                }
+                const prevExams = prevSchoolClassList.exams;
+                const nextExams = setStateAction(prevExams);
+                return {
+                    ...prevSchoolClassList,
+                    exams: nextExams,
                 };
             });
         },
@@ -135,63 +151,12 @@ export default function ClassLevelView(): ReactElement {
                 school_classes={sorted_school_classes}
                 setSchoolClasses={setSchoolClasses}
             />
-            <h4>{t('exam.title')}</h4>
-            <ClassLevelExams
-                belts={belts}
-                skill_domains={skill_domains}
-                class_level={class_level}
+            <ExamsManager
                 exams={exams}
-                createdCallback={(new_exam) => {
-                    setSchoolClassList({
-                        ...schoolClassList,
-                        exams: [...exams, new_exam],
-                    });
-                }}
-                changedCallback={(changed_exam) => {
-                    const index = exams.findIndex(
-                        (exam) => exam.id === changed_exam.id
-                    );
-                    if (index === null) {
-                        return;
-                    }
-                    const new_exams = [...exams];
-                    new_exams[index] = changed_exam;
-                    setSchoolClassList({
-                        ...schoolClassList,
-                        exams: new_exams,
-                    });
-                }}
-                deletedCallback={(exam_id) => {
-                    const index = exams.findIndex(
-                        (exam) => exam.id === exam_id
-                    );
-                    if (index === null) {
-                        return;
-                    }
-                    const new_exams = [...exams];
-                    new_exams.splice(index, 1);
-                    setSchoolClassList({
-                        ...schoolClassList,
-                        exams: new_exams,
-                    });
-                }}
-            />
-            <ClassLevelExamBulkUpload
+                setExams={setExams}
                 belts={belts}
                 skill_domains={skill_domains}
                 class_level={class_level}
-                createdCallback={(nextExam) =>
-                    setSchoolClassList((prevSchoolClassList) => {
-                        if (!prevSchoolClassList) {
-                            return null;
-                        }
-                        const { exams: prevExams } = prevSchoolClassList;
-                        return {
-                            ...prevSchoolClassList,
-                            exams: [...prevExams, nextExam],
-                        };
-                    })
-                }
             />
         </>
     );
