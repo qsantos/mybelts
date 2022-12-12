@@ -1,9 +1,9 @@
 import React from 'react';
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Alert from 'react-bootstrap/Alert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
-import { ClassLevelList, ClassLevelsService } from './api';
+import { ClassLevel, ClassLevelList, ClassLevelsService } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly } from './auth';
 import ClassLevelListing from './ClassLevelListing';
@@ -15,6 +15,23 @@ export default function ClassLevelsView(): ReactElement {
     const [errorMessage, setErrorMessage] = useState('');
     const [classLevelList, setClassLevelList] = useState<null | ClassLevelList>(
         null
+    );
+
+    const setClassLevels = useCallback(
+        (setStateAction: (prevClassLevels: ClassLevel[]) => ClassLevel[]) => {
+            setClassLevelList((prevClassLevelList) => {
+                if (prevClassLevelList === null) {
+                    return null;
+                }
+                const prevClassLevels = prevClassLevelList.class_levels;
+                const nextClassLevels = setStateAction(prevClassLevels);
+                return {
+                    ...prevClassLevelList,
+                    class_levels: nextClassLevels,
+                };
+            });
+        },
+        [setClassLevelList]
     );
 
     useEffect(() => {
@@ -73,12 +90,7 @@ export default function ClassLevelsView(): ReactElement {
             <h4>{t('class_level.list.title.secondary')}</h4>
             <ClassLevelListing
                 class_levels={sorted_class_levels}
-                setClassLevels={(new_class_levels) =>
-                    setClassLevelList({
-                        ...classLevelList,
-                        class_levels: new_class_levels,
-                    })
-                }
+                setClassLevels={setClassLevels}
             />
         </>
     );

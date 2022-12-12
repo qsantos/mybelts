@@ -10,9 +10,57 @@ import { AdminOnly } from './auth';
 import ClassLevelEditButton from './ClassLevelEditButton';
 import ClassLevelDeleteButton from './ClassLevelDeleteButton';
 
+interface RowProps {
+    index: number;
+    class_level: ClassLevel;
+    setClassLevels: Dispatch<(prevClassLevels: ClassLevel[]) => ClassLevel[]>;
+}
+
+function ClassLevelRow_(props: RowProps) {
+    const { index, class_level, setClassLevels } = props;
+
+    const changedCallback = (nextClassLevel: ClassLevel) =>
+        setClassLevels((prevClassLevels) => {
+            const nextClassLevels = [...prevClassLevels];
+            nextClassLevels[index] = nextClassLevel;
+            return nextClassLevels;
+        });
+
+    const deletedCallback = () =>
+        setClassLevels((prevClassLevels) => {
+            const nextClasslevels = [...prevClassLevels];
+            nextClasslevels.splice(index, 1);
+            return nextClasslevels;
+        });
+
+    return (
+        <tr key={class_level.id}>
+            <td>
+                <Nav.Link as={Link} to={'/class-levels/' + class_level.id}>
+                    {class_level.prefix}
+                </Nav.Link>
+            </td>
+            <AdminOnly>
+                <td>
+                    <ClassLevelEditButton
+                        class_level={class_level}
+                        changedCallback={changedCallback}
+                    />{' '}
+                    <ClassLevelDeleteButton
+                        class_level={class_level}
+                        deletedCallback={deletedCallback}
+                    />
+                </td>
+            </AdminOnly>
+        </tr>
+    );
+}
+
+const ClassLevelRow = React.memo(ClassLevelRow_);
+
 interface Props {
     class_levels: ClassLevel[];
-    setClassLevels: Dispatch<ClassLevel[]>;
+    setClassLevels: Dispatch<(prevClassLevels: ClassLevel[]) => ClassLevel[]>;
 }
 
 export default function ClassLevelListing(props: Props): ReactElement {
@@ -31,41 +79,12 @@ export default function ClassLevelListing(props: Props): ReactElement {
                 </thead>
                 <tbody>
                     {class_levels.map((class_level, index) => (
-                        <tr key={class_level.id}>
-                            <td>
-                                <Nav.Link
-                                    as={Link}
-                                    to={'/class-levels/' + class_level.id}
-                                >
-                                    {class_level.prefix}
-                                </Nav.Link>
-                            </td>
-                            <AdminOnly>
-                                <td>
-                                    <ClassLevelEditButton
-                                        class_level={class_level}
-                                        changedCallback={(new_class_level) => {
-                                            const new_class_levels = [
-                                                ...class_levels,
-                                            ];
-                                            new_class_levels[index] =
-                                                new_class_level;
-                                            setClassLevels(new_class_levels);
-                                        }}
-                                    />{' '}
-                                    <ClassLevelDeleteButton
-                                        class_level={class_level}
-                                        deletedCallback={() => {
-                                            const new_class_levels = [
-                                                ...class_levels,
-                                            ];
-                                            new_class_levels.splice(index, 1);
-                                            setClassLevels(new_class_levels);
-                                        }}
-                                    />
-                                </td>
-                            </AdminOnly>
-                        </tr>
+                        <ClassLevelRow
+                            key={class_level.id}
+                            index={index}
+                            class_level={class_level}
+                            setClassLevels={setClassLevels}
+                        />
                     ))}
                 </tbody>
             </Table>
