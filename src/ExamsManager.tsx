@@ -2,8 +2,8 @@ import React from 'react';
 import { Dispatch, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Exam, Belt, SkillDomain, ClassLevel } from './api';
-import ExamBulkUpload from './ClassLevelExamBulkUpload';
-import ExamGrid from './ClassLevelExams';
+import ExamBulkUpload from './ExamBulkUpload';
+import ExamGrid from './ExamGrid';
 
 export interface Props {
     exams: Exam[];
@@ -13,7 +13,7 @@ export interface Props {
     class_level: ClassLevel;
 }
 
-export default function ExamsManager(props: Props): ReactElement {
+function ExamsManager_(props: Props): ReactElement {
     const { exams, setExams, belts, skill_domains, class_level } = props;
     const { t } = useTranslation();
 
@@ -65,3 +65,7 @@ export default function ExamsManager(props: Props): ReactElement {
         </>
     );
 }
+
+const ExamsManager = React.memo(ExamsManager_);
+
+export default ExamsManager;
