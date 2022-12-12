@@ -1,10 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import React from 'react';
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Alert from 'react-bootstrap/Alert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
-import { ClassLevelsService, SchoolClassList } from './api';
+import { SchoolClass, ClassLevelsService, SchoolClassList } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly } from './auth';
 import ClassLevelExamBulkUpload from './ClassLevelExamBulkUpload';
@@ -24,6 +24,25 @@ export default function ClassLevelView(): ReactElement {
     const [schoolClassList, setSchoolClassList] =
         useState<null | SchoolClassList>(null);
     const navigate = useNavigate();
+
+    const setSchoolClasses = useCallback(
+        (
+            setStateAction: (prevSchoolClasses: SchoolClass[]) => SchoolClass[]
+        ) => {
+            setSchoolClassList((prevSchoolClassList) => {
+                if (prevSchoolClassList === null) {
+                    return null;
+                }
+                const prevSchoolClasses = prevSchoolClassList.school_classes;
+                const nextSchoolClasses = setStateAction(prevSchoolClasses);
+                return {
+                    ...prevSchoolClassList,
+                    school_classes: nextSchoolClasses,
+                };
+            });
+        },
+        [setSchoolClassList]
+    );
 
     useEffect(() => {
         ClassLevelsService.getClassLevelResource(parseInt(class_level_id))
@@ -114,12 +133,7 @@ export default function ClassLevelView(): ReactElement {
             <SchoolClassListing
                 class_level={class_level}
                 school_classes={sorted_school_classes}
-                setSchoolClasses={(new_school_classes) =>
-                    setSchoolClassList({
-                        ...schoolClassList,
-                        school_classes: new_school_classes,
-                    })
-                }
+                setSchoolClasses={setSchoolClasses}
             />
             <h4>{t('exam.title')}</h4>
             <ClassLevelExams
