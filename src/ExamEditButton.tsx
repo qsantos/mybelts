@@ -40,7 +40,7 @@ interface Props {
     deletedCallback?: (exam_id: number) => void;
 }
 
-export default function ExamEditButton(props: Props): ReactElement {
+function ExamEditButton_(props: Props): ReactElement {
     const {
         exam,
         belt,
@@ -164,3 +164,7 @@ export default function ExamEditButton(props: Props): ReactElement {
         </>
     );
 }
+
+const ExamEditButton = React.memo(ExamEditButton_);
+
+export default ExamEditButton;

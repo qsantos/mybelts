@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dispatch, ReactElement } from 'react';
+import { Dispatch, ReactElement, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Exam, Belt, SkillDomain, ClassLevel } from './api';
 import ExamBulkUpload from './ExamBulkUpload';
@@ -17,32 +17,42 @@ function ExamsManager_(props: Props): ReactElement {
     const { exams, setExams, belts, skill_domains, class_level } = props;
     const { t } = useTranslation();
 
-    const createdCallback = (nextExam: Exam) =>
-        setExams((prevExams) => [...prevExams, nextExam]);
+    const createdCallback = useCallback(
+        (nextExam: Exam) => setExams((prevExams) => [...prevExams, nextExam]),
+        [setExams]
+    );
 
-    const changedCallback = (nextExam: Exam) =>
-        setExams((prevExams) => {
-            const index = prevExams.findIndex(
-                (exam) => exam.id === nextExam.id
-            );
-            if (index === null) {
-                return prevExams;
-            }
-            const nextExams = [...prevExams];
-            nextExams[index] = nextExam;
-            return nextExams;
-        });
+    const changedCallback = useCallback(
+        (nextExam: Exam) =>
+            setExams((prevExams) => {
+                const index = prevExams.findIndex(
+                    (exam) => exam.id === nextExam.id
+                );
+                if (index === null) {
+                    return prevExams;
+                }
+                const nextExams = [...prevExams];
+                nextExams[index] = nextExam;
+                return nextExams;
+            }),
+        [setExams]
+    );
 
-    const deletedCallback = (exam_id: number) =>
-        setExams((prevExams: Exam[]) => {
-            const index = prevExams.findIndex((exam) => exam.id === exam_id);
-            if (index === null) {
-                return prevExams;
-            }
-            const nextExams = [...prevExams];
-            nextExams.splice(index, 1);
-            return nextExams;
-        });
+    const deletedCallback = useCallback(
+        (exam_id: number) =>
+            setExams((prevExams: Exam[]) => {
+                const index = prevExams.findIndex(
+                    (exam) => exam.id === exam_id
+                );
+                if (index === null) {
+                    return prevExams;
+                }
+                const nextExams = [...prevExams];
+                nextExams.splice(index, 1);
+                return nextExams;
+            }),
+        [setExams]
+    );
 
     return (
         <>

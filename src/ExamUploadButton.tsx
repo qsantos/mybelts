@@ -20,7 +20,7 @@ interface Props {
     createdCallback: (new_exam: Exam) => void;
 }
 
-export default function ExamUploadButton(props: Props): ReactElement {
+function ExamUploadButton_(props: Props): ReactElement {
     const { belt, skill_domain, class_level, createdCallback } = props;
     const { t } = useTranslation();
     return (
@@ -75,3 +75,7 @@ export default function ExamUploadButton(props: Props): ReactElement {
         </ModalButton>
     );
 }
+
+const ExamUploadButton = React.memo(ExamUploadButton_);
+
+export default ExamUploadButton;
