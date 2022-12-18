@@ -15,10 +15,11 @@ interface SortTableProps<T> {
     data: T[];
     columns: ColumnDef<T>[];
     initialSorting?: SortingState;
+    rowComponent: (data: T) => ReactElement | null;
 }
 
 export default function SortTable<T>(props: SortTableProps<T>): ReactElement {
-    const { data, columns, initialSorting } = props;
+    const { data, columns, initialSorting, rowComponent } = props;
 
     const [sorting, setSorting] = useState<SortingState>(initialSorting || []);
 
@@ -68,18 +69,9 @@ export default function SortTable<T>(props: SortTableProps<T>): ReactElement {
                     ))}
                 </thead>
                 <tbody>
-                    {table.getRowModel().rows.map((row) => (
-                        <tr key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <td key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext()
-                                    )}
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
+                    {table
+                        .getRowModel()
+                        .rows.map((row) => rowComponent(row.original))}
                 </tbody>
             </Table>
         </>

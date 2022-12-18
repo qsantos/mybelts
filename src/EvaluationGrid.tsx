@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dispatch, ReactElement } from 'react';
+import { Dispatch, ReactElement, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import Nav from 'react-bootstrap/Nav';
@@ -10,8 +10,9 @@ import {
     SkillDomain,
     SchoolClassStudentBeltsStudentBelts,
     Student,
+    User,
 } from './api';
-import { LoginContext } from './auth';
+import { AdminOnly, LoginContext } from './auth';
 import { formatDatetime } from './lib';
 import BeltIcon from './BeltIcon';
 import SortTable from './SortTable';
@@ -68,6 +69,77 @@ function StudentActions_(props: ActionsProps) {
 
 const StudentActions = React.memo(StudentActions_);
 
+interface RowProps {
+    student: Student;
+    setStudents: Dispatch<(prevStudent: Student[]) => Student[]>;
+    user: User | undefined;
+    this_belts: { belt_id: number; skill_domain_id: number }[];
+    sorted_skill_domains: SkillDomain[];
+    belt_by_id: { [index: number]: Belt };
+}
+
+function EvaluationGridRow_(props: RowProps) {
+    const {
+        student,
+        setStudents,
+        user,
+        this_belts,
+        sorted_skill_domains,
+        belt_by_id,
+    } = props;
+    return (
+        <tr key={student.id}>
+            <AdminOnly>
+                <td>{student.rank}</td>
+            </AdminOnly>
+            <td>
+                <Nav.Link
+                    as={Link}
+                    to={'/students/' + student.id}
+                    disabled={!(user?.is_admin || student.user_id === user?.id)}
+                >
+                    {student.display_name}
+                </Nav.Link>
+            </td>
+            {sorted_skill_domains.map((skill_domain) => {
+                let belt_id = undefined;
+                this_belts.forEach(({ belt_id: xbelt_id, skill_domain_id }) => {
+                    if (skill_domain_id === skill_domain.id) {
+                        belt_id = xbelt_id;
+                    }
+                });
+                if (belt_id === undefined) {
+                    return <td key={skill_domain.id}></td>;
+                }
+                const belt = belt_by_id[belt_id];
+                if (belt === undefined) {
+                    return <td key={skill_domain.id}></td>;
+                }
+                return (
+                    <td key={skill_domain.id}>
+                        <BeltIcon belt={belt} />
+                    </td>
+                );
+            })}
+            <AdminOnly>
+                <td>
+                    {student.last_login
+                        ? formatDatetime(student.last_login)
+                        : ''}
+                </td>
+                <td>
+                    <StudentActions
+                        student={student}
+                        setStudents={setStudents}
+                    />
+                </td>
+            </AdminOnly>
+        </tr>
+    );
+}
+
+const EvaluationGridRow = React.memo(EvaluationGridRow_);
+
 interface Props {
     students: Student[];
     setStudents: Dispatch<(prevStudent: Student[]) => Student[]>;
@@ -95,74 +167,27 @@ export default function EvaluationGrid(props: Props): ReactElement | null {
         });
     }
 
-    const { columns: columnsMemo, sorting: sortingMemo } = React.useMemo(() => {
+    const sorted_skill_domains = useMemo(
+        () => skill_domains.sort((a, b) => a.code.localeCompare(b.code)),
+        [skill_domains]
+    );
+
+    const { columns: columnsMemo, sorting: sortingMemo } = useMemo(() => {
         if (!loginInfo) {
             return { columns: [], sorting: [] };
         }
-        const user = loginInfo.user;
-        const belt_by_id = Object.fromEntries(
-            belts.map((belt) => [belt.id, belt])
-        );
-        const student_belts_by_student_id = Object.fromEntries(
-            student_belts.map(({ student_id, belts: xbelts }) => [
-                student_id,
-                xbelts,
-            ])
-        );
 
         const columns: ColumnDef<Student>[] = [
             {
                 id: 'display_name',
                 accessorKey: 'display_name',
                 header: t('student.list.display_name.title'),
-                cell: (info) => {
-                    const student = info.row.original;
-                    const enabled =
-                        user.is_admin || student.user_id === user.id;
-                    return (
-                        <Nav.Link
-                            as={Link}
-                            to={'/students/' + student.id}
-                            disabled={!enabled}
-                        >
-                            {student.display_name}
-                        </Nav.Link>
-                    );
-                },
             },
         ];
-
-        const sorted_skill_domains = skill_domains.sort((a, b) =>
-            a.code.localeCompare(b.code)
-        );
         sorted_skill_domains.forEach((skill_domain) =>
             columns.push({
                 id: skill_domain.name,
                 header: skill_domain.name,
-                cell: (info) => {
-                    const student = info.row.original;
-                    const this_belts = student_belts_by_student_id[student.id];
-                    if (this_belts === undefined) {
-                        return '';
-                    }
-                    let belt_id = undefined;
-                    this_belts.forEach(
-                        ({ belt_id: xbelt_id, skill_domain_id }) => {
-                            if (skill_domain_id === skill_domain.id) {
-                                belt_id = xbelt_id;
-                            }
-                        }
-                    );
-                    if (belt_id === undefined) {
-                        return '';
-                    }
-
-                    const belt = belt_by_id[belt_id];
-                    if (belt === undefined) {
-                        return '';
-                    }
-                    return <BeltIcon belt={belt} />;
-                },
             })
         );
 
@@ -185,36 +210,53 @@ export default function EvaluationGrid(props: Props): ReactElement | null {
             columns.push({
                 id: 'last_login',
                 header: t('student.list.last_login.title'),
-                cell: (info) => {
-                    const student = info.row.original;
-                    return student.last_login
-                        ? formatDatetime(student.last_login)
-                        : '';
-                },
             });
             columns.push({
                 id: 'actions',
                 header: t('student.list.actions.title'),
-                cell: (info) => {
-                    const student = info.row.original;
-                    return (
-                        <StudentActions
-                            student={student}
-                            setStudents={setStudents}
-                        />
-                    );
-                },
             });
         }
 
         return { columns, sorting };
-    }, [belts, loginInfo, setStudents, skill_domains, student_belts, t]);
+    }, [loginInfo, sorted_skill_domains, t]);
+
+    const rowComponent = useMemo(() => {
+        const user = loginInfo?.user;
+        const belt_by_id = Object.fromEntries(
+            belts.map((belt) => [belt.id, belt])
+        );
+        const student_belts_by_student_id = Object.fromEntries(
+            student_belts.map(({ student_id, belts: xbelts }) => [
+                student_id,
+                xbelts,
+            ])
+        );
+        function RowComponent(student: Student) {
+            const this_belts = student_belts_by_student_id[student.id];
+            if (!this_belts) {
+                return null;
+            }
+            return (
+                <EvaluationGridRow
+                    key={student.id}
+                    student={student}
+                    setStudents={setStudents}
+                    user={user}
+                    this_belts={this_belts}
+                    sorted_skill_domains={sorted_skill_domains}
+                    belt_by_id={belt_by_id}
+                />
+            );
+        }
+        return RowComponent;
+    }, [belts, loginInfo, setStudents, sorted_skill_domains, student_belts]);
 
     return (
         <SortTable
             data={students}
             columns={columnsMemo}
             initialSorting={sortingMemo}
+            rowComponent={rowComponent}
         />
     );
 }

@@ -11,6 +11,10 @@ import SortTable from './SortTable';
 import EvaluationEditButton from './EvaluationEditButton';
 import EvaluationDeleteButton from './EvaluationDeleteButton';
 
+function EvaluationListingRow(evaluation: Evaluation) {
+    return <tr key={evaluation.id}></tr>;
+}
+
 interface Props {
     skill_domains: SkillDomain[];
     belts: Belt[];
@@ -198,6 +202,7 @@ export default function EvaluationListing(props: Props): ReactElement | null {
             data={evaluations}
             columns={columns}
             initialSorting={sorting}
+            rowComponent={EvaluationListingRow}
         />
     );
 }

@@ -21,6 +21,10 @@ import {
 import SortTable from './SortTable';
 import SchoolClassManageWaitlistButton from './SchoolClassManageWaitlistButton';
 
+function WaitlistRow(student: Student) {
+    return <tr key={student.id}></tr>;
+}
+
 interface Props {
     class_level: ClassLevel;
     school_class: SchoolClass;
@@ -252,6 +256,7 @@ export default function SchoolClassManageWaitlist(props: Props): ReactElement {
                         data={students}
                         columns={columns}
                         initialSorting={sorting}
+                        rowComponent={WaitlistRow}
                     />
                 </Modal.Body>
                 <Modal.Footer>
