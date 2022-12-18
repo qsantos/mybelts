@@ -11,7 +11,6 @@ import BeltEditButton from './BeltEditButton';
 import BeltDeleteButton from './BeltDeleteButton';
 
 interface RowProps {
-    index: number;
     belt: Belt;
     is_last: boolean;
     setBelts: Dispatch<(prevBelts: Belt[]) => Belt[]>;
@@ -19,18 +18,30 @@ interface RowProps {
 }
 
 function BeltListingRow_(props: RowProps) {
-    const { index, belt, is_last, setBelts, setErrorMessage } = props;
+    const { belt, is_last, setBelts, setErrorMessage } = props;
 
     const changedCallback = (nextBelt: Belt) => {
         setBelts((prevBelts) => {
+            const index = prevBelts.findIndex(
+                (otherBelt) => otherBelt.id === nextBelt.id
+            );
+            if (index === null) {
+                return prevBelts;
+            }
             const nextBelts = [...prevBelts];
             nextBelts[index] = nextBelt;
             return nextBelts;
         });
     };
 
-    const deletedCallback = () => {
+    const deletedCallback = (belt_id: number) => {
         setBelts((prevBelts) => {
+            const index = prevBelts.findIndex(
+                (otherBelt) => otherBelt.id === belt_id
+            );
+            if (index === null) {
+                return prevBelts;
+            }
             const nextBelts = [...prevBelts];
             nextBelts.splice(index, 1);
             for (let j = index; j < nextBelts.length; j += 1) {
@@ -116,7 +127,6 @@ export default function BeltListing(props: Props): ReactElement {
                     {belts.map((belt, index) => (
                         <BeltListingRow
                             key={belt.id}
-                            index={index}
                             belt={belt}
                             is_last={index === belts.length - 1}
                             setBelts={setBelts}

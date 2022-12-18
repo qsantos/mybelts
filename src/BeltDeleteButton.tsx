@@ -7,7 +7,7 @@ import ModalButton from './ModalButton';
 
 interface Props {
     belt: Belt;
-    deletedCallback?: () => void;
+    deletedCallback?: (belt_id: number) => void;
 }
 
 export default function BeltDeleteButton(props: Props): ReactElement {
@@ -20,7 +20,7 @@ export default function BeltDeleteButton(props: Props): ReactElement {
             i18nPrefix="belt.delete"
             i18nArgs={{ belt }}
             onSubmit={() => BeltsService.deleteBeltResource(belt.id)}
-            onResponse={() => deletedCallback?.()}
+            onResponse={() => deletedCallback?.(belt.id)}
         >
             {t('belt.delete.message', { belt })}
         </ModalButton>

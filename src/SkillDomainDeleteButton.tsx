@@ -7,7 +7,7 @@ import ModalButton from './ModalButton';
 
 interface Props {
     skill_domain: SkillDomain;
-    deletedCallback?: () => void;
+    deletedCallback?: (skill_domain_id: number) => void;
 }
 
 export default function SkillDomainDeleteButton(props: Props): ReactElement {
@@ -22,7 +22,7 @@ export default function SkillDomainDeleteButton(props: Props): ReactElement {
             onSubmit={() =>
                 SkillDomainsService.deleteSkillDomainResource(skill_domain.id)
             }
-            onResponse={() => deletedCallback?.()}
+            onResponse={() => deletedCallback?.(skill_domain.id)}
         >
             {t('skill_domain.delete.message', { skill_domain })}
         </ModalButton>

@@ -9,7 +9,6 @@ import SkillDomainEditButton from './SkillDomainEditButton';
 import SkillDomainDeleteButton from './SkillDomainDeleteButton';
 
 interface RowProps {
-    index: number;
     skill_domain: SkillDomain;
     setSkillDomains: Dispatch<
         (prevSkillDomains: SkillDomain[]) => SkillDomain[]
@@ -17,17 +16,29 @@ interface RowProps {
 }
 
 function SkillDomainRow_(props: RowProps) {
-    const { index, skill_domain, setSkillDomains } = props;
+    const { skill_domain, setSkillDomains } = props;
 
     const changedCallback = (nextSkillDomain: SkillDomain) =>
         setSkillDomains((prevSkillDomains) => {
+            const index = prevSkillDomains.findIndex(
+                (otherSkillDomain) => otherSkillDomain.id === nextSkillDomain.id
+            );
+            if (index === null) {
+                return prevSkillDomains;
+            }
             const nextSkillDomains = [...prevSkillDomains];
             nextSkillDomains[index] = nextSkillDomain;
             return nextSkillDomains;
         });
 
-    const deletedCallBack = () =>
+    const deletedCallBack = (skill_domain_id: number) =>
         setSkillDomains((prevSkillDomains) => {
+            const index = prevSkillDomains.findIndex(
+                (otherSkillDomain) => otherSkillDomain.id === skill_domain_id
+            );
+            if (index === null) {
+                return prevSkillDomains;
+            }
             const nextSkillDomains = [...prevSkillDomains];
             nextSkillDomains.splice(index, 1);
             return nextSkillDomains;
@@ -79,10 +90,9 @@ export default function SkillDomainListing(props: Props): ReactElement {
                     </tr>
                 </thead>
                 <tbody>
-                    {skill_domains.map((skill_domain, index) => (
+                    {skill_domains.map((skill_domain) => (
                         <SkillDomainRow
                             key={skill_domain.id}
-                            index={index}
                             skill_domain={skill_domain}
                             setSkillDomains={setSkillDomains}
                         />

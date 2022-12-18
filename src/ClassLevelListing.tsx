@@ -11,23 +11,34 @@ import ClassLevelEditButton from './ClassLevelEditButton';
 import ClassLevelDeleteButton from './ClassLevelDeleteButton';
 
 interface RowProps {
-    index: number;
     class_level: ClassLevel;
     setClassLevels: Dispatch<(prevClassLevels: ClassLevel[]) => ClassLevel[]>;
 }
 
 function ClassLevelRow_(props: RowProps) {
-    const { index, class_level, setClassLevels } = props;
+    const { class_level, setClassLevels } = props;
 
     const changedCallback = (nextClassLevel: ClassLevel) =>
         setClassLevels((prevClassLevels) => {
+            const index = prevClassLevels.findIndex(
+                (otherClassLevel) => otherClassLevel.id === nextClassLevel.id
+            );
+            if (index === null) {
+                return prevClassLevels;
+            }
             const nextClassLevels = [...prevClassLevels];
             nextClassLevels[index] = nextClassLevel;
             return nextClassLevels;
         });
 
-    const deletedCallback = () =>
+    const deletedCallback = (class_level_id: number) =>
         setClassLevels((prevClassLevels) => {
+            const index = prevClassLevels.findIndex(
+                (otherClassLevel) => otherClassLevel.id === class_level_id
+            );
+            if (index === null) {
+                return prevClassLevels;
+            }
             const nextClasslevels = [...prevClassLevels];
             nextClasslevels.splice(index, 1);
             return nextClasslevels;
@@ -78,10 +89,9 @@ export default function ClassLevelListing(props: Props): ReactElement {
                     </tr>
                 </thead>
                 <tbody>
-                    {class_levels.map((class_level, index) => (
+                    {class_levels.map((class_level) => (
                         <ClassLevelRow
                             key={class_level.id}
-                            index={index}
                             class_level={class_level}
                             setClassLevels={setClassLevels}
                         />

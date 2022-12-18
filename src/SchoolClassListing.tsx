@@ -11,7 +11,6 @@ import SchoolClassEditButton from './SchoolClassEditButton';
 import SchoolClassDeleteButton from './SchoolClassDeleteButton';
 
 interface RowProps {
-    index: number;
     class_level: ClassLevel;
     school_class: SchoolClass;
     setSchoolClasses: Dispatch<
@@ -20,17 +19,29 @@ interface RowProps {
 }
 
 function SchoolClassRow_(props: RowProps) {
-    const { index, class_level, school_class, setSchoolClasses } = props;
+    const { class_level, school_class, setSchoolClasses } = props;
 
     const changedCallback = (nextSchoolClass: SchoolClass) =>
         setSchoolClasses((prevSchoolClasses) => {
+            const index = prevSchoolClasses.findIndex(
+                (otherSchoolClass) => otherSchoolClass.id === nextSchoolClass.id
+            );
+            if (index === null) {
+                return prevSchoolClasses;
+            }
             const nextSchoolClasses = [...prevSchoolClasses];
             nextSchoolClasses[index] = nextSchoolClass;
             return nextSchoolClasses;
         });
 
-    const deletedCallback = () =>
+    const deletedCallback = (school_class_id: number) =>
         setSchoolClasses((prevSchoolClasses) => {
+            const index = prevSchoolClasses.findIndex(
+                (otherSchoolClass) => otherSchoolClass.id === school_class_id
+            );
+            if (index === null) {
+                return prevSchoolClasses;
+            }
             const nextSchoolClasses = [...prevSchoolClasses];
             nextSchoolClasses.splice(index, 1);
             return nextSchoolClasses;
@@ -86,10 +97,9 @@ export default function SchoolClassListing(props: Props): ReactElement {
                     </tr>
                 </thead>
                 <tbody>
-                    {school_classes.map((school_class, index) => (
+                    {school_classes.map((school_class) => (
                         <SchoolClassRow
                             key={school_class.id}
-                            index={index}
                             class_level={class_level}
                             school_class={school_class}
                             setSchoolClasses={setSchoolClasses}

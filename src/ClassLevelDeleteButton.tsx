@@ -7,7 +7,7 @@ import ModalButton from './ModalButton';
 
 interface DeleteClassLevelButtonProps {
     class_level: ClassLevel;
-    deletedCallback?: () => void;
+    deletedCallback?: (class_level_id: number) => void;
 }
 
 export default function ClassLevelDeleteButton(
@@ -24,7 +24,7 @@ export default function ClassLevelDeleteButton(
             onSubmit={() =>
                 ClassLevelsService.deleteClassLevelResource(class_level.id)
             }
-            onResponse={() => deletedCallback?.()}
+            onResponse={() => deletedCallback?.(class_level.id)}
         >
             {t('class_level.delete.message', { class_level })}
         </ModalButton>

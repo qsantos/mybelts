@@ -8,7 +8,7 @@ import ModalButton from './ModalButton';
 interface Props {
     class_level: ClassLevel;
     school_class: SchoolClass;
-    deletedCallback?: () => void;
+    deletedCallback?: (school_class_id: number) => void;
 }
 
 export default function SchoolClassDeleteButton(props: Props): ReactElement {
@@ -23,7 +23,7 @@ export default function SchoolClassDeleteButton(props: Props): ReactElement {
             onSubmit={() =>
                 SchoolClassesService.deleteSchoolClassResource(school_class.id)
             }
-            onResponse={() => deletedCallback?.()}
+            onResponse={() => deletedCallback?.(school_class.id)}
         >
             {t('school_class.delete.message', { class_level, school_class })}
         </ModalButton>

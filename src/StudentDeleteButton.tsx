@@ -7,7 +7,7 @@ import ModalButton from './ModalButton';
 
 interface Props {
     student: Student;
-    deletedCallback?: () => void;
+    deletedCallback?: (student_id: number) => void;
 }
 
 export default function StudentDeleteButton(props: Props): ReactElement {
@@ -20,7 +20,7 @@ export default function StudentDeleteButton(props: Props): ReactElement {
             i18nPrefix="student.delete"
             i18nArgs={{ student }}
             onSubmit={() => StudentsService.deleteStudentResource(student.id)}
-            onResponse={() => deletedCallback?.()}
+            onResponse={() => deletedCallback?.(student.id)}
         >
             {t('student.delete.message', { student })}
         </ModalButton>

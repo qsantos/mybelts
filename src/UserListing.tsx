@@ -8,23 +8,34 @@ import UserEditButton from './UserEditButton';
 import UserDeleteButton from './UserDeleteButton';
 
 interface RowProps {
-    index: number;
     user: User;
     setUsers: Dispatch<(prevUsers: User[]) => User[]>;
 }
 
 function UserRow_(props: RowProps) {
-    const { index, user, setUsers } = props;
+    const { user, setUsers } = props;
 
     const changedCallback = (nextUser: User) =>
         setUsers((prevUsers) => {
+            const index = prevUsers.findIndex(
+                (otherUser) => otherUser.id === nextUser.id
+            );
+            if (index === null) {
+                return prevUsers;
+            }
             const nextUsers = [...prevUsers];
             nextUsers[index] = nextUser;
             return nextUsers;
         });
 
-    const deletedCallback = () =>
+    const deletedCallback = (user_id: number) =>
         setUsers((prevUsers) => {
+            const index = prevUsers.findIndex(
+                (otherUser) => otherUser.id === user_id
+            );
+            if (index === null) {
+                return prevUsers;
+            }
             const nextUsers = [...prevUsers];
             nextUsers.splice(index, 1);
             return nextUsers;
@@ -66,11 +77,10 @@ export default function UserListing(props: Props): ReactElement {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((user, index) => (
+                    {users.map((user) => (
                         <UserRow
                             key={user.id}
                             user={user}
-                            index={index}
                             setUsers={setUsers}
                         />
                     ))}

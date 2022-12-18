@@ -19,23 +19,34 @@ import StudentDeleteButton from './StudentDeleteButton';
 import StudentEditButton from './StudentEditButton';
 
 interface ActionsProps {
-    index: number;
     student: Student;
     setStudents: Dispatch<(prevStudents: Student[]) => Student[]>;
 }
 
 function StudentActions_(props: ActionsProps) {
-    const { index, student, setStudents } = props;
+    const { student, setStudents } = props;
 
     const changedCallback = (nextStudent: Student) =>
         setStudents((prevStudents) => {
+            const index = prevStudents.findIndex(
+                (otherStudent) => otherStudent.id === nextStudent.id
+            );
+            if (index === null) {
+                return prevStudents;
+            }
             const nextStudents = [...prevStudents];
             nextStudents[index] = nextStudent;
             return nextStudents;
         });
 
-    const deletedCallback = () =>
+    const deletedCallback = (student_id: number) =>
         setStudents((prevStudents) => {
+            const index = prevStudents.findIndex(
+                (otherStudent) => otherStudent.id === student_id
+            );
+            if (index === null) {
+                return prevStudents;
+            }
             const nextStudents = [...prevStudents];
             nextStudents.splice(index, 1);
             return nextStudents;
@@ -188,7 +199,6 @@ export default function EvaluationGrid(props: Props): ReactElement | null {
                     const student = info.row.original;
                     return (
                         <StudentActions
-                            index={info.row.index}
                             student={student}
                             setStudents={setStudents}
                         />
