@@ -15,6 +15,91 @@ import {
 import BeltIcon from './BeltIcon';
 import ModalButton from './ModalButton';
 
+interface StudentRowsProps {
+    belt_by_id: { [index: number]: Belt };
+    skill_domain_by_id: { [index: number]: SkillDomain };
+    student: Student;
+    student_waitlist_entries: WaitlistEntry[];
+}
+
+function StudentRows(props: StudentRowsProps) {
+    const {
+        belt_by_id,
+        skill_domain_by_id,
+        student,
+        student_waitlist_entries,
+    } = props;
+    const student_id = student.id;
+    return (
+        <>
+            {student_waitlist_entries.map(
+                ({ id, skill_domain_id, belt_id }, index) => {
+                    const skill_domain = skill_domain_by_id[skill_domain_id];
+                    if (skill_domain === undefined) {
+                        console.error(
+                            'skill domain ' + skill_domain_id + ' not found'
+                        );
+                        return null;
+                    }
+                    const belt = belt_by_id[belt_id];
+                    if (belt === undefined) {
+                        console.error('belt ' + belt_id + ' not found');
+                        return null;
+                    }
+                    return (
+                        <tr
+                            key={[
+                                student_id,
+                                skill_domain_id,
+                                belt_id,
+                            ].toString()}
+                        >
+                            {index === 0 && (
+                                <th rowSpan={student_waitlist_entries.length}>
+                                    {student.display_name}
+                                </th>
+                            )}
+                            <td>{skill_domain.name}</td>
+                            <td>
+                                <BeltIcon belt={belt} height={20} />
+                            </td>
+                            <td>
+                                <input
+                                    type="hidden"
+                                    id="waitlist_entry_id"
+                                    value={id}
+                                />
+                                <input
+                                    type="checkbox"
+                                    id="completed"
+                                    className="big-checkbox"
+                                    defaultChecked
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    type="date"
+                                    id="date"
+                                    defaultValue={new Date()
+                                        .toISOString()
+                                        .slice(0, 10)}
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    type="checkbox"
+                                    id="success"
+                                    className="big-checkbox"
+                                />
+                            </td>
+                        </tr>
+                    );
+                }
+            )}
+        </>
+    );
+}
+
 interface Props {
     belt_by_id: { [index: number]: Belt };
     skill_domain_by_id: { [index: number]: SkillDomain };
@@ -120,81 +205,16 @@ export default function SchoolClassWaitlistConvertButton(
                                 );
                                 return null;
                             }
-                            return student_waitlist_entries.map(
-                                ({ id, skill_domain_id, belt_id }, index) => {
-                                    const skill_domain =
-                                        skill_domain_by_id[skill_domain_id];
-                                    if (skill_domain === undefined) {
-                                        console.error(
-                                            'skill domain ' +
-                                                skill_domain_id +
-                                                ' not found'
-                                        );
-                                        return null;
+                            return (
+                                <StudentRows
+                                    key={student_id}
+                                    belt_by_id={belt_by_id}
+                                    skill_domain_by_id={skill_domain_by_id}
+                                    student={student}
+                                    student_waitlist_entries={
+                                        student_waitlist_entries
                                     }
-                                    const belt = belt_by_id[belt_id];
-                                    if (belt === undefined) {
-                                        console.error(
-                                            'belt ' + belt_id + ' not found'
-                                        );
-                                        return null;
-                                    }
-                                    return (
-                                        <tr
-                                            key={[
-                                                student_id,
-                                                skill_domain_id,
-                                                belt_id,
-                                            ].toString()}
-                                        >
-                                            {index === 0 && (
-                                                <th
-                                                    rowSpan={
-                                                        student_waitlist_entries.length
-                                                    }
-                                                >
-                                                    {student.display_name}
-                                                </th>
-                                            )}
-                                            <td>{skill_domain.name}</td>
-                                            <td>
-                                                <BeltIcon
-                                                    belt={belt}
-                                                    height={20}
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="hidden"
-                                                    id="waitlist_entry_id"
-                                                    value={id}
-                                                />
-                                                <input
-                                                    type="checkbox"
-                                                    id="completed"
-                                                    className="big-checkbox"
-                                                    defaultChecked
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="date"
-                                                    id="date"
-                                                    defaultValue={new Date()
-                                                        .toISOString()
-                                                        .slice(0, 10)}
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="checkbox"
-                                                    id="success"
-                                                    className="big-checkbox"
-                                                />
-                                            </td>
-                                        </tr>
-                                    );
-                                }
+                                />
                             );
                         }
                     )}
