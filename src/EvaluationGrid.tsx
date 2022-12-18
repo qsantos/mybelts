@@ -18,9 +18,48 @@ import SortTable from './SortTable';
 import StudentDeleteButton from './StudentDeleteButton';
 import StudentEditButton from './StudentEditButton';
 
+interface ActionsProps {
+    index: number;
+    student: Student;
+    setStudents: Dispatch<(prevStudents: Student[]) => Student[]>;
+}
+
+function StudentActions_(props: ActionsProps) {
+    const { index, student, setStudents } = props;
+
+    const changedCallback = (nextStudent: Student) =>
+        setStudents((prevStudents) => {
+            const nextStudents = [...prevStudents];
+            nextStudents[index] = nextStudent;
+            return nextStudents;
+        });
+
+    const deletedCallback = () =>
+        setStudents((prevStudents) => {
+            const nextStudents = [...prevStudents];
+            nextStudents.splice(index, 1);
+            return nextStudents;
+        });
+
+    return (
+        <>
+            <StudentEditButton
+                student={student}
+                changedCallback={changedCallback}
+            />{' '}
+            <StudentDeleteButton
+                student={student}
+                deletedCallback={deletedCallback}
+            />
+        </>
+    );
+}
+
+const StudentActions = React.memo(StudentActions_);
+
 interface Props {
     students: Student[];
-    setStudents: Dispatch<Student[]>;
+    setStudents: Dispatch<(prevStudent: Student[]) => Student[]>;
     skill_domains: SkillDomain[];
     belts: Belt[];
     student_belts: SchoolClassStudentBeltsStudentBelts[];
@@ -135,24 +174,11 @@ export default function EvaluationGrid(props: Props): ReactElement | null {
                 cell: (info) => {
                     const student = info.row.original;
                     return (
-                        <>
-                            <StudentEditButton
-                                student={student}
-                                changedCallback={(new_student) => {
-                                    const new_students = [...students];
-                                    new_students[info.row.index] = new_student;
-                                    setStudents(new_students);
-                                }}
-                            />{' '}
-                            <StudentDeleteButton
-                                student={student}
-                                deletedCallback={() => {
-                                    const new_students = [...students];
-                                    new_students.splice(info.row.index, 1);
-                                    setStudents(new_students);
-                                }}
-                            />
-                        </>
+                        <StudentActions
+                            index={info.row.index}
+                            student={student}
+                            setStudents={setStudents}
+                        />
                     );
                 },
             });

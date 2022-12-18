@@ -1,10 +1,15 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import React from 'react';
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Alert from 'react-bootstrap/Alert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
-import { SchoolClassesService, StudentList, WaitlistEntryList } from './api';
+import {
+    Student,
+    SchoolClassesService,
+    StudentList,
+    WaitlistEntryList,
+} from './api';
 import { getAPIError } from './lib';
 import { AdminOnly, LoginContext } from './auth';
 import SchoolClassManageWaitlist from './SchoolClassManageWaitlist';
@@ -31,6 +36,19 @@ export default function SchoolClassView(): ReactElement {
     const [waitlistEntryList, setWaitlistEntryList] =
         useState<null | WaitlistEntryList>(null);
     const navigate = useNavigate();
+
+    const setStudents = useCallback(
+        (setStateAction: (prevStudents: Student[]) => Student[]) =>
+            setStudentList((prevStudentList) => {
+                if (prevStudentList === null) {
+                    return null;
+                }
+                const prevStudents = prevStudentList.students;
+                const nextStudents = setStateAction(prevStudents);
+                return { ...prevStudentList, students: nextStudents };
+            }),
+        [setStudentList]
+    );
 
     useEffect(() => {
         SchoolClassesService.getSchoolClassResource(parseInt(school_class_id))
@@ -177,9 +195,7 @@ export default function SchoolClassView(): ReactElement {
             </AdminOnly>
             <EvaluationGrid
                 students={students}
-                setStudents={(new_students) =>
-                    setStudentList({ ...studentList, students: new_students })
-                }
+                setStudents={setStudents}
                 skill_domains={skill_domains}
                 belts={belts}
                 student_belts={student_belts}
