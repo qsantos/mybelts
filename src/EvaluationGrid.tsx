@@ -71,6 +71,19 @@ export default function EvaluationGrid(props: Props): ReactElement | null {
     const { t } = useTranslation();
     const loginInfo = React.useContext(LoginContext);
 
+    // ensure the logged student is always the first on in the list
+    if (loginInfo?.user?.is_admin === false) {
+        students.sort((a, b) => {
+            if (a.display_name === loginInfo.student?.display_name) {
+                return -1;
+            }
+            if (b.display_name === loginInfo.student?.display_name) {
+                return +1;
+            }
+            return a.display_name.localeCompare(b.display_name);
+        });
+    }
+
     const { columns: columnsMemo, sorting: sortingMemo } = React.useMemo(() => {
         if (!loginInfo) {
             return { columns: [], sorting: [] };
@@ -182,29 +195,10 @@ export default function EvaluationGrid(props: Props): ReactElement | null {
                     );
                 },
             });
-        } else {
-            // ensure the logged student is always the first on in the list
-            students.sort((a, b) => {
-                if (a.display_name === loginInfo.student?.display_name) {
-                    return -1;
-                }
-                if (b.display_name === loginInfo.student?.display_name) {
-                    return +1;
-                }
-                return a.display_name.localeCompare(b.display_name);
-            });
         }
 
         return { columns, sorting };
-    }, [
-        belts,
-        loginInfo,
-        setStudents,
-        skill_domains,
-        student_belts,
-        students,
-        t,
-    ]);
+    }, [belts, loginInfo, setStudents, skill_domains, student_belts, t]);
 
     return (
         <SortTable
