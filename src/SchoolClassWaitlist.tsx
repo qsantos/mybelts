@@ -19,6 +19,76 @@ import BeltIcon from './BeltIcon';
 import ModalButton from './ModalButton';
 import SchoolClassExamsPDFButton from './SchoolClassExamsPDFButton';
 
+interface StudentEntriesProps {
+    student_waitlist_entries: WaitlistEntry[];
+    belt_by_id: { [index: number]: Belt };
+    skill_domain_by_id: { [index: number]: SkillDomain };
+}
+
+function StudentEntries_(props: StudentEntriesProps) {
+    const { student_waitlist_entries, belt_by_id, skill_domain_by_id } = props;
+    return (
+        <>
+            {joinArray(
+                student_waitlist_entries.map(({ skill_domain_id, belt_id }) => {
+                    const skill_domain = skill_domain_by_id[skill_domain_id];
+                    if (skill_domain === undefined) {
+                        console.error(
+                            'skill domain ' + skill_domain_id + ' not found'
+                        );
+                        return null;
+                    }
+                    const belt = belt_by_id[belt_id];
+                    if (belt === undefined) {
+                        console.error('belt ' + belt_id + ' not found');
+                        return null;
+                    }
+                    return (
+                        <span key={skill_domain_id}>
+                            {skill_domain.name}{' '}
+                            <BeltIcon belt={belt} height={20} />
+                        </span>
+                    );
+                }),
+                ' / '
+            )}
+        </>
+    );
+}
+
+const StudentEntries = React.memo(StudentEntries_);
+
+interface StudentItemProps {
+    student: Student;
+    student_waitlist_entries: WaitlistEntry[];
+    belt_by_id: { [index: number]: Belt };
+    skill_domain_by_id: { [index: number]: SkillDomain };
+}
+
+function StudentItem_(props: StudentItemProps) {
+    const {
+        student,
+        student_waitlist_entries,
+        belt_by_id,
+        skill_domain_by_id,
+    } = props;
+
+    return (
+        <li key={student.id}>
+            <div className="ms-2 me-auto">
+                <strong>{student.display_name}:</strong>
+                <StudentEntries
+                    student_waitlist_entries={student_waitlist_entries}
+                    belt_by_id={belt_by_id}
+                    skill_domain_by_id={skill_domain_by_id}
+                />
+            </div>
+        </li>
+    );
+}
+
+const StudentItem = React.memo(StudentItem_);
+
 interface Props {
     school_class: SchoolClass;
     students: Student[];
@@ -36,28 +106,41 @@ export default function SchoolClassWaitlist(props: Props): ReactElement | null {
 
     const [errorMessage, setErrorMessage] = useState('');
 
-    if (waitlist_entries.length === 0) {
-        return null;
-    }
-
-    const belt_by_id = Object.fromEntries(belts.map((belt) => [belt.id, belt]));
-    const skill_domain_by_id = Object.fromEntries(
-        skill_domains.map((skill_domain) => [skill_domain.id, skill_domain])
+    const belt_by_id = React.useMemo(
+        () => Object.fromEntries(belts.map((belt) => [belt.id, belt])),
+        [belts]
+    );
+    const skill_domain_by_id = React.useMemo(
+        () =>
+            Object.fromEntries(
+                skill_domains.map((skill_domain) => [
+                    skill_domain.id,
+                    skill_domain,
+                ])
+            ),
+        [skill_domains]
     );
     const student_by_id = Object.fromEntries(
         students.map((student) => [student.id, student])
     );
 
-    const waitlist_by_student_id: { [index: number]: WaitlistEntry[] } = {};
-    waitlist_entries.forEach((waitlist_entry) => {
-        const student_id = waitlist_entry.student_id;
-        const student_waitlist = waitlist_by_student_id[student_id];
-        if (student_waitlist === undefined) {
-            waitlist_by_student_id[student_id] = [waitlist_entry];
-        } else {
-            student_waitlist.push(waitlist_entry);
-        }
-    });
+    const waitlist_by_student_id = React.useMemo(() => {
+        const ret: { [index: number]: WaitlistEntry[] } = {};
+        waitlist_entries.forEach((waitlist_entry) => {
+            const student_id = waitlist_entry.student_id;
+            const student_waitlist = ret[student_id];
+            if (student_waitlist === undefined) {
+                ret[student_id] = [waitlist_entry];
+            } else {
+                student_waitlist.push(waitlist_entry);
+            }
+        });
+        return ret;
+    }, [waitlist_entries]);
+
+    if (waitlist_entries.length === 0) {
+        return null;
+    }
 
     const sorted_waitlists = Object.entries(waitlist_by_student_id).sort(
         ([a_id], [b_id]) => {
@@ -99,51 +182,15 @@ export default function SchoolClassWaitlist(props: Props): ReactElement | null {
                             return null;
                         }
                         return (
-                            <li key={student_id}>
-                                <div className="ms-2 me-auto">
-                                    <strong>{student.display_name}:</strong>{' '}
-                                    {joinArray(
-                                        student_waitlist_entries.map(
-                                            ({ skill_domain_id, belt_id }) => {
-                                                const skill_domain =
-                                                    skill_domain_by_id[
-                                                        skill_domain_id
-                                                    ];
-                                                if (
-                                                    skill_domain === undefined
-                                                ) {
-                                                    console.error(
-                                                        'skill domain ' +
-                                                            skill_domain_id +
-                                                            ' not found'
-                                                    );
-                                                    return null;
-                                                }
-                                                const belt =
-                                                    belt_by_id[belt_id];
-                                                if (belt === undefined) {
-                                                    console.error(
-                                                        'belt ' +
-                                                            belt_id +
-                                                            ' not found'
-                                                    );
-                                                    return null;
-                                                }
-                                                return (
-                                                    <span key={skill_domain_id}>
-                                                        {skill_domain.name}{' '}
-                                                        <BeltIcon
-                                                            belt={belt}
-                                                            height={20}
-                                                        />
-                                                    </span>
-                                                );
-                                            }
-                                        ),
-                                        ' / '
-                                    )}
-                                </div>
-                            </li>
+                            <StudentItem
+                                key={student_id}
+                                student={student}
+                                student_waitlist_entries={
+                                    student_waitlist_entries
+                                }
+                                belt_by_id={belt_by_id}
+                                skill_domain_by_id={skill_domain_by_id}
+                            />
                         );
                     }
                 )}
