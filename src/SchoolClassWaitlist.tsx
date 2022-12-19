@@ -189,7 +189,7 @@ export default function SchoolClassWaitlist(props: Props): ReactElement | null {
                 skill_domain_by_id={skill_domain_by_id}
                 student_by_id={student_by_id}
                 sorted_waitlists={sorted_waitlists}
-            />
+            />{' '}
             <SchoolClassExamsPDFButton
                 school_class={school_class}
                 setErrorMessage={setErrorMessage}
