@@ -275,6 +275,15 @@ api_model_waitlist_entry_list = api.model('WaitlistEntryList', {
     'waitlist_entries': fields.List(fields.Nested(api_model_waitlist_entry), required=True),
 })
 
+api_model_waitlist_mapping = api.model('WaitlistMapping', {
+    'student_id': fields.Integer(example=42, required=True),
+    'waitlist_entries': fields.List(fields.Nested(api_model_waitlist_entry), required=True),
+})
+
+api_model_waitlist_mapping_list = api.model('WaitlistMappingList', {
+    'waitlist_mappings': fields.List(fields.Nested(api_model_waitlist_mapping), required=True),
+})
+
 api_model_exam_one = api.model('ExamOne', {
     'exam': fields.Nested(api_model_exam, required=True),
 })
@@ -776,7 +785,7 @@ class SchoolClassResource(Resource):
 
 @school_class_ns.route('/school-classes/<int:school_class_id>/waitlist')
 class SchoolClassWaitlistResource(Resource):
-    @api.marshal_with(api_model_waitlist_entry_list)
+    @api.marshal_with(api_model_waitlist_mapping_list)
     def get(self, school_class_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
@@ -793,8 +802,20 @@ class SchoolClassWaitlistResource(Resource):
                 .all()
             )
 
+            # collect results
+            waitlist_entries_of_students: Dict[int, List[Dict[str, int]]] = {}
+            for waitlist_entry in waitlist_entries:
+                waitlist_entries = waitlist_entries_of_students.setdefault(waitlist_entry.student_id, [])
+                waitlist_entries.append(waitlist_entry.json())
+
             return {
-                'waitlist_entries': [waitlist_entry.json() for waitlist_entry in waitlist_entries],
+                'waitlist_mappings': [
+                    {
+                        'student_id': student_id,
+                        'waitlist_entries': waitlist_entries,
+                    }
+                    for student_id, waitlist_entries in waitlist_entries_of_students.items()
+                ],
             }
 
 

@@ -62,6 +62,8 @@ export type { UsersPost } from './models/UsersPost';
 export type { WaitlistEntry } from './models/WaitlistEntry';
 export type { WaitlistEntryList } from './models/WaitlistEntryList';
 export type { WaitlistEntryOne } from './models/WaitlistEntryOne';
+export type { WaitlistMapping } from './models/WaitlistMapping';
+export type { WaitlistMappingList } from './models/WaitlistMappingList';
 
 export { BeltsService } from './services/BeltsService';
 export { ClassLevelsService } from './services/ClassLevelsService';

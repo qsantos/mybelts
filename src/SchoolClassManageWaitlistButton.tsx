@@ -22,7 +22,7 @@ interface Props {
     waitlist_entry?: WaitlistEntry;
     setErrorMessage: Dispatch<SetStateAction<string>>;
     onCreate?: (waitlistEntryList: WaitlistEntry) => void;
-    onDelete?: () => void;
+    onDelete?: (waitlist_entry_id: number) => void;
 }
 
 export default function SchoolClassManageWaitlistButton(
@@ -47,7 +47,7 @@ export default function SchoolClassManageWaitlistButton(
             WaitlistService.deleteWaitlistResource(waitlist_entry.id)
                 .then(() => {
                     setIn_process(false);
-                    onDelete?.();
+                    onDelete?.(waitlist_entry.id);
                 })
                 .catch((error) => {
                     setIn_process(false);

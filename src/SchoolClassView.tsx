@@ -8,7 +8,8 @@ import {
     Student,
     SchoolClassesService,
     StudentList,
-    WaitlistEntryList,
+    WaitlistMappingList,
+    WaitlistMapping,
 } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly, LoginContext } from './auth';
@@ -33,8 +34,8 @@ export default function SchoolClassView(): ReactElement {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
     const [studentList, setStudentList] = useState<null | StudentList>(null);
-    const [waitlistEntryList, setWaitlistEntryList] =
-        useState<null | WaitlistEntryList>(null);
+    const [waitlistMappingList, setWaitlistMappingList] =
+        useState<null | WaitlistMappingList>(null);
     const navigate = useNavigate();
 
     const setStudents = useCallback(
@@ -50,6 +51,29 @@ export default function SchoolClassView(): ReactElement {
         [setStudentList]
     );
 
+    const setWaitlistMappings = useCallback(
+        (
+            setStateAction: (
+                prevWaitlistMappings: WaitlistMapping[]
+            ) => WaitlistMapping[]
+        ) => {
+            setWaitlistMappingList((prevWaitlistMappingList) => {
+                if (prevWaitlistMappingList === null) {
+                    return null;
+                }
+                const prevWaitlistMappings =
+                    prevWaitlistMappingList.waitlist_mappings;
+                const nextWaitlistMappings =
+                    setStateAction(prevWaitlistMappings);
+                return {
+                    ...prevWaitlistMappingList,
+                    waitlist_mappings: nextWaitlistMappings,
+                };
+            });
+        },
+        [setWaitlistMappingList]
+    );
+
     useEffect(() => {
         SchoolClassesService.getSchoolClassResource(parseInt(school_class_id))
             .then(setStudentList)
@@ -60,7 +84,7 @@ export default function SchoolClassView(): ReactElement {
             SchoolClassesService.getSchoolClassWaitlistResource(
                 parseInt(school_class_id)
             )
-                .then(setWaitlistEntryList)
+                .then(setWaitlistMappingList)
                 .catch((error) => {
                     setErrorMessage(getAPIError(error));
                 });
@@ -69,7 +93,7 @@ export default function SchoolClassView(): ReactElement {
 
     if (
         studentList === null ||
-        (canUseWaitlist && waitlistEntryList === null)
+        (canUseWaitlist && waitlistMappingList === null)
     ) {
         return (
             <>
@@ -134,13 +158,15 @@ export default function SchoolClassView(): ReactElement {
                 {school_class.suffix}
             </h3>
             <AdminOnly>
-                {waitlistEntryList && (
+                {waitlistMappingList && (
                     <SchoolClassWaitlist
                         school_class={school_class}
                         students={students}
                         skill_domains={skill_domains}
                         belts={belts}
-                        waitlist_entries={waitlistEntryList.waitlist_entries}
+                        waitlist_mappings={
+                            waitlistMappingList.waitlist_mappings
+                        }
                     />
                 )}
                 <SchoolClassEditButton
@@ -180,7 +206,7 @@ export default function SchoolClassView(): ReactElement {
                         });
                     }}
                 />{' '}
-                {waitlistEntryList && (
+                {waitlistMappingList && (
                     <SchoolClassManageWaitlist
                         class_level={class_level}
                         school_class={school_class}
@@ -188,8 +214,10 @@ export default function SchoolClassView(): ReactElement {
                         skill_domains={skill_domains}
                         belts={belts}
                         student_belts={student_belts}
-                        waitlistEntryList={waitlistEntryList}
-                        setWaitlistEntryList={setWaitlistEntryList}
+                        waitlist_mappings={
+                            waitlistMappingList.waitlist_mappings
+                        }
+                        setWaitlistMappings={setWaitlistMappings}
                     />
                 )}
             </AdminOnly>

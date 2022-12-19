@@ -3,7 +3,14 @@ import { ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Alert from 'react-bootstrap/Alert';
 
-import { Belt, SchoolClass, SkillDomain, Student, WaitlistEntry } from './api';
+import {
+    Belt,
+    SchoolClass,
+    SkillDomain,
+    Student,
+    WaitlistEntry,
+    WaitlistMapping,
+} from './api';
 import { joinArray } from './lib';
 import BeltIcon from './BeltIcon';
 import SchoolClassWaitlistConvertButton from './SchoolClassWaitlistConvertButton';
@@ -84,11 +91,11 @@ interface Props {
     students: Student[];
     skill_domains: SkillDomain[];
     belts: Belt[];
-    waitlist_entries: WaitlistEntry[];
+    waitlist_mappings: WaitlistMapping[];
 }
 
 export default function SchoolClassWaitlist(props: Props): ReactElement | null {
-    const { school_class, students, skill_domains, belts, waitlist_entries } =
+    const { school_class, students, skill_domains, belts, waitlist_mappings } =
         props;
 
     const { t } = useTranslation();
@@ -113,21 +120,19 @@ export default function SchoolClassWaitlist(props: Props): ReactElement | null {
         students.map((student) => [student.id, student])
     );
 
-    const waitlist_by_student_id = React.useMemo(() => {
-        const ret: { [index: number]: WaitlistEntry[] } = {};
-        waitlist_entries.forEach((waitlist_entry) => {
-            const student_id = waitlist_entry.student_id;
-            const student_waitlist = ret[student_id];
-            if (student_waitlist === undefined) {
-                ret[student_id] = [waitlist_entry];
-            } else {
-                student_waitlist.push(waitlist_entry);
-            }
-        });
-        return ret;
-    }, [waitlist_entries]);
+    const waitlist_by_student_id = React.useMemo(
+        () =>
+            Object.fromEntries(
+                waitlist_mappings.map((waitlist_mapping) => {
+                    const { student_id: key, waitlist_entries: value } =
+                        waitlist_mapping;
+                    return [key, value];
+                })
+            ),
+        [waitlist_mappings]
+    );
 
-    if (waitlist_entries.length === 0) {
+    if (waitlist_mappings.length === 0) {
         return null;
     }
 
@@ -152,7 +157,7 @@ export default function SchoolClassWaitlist(props: Props): ReactElement | null {
                 />{' '}
                 {t('waitlist.title', {
                     student_count: sorted_waitlists.length,
-                    evaluation_count: waitlist_entries.length,
+                    evaluation_count: waitlist_mappings.length,
                 })}
             </Alert.Heading>
             {errorMessage && (

@@ -46,3 +46,26 @@ export function joinArray<T, S>(array: Array<T>, separator: S): Array<T | S> {
         }
     }, []);
 }
+
+export function assertNotUndefined<T>(obj: T | undefined): T {
+    if (obj === undefined) {
+        throw Error("An object is unexpectedly undefined");
+    }
+    return obj;
+}
+
+export function assertNotNull<T>(obj: T | null): T {
+    if (obj === null) {
+        throw Error("An object is unexpectedly undefined");
+    }
+    return obj;
+}
+
+
+export function assertNotNullish<T>(obj: T | undefined | null): T {
+    if (obj === undefined || obj === null) {
+        throw Error("An object is unexpectedly undefined");
+    }
+    return obj;
+}
+
