@@ -1,11 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom';
 import React from 'react';
-import { ReactElement } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Alert from 'react-bootstrap/Alert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
-import { StudentsService, EvaluationList, WaitlistEntryList } from './api';
+import {
+    Evaluation,
+    StudentsService,
+    EvaluationList,
+    WaitlistEntryList,
+} from './api';
 import { getAPIError } from './lib';
 import { AdminOnly, LoginContext } from './auth';
 import StudentBelts from './StudentBelts';
@@ -35,6 +40,22 @@ export default function StudentWidget(props: Props): ReactElement {
     const [waitlistEntryList, setWaitlistEntryList] =
         useState<null | WaitlistEntryList>(null);
     const navigate = useNavigate();
+
+    const setEvaluations = useCallback(
+        (setStateAction: (prevEvaluations: Evaluation[]) => Evaluation[]) =>
+            setEvaluationList((prevEvaluationList) => {
+                if (prevEvaluationList === null) {
+                    return null;
+                }
+                const prevEvaluations = prevEvaluationList.evaluations;
+                const nextEvaluations = setStateAction(prevEvaluations);
+                return {
+                    ...prevEvaluationList,
+                    evaluations: nextEvaluations,
+                };
+            }),
+        [setEvaluationList]
+    );
 
     useEffect(() => {
         StudentsService.getStudentResource(student_id)
@@ -185,12 +206,7 @@ export default function StudentWidget(props: Props): ReactElement {
                 belts={belts}
                 student={student}
                 evaluations={evaluations}
-                setEvaluations={(new_evaluations) =>
-                    setEvaluationList({
-                        ...evaluationList,
-                        evaluations: new_evaluations,
-                    })
-                }
+                setEvaluations={setEvaluations}
             />
         </>
     );

@@ -16,7 +16,7 @@ interface Props {
     skill_domain: SkillDomain;
     belt: Belt;
     evaluation: Evaluation;
-    deletedCallback?: () => void;
+    deletedCallback?: (evaluation_id: number) => void;
 }
 
 export default function EvaluationDeleteButton(props: Props): ReactElement {
@@ -31,7 +31,7 @@ export default function EvaluationDeleteButton(props: Props): ReactElement {
             onSubmit={() =>
                 EvaluationsService.deleteEvaluationResource(evaluation.id)
             }
-            onResponse={() => deletedCallback?.()}
+            onResponse={() => deletedCallback?.(evaluation.id)}
         >
             {t('evaluation.delete.message', { student, skill_domain, belt })}
         </ModalButton>
