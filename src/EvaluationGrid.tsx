@@ -232,10 +232,7 @@ export default function EvaluationGrid(props: Props): ReactElement | null {
             ])
         );
         function RowComponent(student: Student) {
-            const this_belts = student_belts_by_student_id[student.id];
-            if (!this_belts) {
-                return null;
-            }
+            const this_belts = student_belts_by_student_id[student.id] || [];
             return (
                 <EvaluationGridRow
                     key={student.id}
