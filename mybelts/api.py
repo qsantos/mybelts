@@ -991,7 +991,9 @@ class StudentResource(Resource):
             student = session.query(Student).get(student_id)
             if student is None:
                 abort(404, f'Student {student_id} not found')
+            user_id = student.user_id
             session.query(Student).filter(Student.id == student.id).delete()
+            session.query(User).filter(User.id == user_id).delete()
             session.commit()
             return None, 204
 
