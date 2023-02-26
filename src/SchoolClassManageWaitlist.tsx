@@ -24,7 +24,6 @@ import {
     WaitlistEntry,
     WaitlistMapping,
 } from './api';
-import { assertNotUndefined } from './lib';
 import SortTable from './SortTable';
 import SchoolClassManageWaitlistButton from './SchoolClassManageWaitlistButton';
 
@@ -225,13 +224,12 @@ export default function SchoolClassManageWaitlist(props: Props): ReactElement {
     const i18nArgs = { class_level, school_class };
     const [show, setShow] = useState(false);
 
-    const student_by_id = Object.fromEntries(
-        students.map((student) => [student.id, student])
+    const waitlist_entries_by_student_id = Object.fromEntries(
+        waitlist_mappings.map(({ student_id, waitlist_entries }) => [student_id, waitlist_entries])
     );
 
-    const data = waitlist_mappings.map((waitlist_mapping) => {
-        const { student_id, waitlist_entries } = waitlist_mapping;
-        const student = assertNotUndefined(student_by_id[student_id]);
+    const data = students.map((student) => {
+        const waitlist_entries = waitlist_entries_by_student_id[student.id] || [];
         return { student, waitlist_entries };
     });
 
@@ -252,10 +250,7 @@ export default function SchoolClassManageWaitlist(props: Props): ReactElement {
         function RowComponent(row: DataRow) {
             const { student, waitlist_entries } = row;
 
-            const this_belts = student_belts_by_student_id[student.id];
-            if (!this_belts) {
-                return null;
-            }
+            const this_belts = student_belts_by_student_id[student.id] || [];
             return (
                 <WaitlistRow
                     key={student.id}
