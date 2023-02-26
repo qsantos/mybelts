@@ -778,7 +778,7 @@ const resources = {
             'user.add.in_process': 'Ajout',
             'user.edit.button': '✏️',
             'user.edit.button.tooltip': 'Modifier',
-            'user.edit.title': 'Modifier un utilisateur: {{user.username}',
+            'user.edit.title': 'Modifier un utilisateur: {{user.username}}',
             'user.edit.cancel': 'Annuler',
             'user.edit.confirm': 'Enregistrer',
             'user.edit.in_process': 'Enregistrement',
@@ -792,7 +792,7 @@ const resources = {
                 "L'utilisateur devrait-il avoir les droits d'administration ?",
             'user.delete.button': '🗑️',
             'user.delete.button.tooltip': 'Supprimer',
-            'user.delete.title': 'Supprimer un utilisateur: {{user.username}',
+            'user.delete.title': 'Supprimer un utilisateur: {{user.username}}',
             'user.delete.message':
                 "Êtes-vous sûr de vouloir supprimer l'utilisateur {{user.username}} ?",
             'user.delete.cancel': 'Annuler',
