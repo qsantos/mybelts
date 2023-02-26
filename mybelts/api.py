@@ -877,7 +877,13 @@ class StudentsResource(Resource):
                 can_register_to_waitlist=request.json['can_register_to_waitlist'],
             )
             session.add(student)
-            session.commit()
+            try:
+                session.commit()
+            except IntegrityError as e:
+                if isinstance(e.orig, UniqueViolation):
+                    abort(409, f'User with username "{request.json["username"]}" already exists')
+                else:
+                    raise
             return {
                 'class_level': class_level.json(),
                 'school_class': school_class.json(),
