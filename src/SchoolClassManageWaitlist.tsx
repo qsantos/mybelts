@@ -63,12 +63,18 @@ function WaitlistRow_(props: RowProps) {
         ) => WaitlistEntry[]
     ) =>
         setWaitlistMappings((prevWaitlistMappings) => {
-            const index = prevWaitlistMappings.findIndex(
+            let index = prevWaitlistMappings.findIndex(
                 (candidate) => candidate.student_id === student.id
             );
-            const prevWaitlistMapping = prevWaitlistMappings?.[index];
+            let prevWaitlistMapping = prevWaitlistMappings?.[index];
+            // add mapping if none exist
             if (prevWaitlistMapping === undefined) {
-                return prevWaitlistMappings;
+                index = prevWaitlistMappings.length;
+                prevWaitlistMapping = {
+                    student_id: student.id,
+                    waitlist_entries: [],
+                };
+                prevWaitlistMappings.push(prevWaitlistMapping);
             }
             const prevWaitlistEntries = prevWaitlistMapping.waitlist_entries;
             const nextWaitlistEntries = setStateAction(prevWaitlistEntries);
