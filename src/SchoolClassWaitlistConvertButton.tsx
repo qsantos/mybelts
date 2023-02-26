@@ -20,6 +20,7 @@ interface StudentRowsProps {
     skill_domain_by_id: { [index: number]: SkillDomain };
     student: Student;
     student_waitlist_entries: WaitlistEntry[];
+    onChange: () => void;
 }
 
 function StudentRows(props: StudentRowsProps) {
@@ -28,6 +29,7 @@ function StudentRows(props: StudentRowsProps) {
         skill_domain_by_id,
         student,
         student_waitlist_entries,
+        onChange,
     } = props;
     const student_id = student.id;
     return (
@@ -74,6 +76,7 @@ function StudentRows(props: StudentRowsProps) {
                                     id="completed"
                                     className="big-checkbox"
                                     defaultChecked
+                                    onChange={onChange}
                                 />
                             </td>
                             <td>
@@ -115,6 +118,45 @@ export default function SchoolClassWaitlistConvertButton(
 
     const { t } = useTranslation();
     const navigate = useNavigate();
+
+    function getCompletedCheckboxes(toggle: HTMLElement): HTMLInputElement[] {
+        let element = toggle;
+        while (element.tagName !== "FORM") {
+            const parent = element.parentElement;
+            if (!parent) {
+                console.error('Could not find form');
+                return [];
+            }
+            element = parent;
+        }
+        const typed_form = element as typeof element & {
+            completed: HTMLInputElement[];
+        };
+        return Array.from(typed_form.completed).filter(checkbox => checkbox.type !== 'hidden');
+    }
+
+    function toggleAllCompleted(event: React.ChangeEvent<HTMLInputElement>) {
+        const completed = getCompletedCheckboxes(event.target);
+        completed.forEach(checkbox => checkbox.checked = event.target.checked);
+    }
+
+    function updateToggleAllCompleted() {
+        const toggle = document.getElementById("toggleAll-completed") as HTMLInputElement | null;
+        if (!toggle) {
+            console.error('Did not find completed toggle');
+            return;
+        }
+        const completed = getCompletedCheckboxes(toggle);
+        if (completed.every(checkbox => checkbox.checked)) {
+            toggle.checked = true;
+            toggle.indeterminate = false;
+        } else if (!completed.some(checkbox => checkbox.checked)) {
+            toggle.checked = false;
+            toggle.indeterminate = false;
+        } else {
+            toggle.indeterminate = true;
+        }
+    }
 
     return (
         <ModalButton
@@ -190,7 +232,11 @@ export default function SchoolClassWaitlistConvertButton(
                         <th>{t('waitlist.convert.columns.student')}</th>
                         <th>{t('waitlist.convert.columns.skill_domain')}</th>
                         <th>{t('waitlist.convert.columns.belt')}</th>
-                        <th>{t('waitlist.convert.columns.completed')}</th>
+                        <th>
+                            <input type="checkbox" defaultChecked id="toggleAll-completed" onChange={toggleAllCompleted} />
+                            {' '}
+                            {t('waitlist.convert.columns.completed')}
+                        </th>
                         <th>{t('waitlist.convert.columns.date')}</th>
                         <th>{t('waitlist.convert.columns.success')}</th>
                     </tr>
@@ -214,6 +260,7 @@ export default function SchoolClassWaitlistConvertButton(
                                     student_waitlist_entries={
                                         student_waitlist_entries
                                     }
+                                    onChange={updateToggleAllCompleted}
                                 />
                             );
                         }
