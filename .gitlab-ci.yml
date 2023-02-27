@@ -7,7 +7,7 @@ test-api:
     - branches
   interruptible: true
   services:
-    - postgres
+    - postgres:12.2-alpine
   variables:
     POSTGRES_USER: mybelts
     POSTGRES_PASSWORD: mybelts
