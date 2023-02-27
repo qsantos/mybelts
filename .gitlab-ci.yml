@@ -30,5 +30,3 @@ test-api:
         coverage_format: cobertura
         path: coverage.xml
   coverage: '/^TOTAL.*\s+(\d+\%)\s*$/'
-  after_script:
-    - docker system prune -f
