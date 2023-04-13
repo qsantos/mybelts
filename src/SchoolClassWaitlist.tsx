@@ -157,7 +157,7 @@ export default function SchoolClassWaitlist(props: Props): ReactElement | null {
                 />{' '}
                 {t('waitlist.title', {
                     student_count: sorted_waitlists.length,
-                    evaluation_count: waitlist_mappings.length,
+                    evaluation_count: waitlist_mappings.reduce((acc, waitlist_mapping) => waitlist_mapping.waitlist_entries.length + acc, 0),
                 })}
             </Alert.Heading>
             {errorMessage && (
