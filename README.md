@@ -29,7 +29,7 @@ They can register students for the next evaluation in any given skill, and stude
 ## PostgreSQL
 
 - install PostgreSQL (`sudo apt install postgresql`)
-- create a database `mybelts` with a user `skills` using password `skills`
+- create a database `mybelts` with a user `mybelts` using password `mybelts`
 - activate the virtual environment (`source env/bin/activate`)
 - create tables in the database (`alembic upgrade head`)
 - populate the tables (`./test-api`)
