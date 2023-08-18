@@ -14,16 +14,18 @@ They can register students for the next evaluation in any given skill, and stude
 
 # Installing
 
-## Python
+## Back-end
 
 - install Python 3.9 or later (`sudo apt install python3`)
+- move to the back-end directory (`cd back`)
 - create a virtual environment (`python3 -m venv env`)
 - activate the virtual environment (`source env/bin/activate`)
 - install the Python packages (`pip install -r requirements.txt`)
 
-## npm
+## Front-end
 
 - install Node and npm
+- move to the front-end directory (`cd front`)
 - install the npm packages (`npm install`)
 
 ## PostgreSQL
@@ -42,17 +44,21 @@ They can register students for the next evaluation in any given skill, and stude
 # Running
 
 - start the system services (`sudo systemctl start postgresql`)
+- move to the back-end directory (`cd back`)
 - activate the Python virtual environment (`source env/bin/activate`)
 - start the back-end (`FLASK_DEBUG=1 flask run`)
+- open another terminal, in the front-end directory (`cd front`)
 - start the front (`npm start`)
 - login as `root` with password `root`
 
 # Testing
 
 ```
+cd back
 flake8 .
 mypy .
 ./test-api
+cd ../front
 npx eslint src/*tsx
 ```
 
@@ -60,4 +66,4 @@ npx eslint src/*tsx
 
 ## Updating TypeScript Models for the API
 
-Assuming the API is listening locally on port 80, just run `./refresh-api-schema`.
+Assuming the API is listening locally on port 80, just run `cd front && ./refresh-api-schema`.
