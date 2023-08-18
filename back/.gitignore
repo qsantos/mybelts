@@ -1,0 +1,6 @@
+env/
+*.pyc
+.mypy_cache/
+.dmypy.json
+.coverage
+coverage.xml

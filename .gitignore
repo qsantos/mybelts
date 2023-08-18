@@ -1,10 +1,2 @@
-env
-*.pyc
-.mypy_cache/
-node_modules/
-.coverage
 tags
-coverage.xml
-build/
 deploy-info/
-.dmypy.json
