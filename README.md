@@ -14,6 +14,16 @@ They can register students for the next evaluation in any given skill, and stude
 
 # Installing
 
+## Dependencies
+
+```
+sudo apt install libpq-dev inkscape pdftk texlive-extra-utils texlive-latex-recommended
+```
+
+`libpq-dev` is required for the back-end to talk to the PostgreSQL database.
+The other dependencies are needed for the exam generation feature;
+everything else should work fine without these dependencies.
+
 ## Back-end
 
 - install Python 3.9 or later (`sudo apt install python3`)
