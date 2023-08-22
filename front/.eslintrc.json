@@ -36,6 +36,7 @@
             "error",
             "always"
         ],
+        "no-explicit-any": "warn",
         "no-shadow": [
             "error"
         ],
