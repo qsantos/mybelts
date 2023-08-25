@@ -1,0 +1,6 @@
+- boolean status “printed” for each personalized exam
+- student groups within each school class
+- database schema normalization of student/user
+- different skill domains for each class level
+- user names instead of ids for forms
+- user-controlled components for forms (evaluations)
