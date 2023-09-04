@@ -1,5 +1,4 @@
 import logging
-from time import sleep
 from typing import Any
 
 from flask import Flask, Response, request, send_file, send_from_directory
@@ -35,10 +34,6 @@ def create_app() -> Flask:
     if app.debug:
         logging.basicConfig()
         logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
-
-        @app.before_request
-        def wait() -> None:
-            sleep(.3)
 
         @app.after_request
         def save_http_request(response: Response) -> Response:
