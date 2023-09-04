@@ -42,7 +42,7 @@ def exams_to_print(session: scoped_session, school_class_id: int) -> tuple[list[
         .filter(Student.school_class_id == school_class_id)
         .outerjoin(WaitlistEntry.evaluations)
         .group_by(WaitlistEntry.id, Student.id, SkillDomain.id)
-        .order_by(Student.rank, SkillDomain.code)
+        .order_by(Student.rank, Student.id, SkillDomain.code)
         .all()
     )
 
