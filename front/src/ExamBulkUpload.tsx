@@ -10,6 +10,50 @@ import Table from 'react-bootstrap/Table';
 import { Belt, ClassLevel, Exam, SkillDomain, ClassLevelsService } from './api';
 import { getAPIError } from './lib';
 
+function FileDrag({ onDrop }: { onDrop: (event: React.DragEvent<HTMLDivElement>)  => void }) {
+    const { t } = useTranslation();
+    const [dragActive, setDragActive] = useState(false);
+
+    function onDragOver(event: React.DragEvent<HTMLDivElement>) {
+        event.preventDefault();
+    }
+
+    function onDragEnter(event: React.DragEvent<HTMLDivElement>) {
+        event.preventDefault();
+        setDragActive(true);
+    }
+
+    function onDragLeave(event: React.DragEvent<HTMLDivElement>) {
+        event.preventDefault();
+        setDragActive(false);
+    }
+
+    return (
+        <div
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onDragEnter={onDragEnter}
+            onDragLeave={onDragLeave}
+            style={{
+                border: dragActive ? '5px dashed black' : '5px dashed #c0c0c0',
+                borderRadius: '10px',
+                textAlign: 'center',
+                padding: '2em',
+                margin: '2em',
+                fontFamily: 'sans',
+            }}
+        >
+            <img
+                src="/upload.svg"
+                height="80"
+                alt={t('exam.bulk_upload.image.alt')}
+            />
+            <br />
+            {t('exam.bulk_upload.prompt')}
+        </div>
+    );
+}
+
 interface Props {
     belts: Belt[];
     skill_domains: SkillDomain[];
@@ -43,10 +87,6 @@ export default function ExamBulkUpload(props: Props): ReactElement {
             }
             return new_files;
         });
-        event.preventDefault();
-    }
-
-    function dragOverHandler(event: React.DragEvent<HTMLDivElement>) {
         event.preventDefault();
     }
 
@@ -265,26 +305,7 @@ export default function ExamBulkUpload(props: Props): ReactElement {
                     </tbody>
                 </Table>
             )}
-            <div
-                onDrop={dropHandler}
-                onDragOver={dragOverHandler}
-                style={{
-                    border: '5px dashed grey',
-                    borderRadius: '10px',
-                    textAlign: 'center',
-                    padding: '2em',
-                    margin: '2em',
-                    fontFamily: 'sans',
-                }}
-            >
-                <img
-                    src="/upload.svg"
-                    height="80"
-                    alt={t('exam.bulk_upload.image.alt')}
-                />
-                <br />
-                {t('exam.bulk_upload.prompt')}
-            </div>
+            <FileDrag onDrop={dropHandler} />
         </>
     );
 }
