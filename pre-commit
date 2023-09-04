@@ -15,4 +15,4 @@ git checkout-index --prefix="$TEMPDIR/" -af
 
 # flake8 only wants Python files so we filter by extension
 git diff --cached --name-only --diff-filter=AM | grep '\.py$' |
-    (cd $TEMPDIR; xargs --no-run-if-empty flake8)
+    (cd $TEMPDIR; xargs --no-run-if-empty flake8 --config back/setup.cfg)
