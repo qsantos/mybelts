@@ -233,9 +233,11 @@ export default function SchoolClassWaitlistConvertButton(
                         <th>{t('waitlist.convert.columns.skill_domain')}</th>
                         <th>{t('waitlist.convert.columns.belt')}</th>
                         <th>
-                            <input type="checkbox" defaultChecked id="toggleAll-completed" onChange={toggleAllCompleted} />
-                            {' '}
-                            {t('waitlist.convert.columns.completed')}
+                            <label>
+                                <input type="checkbox" defaultChecked id="toggleAll-completed" onChange={toggleAllCompleted} />
+                                {' '}
+                                {t('waitlist.convert.columns.completed')}
+                            </label>
                         </th>
                         <th>{t('waitlist.convert.columns.date')}</th>
                         <th>{t('waitlist.convert.columns.success')}</th>

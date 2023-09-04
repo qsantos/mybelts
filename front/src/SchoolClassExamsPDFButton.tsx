@@ -174,9 +174,11 @@ export default function SchoolClassExamsPDFButton(props: Props): ReactElement {
                         <th>{t('waitlist.print.columns.skill_domain')}</th>
                         <th>{t('waitlist.print.columns.belt')}</th>
                         <th>
-                            <input type="checkbox" defaultChecked id="toggleAll-print" onChange={toggleAllPrint} />
-                            {' '}
-                            {t('waitlist.print.columns.print')}
+                            <label>
+                                <input type="checkbox" defaultChecked id="toggleAll-print" onChange={toggleAllPrint} />
+                                {' '}
+                                {t('waitlist.print.columns.print')}
+                            </label>
                         </th>
                     </tr>
                 </thead>
