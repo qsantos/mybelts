@@ -100,8 +100,6 @@ export default function SchoolClassWaitlist(props: Props): ReactElement | null {
 
     const { t } = useTranslation();
 
-    const [errorMessage, setErrorMessage] = useState('');
-
     const belt_by_id = React.useMemo(
         () => Object.fromEntries(belts.map((belt) => [belt.id, belt])),
         [belts]
@@ -160,11 +158,6 @@ export default function SchoolClassWaitlist(props: Props): ReactElement | null {
                     evaluation_count: waitlist_mappings.reduce((acc, waitlist_mapping) => waitlist_mapping.waitlist_entries.length + acc, 0),
                 })}
             </Alert.Heading>
-            {errorMessage && (
-                <Alert variant="danger">
-                    {t('error')}: {errorMessage}
-                </Alert>
-            )}
             <ul>
                 {sorted_waitlists.map(
                     ([student_id, student_waitlist_entries]) => {
@@ -197,7 +190,10 @@ export default function SchoolClassWaitlist(props: Props): ReactElement | null {
             />{' '}
             <SchoolClassExamsPDFButton
                 school_class={school_class}
-                setErrorMessage={setErrorMessage}
+                belt_by_id={belt_by_id}
+                skill_domain_by_id={skill_domain_by_id}
+                student_by_id={student_by_id}
+                sorted_waitlists={sorted_waitlists}
             />
         </Alert>
     );
