@@ -8,7 +8,7 @@ from mybelts.schema import HTTPRequest, session_context
 
 
 def create_app() -> Flask:
-    app = Flask(__name__, static_folder='build', static_url_path='/')
+    app = Flask(__name__, static_folder='../front/build', static_url_path='/')
     app.config['ERROR_404_HELP'] = False
     app.config['SWAGGER_UI_DOC_EXPANSION'] = 'list'
     app.register_blueprint(api_blueprint, url_prefix='/api')
@@ -25,7 +25,7 @@ def create_app() -> Flask:
     @app.route('/users')
     @app.route('/i18n')
     def home(x: str = '', y: str = '', z: str = '') -> Any:
-        return send_file('build/index.html')
+        return send_file('../front/build/index.html')
 
     @app.route('/.well-known/<path:path>')
     def well_known(path: str) -> Any:

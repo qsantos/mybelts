@@ -15,12 +15,13 @@ source "deploy-info/${ENV}.env"
 set -x
 
 # build front-end
-make
+make -C front
 
 # copy back-end sources, front-end build and migrations
 mkdir tmp
 trap 'rm -Rf tmp' EXIT ERR SIGINT SIGTERM
-rsync -PHav --exclude=__pycache__ --exclude=.mypy_cache alembic.ini app.py build migrations mybelts requirements.txt tmp
+rsync -PHav --exclude=__pycache__ --exclude=.mypy_cache back tmp
+rsync -PHav front/build tmp/front/
 rsync -PHav --delete --exclude=env --rsh="ssh -i 'deploy-info/${ENV}.key' -p '${PORT}'" tmp/ "${USER}@${HOSTNAME}:${WORKDIR}"
 
 # migrate database and deploy back-end
@@ -28,6 +29,7 @@ rsync -PHav --delete --exclude=env --rsh="ssh -i 'deploy-info/${ENV}.key' -p '${
 ssh -i "deploy-info/${ENV}.key" -p "${PORT}" "${USER}@${HOSTNAME}" <<EOF
 set -x
 cd ${WORKDIR}
+cd back
 python3 -m venv env
 source env/bin/activate
 pip install -r requirements.txt
