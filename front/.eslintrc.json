@@ -36,7 +36,7 @@
             "error",
             "always"
         ],
-        "no-explicit-any": "warn",
+        "@typescript-eslint/no-explicit-any": "off",
         "no-shadow": [
             "error"
         ],
