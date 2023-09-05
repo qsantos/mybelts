@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { SchoolClassesPost } from '../models/SchoolClassesPost';
+import type { SchoolClassExamPdfPost } from '../models/SchoolClassExamPdfPost';
 import type { SchoolClassOne } from '../models/SchoolClassOne';
 import type { SchoolClassPut } from '../models/SchoolClassPut';
 import type { StudentList } from '../models/StudentList';
@@ -88,15 +89,18 @@ export class SchoolClassesService {
 
     /**
      * @param schoolClassId
+     * @param payload
      * @returns any Success
      * @throws ApiError
      */
-    public static getSchoolClassExamPdfResource(
+    public static postSchoolClassExamPdfResource(
         schoolClassId: number,
+        payload: SchoolClassExamPdfPost,
     ): CancelablePromise<any> {
         return __request({
-            method: 'GET',
+            method: 'POST',
             path: `/school-classes/${schoolClassId}/exam-pdf`,
+            body: payload,
         });
     }
 

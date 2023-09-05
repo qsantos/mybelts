@@ -821,8 +821,13 @@ class SchoolClassWaitlistResource(Resource):
 
 @school_class_ns.route('/school-classes/<int:school_class_id>/exam-pdf')
 class SchoolClassExamPDFResource(Resource):
+    post_model = api.model('SchoolClassExamPdfPost', {
+        'waitlist_entry_ids': fields.List(fields.Integer),
+    })
+
+    @api.expect(post_model, validate=True)
     @api.response(200, 'Success')
-    def get(self, school_class_id: int) -> Any:
+    def post(self, school_class_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
@@ -833,7 +838,8 @@ class SchoolClassExamPDFResource(Resource):
             class_level = school_class.class_level
             full_class_name = class_level.prefix + school_class.suffix
 
-            exams_with_names, errors = exams_to_print(session, school_class_id)
+            waitlist_entry_ids = request.json['waitlist_entry_ids']
+            exams_with_names, errors = exams_to_print(session, school_class_id, waitlist_entry_ids)
             if errors:
                 abort(422, '\n'.join(errors))
             with NamedTemporaryFile(suffix='pdf') as tmpfile:

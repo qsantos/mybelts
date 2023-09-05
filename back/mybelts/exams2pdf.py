@@ -3,13 +3,11 @@ from itertools import zip_longest
 from os import remove
 from subprocess import PIPE, CalledProcessError, check_output, run
 from tempfile import NamedTemporaryFile
+from typing import TypedDict
 
-from sqlalchemy import func
 from sqlalchemy.orm import scoped_session
 
-from mybelts.schema import (
-    Evaluation, Exam, SkillDomain, Student, WaitlistEntry,
-)
+from mybelts.schema import Evaluation, Exam, WaitlistEntry
 
 stamp_template = """\
 <?xml version="1.0" encoding="UTF-8"?>
@@ -32,27 +30,39 @@ def stamp_of_student(display_name: str, full_class_name: str) -> bytes:
     return stamp_pdf
 
 
-def exams_to_print(session: scoped_session, school_class_id: int) -> tuple[list[tuple[Exam, str]], list[str]]:
-    things = (
-        session  # type: ignore
-        .query(WaitlistEntry, Student, func.count_(Evaluation.id))
-        .select_from(WaitlistEntry)
-        .outerjoin(Student)
-        .outerjoin(SkillDomain)
-        .filter(Student.school_class_id == school_class_id)
-        .outerjoin(WaitlistEntry.evaluations)
-        .group_by(WaitlistEntry.id, Student.id, SkillDomain.id)
-        .order_by(Student.rank, Student.id, SkillDomain.code)
-        .all()
-    )
+class Entry(TypedDict):
+    student_id: int
+    skill_domain_id: int
+    belt_id: int
 
+
+def exams_to_print(
+    session: scoped_session,
+    school_class_id: int,
+    waitlist_entry_ids: [int],
+) -> tuple[list[tuple[Exam, str]], list[str]]:
     # TODO: use single SQL query
     exams_with_names = []
     errors = []
-    for waitlist_entry, student, attempt_number in things:
+    for waitlist_entry_id in waitlist_entry_ids:
+        waitlist_entry = (
+            session
+            .query(WaitlistEntry)
+            .get(waitlist_entry_id)
+        )
+        student = waitlist_entry.student
+        attempt_number = (
+            session  # type: ignore
+            .query(Evaluation)
+            .filter(Evaluation.student_id == waitlist_entry.student_id)
+            .filter(Evaluation.skill_domain_id == waitlist_entry.skill_domain_id)
+            .filter(Evaluation.belt_id == waitlist_entry.belt_id)
+            .count()
+        )
         exams = (
             session
             .query(Exam)
+            # TODO: filter by class level id
             .filter(Exam.skill_domain_id == waitlist_entry.skill_domain_id)
             .filter(Exam.belt_id == waitlist_entry.belt_id)
             .order_by(Exam.code)

@@ -35,6 +35,7 @@ export type { MissingI18nKeyEventList } from './models/MissingI18nKeyEventList';
 export type { MissingI18nKeyPost } from './models/MissingI18nKeyPost';
 export type { SchoolClass } from './models/SchoolClass';
 export type { SchoolClassesPost } from './models/SchoolClassesPost';
+export type { SchoolClassExamPdfPost } from './models/SchoolClassExamPdfPost';
 export type { SchoolClassList } from './models/SchoolClassList';
 export type { SchoolClassOne } from './models/SchoolClassOne';
 export type { SchoolClassPut } from './models/SchoolClassPut';

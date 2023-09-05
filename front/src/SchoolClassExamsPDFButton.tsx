@@ -1,9 +1,7 @@
 import React from 'react';
-import { Dispatch, ReactElement, SetStateAction, useState } from 'react';
+import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import Form from 'react-bootstrap/Form';
 import Table from 'react-bootstrap/Table';
-import Tooltip from 'react-bootstrap/Tooltip';
 
 import {
     Belt,
@@ -144,8 +142,29 @@ export default function SchoolClassExamsPDFButton(props: Props): ReactElement {
             size="lg"
             i18nPrefix="waitlist.print"
             onSubmit={(form: EventTarget) => {
-                return SchoolClassesService.getSchoolClassExamPdfResource(
-                    school_class.id
+                const typed_form = form as typeof form & {
+                    waitlist_entry_id: HTMLInputElement[];
+                    print: HTMLInputElement[];
+                };
+                const waitlist_entry_ids = [];
+                // the index 0 of these variable is a DUMMY ENTRY
+                for (let i = 1; i < typed_form.waitlist_entry_id.length; i++) {
+                    const waitlist_entry_id =
+                        typed_form.waitlist_entry_id[i]?.value;
+                    const print = typed_form.print[i]?.checked;
+                    if (!waitlist_entry_id || print === undefined) {
+                        continue;
+                    }
+                    if (print) {
+                        waitlist_entry_ids.push(parseInt(waitlist_entry_id));
+                    }
+                }
+                console.log(waitlist_entry_ids);
+                return SchoolClassesService.postSchoolClassExamPdfResource(
+                    school_class.id,
+                    {
+                        waitlist_entry_ids,
+                    },
                 );
             }}
             onResponse={(blob) => {
