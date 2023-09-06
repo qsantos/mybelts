@@ -24,6 +24,9 @@
     "typescript": "^4.4.4",
     "web-vitals": "^1.1.2"
   },
+  "overrides": {
+    "autoprefixer": "10.4.5"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build"
