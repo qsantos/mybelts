@@ -40,7 +40,7 @@ class Entry(TypedDict):
 def exams_to_print(
     session: scoped_session,
     school_class_id: int,
-    waitlist_entry_ids: [int],
+    waitlist_entry_ids: list[int],
 ) -> tuple[list[tuple[Exam, str]], list[str]]:
     # TODO: use single SQL query
     exams_with_names = []
@@ -51,9 +51,11 @@ def exams_to_print(
             .query(WaitlistEntry)
             .get(waitlist_entry_id)
         )
+        if waitlist_entry is None:
+            continue
         student = waitlist_entry.student
         attempt_number = (
-            session  # type: ignore
+            session
             .query(Evaluation)
             .filter(Evaluation.student_id == waitlist_entry.student_id)
             .filter(Evaluation.skill_domain_id == waitlist_entry.skill_domain_id)
