@@ -287,6 +287,7 @@ class WaitlistEntry(Base):
             'student_id': self.student_id,
             'skill_domain_id': self.skill_domain_id,
             'belt_id': self.belt_id,
+            'last_printed': self.last_printed,
         }
 
 

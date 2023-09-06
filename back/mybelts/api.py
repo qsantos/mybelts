@@ -137,6 +137,7 @@ api_model_waitlist_entry = api.model('WaitlistEntry', {
     'student_id': fields.Integer(example=42, required=True),
     'skill_domain_id': fields.Integer(example=42, required=True),
     'belt_id': fields.Integer(example=42, required=True),
+    'last_printed': fields.DateTime(example='2021-11-13T12:34:56Z', required=False),
 })
 
 api_model_exam = api.model('Exam', {
