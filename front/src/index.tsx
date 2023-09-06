@@ -16,7 +16,6 @@ import Spinner from 'react-bootstrap/Spinner';
 import './i18n';
 import { OpenAPI, LoginInfo } from './api';
 import { OpenAPIWithCallback } from './api/core/request';
-import { formatDatetime } from './lib';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
@@ -28,6 +27,7 @@ import BeltsView from './BeltsView';
 import SkillDomainsView from './SkillDomainsView';
 import ClassLevelsView from './ClassLevelsView';
 import ClassLevelView from './ClassLevelView';
+import RelativeTime from './RelativeTime';
 import SchoolClassView from './SchoolClassView';
 import StudentWidget from './StudentWidget';
 import StudentView from './StudentView';
@@ -74,6 +74,7 @@ export function Loader(): ReactElement {
 }
 
 function HomeView() {
+    const { t } = useTranslation();
     const loginInfo = React.useContext(LoginContext);
     if (loginInfo === null) {
         // not connected
@@ -86,17 +87,15 @@ function HomeView() {
     if (student) {
         // student
         return <StudentWidget student_id={student.id} />;
-    } else if (user.is_admin) {
+    } else {
         // admin
         return (
             <>
-                Hello {user.username}. You last logged in on{' '}
-                {formatDatetime(user.last_login)}.
+                {t('home.welcome', { user })}
+                {' '}
+                <RelativeTime dateTime={user.last_login} />.
             </>
         );
-    } else {
-        // other
-        return <>Hello {user.username}</>;
     }
 }
 

@@ -16,6 +16,7 @@ const resources = {
             'home_page': 'Home',
             'missing_i18n_keys':
                 'Since your last login, {{unique}} missing i18n keys were detected, totaling {{total}} events. Please notify the developer team.',
+            'home.welcome': 'Hello {{user.username}}. You last logged in',
             'login.title': 'Log In',
             'login.button': 'Log In',
             'login.username.title': 'User Name',
@@ -422,6 +423,7 @@ const resources = {
             'home_page': 'Accueil',
             'missing_i18n_keys':
                 'Depuis votre dernière connexion, {{unique}} clés i18n manquantes ont été détectées, pour un total de {{total}} occurrences. Merci de contacter les développeurs.',
+            'home.welcome': 'Bonjour {{user.username}}, vous vous êtes connecté pour la dernière fois',
             'login.title': 'Se connecter',
             'login.button': 'Se connecter',
             'login.username.title': "Nom d'utilisateur",
