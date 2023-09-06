@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+cd "$(dirname $0)"
+
 # parse arguments
 if [ "$#" -ne 1 ]; then
   echo "Usage: $0 [dev|prod]"
