@@ -1,3 +1,2 @@
-- boolean status “printed” for each personalized exam
 - student groups within each school class
 - different skill domains for each class level
