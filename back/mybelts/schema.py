@@ -259,6 +259,7 @@ class WaitlistEntry(Base):
     student_id = Column(Integer, ForeignKey('student.id', ondelete='CASCADE'), nullable=False)
     skill_domain_id = Column(Integer, ForeignKey('skill_domain.id', ondelete='CASCADE'), nullable=False)
     belt_id = Column(Integer, ForeignKey('belt.id', ondelete='CASCADE'), nullable=False)
+    last_printed = Column(DateTime(timezone=True), nullable=True, index=True)
 
     __table_args__ = (
         UniqueConstraint('student_id', 'skill_domain_id'),
