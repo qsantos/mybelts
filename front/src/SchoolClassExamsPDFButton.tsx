@@ -13,6 +13,7 @@ import {
 } from './api';
 import BeltIcon from './BeltIcon';
 import ModalButton from './ModalButton';
+import RelativeTime from './RelativeTime';
 
 interface StudentRowsProps {
     belt_by_id: { [index: number]: Belt };
@@ -34,7 +35,7 @@ function StudentRows(props: StudentRowsProps) {
     return (
         <>
             {student_waitlist_entries.map(
-                ({ id, skill_domain_id, belt_id }, index) => {
+                ({ id, skill_domain_id, belt_id, last_printed }, index) => {
                     const skill_domain = skill_domain_by_id[skill_domain_id];
                     if (skill_domain === undefined) {
                         console.error(
@@ -74,9 +75,15 @@ function StudentRows(props: StudentRowsProps) {
                                     type="checkbox"
                                     id="print"
                                     className="big-checkbox"
-                                    defaultChecked
+                                    defaultChecked={!last_printed}
                                     onChange={onChange}
                                 />
+                            </td>
+                            <td>
+                                {last_printed
+                                    ? <RelativeTime dateTime={last_printed} />
+                                    : '-'
+                                }
                             </td>
                         </tr>
                     );
@@ -199,6 +206,7 @@ export default function SchoolClassExamsPDFButton(props: Props): ReactElement {
                                 {t('waitlist.print.columns.print')}
                             </label>
                         </th>
+                        <th>{t('waitlist.print.columns.last_printed')}</th>
                     </tr>
                 </thead>
                 <tbody>

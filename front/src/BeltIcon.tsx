@@ -14,10 +14,8 @@ interface Props {
 export default function BeltIcon(props: Props): ReactElement {
     const { belt, height } = props;
     return (
-        <>
-            <OverlayTrigger overlay={<Tooltip>{belt.name}</Tooltip>}>
-                <BeltImage height={height || 40} fill={belt.color} />
-            </OverlayTrigger>
-        </>
+        <OverlayTrigger overlay={<Tooltip>{belt.name}</Tooltip>}>
+            <BeltImage height={height || 40} fill={belt.color} />
+        </OverlayTrigger>
     );
 }
