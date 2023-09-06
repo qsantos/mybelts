@@ -5,6 +5,7 @@ from subprocess import PIPE, CalledProcessError, check_output, run
 from tempfile import NamedTemporaryFile
 from typing import TypedDict
 
+from sqlalchemy import func
 from sqlalchemy.orm import scoped_session
 
 from mybelts.schema import Evaluation, Exam, WaitlistEntry
@@ -76,6 +77,13 @@ def exams_to_print(
             continue
         exam = exams[attempt_number % len(exams)]
         exams_with_names.append((exam, student.display_name))
+    (
+        session
+        .query(WaitlistEntry)
+        .filter(WaitlistEntry.id.in_(waitlist_entry_ids))
+        .update({'last_printed': func.now()})
+    )
+    session.commit()
     return exams_with_names, errors
 
 
