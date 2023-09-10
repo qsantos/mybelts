@@ -1,0 +1,35 @@
+name: MyBelts CI
+
+on:
+  push:
+    branches: master
+  pull_request:
+    branches: master
+
+jobs:
+  front:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: front/
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: npm ci
+      - name: Check types
+        run: npx tsc
+      - name: Check lints
+        run: npx eslint src/*tsx
+  back:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: back/
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Check types
+        run: flake8  .
+      - name: Check lints
+        run: mypy .
