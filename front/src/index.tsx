@@ -285,6 +285,7 @@ function App() {
     );
 }
 
+// eslint-disable-next-line react/no-deprecated
 ReactDOM.render(
     <StrictMode>
         <BrowserRouter>
