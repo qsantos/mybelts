@@ -30,6 +30,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Check types
-        run: flake8  .
+        run: ruff check .
       - name: Check lints
         run: mypy .

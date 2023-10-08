@@ -11,16 +11,8 @@ flask-restx
 pyjwt
 gunicorn[gevent]
 
-# linting
-flake8
-flake8-broken-line
-flake8-commas
-flake8-isort
-flake8-pep3101
-flake8-quotes
-isort
-
-# typing
+# linting & typing
+ruff
 mypy
 sqlalchemy-stubs
 types-flask

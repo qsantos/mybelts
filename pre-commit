@@ -13,6 +13,6 @@ git checkout-index --prefix="$TEMPDIR/" -af
 
 # Listing the changed files must be done from the git repository.
 
-# flake8 only wants Python files so we filter by extension
+# filter by extension to only list Python files
 git diff --cached --name-only --diff-filter=AM | grep '\.py$' |
-    (cd $TEMPDIR; xargs --no-run-if-empty flake8 --config back/setup.cfg)
+    (cd $TEMPDIR; xargs --no-run-if-empty ruff --config back/pyproject.toml)

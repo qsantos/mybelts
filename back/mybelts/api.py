@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, NoReturn
 
 import jwt
 from flask import Blueprint, request, send_file, url_for
-from flask_restx import fields  # type: ignore
-from flask_restx import Api, Resource
+from flask_restx import Api, Resource, fields  # type: ignore
 from flask_restx.apidoc import apidoc  # type: ignore
 from flask_restx.reqparse import FileStorage  # type: ignore
 from jsonschema import FormatChecker
@@ -19,8 +18,17 @@ from sqlalchemy.sql.expression import func
 from mybelts.config import SECRET
 from mybelts.exams2pdf import exams_to_print, print_exams_as_pdf
 from mybelts.schema import (
-    Belt, ClassLevel, Evaluation, Exam, MissingI18nKey, SchoolClass,
-    SkillDomain, Student, User, WaitlistEntry, session_context,
+    Belt,
+    ClassLevel,
+    Evaluation,
+    Exam,
+    MissingI18nKey,
+    SchoolClass,
+    SkillDomain,
+    Student,
+    User,
+    WaitlistEntry,
+    session_context,
 )
 
 # add typing to flask_restx.abort()
