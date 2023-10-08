@@ -24,7 +24,7 @@ def create_app() -> Flask:
     @app.route('/students/<path:x>')
     @app.route('/users')
     @app.route('/i18n')
-    def home(x: str = '', y: str = '', z: str = '') -> Any:
+    def home(_x: str = '', _y: str = '', _z: str = '') -> Any:
         return send_file('../front/build/index.html')
 
     @app.route('/.well-known/<path:path>')

@@ -1,7 +1,7 @@
 from functools import lru_cache
 from itertools import zip_longest
 from os import remove
-from subprocess import PIPE, CalledProcessError, check_output, run
+from subprocess import CalledProcessError, check_output, run
 from tempfile import NamedTemporaryFile
 from typing import TypedDict
 
@@ -23,7 +23,7 @@ stamp_template = """\
 def stamp_of_student(display_name: str, full_class_name: str) -> bytes:
     stamp_svg = stamp_template.format(display_name=display_name, full_class_name=full_class_name).encode()
     command = ['inkscape', '/dev/stdin', '--export-type=pdf', '--export-filename=-']
-    res = run(command, input=stamp_svg, stdout=PIPE, stderr=PIPE)
+    res = run(command, input=stamp_svg, capture_output=True, check=False)
     stamp_pdf = res.stdout
     if not stamp_pdf:
         print(res.stderr.decode())
@@ -39,7 +39,6 @@ class Entry(TypedDict):
 
 def exams_to_print(
     session: scoped_session,
-    school_class_id: int,
     waitlist_entry_ids: list[int],
 ) -> tuple[list[tuple[Exam, str]], list[str]]:
     # TODO: use single SQL query
@@ -72,10 +71,10 @@ def exams_to_print(
             .all()
         )
         if not exams:
-            errors.append((
+            errors.append(
                 f'No exam for skill_domain {waitlist_entry.skill_domain_id} '
-                f'and belt {waitlist_entry.belt_id}'
-            ))
+                f'and belt {waitlist_entry.belt_id}',
+            )
             continue
         exam = exams[attempt_number % len(exams)]
         exams_with_names.append((exam, student.display_name))

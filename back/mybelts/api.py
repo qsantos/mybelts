@@ -33,7 +33,7 @@ from mybelts.schema import (
 
 # add typing to flask_restx.abort()
 if TYPE_CHECKING:
-    def abort(code: int, message: str) -> NoReturn:
+    def abort(_code: int, _message: str) -> NoReturn:
         ...
 else:
     from flask_restx import abort
@@ -334,7 +334,6 @@ class MissingI18nKeyResource(Resource):
     @api.response(204, 'Success')
     def post(self) -> Any:
         with session_context() as session:
-            session.query
             missing_i18n_key = MissingI18nKey(
                 language=request.json['language'],
                 namespace=request.json['namespace'],
@@ -848,7 +847,7 @@ class SchoolClassExamPDFResource(Resource):
             full_class_name = class_level.prefix + school_class.suffix
 
             waitlist_entry_ids = request.json['waitlist_entry_ids']
-            exams_with_names, errors = exams_to_print(session, school_class_id, waitlist_entry_ids)
+            exams_with_names, errors = exams_to_print(session, waitlist_entry_ids)
             if errors:
                 abort(422, '\n'.join(errors))
             with NamedTemporaryFile(suffix='pdf') as tmpfile:
@@ -1092,7 +1091,7 @@ class StudentWaitlistResource(Resource):
                         f'in {skill_domain.name} but already achieved '
                         f'{achieved_belt.name} (rank: {achieved_belt.rank})'
                     ))
-            else:
+            else:  # noqa: PLR5501
                 if belt.rank > 1:
                     abort(409, (
                         f'Registering for evaluation of {belt.name} (rank: {belt.rank}) '

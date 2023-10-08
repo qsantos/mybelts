@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     # deferred() is not properly typed in sqlalchemy-stubs
     U = TypeVar('U')
 
-    def deferred(x: U) -> U:
+    def deferred(_x: U) -> U:
         ...
 else:
     from sqlalchemy.orm import deferred

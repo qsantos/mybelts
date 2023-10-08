@@ -11,8 +11,4 @@ TEMPDIR=$(mktemp -d)
 trap 'rm -rf "$TEMPDIR"' EXIT SIGHUP SIGINT SIGQUIT SIGTERM
 git checkout-index --prefix="$TEMPDIR/" -af
 
-# Listing the changed files must be done from the git repository.
-
-# filter by extension to only list Python files
-git diff --cached --name-only --diff-filter=AM | grep '\.py$' |
-    (cd $TEMPDIR; xargs --no-run-if-empty ruff --config back/pyproject.toml)
+(cd $TEMPDIR/back; ruff check .)
