@@ -10,6 +10,7 @@ select = [
     "EM",  # flake8-errmsg
     "EXE",  # flake8-executable
     "F",  # Pyflakes
+    "FA",  # flake8-future-annotations
     "FLY",  # flynt
     "G",  # flake8-logging-format
     "I",  # isort

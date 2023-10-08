@@ -1,14 +1,18 @@
+from __future__ import annotations
+
 from functools import lru_cache
 from itertools import zip_longest
 from os import remove
 from subprocess import CalledProcessError, check_output, run
 from tempfile import NamedTemporaryFile
-from typing import TypedDict
+from typing import TYPE_CHECKING, TypedDict
 
 from sqlalchemy import func
-from sqlalchemy.orm import scoped_session
 
 from mybelts.schema import Evaluation, Exam, WaitlistEntry
+
+if TYPE_CHECKING:
+    from sqlalchemy.orm import scoped_session
 
 stamp_template = """\
 <?xml version="1.0" encoding="UTF-8"?>

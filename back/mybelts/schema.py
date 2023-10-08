@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Dict, Iterator, List, TypeVar
+from typing import TYPE_CHECKING, Iterator, TypeVar
 
 from sqlalchemy import (
     Boolean,
@@ -96,7 +98,7 @@ class User(Base):
         uselist=False,
     )
 
-    def json(self) -> Dict:
+    def json(self) -> dict:
         return {
             'id': self.id,
             'created': self.created,
@@ -112,19 +114,19 @@ class ClassLevel(Base):
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     prefix = Column(String, nullable=False, index=True)
 
-    school_classes: List['SchoolClass'] = relationship(  # type: ignore
+    school_classes: list[SchoolClass] = relationship(  # type: ignore
         'SchoolClass',
         foreign_keys='SchoolClass.class_level_id',
         back_populates='class_level',
     )
 
-    exams: List['Exam'] = relationship(  # type: ignore
+    exams: list[Exam] = relationship(  # type: ignore
         'Exam',
         foreign_keys='Exam.class_level_id',
         back_populates='class_level',
     )
 
-    def json(self) -> Dict:
+    def json(self) -> dict:
         return {
             'id': self.id,
             'created': self.created.isoformat(),
@@ -145,13 +147,13 @@ class SchoolClass(Base):
         back_populates='school_classes',
     )
 
-    students: List['Student'] = relationship(  # type: ignore
+    students: list[Student] = relationship(  # type: ignore
         'Student',
         foreign_keys='Student.school_class_id',
         back_populates='school_class',
     )
 
-    def json(self) -> Dict:
+    def json(self) -> dict:
         return {
             'id': self.id,
             'created': self.created.isoformat(),
@@ -182,7 +184,7 @@ class Student(Base):
         back_populates='students',
     )
 
-    def json(self) -> Dict:
+    def json(self) -> dict:
         return {
             'id': self.id,
             'created': self.created.isoformat(),
@@ -205,7 +207,7 @@ class Belt(Base):
     code = Column(String, nullable=False, index=True, server_default='')
     color = Column(String, nullable=False, index=True, server_default='')
 
-    def json(self) -> Dict:
+    def json(self) -> dict:
         return {
             'id': self.id,
             'created': self.created.isoformat(),
@@ -215,7 +217,7 @@ class Belt(Base):
             'code': self.code,
         }
 
-    def exchange_ranks(self, other: 'Belt') -> None:
+    def exchange_ranks(self, other: Belt) -> None:
         self.rank, other.rank = other.rank, self.rank
 
 
@@ -226,7 +228,7 @@ class SkillDomain(Base):
     name = Column(String, index=True, nullable=False)
     code = Column(String, nullable=False, index=True, server_default='')
 
-    def json(self) -> Dict:
+    def json(self) -> dict:
         return {
             'id': self.id,
             'created': self.created.isoformat(),
@@ -249,7 +251,7 @@ class Evaluation(Base):
     skill_domain = relationship('SkillDomain', foreign_keys=skill_domain_id)
     belt = relationship('Belt', foreign_keys=belt_id)
 
-    def json(self) -> Dict:
+    def json(self) -> dict:
         return {
             'id': self.id,
             'created': self.created.isoformat(),
@@ -289,7 +291,7 @@ class WaitlistEntry(Base):
         viewonly=True,
     )
 
-    def json(self) -> Dict:
+    def json(self) -> dict:
         return {
             'id': self.id,
             'created': self.created.isoformat(),
@@ -319,7 +321,7 @@ class Exam(Base):
     skill_domain = relationship('SkillDomain', foreign_keys=skill_domain_id)
     belt = relationship('Belt', foreign_keys=belt_id)
 
-    def json(self) -> Dict:
+    def json(self) -> dict:
         return {
             'id': self.id,
             'created': self.created.isoformat(),

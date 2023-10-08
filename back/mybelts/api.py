@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from datetime import date, datetime, timedelta, timezone
 from io import BytesIO
 from tempfile import NamedTemporaryFile
-from typing import TYPE_CHECKING, Any, Dict, List, NoReturn
+from typing import TYPE_CHECKING, Any, NoReturn
 
 import jwt
 from flask import Blueprint, request, send_file, url_for
@@ -12,7 +14,6 @@ from jsonschema import FormatChecker
 from psycopg2.errors import UniqueViolation  # type: ignore
 from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
 from mybelts.config import SECRET
@@ -33,6 +34,7 @@ from mybelts.schema import (
 
 # add typing to flask_restx.abort()
 if TYPE_CHECKING:
+    from sqlalchemy.orm import Session
     def abort(_code: int, _message: str) -> NoReturn:
         ...
 else:
@@ -733,7 +735,7 @@ class SchoolClassResource(Resource):
             students = school_class.students
 
             # collect results
-            belts_of_students: Dict[int, List[Dict[str, int]]] = {}
+            belts_of_students: dict[int, list[dict[str, int]]] = {}
             for evaluation in evaluations:
                 belts_of_students.setdefault(evaluation.student_id, []).append({
                     'skill_domain_id': evaluation.skill_domain_id,
@@ -811,7 +813,7 @@ class SchoolClassWaitlistResource(Resource):
             )
 
             # collect results
-            waitlist_entries_of_students: Dict[int, List[Dict[str, int]]] = {}
+            waitlist_entries_of_students: dict[int, list[dict[str, int]]] = {}
             for waitlist_entry in waitlist_entries:
                 waitlist_entries = waitlist_entries_of_students.setdefault(waitlist_entry.student_id, [])
                 waitlist_entries.append(waitlist_entry.json())
