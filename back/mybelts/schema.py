@@ -44,7 +44,7 @@ def session_context() -> Iterator[scoped_session]:
     """
     (straight from SQLAlchemy's documentation)
     Provides a transactional scope around a series of operations.
-    The session is commited on exit : DON'T DO IT YOURSELF
+    The session is committed on exit : DON'T DO IT YOURSELF
     """
     session = session_factory()
     try:

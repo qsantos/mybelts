@@ -143,7 +143,7 @@ export default function SchoolClassWaitlist(props: Props): ReactElement | null {
             }
             return a.rank - b.rank;
         }
-    ) as unknown as [number, WaitlistEntry[]][]; // TypeScript thinks this is [stirng, WaitlistEntry[]][]
+    ) as unknown as [number, WaitlistEntry[]][]; // TypeScript thinks this is [string, WaitlistEntry[]][]
 
     return (
         <Alert>
