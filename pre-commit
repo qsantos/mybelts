@@ -11,4 +11,9 @@ TEMPDIR=$(mktemp -d)
 trap 'rm -rf "$TEMPDIR"' EXIT SIGHUP SIGINT SIGQUIT SIGTERM
 git checkout-index --prefix="$TEMPDIR/" -af
 
-(cd $TEMPDIR/back; ruff check .)
+# lint back
+if ! git diff --cached --name-only --diff-filter=AM --quiet -- back; then
+    pushd $TEMPDIR/back >/dev/null
+    ruff check .
+    popd >/dev/null
+fi
