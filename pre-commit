@@ -2,7 +2,7 @@
 # Usage: copy this file to .git/hooks/
 
 # Exit at first error
-set -e
+set -Eeu
 
 # To handle partially committed files, we must copy the staged changes to a
 # separate location
