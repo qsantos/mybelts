@@ -6,7 +6,7 @@ sqlalchemy-utils
 passlib
 
 # API
-Werkzeug <= 2.1.2  # https://github.com/python-restx/flask-restx/issues/460
+Werkzeug
 flask-restx
 pyjwt
 gunicorn[gevent]
