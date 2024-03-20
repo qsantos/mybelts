@@ -110,7 +110,7 @@ interface Props {
     sorted_waitlists: [number, WaitlistEntry[]][];
 }
 
-export default function SchoolClassWaitlistConvertButton(
+export default function ClassWaitlistConvertButton(
     props: Props
 ): ReactElement {
     const { belt_by_id, skill_domain_by_id, student_by_id, sorted_waitlists } =

@@ -114,9 +114,9 @@ class Level(Base):
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     prefix = Column(String, nullable=False, index=True)
 
-    school_classes: list[SchoolClass] = relationship(  # type: ignore
-        'SchoolClass',
-        foreign_keys='SchoolClass.level_id',
+    classes: list[Class] = relationship(  # type: ignore
+        'Class',
+        foreign_keys='Class.level_id',
         back_populates='level',
     )
 
@@ -134,8 +134,8 @@ class Level(Base):
         }
 
 
-class SchoolClass(Base):
-    __tablename__ = 'school_class'
+class Class(Base):
+    __tablename__ = 'class'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     level_id = Column(Integer, ForeignKey(Level.id, ondelete='CASCADE'), nullable=False)
@@ -144,13 +144,13 @@ class SchoolClass(Base):
     level = relationship(
         'Level',
         foreign_keys=level_id,
-        back_populates='school_classes',
+        back_populates='classes',
     )
 
     students: list[Student] = relationship(  # type: ignore
         'Student',
-        foreign_keys='Student.school_class_id',
-        back_populates='school_class',
+        foreign_keys='Student.class_id',
+        back_populates='class_',
     )
 
     def json(self) -> dict:
@@ -167,7 +167,7 @@ class Student(Base):
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), unique=True, nullable=False)
-    school_class_id = Column(Integer, ForeignKey('school_class.id', ondelete='CASCADE'), nullable=False)
+    class_id = Column(Integer, ForeignKey('class.id', ondelete='CASCADE'), nullable=False)
     display_name = Column(String, nullable=False, index=True)
     rank = Column(Integer, nullable=False, index=True, server_default='0')
     can_register_to_waitlist = Column(Boolean, index=True, nullable=False)
@@ -178,9 +178,9 @@ class Student(Base):
         back_populates='student',
     )
 
-    school_class = relationship(
-        'SchoolClass',
-        foreign_keys=school_class_id,
+    class_ = relationship(
+        'Class',
+        foreign_keys=class_id,
         back_populates='students',
     )
 
@@ -191,7 +191,7 @@ class Student(Base):
             'user_id': self.user_id,
             'username': self.user.username,
             'last_login': self.user.last_login,
-            'school_class_id': self.school_class_id,
+            'class_id': self.class_id,
             'display_name': self.display_name,
             'rank': self.rank,
             'can_register_to_waitlist': self.can_register_to_waitlist,

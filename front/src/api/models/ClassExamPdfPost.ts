@@ -2,6 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type SchoolClassExamPdfPost = {
+export type ClassExamPdfPost = {
     waitlist_entry_ids?: Array<number>;
 }

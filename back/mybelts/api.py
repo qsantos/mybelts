@@ -20,11 +20,11 @@ from mybelts.config import SECRET
 from mybelts.exams2pdf import exams_to_print, print_exams_as_pdf
 from mybelts.schema import (
     Belt,
+    Class,
     Evaluation,
     Exam,
     Level,
     MissingI18nKey,
-    SchoolClass,
     SkillDomain,
     Student,
     User,
@@ -73,7 +73,7 @@ api = Api(
 
 users_ns = api.namespace('Users', path='/')
 level_ns = api.namespace('Levels', path='/')
-school_class_ns = api.namespace('School Classes', path='/')
+class_ns = api.namespace('Classes', path='/')
 students_ns = api.namespace('Students', path='/')
 skill_domains_ns = api.namespace('Skill Domains', path='/')
 belts_ns = api.namespace('Belts', path='/')
@@ -96,7 +96,7 @@ api_model_level = api.model('Level', {
     'prefix': fields.String(example='4e', required=True),
 })
 
-api_model_school_class = api.model('SchoolClass', {
+api_model_class = api.model('Class', {
     'id': fields.Integer(example=42, required=True),
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
     'level_id': fields.Integer(example=42, required=True),
@@ -109,7 +109,7 @@ api_model_student = api.model('Student', {
     'user_id': fields.Integer(example=42, required=True),
     'username': fields.String(example='jdoe', required=True),
     'last_login': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
-    'school_class_id': fields.Integer(example=42, required=True),
+    'class_id': fields.Integer(example=42, required=True),
     'display_name': fields.String(example='John Doe', required=True),
     'rank': fields.Integer(example=7, required=True),
     'can_register_to_waitlist': fields.Boolean(example=False, required=True),
@@ -205,28 +205,28 @@ api_model_level_one = api.model('LevelOne', {
     'level': fields.Nested(api_model_level, required=True),
 })
 
-api_model_school_class_list = api.model('SchoolClassList', {
+api_model_class_list = api.model('ClassList', {
     'belts': fields.List(fields.Nested(api_model_belt), required=True),
     'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
     'level': fields.Nested(api_model_level, required=True),
-    'school_classes': fields.List(fields.Nested(api_model_school_class), required=True),
+    'classes': fields.List(fields.Nested(api_model_class), required=True),
     'exams': fields.List(fields.Nested(api_model_exam), required=True),
 })
 
-api_model_school_class_one = api.model('SchoolClassOne', {
+api_model_class_one = api.model('ClassOne', {
     'level': fields.Nested(api_model_level, required=True),
-    'school_class': fields.Nested(api_model_school_class, required=True),
+    'class': fields.Nested(api_model_class, required=True),
 })
 
 api_model_student_list = api.model('StudentList', {
     'belts': fields.List(fields.Nested(api_model_belt), required=True),
     'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
     'level': fields.Nested(api_model_level, required=True),
-    'school_class': fields.Nested(api_model_school_class, required=True),
+    'class': fields.Nested(api_model_class, required=True),
     'students': fields.List(fields.Nested(api_model_student), required=True),
-    'student_belts': fields.List(fields.Nested(api.model('SchoolClassStudentBeltsStudentBelts', {
+    'student_belts': fields.List(fields.Nested(api.model('ClassStudentBeltsStudentBelts', {
         'student_id': fields.Integer(example=42, required=True),
-        'belts': fields.List(fields.Nested(api.model('SchoolClassStudentBeltsBelts', {
+        'belts': fields.List(fields.Nested(api.model('ClassStudentBeltsBelts', {
             'skill_domain_id': fields.Integer(example=42, required=True),
             'belt_id': fields.Integer(example=42, required=True),
         })), required=True),
@@ -239,7 +239,7 @@ api_model_student_list_bare = api.model('StudentListBare', {
 
 api_model_student_one = api.model('StudentOne', {
     'level': fields.Nested(api_model_level, required=True),
-    'school_class': fields.Nested(api_model_school_class, required=True),
+    'class': fields.Nested(api_model_class, required=True),
     'user': fields.Nested(api_model_user, required=True),
     'student': fields.Nested(api_model_student, required=True),
 })
@@ -262,7 +262,7 @@ api_model_belt_one = api.model('BeltOne', {
 
 api_model_evaluation_list = api.model('EvaluationList', {
     'level': fields.Nested(api_model_level, required=True),
-    'school_class': fields.Nested(api_model_school_class, required=True),
+    'class': fields.Nested(api_model_class, required=True),
     'student': fields.Nested(api_model_student, required=True),
     'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
     'belts': fields.List(fields.Nested(api_model_belt), required=True),
@@ -271,7 +271,7 @@ api_model_evaluation_list = api.model('EvaluationList', {
 
 api_model_evaluation_one = api.model('EvaluationOne', {
     'level': fields.Nested(api_model_level, required=True),
-    'school_class': fields.Nested(api_model_school_class, required=True),
+    'class': fields.Nested(api_model_class, required=True),
     'student': fields.Nested(api_model_student, required=True),
     'skill_domain': fields.Nested(api_model_skill_domain, required=True),
     'belt': fields.Nested(api_model_belt, required=True),
@@ -568,7 +568,7 @@ class LevelsResource(Resource):
 
 @level_ns.route('/levels/<int:level_id>')
 class LevelResource(Resource):
-    @api.marshal_with(api_model_school_class_list)
+    @api.marshal_with(api_model_class_list)
     def get(self, level_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
@@ -582,9 +582,9 @@ class LevelResource(Resource):
                 'belts': [belt.json() for belt in belts],
                 'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
                 'level': level.json(),
-                'school_classes': [
-                    school_class.json()
-                    for school_class in level.school_classes
+                'classes': [
+                    class_.json()
+                    for class_ in level.classes
                 ],
                 'exams': [
                     exam.json()
@@ -680,15 +680,15 @@ class LevelExamsResource(Resource):
             }
 
 
-@school_class_ns.route('/school-classes')
-class SchoolClassesResource(Resource):
-    post_model = api.model('SchoolClassesPost', {
+@class_ns.route('/classes')
+class ClassesResource(Resource):
+    post_model = api.model('ClassesPost', {
         'level_id': fields.Integer(example=42, required=True),
         'suffix': fields.String(example='D', required=True),
     })
 
     @api.expect(post_model, validate=True)
-    @api.marshal_with(api_model_school_class_one)
+    @api.marshal_with(api_model_class_one)
     def post(self) -> Any:
         with session_context() as session:
             me = authenticate(session)
@@ -697,42 +697,42 @@ class SchoolClassesResource(Resource):
             level = session.query(Level).get(level_id)
             if level is None:
                 abort(404, f'Level {level_id} not found')
-            school_class = SchoolClass(
+            class_ = Class(
                 level=level,
                 suffix=request.json['suffix'],
             )
-            session.add(school_class)
+            session.add(class_)
             session.commit()
             return {
                 'level': level.json(),
-                'school_class': school_class.json(),
+                'class': class_.json(),
             }
 
 
-@school_class_ns.route('/school-classes/<int:school_class_id>')
-class SchoolClassResource(Resource):
+@class_ns.route('/classes/<int:class_id>')
+class ClassResource(Resource):
     @api.marshal_with(api_model_student_list)
-    def get(self, school_class_id: int) -> Any:
+    def get(self, class_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
-            authorize(me, me.student is not None and me.student.school_class_id == school_class_id)
-            school_class = session.query(SchoolClass).get(school_class_id)
-            if school_class is None:
-                abort(404, f'School class {school_class_id} not found')
-            level = school_class.level
+            authorize(me, me.student is not None and me.student.class_id == class_id)
+            class_ = session.query(Class).get(class_id)
+            if class_ is None:
+                abort(404, f'Class {class_id} not found')
+            level = class_.level
 
             evaluations = (
                 session  # type: ignore
                 .query(Evaluation)
                 .filter(Evaluation.success)
                 .outerjoin(Student)
-                .filter(Student.school_class_id == school_class_id)
+                .filter(Student.class_id == class_id)
                 .all()
             )
 
             belts = session.query(Belt).all()
             skill_domains = session.query(SkillDomain).all()
-            students = school_class.students
+            students = class_.students
 
             # collect results
             belts_of_students: dict[int, list[dict[str, int]]] = {}
@@ -747,7 +747,7 @@ class SchoolClassResource(Resource):
                 'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
                 'students': [student.json() for student in students],
                 'level': level.json(),
-                'school_class': school_class.json(),
+                'class': class_.json(),
                 'student_belts': [
                     {
                         'student_id': student_id,
@@ -757,58 +757,58 @@ class SchoolClassResource(Resource):
                 ],
             }
 
-    put_model = api.model('SchoolClassPut', {
+    put_model = api.model('ClassPut', {
         'suffix': fields.String(example='4e'),
     })
 
     @api.expect(put_model, validate=True)
-    @api.marshal_with(api_model_school_class_one)
-    def put(self, school_class_id: int) -> Any:
+    @api.marshal_with(api_model_class_one)
+    def put(self, class_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
-            school_class = session.query(SchoolClass).get(school_class_id)
-            if school_class is None:
-                abort(404, f'School class {school_class_id} not found')
+            class_ = session.query(Class).get(class_id)
+            if class_ is None:
+                abort(404, f'Class {class_id} not found')
             suffix = request.json.get('suffix')
             if suffix is not None:
-                school_class.suffix = suffix
+                class_.suffix = suffix
             session.commit()
-            level = school_class.level
+            level = class_.level
             return {
                 'level': level.json(),
-                'school_class': school_class.json(),
+                'class': class_.json(),
             }
 
     @api.response(204, 'Success')
-    def delete(self, school_class_id: int) -> Any:
+    def delete(self, class_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
-            school_class = session.query(SchoolClass).get(school_class_id)
-            if school_class is None:
-                abort(404, f'School class {school_class_id} not found')
-            session.query(SchoolClass).filter(SchoolClass.id == school_class.id).delete()
+            class_ = session.query(Class).get(class_id)
+            if class_ is None:
+                abort(404, f'Class {class_id} not found')
+            session.query(Class).filter(Class.id == class_.id).delete()
             session.commit()
             return None, 204
 
 
-@school_class_ns.route('/school-classes/<int:school_class_id>/waitlist')
-class SchoolClassWaitlistResource(Resource):
+@class_ns.route('/classes/<int:class_id>/waitlist')
+class ClassWaitlistResource(Resource):
     @api.marshal_with(api_model_waitlist_mapping_list)
-    def get(self, school_class_id: int) -> Any:
+    def get(self, class_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
-            school_class = session.query(SchoolClass).get(school_class_id)
-            if school_class is None:
-                abort(404, f'School class {school_class_id} not found')
+            class_ = session.query(Class).get(class_id)
+            if class_ is None:
+                abort(404, f'Class {class_id} not found')
 
             waitlist_entries = (
                 session  # type: ignore
                 .query(WaitlistEntry)
                 .outerjoin(Student)
-                .filter(Student.school_class_id == school_class_id)
+                .filter(Student.class_id == class_id)
                 .all()
             )
 
@@ -829,24 +829,24 @@ class SchoolClassWaitlistResource(Resource):
             }
 
 
-@school_class_ns.route('/school-classes/<int:school_class_id>/exam-pdf')
-class SchoolClassExamPDFResource(Resource):
-    post_model = api.model('SchoolClassExamPdfPost', {
+@class_ns.route('/classes/<int:class_id>/exam-pdf')
+class ClassExamPDFResource(Resource):
+    post_model = api.model('ClassExamPdfPost', {
         'waitlist_entry_ids': fields.List(fields.Integer),
     })
 
     @api.expect(post_model, validate=True)
     @api.response(200, 'Success')
-    def post(self, school_class_id: int) -> Any:
+    def post(self, class_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
-            school_class = session.query(SchoolClass).get(school_class_id)
-            if school_class is None:
-                abort(404, f'School class {school_class_id} not found')
+            class_ = session.query(Class).get(class_id)
+            if class_ is None:
+                abort(404, f'Class {class_id} not found')
 
-            level = school_class.level
-            full_class_name = level.prefix + school_class.suffix
+            level = class_.level
+            full_class_name = level.prefix + class_.suffix
 
             waitlist_entry_ids = request.json['waitlist_entry_ids']
             exams_with_names, errors = exams_to_print(session, waitlist_entry_ids)
@@ -864,7 +864,7 @@ class SchoolClassExamPDFResource(Resource):
 @students_ns.route('/students')
 class StudentsResource(Resource):
     post_model = api.model('StudentsPost', {
-        'school_class_id': fields.Integer(example=42, required=True),
+        'class_id': fields.Integer(example=42, required=True),
         'username': fields.String(example='tartempion', required=True),
         'password': fields.String(example='correct horse battery staple', required=True),
         'display_name': fields.String(example='John Doe', required=True),
@@ -877,17 +877,17 @@ class StudentsResource(Resource):
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
-            school_class_id = request.json['school_class_id']
-            school_class = session.query(SchoolClass).get(school_class_id)
-            if school_class is None:
-                abort(404, f'School class {school_class_id} not found')
-            level = school_class.level
+            class_id = request.json['class_id']
+            class_ = session.query(Class).get(class_id)
+            if class_ is None:
+                abort(404, f'Class {class_id} not found')
+            level = class_.level
             user = User(
                 username=request.json['username'],
                 password=request.json['password'],
             )
             student = Student(
-                school_class_id=school_class_id,
+                class_id=class_id,
                 user=user,
                 display_name=request.json['display_name'],
                 can_register_to_waitlist=request.json['can_register_to_waitlist'],
@@ -902,7 +902,7 @@ class StudentsResource(Resource):
                     raise
             return {
                 'level': level.json(),
-                'school_class': school_class.json(),
+                'class': class_.json(),
                 'user': user.json(),
                 'student': student.json(),
             }
@@ -951,11 +951,11 @@ class StudentResource(Resource):
             belts = session.query(Belt).all()
             skill_domains = session.query(SkillDomain).all()
             evaluations = session.query(Evaluation).filter(Evaluation.student_id == student.id).all()
-            school_class = student.school_class
-            level = school_class.level
+            class_ = student.class_
+            level = class_.level
             return {
                 'level': level.json(),
-                'school_class': school_class.json(),
+                'class': class_.json(),
                 'student': student.json(),
                 'belts': [belt.json() for belt in belts],
                 'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
@@ -996,11 +996,11 @@ class StudentResource(Resource):
             if rank is not None:
                 student.rank = rank
             session.commit()
-            school_class = student.school_class
-            level = school_class.level
+            class_ = student.class_
+            level = class_.level
             return {
                 'level': level.json(),
-                'school_class': school_class.json(),
+                'class': class_.json(),
                 'user': user.json(),
                 'student': student.json(),
             }
@@ -1394,11 +1394,11 @@ class EvaluationsResource(Resource):
             )
             session.add(evaluation)
             session.commit()
-            school_class = student.school_class
-            level = school_class.level
+            class_ = student.class_
+            level = class_.level
             return {
                 'level': level.json(),
-                'school_class': school_class.json(),
+                'class': class_.json(),
                 'student': student.json(),
                 'belt': belt.json(),
                 'skill_domain': skill_domain.json(),
@@ -1460,11 +1460,11 @@ class EvaluationResource(Resource):
             if success is not None:
                 evaluation.success = success
             session.commit()
-            school_class = student.school_class
-            level = school_class.level
+            class_ = student.class_
+            level = class_.level
             return {
                 'level': level.json(),
-                'school_class': school_class.json(),
+                'class': class_.json(),
                 'student': student.json(),
                 'skill_domain': skill_domain.json(),
                 'belt': belt.json(),

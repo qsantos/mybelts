@@ -6,25 +6,25 @@ import Alert from 'react-bootstrap/Alert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
 import {
     Student,
-    SchoolClassesService,
+    ClassesService,
     StudentList,
     WaitlistMappingList,
     WaitlistMapping,
 } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly, LoginContext } from './auth';
-import SchoolClassManageWaitlist from './SchoolClassManageWaitlist';
-import SchoolClassWaitlist from './SchoolClassWaitlist';
-import SchoolClassDeleteButton from './SchoolClassDeleteButton';
-import SchoolClassEditButton from './SchoolClassEditButton';
+import ClassManageWaitlist from './ClassManageWaitlist';
+import ClassWaitlist from './ClassWaitlist';
+import ClassDeleteButton from './ClassDeleteButton';
+import ClassEditButton from './ClassEditButton';
 import StudentUpdateRanks from './StudentUpdateRanks';
 import StudentCreateButton from './StudentCreateButton';
 import EvaluationGrid from './EvaluationGrid';
 import { assert, BreadcrumbItem, Loader } from './index';
 
-export default function SchoolClassView(): ReactElement {
-    const { school_class_id } = useParams();
-    assert(school_class_id !== undefined);
+export default function ClassView(): ReactElement {
+    const { class_id } = useParams();
+    assert(class_id !== undefined);
 
     const loginInfo = React.useContext(LoginContext);
     assert(loginInfo !== null);
@@ -75,21 +75,21 @@ export default function SchoolClassView(): ReactElement {
     );
 
     useEffect(() => {
-        SchoolClassesService.getSchoolClassResource(parseInt(school_class_id))
+        ClassesService.getClassResource(parseInt(class_id))
             .then(setStudentList)
             .catch((error) => {
                 setErrorMessage(getAPIError(error));
             });
         if (canUseWaitlist) {
-            SchoolClassesService.getSchoolClassWaitlistResource(
-                parseInt(school_class_id)
+            ClassesService.getClassWaitlistResource(
+                parseInt(class_id)
             )
                 .then(setWaitlistMappingList)
                 .catch((error) => {
                     setErrorMessage(getAPIError(error));
                 });
         }
-    }, [school_class_id, canUseWaitlist]);
+    }, [class_id, canUseWaitlist]);
 
     if (
         studentList === null ||
@@ -109,11 +109,11 @@ export default function SchoolClassView(): ReactElement {
                             {t('level.view.title')} ?
                         </BreadcrumbItem>
                         <BreadcrumbItem active href="/">
-                            {t('school_class.view.title')} ?
+                            {t('class.view.title')} ?
                         </BreadcrumbItem>
                     </Breadcrumb>
                 </AdminOnly>
-                <h3>{t('school_class.view.title')}: ?</h3>
+                <h3>{t('class.view.title')}: ?</h3>
                 {errorMessage ? (
                     <Alert variant="danger">
                         {t('error')}: {errorMessage}
@@ -129,7 +129,7 @@ export default function SchoolClassView(): ReactElement {
         belts,
         skill_domains,
         level,
-        school_class,
+        class: class_,
         students,
         student_belts,
     } = studentList;
@@ -147,20 +147,20 @@ export default function SchoolClassView(): ReactElement {
                     </BreadcrumbItem>
                     <BreadcrumbItem
                         active
-                        href={'/school-classes/' + school_class.id}
+                        href={'/classes/' + class_.id}
                     >
-                        {t('school_class.view.title')} {school_class.suffix}
+                        {t('class.view.title')} {class_.suffix}
                     </BreadcrumbItem>
                 </Breadcrumb>
             </AdminOnly>
             <h3>
-                {t('school_class.view.title')}: {level.prefix}
-                {school_class.suffix}
+                {t('class.view.title')}: {level.prefix}
+                {class_.suffix}
             </h3>
             <AdminOnly>
                 {waitlistMappingList && (
-                    <SchoolClassWaitlist
-                        school_class={school_class}
+                    <ClassWaitlist
+                        class={class_}
                         students={students}
                         skill_domains={skill_domains}
                         belts={belts}
@@ -169,26 +169,26 @@ export default function SchoolClassView(): ReactElement {
                         }
                     />
                 )}
-                <SchoolClassEditButton
+                <ClassEditButton
                     level={level}
-                    school_class={school_class}
-                    changedCallback={(new_school_class) => {
+                    class={class_}
+                    changedCallback={(new_class) => {
                         setStudentList({
                             ...studentList,
-                            school_class: new_school_class,
+                            class: new_class,
                         });
                     }}
                 />{' '}
-                <SchoolClassDeleteButton
+                <ClassDeleteButton
                     level={level}
-                    school_class={school_class}
+                    class={class_}
                     deletedCallback={() =>
                         navigate('/levels/' + level.id)
                     }
                 />
                 <h4>{t('student.list.title.secondary')}</h4>
                 <StudentCreateButton
-                    school_class={school_class}
+                    class={class_}
                     level={level}
                     createdCallback={(new_student) => {
                         setStudentList({
@@ -207,9 +207,9 @@ export default function SchoolClassView(): ReactElement {
                     }}
                 />{' '}
                 {waitlistMappingList && (
-                    <SchoolClassManageWaitlist
+                    <ClassManageWaitlist
                         level={level}
-                        school_class={school_class}
+                        class={class_}
                         students={students}
                         skill_domains={skill_domains}
                         belts={belts}

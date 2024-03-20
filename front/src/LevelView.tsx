@@ -4,13 +4,13 @@ import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Alert from 'react-bootstrap/Alert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
-import { Exam, SchoolClass, LevelsService, SchoolClassList } from './api';
+import { Exam, Class, LevelsService, ClassList } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly } from './auth';
 import LevelDeleteButton from './LevelDeleteButton';
 import LevelEditButton from './LevelEditButton';
-import SchoolClassListing from './SchoolClassListing';
-import SchoolClassCreateButton from './SchoolClassCreateButton';
+import ClassListing from './ClassListing';
+import ClassCreateButton from './ClassCreateButton';
 import { assert, BreadcrumbItem, Loader } from './index';
 import ExamsManager from './ExamsManager';
 
@@ -20,55 +20,55 @@ export default function LevelView(): ReactElement {
 
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
-    const [schoolClassList, setSchoolClassList] =
-        useState<null | SchoolClassList>(null);
+    const [classList, setClassList] =
+        useState<null | ClassList>(null);
     const navigate = useNavigate();
 
-    const setSchoolClasses = useCallback(
+    const setClasses = useCallback(
         (
-            setStateAction: (prevSchoolClasses: SchoolClass[]) => SchoolClass[]
+            setStateAction: (prevClasses: Class[]) => Class[]
         ) => {
-            setSchoolClassList((prevSchoolClassList) => {
-                if (prevSchoolClassList === null) {
+            setClassList((prevClassList) => {
+                if (prevClassList === null) {
                     return null;
                 }
-                const prevSchoolClasses = prevSchoolClassList.school_classes;
-                const nextSchoolClasses = setStateAction(prevSchoolClasses);
+                const prevClasses = prevClassList.classes;
+                const nextClasses = setStateAction(prevClasses);
                 return {
-                    ...prevSchoolClassList,
-                    school_classes: nextSchoolClasses,
+                    ...prevClassList,
+                    classes: nextClasses,
                 };
             });
         },
-        [setSchoolClassList]
+        [setClassList]
     );
 
     const setExams = useCallback(
         (setStateAction: (prevExams: Exam[]) => Exam[]) => {
-            setSchoolClassList((prevSchoolClassList) => {
-                if (prevSchoolClassList === null) {
+            setClassList((prevClassList) => {
+                if (prevClassList === null) {
                     return null;
                 }
-                const prevExams = prevSchoolClassList.exams;
+                const prevExams = prevClassList.exams;
                 const nextExams = setStateAction(prevExams);
                 return {
-                    ...prevSchoolClassList,
+                    ...prevClassList,
                     exams: nextExams,
                 };
             });
         },
-        [setSchoolClassList]
+        [setClassList]
     );
 
     useEffect(() => {
         LevelsService.getLevelResource(parseInt(level_id))
-            .then(setSchoolClassList)
+            .then(setClassList)
             .catch((error) => {
                 setErrorMessage(getAPIError(error));
             });
     }, [level_id]);
 
-    if (schoolClassList === null) {
+    if (classList === null) {
         return (
             <>
                 <Breadcrumb>
@@ -95,10 +95,10 @@ export default function LevelView(): ReactElement {
         );
     }
 
-    const { belts, skill_domains, level, school_classes, exams } =
-        schoolClassList;
+    const { belts, skill_domains, level, classes, exams } =
+        classList;
 
-    const sorted_school_classes = school_classes.sort((a, b) =>
+    const sorted_classes = classes.sort((a, b) =>
         a.suffix.localeCompare(b.suffix)
     );
 
@@ -120,8 +120,8 @@ export default function LevelView(): ReactElement {
                 <LevelEditButton
                     level={level}
                     changedCallback={(new_level) => {
-                        setSchoolClassList({
-                            ...schoolClassList,
+                        setClassList({
+                            ...classList,
                             level: new_level,
                         });
                     }}
@@ -131,25 +131,25 @@ export default function LevelView(): ReactElement {
                     deletedCallback={() => navigate('/levels')}
                 />
             </AdminOnly>
-            <h4>{t('school_class.list.title.secondary')}</h4>
+            <h4>{t('class.list.title.secondary')}</h4>
             <AdminOnly>
-                <SchoolClassCreateButton
+                <ClassCreateButton
                     level={level}
-                    createdCallback={(new_school_class) => {
-                        setSchoolClassList({
-                            ...schoolClassList,
-                            school_classes: [
-                                ...school_classes,
-                                new_school_class,
+                    createdCallback={(new_class) => {
+                        setClassList({
+                            ...classList,
+                            classes: [
+                                ...classes,
+                                new_class,
                             ],
                         });
                     }}
                 />
             </AdminOnly>
-            <SchoolClassListing
+            <ClassListing
                 level={level}
-                school_classes={sorted_school_classes}
-                setSchoolClasses={setSchoolClasses}
+                classes={sorted_classes}
+                setClasses={setClasses}
             />
             <ExamsManager
                 exams={exams}

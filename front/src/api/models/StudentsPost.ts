@@ -4,8 +4,8 @@
 
 export type StudentsPost = {
     can_register_to_waitlist: boolean;
+    class_id: number;
     display_name: string;
     password: string;
-    school_class_id: number;
     username: string;
 }

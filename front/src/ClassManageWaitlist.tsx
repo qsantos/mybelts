@@ -17,15 +17,15 @@ import { ColumnDef } from '@tanstack/react-table';
 import {
     Belt,
     Level,
-    SchoolClass,
-    SchoolClassStudentBeltsStudentBelts,
+    Class,
+    ClassStudentBeltsStudentBelts,
     SkillDomain,
     Student,
     WaitlistEntry,
     WaitlistMapping,
 } from './api';
 import SortTable from './SortTable';
-import SchoolClassManageWaitlistButton from './SchoolClassManageWaitlistButton';
+import ClassManageWaitlistButton from './ClassManageWaitlistButton';
 
 interface DataRow {
     waitlist_entries: WaitlistEntry[];
@@ -138,7 +138,7 @@ function WaitlistRow_(props: RowProps) {
                     waitlist_entry_by_domain?.[skill_domain.id];
                 return (
                     <td key={skill_domain.id}>
-                        <SchoolClassManageWaitlistButton
+                        <ClassManageWaitlistButton
                             student={student}
                             belt={next_belt}
                             skill_domain={skill_domain}
@@ -158,21 +158,21 @@ const WaitlistRow = React.memo(WaitlistRow_);
 
 interface Props {
     level: Level;
-    school_class: SchoolClass;
+    class: Class;
     students: Student[];
     skill_domains: SkillDomain[];
     belts: Belt[];
-    student_belts: SchoolClassStudentBeltsStudentBelts[];
+    student_belts: ClassStudentBeltsStudentBelts[];
     waitlist_mappings: WaitlistMapping[];
     setWaitlistMappings: Dispatch<
         (prevState: WaitlistMapping[]) => WaitlistMapping[]
     >;
 }
 
-export default function SchoolClassManageWaitlist(props: Props): ReactElement {
+export default function ClassManageWaitlist(props: Props): ReactElement {
     const {
         level,
-        school_class,
+        class: class_,
         students,
         skill_domains,
         belts,
@@ -227,7 +227,7 @@ export default function SchoolClassManageWaitlist(props: Props): ReactElement {
 
     // similar to ModalButton, except no form or cancel/confirm buttons
     const i18nPrefix = 'waitlist.manage';
-    const i18nArgs = { level, school_class };
+    const i18nArgs = { level, class: class_ };
     const [show, setShow] = useState(false);
 
     const waitlist_entries_by_student_id = Object.fromEntries(

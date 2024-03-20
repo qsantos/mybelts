@@ -3,23 +3,23 @@ import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import Form from 'react-bootstrap/Form';
 
-import { Level, SchoolClass, Student, StudentsService } from './api';
+import { Level, Class, Student, StudentsService } from './api';
 import ModalButton from './ModalButton';
 
 interface Props {
-    school_class: SchoolClass;
+    class: Class;
     level: Level;
     createdCallback?: (student: Student) => void;
 }
 
 export default function StudentCreateButton(props: Props): ReactElement {
-    const { school_class, level, createdCallback } = props;
+    const { class: class_, level, createdCallback } = props;
     const { t } = useTranslation();
 
     return (
         <ModalButton
             i18nPrefix="student.add"
-            i18nArgs={{ level, school_class }}
+            i18nArgs={{ level, class: class_ }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     display_name: { value: string };
@@ -28,7 +28,7 @@ export default function StudentCreateButton(props: Props): ReactElement {
                     can_register_to_waitlist: { checked: boolean };
                 };
                 return StudentsService.postStudentsResource({
-                    school_class_id: school_class.id,
+                    class_id: class_.id,
                     display_name: typed_form.display_name.value,
                     username: typed_form.username.value,
                     password: typed_form.password.value,

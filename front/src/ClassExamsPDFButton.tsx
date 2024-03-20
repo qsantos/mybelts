@@ -5,8 +5,8 @@ import Table from 'react-bootstrap/Table';
 
 import {
     Belt,
-    SchoolClass,
-    SchoolClassesService,
+    Class,
+    ClassesService,
     SkillDomain,
     Student,
     WaitlistEntry,
@@ -94,15 +94,15 @@ function StudentRows(props: StudentRowsProps) {
 }
 
 interface Props {
-    school_class: SchoolClass;
+    class: Class;
     belt_by_id: { [index: number]: Belt };
     skill_domain_by_id: { [index: number]: SkillDomain };
     student_by_id: { [index: number]: Student };
     sorted_waitlists: [number, WaitlistEntry[]][];
 }
 
-export default function SchoolClassExamsPDFButton(props: Props): ReactElement {
-    const { school_class, belt_by_id, skill_domain_by_id, student_by_id, sorted_waitlists } = props;
+export default function ClassExamsPDFButton(props: Props): ReactElement {
+    const { class: class_, belt_by_id, skill_domain_by_id, student_by_id, sorted_waitlists } = props;
     const { t } = useTranslation();
 
     function getPrintCheckboxes(toggle: HTMLElement): HTMLInputElement[] {
@@ -167,8 +167,8 @@ export default function SchoolClassExamsPDFButton(props: Props): ReactElement {
                     }
                 }
                 console.log(waitlist_entry_ids);
-                return SchoolClassesService.postSchoolClassExamPdfResource(
-                    school_class.id,
+                return ClassesService.postClassExamPdfResource(
+                    class_.id,
                     {
                         waitlist_entry_ids,
                     },

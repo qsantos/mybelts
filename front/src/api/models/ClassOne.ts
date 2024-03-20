@@ -2,10 +2,10 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { Class } from './Class';
 import type { Level } from './Level';
-import type { SchoolClass } from './SchoolClass';
 
-export type SchoolClassOne = {
+export type ClassOne = {
+    class: Class;
     level: Level;
-    school_class: SchoolClass;
 }
