@@ -6,5 +6,5 @@ export type Class = {
     created: string;
     id: number;
     level_id: number;
-    suffix: string;
+    name: string;
 }

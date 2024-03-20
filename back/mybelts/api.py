@@ -100,7 +100,7 @@ api_model_class = api.model('Class', {
     'id': fields.Integer(example=42, required=True),
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
     'level_id': fields.Integer(example=42, required=True),
-    'suffix': fields.String(example='D', required=True),
+    'name': fields.String(example='D', required=True),
 })
 
 api_model_student = api.model('Student', {
@@ -684,7 +684,7 @@ class LevelExamsResource(Resource):
 class ClassesResource(Resource):
     post_model = api.model('ClassesPost', {
         'level_id': fields.Integer(example=42, required=True),
-        'suffix': fields.String(example='D', required=True),
+        'name': fields.String(example='D', required=True),
     })
 
     @api.expect(post_model, validate=True)
@@ -699,7 +699,7 @@ class ClassesResource(Resource):
                 abort(404, f'Level {level_id} not found')
             class_ = Class(
                 level=level,
-                suffix=request.json['suffix'],
+                name=request.json['name'],
             )
             session.add(class_)
             session.commit()
@@ -758,7 +758,7 @@ class ClassResource(Resource):
             }
 
     put_model = api.model('ClassPut', {
-        'suffix': fields.String(example='4e'),
+        'name': fields.String(example='4e'),
     })
 
     @api.expect(put_model, validate=True)
@@ -770,9 +770,9 @@ class ClassResource(Resource):
             class_ = session.query(Class).get(class_id)
             if class_ is None:
                 abort(404, f'Class {class_id} not found')
-            suffix = request.json.get('suffix')
-            if suffix is not None:
-                class_.suffix = suffix
+            name = request.json.get('name')
+            if name is not None:
+                class_.name = name
             session.commit()
             level = class_.level
             return {
@@ -846,7 +846,7 @@ class ClassExamPDFResource(Resource):
                 abort(404, f'Class {class_id} not found')
 
             level = class_.level
-            full_class_name = level.prefix + class_.suffix
+            full_class_name = level.prefix + class_.name
 
             waitlist_entry_ids = request.json['waitlist_entry_ids']
             exams_with_names, errors = exams_to_print(session, waitlist_entry_ids)

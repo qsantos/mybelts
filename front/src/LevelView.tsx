@@ -99,7 +99,7 @@ export default function LevelView(): ReactElement {
         classList;
 
     const sorted_classes = classes.sort((a, b) =>
-        a.suffix.localeCompare(b.suffix)
+        a.name.localeCompare(b.name)
     );
 
     return (

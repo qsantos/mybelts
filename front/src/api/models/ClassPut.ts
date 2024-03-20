@@ -3,5 +3,5 @@
 /* eslint-disable */
 
 export type ClassPut = {
-    suffix?: string;
+    name?: string;
 }

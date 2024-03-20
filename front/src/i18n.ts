@@ -101,7 +101,7 @@ const resources = {
             'waitlist.manage.button.tooltip':
                 'Click to update what students are waiting for an evaluation',
             'waitlist.manage.title':
-                'Manage Waitlist of {{level.prefix}}{{class.suffix}}',
+                'Manage Waitlist of {{level.prefix}}{{class.name}}',
             'waitlist.manage.in_process': 'In progress',
             'waitlist.manage.close': 'Close',
             'waitlist.print.button': '<img src="/pdf.svg" height="20" alt="PDF icon" />',
@@ -246,24 +246,24 @@ const resources = {
             'class.edit.button': '✏️',
             'class.edit.button.tooltip': 'Edit',
             'class.edit.title':
-                'Edit Class: {{level.prefix}}{{class.suffix}}',
+                'Edit Class: {{level.prefix}}{{class.name}}',
             'class.edit.cancel': 'Cancel',
             'class.edit.confirm': 'Save',
             'class.edit.in_process': 'Saving',
-            'class.add_edit.suffix.title': 'Suffix',
-            'class.add_edit.suffix.placeholder': 'Example: D',
-            'class.add_edit.suffix.help': 'Suffix for the class',
+            'class.add_edit.name.title': 'Name',
+            'class.add_edit.name.placeholder': 'Example: D',
+            'class.add_edit.name.help': 'Name for the class',
             'class.delete.button': '🗑️',
             'class.delete.button.tooltip': 'Delete',
             'class.delete.title':
-                'Delete Class: {{level.prefix}}{{class.suffix}}',
+                'Delete Class: {{level.prefix}}{{class.name}}',
             'class.delete.message':
                 'Are you sure you want to delete the class?',
             'class.delete.cancel': 'Cancel',
             'class.delete.confirm': 'Delete',
             'class.delete.in_process': 'Deleting',
             'class.list.title.secondary': 'List of classes',
-            'class.list.suffix.title': 'Suffix',
+            'class.list.name.title': 'Name',
             'class.list.actions.title': 'Actions',
             'skill_domain.add.button': 'Add',
             'skill_domain.add.button.tooltip': 'Add a new skill domain',
@@ -331,7 +331,7 @@ const resources = {
             'student.add.button': 'Add',
             'student.add.button.tooltip': 'Add a new student to the class',
             'student.add.title':
-                'Add Student in {{level.name.prefix}}{{class.suffix}}',
+                'Add Student in {{level.name.prefix}}{{class.name}}',
             'student.add.cancel': 'Cancel',
             'student.add.confirm': 'Add',
             'student.add.in_process': 'Adding',
@@ -508,7 +508,7 @@ const resources = {
             'waitlist.manage.button.tooltip':
                 'Cliquer pour gérer la liste des élèves qui attendant une évaluation',
             'waitlist.manage.title':
-                "Gérer la liste d'attente de la {{level.prefix}}{{class.suffix}}",
+                "Gérer la liste d'attente de la {{level.prefix}}{{class.name}}",
             'waitlist.manage.in_process': 'En cours',
             'waitlist.manage.close': 'Fermer',
             'waitlist.print.button': '<img src="/pdf.svg" height="20" alt="Icône de PDF" />',
@@ -654,24 +654,24 @@ const resources = {
             'class.edit.button': '✏️',
             'class.edit.button.tooltip': 'Modifier',
             'class.edit.title':
-                'Modifier une classe: {{level.prefix}}{{class.suffix}}',
+                'Modifier une classe: {{level.prefix}}{{class.name}}',
             'class.edit.cancel': 'Annuler',
             'class.edit.confirm': 'Enregistrer',
             'class.edit.in_process': 'Enregistrement',
-            'class.add_edit.suffix.title': 'Suffixe',
-            'class.add_edit.suffix.placeholder': 'Exemple : D',
-            'class.add_edit.suffix.help': 'Suffixe pour la classe',
+            'class.add_edit.name.title': 'Nom',
+            'class.add_edit.name.placeholder': 'Exemple : D',
+            'class.add_edit.name.help': 'Nom pour la classe',
             'class.delete.button': '🗑️',
             'class.delete.button.tooltip': 'Supprimer',
             'class.delete.title':
-                'Supprimer la classe: {{level.prefix}}{{class.suffix}}',
+                'Supprimer la classe: {{level.prefix}}{{class.name}}',
             'class.delete.message':
-                'Êtes-vous sûr de vouloir supprimer la classe {{level.prefix}}{{class.suffix}}?',
+                'Êtes-vous sûr de vouloir supprimer la classe {{level.prefix}}{{class.name}}?',
             'class.delete.cancel': 'Annuler',
             'class.delete.confirm': 'Supprimer',
             'class.delete.in_process': 'Suppression',
             'class.list.title.secondary': 'Liste des classes',
-            'class.list.suffix.title': 'Suffixe',
+            'class.list.name.title': 'Nom',
             'class.list.actions.title': 'Actions',
             'skill_domain.add.button': 'Ajouter',
             'skill_domain.add.button.tooltip':
@@ -741,7 +741,7 @@ const resources = {
             'student.add.button': 'Ajouter',
             'student.add.button.tooltip': 'Ajouter un nouvel élève à la classe',
             'student.add.title':
-                'Ajouter un élève en {{level.prefix}}{{class.suffix}}',
+                'Ajouter un élève en {{level.prefix}}{{class.name}}',
             'student.add.cancel': 'Annuler',
             'student.add.confirm': 'Ajouter',
             'student.add.in_process': 'Ajout',

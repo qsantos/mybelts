@@ -51,7 +51,7 @@ function ClassRow_(props: RowProps) {
         <tr key={class_.id}>
             <td>
                 <Nav.Link as={Link} to={'/classes/' + class_.id}>
-                    {class_.suffix}
+                    {class_.name}
                 </Nav.Link>
             </td>
             <AdminOnly>
@@ -90,7 +90,7 @@ export default function ClassListing(props: Props): ReactElement {
             <Table>
                 <thead>
                     <tr>
-                        <th>{t('class.list.suffix.title')}</th>
+                        <th>{t('class.list.name.title')}</th>
                         <AdminOnly>
                             <th>{t('class.list.actions.title')}</th>
                         </AdminOnly>

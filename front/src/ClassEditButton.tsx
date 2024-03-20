@@ -22,12 +22,12 @@ export default function ClassEditButton(props: Props): ReactElement {
             i18nArgs={{ level, class: class_ }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
-                    suffix: { value: string };
+                    name: { value: string };
                 };
                 return ClassesService.putClassResource(
                     class_.id,
                     {
-                        suffix: typed_form.suffix.value,
+                        name: typed_form.name.value,
                     }
                 );
             }}
@@ -35,17 +35,17 @@ export default function ClassEditButton(props: Props): ReactElement {
                 changedCallback?.(changed_class)
             }
         >
-            <Form.Group controlId="suffix">
+            <Form.Group controlId="name">
                 <Form.Label>
-                    {t('class.add_edit.suffix.title')}
+                    {t('class.add_edit.name.title')}
                 </Form.Label>
                 <Form.Control
                     type="text"
-                    placeholder={t('class.add_edit.suffix.placeholder')}
-                    defaultValue={class_.suffix}
+                    placeholder={t('class.add_edit.name.placeholder')}
+                    defaultValue={class_.name}
                 />
                 <Form.Text className="text-muted">
-                    {t('class.add_edit.suffix.help')}
+                    {t('class.add_edit.name.help')}
                 </Form.Text>
             </Form.Group>
         </ModalButton>

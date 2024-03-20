@@ -4,5 +4,5 @@
 
 export type ClassesPost = {
     level_id: number;
-    suffix: string;
+    name: string;
 }
