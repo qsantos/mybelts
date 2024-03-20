@@ -112,7 +112,7 @@ class Level(Base):
     __tablename__ = 'level'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
-    prefix = Column(String, nullable=False, index=True)
+    name = Column(String, nullable=False, index=True)
 
     classes: list[Class] = relationship(  # type: ignore
         'Class',
@@ -130,7 +130,7 @@ class Level(Base):
         return {
             'id': self.id,
             'created': self.created.isoformat(),
-            'prefix': self.prefix,
+            'name': self.name,
         }
 
 

@@ -101,7 +101,7 @@ const resources = {
             'waitlist.manage.button.tooltip':
                 'Click to update what students are waiting for an evaluation',
             'waitlist.manage.title':
-                'Manage Waitlist of {{level.prefix}}{{class.name}}',
+                'Manage Waitlist of {{level.name}}{{class.name}}',
             'waitlist.manage.in_process': 'In progress',
             'waitlist.manage.close': 'Close',
             'waitlist.print.button': '<img src="/pdf.svg" height="20" alt="PDF icon" />',
@@ -165,17 +165,17 @@ const resources = {
             'level.edit.button': '✏️',
             'level.edit.button.tooltip': 'Edit',
             'level.edit.title':
-                'Edit Level: {{level.prefix}}',
+                'Edit Level: {{level.name}}',
             'level.edit.cancel': 'Cancel',
             'level.edit.confirm': 'Save',
             'level.edit.in_process': 'Saving',
-            'level.add_edit.prefix.title': 'Prefix',
-            'level.add_edit.prefix.placeholder': 'Example: 4e',
-            'level.add_edit.prefix.help': 'Prefix for the level',
+            'level.add_edit.name.title': 'Name',
+            'level.add_edit.name.placeholder': 'Example: 4e',
+            'level.add_edit.name.help': 'Name for the level',
             'level.delete.button': '🗑️',
             'level.delete.button.tooltip': 'Delete',
             'level.delete.title':
-                'Delete Level: {{level.prefix}}',
+                'Delete Level: {{level.name}}',
             'level.delete.message':
                 'Are you sure you want to delete the level?',
             'level.delete.cancel': 'Cancel',
@@ -184,14 +184,14 @@ const resources = {
             'level.list.title.primary': 'Levels',
             'level.list.title.secondary':
                 'List of available levels',
-            'level.list.prefix.title': 'Prefix',
+            'level.list.name.title': 'Name',
             'level.list.actions.title': 'Actions',
             'exam.title': 'Test sheets',
             'exam.skill_domain.title': 'Domain',
             'exam.upload.button': '<img src="/upload.svg" height="30" />',
             'exam.upload.button.tooltip': 'Upload a new test sheet',
             'exam.upload.title':
-                'New test sheet for {{belt.name}} in {{skill_domain.name}} ({{level.prefix}})',
+                'New test sheet for {{belt.name}} in {{skill_domain.name}} ({{level.name}})',
             'exam.upload.cancel': 'Cancel',
             'exam.upload.confirm': 'Upload',
             'exam.upload.in_process': 'Uploading',
@@ -239,14 +239,14 @@ const resources = {
             'class.add.button.tooltip':
                 'Create a new class in this level',
             'class.add.title':
-                'Add Class in {{level.prefix}}',
+                'Add Class in {{level.name}}',
             'class.add.cancel': 'Cancel',
             'class.add.confirm': 'Add',
             'class.add.in_process': 'Adding',
             'class.edit.button': '✏️',
             'class.edit.button.tooltip': 'Edit',
             'class.edit.title':
-                'Edit Class: {{level.prefix}}{{class.name}}',
+                'Edit Class: {{level.name}}{{class.name}}',
             'class.edit.cancel': 'Cancel',
             'class.edit.confirm': 'Save',
             'class.edit.in_process': 'Saving',
@@ -256,7 +256,7 @@ const resources = {
             'class.delete.button': '🗑️',
             'class.delete.button.tooltip': 'Delete',
             'class.delete.title':
-                'Delete Class: {{level.prefix}}{{class.name}}',
+                'Delete Class: {{level.name}}{{class.name}}',
             'class.delete.message':
                 'Are you sure you want to delete the class?',
             'class.delete.cancel': 'Cancel',
@@ -331,7 +331,7 @@ const resources = {
             'student.add.button': 'Add',
             'student.add.button.tooltip': 'Add a new student to the class',
             'student.add.title':
-                'Add Student in {{level.name.prefix}}{{class.name}}',
+                'Add Student in {{level.name.name}}{{class.name}}',
             'student.add.cancel': 'Cancel',
             'student.add.confirm': 'Add',
             'student.add.in_process': 'Adding',
@@ -508,7 +508,7 @@ const resources = {
             'waitlist.manage.button.tooltip':
                 'Cliquer pour gérer la liste des élèves qui attendant une évaluation',
             'waitlist.manage.title':
-                "Gérer la liste d'attente de la {{level.prefix}}{{class.name}}",
+                "Gérer la liste d'attente de la {{level.name}}{{class.name}}",
             'waitlist.manage.in_process': 'En cours',
             'waitlist.manage.close': 'Fermer',
             'waitlist.print.button': '<img src="/pdf.svg" height="20" alt="Icône de PDF" />',
@@ -572,32 +572,32 @@ const resources = {
             'level.edit.button': '✏️',
             'level.edit.button.tooltip': 'Modifier',
             'level.edit.title':
-                'Modifier un niveau: {{level.prefix}}',
+                'Modifier un niveau: {{level.name}}',
             'level.edit.cancel': 'Annuler',
             'level.edit.confirm': 'Enregistrer',
             'level.edit.in_process': 'Enregistrement',
-            'level.add_edit.prefix.title': 'Préfixe',
-            'level.add_edit.prefix.placeholder': 'Exemple : 4e',
-            'level.add_edit.prefix.help': 'Préfixe pour le niveau',
+            'level.add_edit.name.title': 'Nom',
+            'level.add_edit.name.placeholder': 'Exemple : 4e',
+            'level.add_edit.name.help': 'Nom pour le niveau',
             'level.delete.button': '🗑️',
             'level.delete.button.tooltip': 'Supprimer',
             'level.delete.title':
-                'Supprimer le niveau: {{level.prefix}}',
+                'Supprimer le niveau: {{level.name}}',
             'level.delete.message':
-                'Êtes-vous sûr de vouloir supprimer le niveau {{level.prefix}} ?',
+                'Êtes-vous sûr de vouloir supprimer le niveau {{level.name}} ?',
             'level.delete.cancel': 'Annuler',
             'level.delete.confirm': 'Supprimer',
             'level.delete.in_process': 'Suppression',
             'level.list.title.primary': 'Niveaux',
             'level.list.title.secondary': 'Liste des niveaux disponibles',
-            'level.list.prefix.title': 'Préfixe',
+            'level.list.name.title': 'Nom',
             'level.list.actions.title': 'Actions',
             'exam.title': "Sujet d'évaluations",
             'exam.skill_domain.title': 'Domaine',
             'exam.upload.button': '<img src="/upload.svg" height="25" />',
             'exam.upload.button.tooltip': 'Téléverser un nouveau sujet',
             'exam.upload.title':
-                'Nouveau sujet de {{belt.name}} en {{skill_domain.name}} ({{level.prefix}})',
+                'Nouveau sujet de {{belt.name}} en {{skill_domain.name}} ({{level.name}})',
             'exam.upload.cancel': 'Annuler',
             'exam.upload.confirm': 'Téléverser',
             'exam.upload.in_process': 'Téléversement',
@@ -647,14 +647,14 @@ const resources = {
             'class.add.button.tooltip':
                 'Ajouter une nouvelle classe à ce niveau',
             'class.add.title':
-                'Ajouter une classe de {{level.prefix}}',
+                'Ajouter une classe de {{level.name}}',
             'class.add.cancel': 'Annuler',
             'class.add.confirm': 'Ajouter',
             'class.add.in_process': 'Ajout',
             'class.edit.button': '✏️',
             'class.edit.button.tooltip': 'Modifier',
             'class.edit.title':
-                'Modifier une classe: {{level.prefix}}{{class.name}}',
+                'Modifier une classe: {{level.name}}{{class.name}}',
             'class.edit.cancel': 'Annuler',
             'class.edit.confirm': 'Enregistrer',
             'class.edit.in_process': 'Enregistrement',
@@ -664,9 +664,9 @@ const resources = {
             'class.delete.button': '🗑️',
             'class.delete.button.tooltip': 'Supprimer',
             'class.delete.title':
-                'Supprimer la classe: {{level.prefix}}{{class.name}}',
+                'Supprimer la classe: {{level.name}}{{class.name}}',
             'class.delete.message':
-                'Êtes-vous sûr de vouloir supprimer la classe {{level.prefix}}{{class.name}}?',
+                'Êtes-vous sûr de vouloir supprimer la classe {{level.name}}{{class.name}}?',
             'class.delete.cancel': 'Annuler',
             'class.delete.confirm': 'Supprimer',
             'class.delete.in_process': 'Suppression',
@@ -741,7 +741,7 @@ const resources = {
             'student.add.button': 'Ajouter',
             'student.add.button.tooltip': 'Ajouter un nouvel élève à la classe',
             'student.add.title':
-                'Ajouter un élève en {{level.prefix}}{{class.name}}',
+                'Ajouter un élève en {{level.name}}{{class.name}}',
             'student.add.cancel': 'Annuler',
             'student.add.confirm': 'Ajouter',
             'student.add.in_process': 'Ajout',

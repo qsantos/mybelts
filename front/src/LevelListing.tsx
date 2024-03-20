@@ -48,7 +48,7 @@ function LevelRow_(props: RowProps) {
         <tr key={level.id}>
             <td>
                 <Nav.Link as={Link} to={'/levels/' + level.id}>
-                    {level.prefix}
+                    {level.name}
                 </Nav.Link>
             </td>
             <AdminOnly>
@@ -82,7 +82,7 @@ export default function LevelListing(props: Props): ReactElement {
             <Table>
                 <thead>
                     <tr>
-                        <th>{t('level.list.prefix.title')}</th>
+                        <th>{t('level.list.name.title')}</th>
                         <AdminOnly>
                             <th>{t('level.list.actions.title')}</th>
                         </AdminOnly>

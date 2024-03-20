@@ -5,5 +5,5 @@
 export type Level = {
     created: string;
     id: number;
-    prefix: string;
+    name: string;
 }
