@@ -110,11 +110,11 @@ export default function LevelView(): ReactElement {
                     {t('level.list.title.primary')}
                 </BreadcrumbItem>
                 <BreadcrumbItem active href={'/levels/' + level.id}>
-                    {t('level.view.title')} {level.prefix}
+                    {t('level.view.title')} {level.name}
                 </BreadcrumbItem>
             </Breadcrumb>
             <h3>
-                {t('level.view.title')}: {level.prefix}
+                {t('level.view.title')}: {level.name}
             </h3>
             <AdminOnly>
                 <LevelEditButton

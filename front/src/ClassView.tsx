@@ -143,7 +143,7 @@ export default function ClassView(): ReactElement {
                         {t('level.list.title.primary')}
                     </BreadcrumbItem>
                     <BreadcrumbItem href={'/levels/' + level.id}>
-                        {t('level.view.title')} {level.prefix}
+                        {t('level.view.title')} {level.name}
                     </BreadcrumbItem>
                     <BreadcrumbItem
                         active
@@ -154,7 +154,7 @@ export default function ClassView(): ReactElement {
                 </Breadcrumb>
             </AdminOnly>
             <h3>
-                {t('class.view.title')}: {level.prefix}
+                {t('class.view.title')}: {level.name}
                 {class_.name}
             </h3>
             <AdminOnly>

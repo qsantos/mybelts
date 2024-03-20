@@ -131,7 +131,7 @@ export default function StudentWidget(props: Props): ReactElement {
                         {t('level.list.title.primary')}
                     </BreadcrumbItem>
                     <BreadcrumbItem href={'/levels/' + level.id}>
-                        {t('level.view.title')} {level.prefix}
+                        {t('level.view.title')} {level.name}
                     </BreadcrumbItem>
                     <BreadcrumbItem
                         active
@@ -149,7 +149,7 @@ export default function StudentWidget(props: Props): ReactElement {
             </h3>
             {t('student.view.class')}:{' '}
             <Link to={'/classes/' + class_.id}>
-                {level.prefix}
+                {level.name}
                 {class_.name}
             </Link>
             <AdminOnly>

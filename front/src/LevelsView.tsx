@@ -65,7 +65,7 @@ export default function LevelsView(): ReactElement {
 
     const { levels } = classLevelList;
     const sorted_levels = levels.sort((a, b) =>
-        a.prefix.localeCompare(b.prefix)
+        a.name.localeCompare(b.name)
     );
 
     return (
