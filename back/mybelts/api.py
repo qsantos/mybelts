@@ -73,7 +73,7 @@ api = Api(
 
 users_ns = api.namespace('Users', path='/')
 level_ns = api.namespace('Levels', path='/')
-class_ns = api.namespace('School Classes', path='/')
+class_ns = api.namespace('Classes', path='/')
 students_ns = api.namespace('Students', path='/')
 skill_domains_ns = api.namespace('Skill Domains', path='/')
 belts_ns = api.namespace('Belts', path='/')
@@ -718,7 +718,7 @@ class ClassResource(Resource):
             authorize(me, me.student is not None and me.student.class_id == class_id)
             class_ = session.query(Class).get(class_id)
             if class_ is None:
-                abort(404, f'School class {class_id} not found')
+                abort(404, f'Class {class_id} not found')
             level = class_.level
 
             evaluations = (
@@ -769,7 +769,7 @@ class ClassResource(Resource):
             need_admin(me)
             class_ = session.query(Class).get(class_id)
             if class_ is None:
-                abort(404, f'School class {class_id} not found')
+                abort(404, f'Class {class_id} not found')
             suffix = request.json.get('suffix')
             if suffix is not None:
                 class_.suffix = suffix
@@ -787,7 +787,7 @@ class ClassResource(Resource):
             need_admin(me)
             class_ = session.query(Class).get(class_id)
             if class_ is None:
-                abort(404, f'School class {class_id} not found')
+                abort(404, f'Class {class_id} not found')
             session.query(Class).filter(Class.id == class_.id).delete()
             session.commit()
             return None, 204
@@ -802,7 +802,7 @@ class ClassWaitlistResource(Resource):
             need_admin(me)
             class_ = session.query(Class).get(class_id)
             if class_ is None:
-                abort(404, f'School class {class_id} not found')
+                abort(404, f'Class {class_id} not found')
 
             waitlist_entries = (
                 session  # type: ignore
@@ -843,7 +843,7 @@ class ClassExamPDFResource(Resource):
             need_admin(me)
             class_ = session.query(Class).get(class_id)
             if class_ is None:
-                abort(404, f'School class {class_id} not found')
+                abort(404, f'Class {class_id} not found')
 
             level = class_.level
             full_class_name = level.prefix + class_.suffix
@@ -880,7 +880,7 @@ class StudentsResource(Resource):
             class_id = request.json['class_id']
             class_ = session.query(Class).get(class_id)
             if class_ is None:
-                abort(404, f'School class {class_id} not found')
+                abort(404, f'Class {class_id} not found')
             level = class_.level
             user = User(
                 username=request.json['username'],

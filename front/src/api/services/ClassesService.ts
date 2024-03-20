@@ -1,30 +1,30 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { SchoolClassesPost } from '../models/SchoolClassesPost';
-import type { SchoolClassExamPdfPost } from '../models/SchoolClassExamPdfPost';
-import type { SchoolClassOne } from '../models/SchoolClassOne';
-import type { SchoolClassPut } from '../models/SchoolClassPut';
+import type { ClassesPost } from '../models/ClassesPost';
+import type { ClassExamPdfPost } from '../models/ClassExamPdfPost';
+import type { ClassOne } from '../models/ClassOne';
+import type { ClassPut } from '../models/ClassPut';
 import type { StudentList } from '../models/StudentList';
 import type { WaitlistMappingList } from '../models/WaitlistMappingList';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { request as __request } from '../core/request';
 
-export class SchoolClassesService {
+export class ClassesService {
 
     /**
      * @param payload
      * @param xFields An optional fields mask
-     * @returns SchoolClassOne Success
+     * @returns ClassOne Success
      * @throws ApiError
      */
-    public static postSchoolClassesResource(
-        payload: SchoolClassesPost,
+    public static postClassesResource(
+        payload: ClassesPost,
         xFields?: string,
-    ): CancelablePromise<SchoolClassOne> {
+    ): CancelablePromise<ClassOne> {
         return __request({
             method: 'POST',
-            path: `/school-classes`,
+            path: `/classes`,
             headers: {
                 'X-Fields': xFields,
             },
@@ -33,32 +33,32 @@ export class SchoolClassesService {
     }
 
     /**
-     * @param schoolClassId
+     * @param classId
      * @returns void
      * @throws ApiError
      */
-    public static deleteSchoolClassResource(
-        schoolClassId: number,
+    public static deleteClassResource(
+        classId: number,
     ): CancelablePromise<void> {
         return __request({
             method: 'DELETE',
-            path: `/school-classes/${schoolClassId}`,
+            path: `/classes/${classId}`,
         });
     }
 
     /**
-     * @param schoolClassId
+     * @param classId
      * @param xFields An optional fields mask
      * @returns StudentList Success
      * @throws ApiError
      */
-    public static getSchoolClassResource(
-        schoolClassId: number,
+    public static getClassResource(
+        classId: number,
         xFields?: string,
     ): CancelablePromise<StudentList> {
         return __request({
             method: 'GET',
-            path: `/school-classes/${schoolClassId}`,
+            path: `/classes/${classId}`,
             headers: {
                 'X-Fields': xFields,
             },
@@ -66,20 +66,20 @@ export class SchoolClassesService {
     }
 
     /**
-     * @param schoolClassId
+     * @param classId
      * @param payload
      * @param xFields An optional fields mask
-     * @returns SchoolClassOne Success
+     * @returns ClassOne Success
      * @throws ApiError
      */
-    public static putSchoolClassResource(
-        schoolClassId: number,
-        payload: SchoolClassPut,
+    public static putClassResource(
+        classId: number,
+        payload: ClassPut,
         xFields?: string,
-    ): CancelablePromise<SchoolClassOne> {
+    ): CancelablePromise<ClassOne> {
         return __request({
             method: 'PUT',
-            path: `/school-classes/${schoolClassId}`,
+            path: `/classes/${classId}`,
             headers: {
                 'X-Fields': xFields,
             },
@@ -88,35 +88,35 @@ export class SchoolClassesService {
     }
 
     /**
-     * @param schoolClassId
+     * @param classId
      * @param payload
      * @returns any Success
      * @throws ApiError
      */
-    public static postSchoolClassExamPdfResource(
-        schoolClassId: number,
-        payload: SchoolClassExamPdfPost,
+    public static postClassExamPdfResource(
+        classId: number,
+        payload: ClassExamPdfPost,
     ): CancelablePromise<any> {
         return __request({
             method: 'POST',
-            path: `/school-classes/${schoolClassId}/exam-pdf`,
+            path: `/classes/${classId}/exam-pdf`,
             body: payload,
         });
     }
 
     /**
-     * @param schoolClassId
+     * @param classId
      * @param xFields An optional fields mask
      * @returns WaitlistMappingList Success
      * @throws ApiError
      */
-    public static getSchoolClassWaitlistResource(
-        schoolClassId: number,
+    public static getClassWaitlistResource(
+        classId: number,
         xFields?: string,
     ): CancelablePromise<WaitlistMappingList> {
         return __request({
             method: 'GET',
-            path: `/school-classes/${schoolClassId}/waitlist`,
+            path: `/classes/${classId}/waitlist`,
             headers: {
                 'X-Fields': xFields,
             },

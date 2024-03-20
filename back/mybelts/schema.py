@@ -150,7 +150,7 @@ class Class(Base):
     students: list[Student] = relationship(  # type: ignore
         'Student',
         foreign_keys='Student.class_id',
-        back_populates='class',
+        back_populates='class_',
     )
 
     def json(self) -> dict:

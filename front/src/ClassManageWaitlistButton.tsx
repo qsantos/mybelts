@@ -25,7 +25,7 @@ interface Props {
     onDelete?: (waitlist_entry_id: number) => void;
 }
 
-export default function SchoolClassManageWaitlistButton(
+export default function ClassManageWaitlistButton(
     props: Props
 ): ReactElement {
     const {

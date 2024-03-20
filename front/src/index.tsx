@@ -28,7 +28,7 @@ import SkillDomainsView from './SkillDomainsView';
 import LevelsView from './LevelsView';
 import LevelView from './LevelView';
 import RelativeTime from './RelativeTime';
-import SchoolClassView from './SchoolClassView';
+import ClassView from './ClassView';
 import StudentWidget from './StudentWidget';
 import StudentView from './StudentView';
 
@@ -275,8 +275,8 @@ function App() {
                     />
                 </Route>
                 <Route
-                    path="school-classes/:school_class_id"
-                    element={<SchoolClassView />}
+                    path="classes/:class_id"
+                    element={<ClassView />}
                 />
                 <Route path="students/:student_id" element={<StudentView />} />
                 <Route path="*" element={<NotFound />} />

@@ -5,7 +5,7 @@ import Alert from 'react-bootstrap/Alert';
 
 import {
     Belt,
-    SchoolClass,
+    Class,
     SkillDomain,
     Student,
     WaitlistEntry,
@@ -13,8 +13,8 @@ import {
 } from './api';
 import { joinArray } from './lib';
 import BeltIcon from './BeltIcon';
-import SchoolClassWaitlistConvertButton from './SchoolClassWaitlistConvertButton';
-import SchoolClassExamsPDFButton from './SchoolClassExamsPDFButton';
+import ClassWaitlistConvertButton from './ClassWaitlistConvertButton';
+import ClassExamsPDFButton from './ClassExamsPDFButton';
 
 interface StudentEntriesProps {
     student_waitlist_entries: WaitlistEntry[];
@@ -87,15 +87,15 @@ function StudentItem_(props: StudentItemProps) {
 const StudentItem = React.memo(StudentItem_);
 
 interface Props {
-    school_class: SchoolClass;
+    class: Class;
     students: Student[];
     skill_domains: SkillDomain[];
     belts: Belt[];
     waitlist_mappings: WaitlistMapping[];
 }
 
-export default function SchoolClassWaitlist(props: Props): ReactElement | null {
-    const { school_class, students, skill_domains, belts, waitlist_mappings } =
+export default function ClassWaitlist(props: Props): ReactElement | null {
+    const { class: class_, students, skill_domains, belts, waitlist_mappings } =
         props;
 
     const { t } = useTranslation();
@@ -182,14 +182,14 @@ export default function SchoolClassWaitlist(props: Props): ReactElement | null {
                     }
                 )}
             </ul>
-            <SchoolClassWaitlistConvertButton
+            <ClassWaitlistConvertButton
                 belt_by_id={belt_by_id}
                 skill_domain_by_id={skill_domain_by_id}
                 student_by_id={student_by_id}
                 sorted_waitlists={sorted_waitlists}
             />{' '}
-            <SchoolClassExamsPDFButton
-                school_class={school_class}
+            <ClassExamsPDFButton
+                class={class_}
                 belt_by_id={belt_by_id}
                 skill_domain_by_id={skill_domain_by_id}
                 student_by_id={student_by_id}

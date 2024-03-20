@@ -1,12 +1,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { ClassList } from '../models/ClassList';
 import type { ExamOne } from '../models/ExamOne';
 import type { LevelList } from '../models/LevelList';
 import type { LevelOne } from '../models/LevelOne';
 import type { LevelPut } from '../models/LevelPut';
 import type { LevelsPost } from '../models/LevelsPost';
-import type { SchoolClassList } from '../models/SchoolClassList';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { request as __request } from '../core/request';
 
@@ -66,13 +66,13 @@ export class LevelsService {
     /**
      * @param levelId
      * @param xFields An optional fields mask
-     * @returns SchoolClassList Success
+     * @returns ClassList Success
      * @throws ApiError
      */
     public static getLevelResource(
         levelId: number,
         xFields?: string,
-    ): CancelablePromise<SchoolClassList> {
+    ): CancelablePromise<ClassList> {
         return __request({
             method: 'GET',
             path: `/levels/${levelId}`,

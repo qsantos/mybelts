@@ -90,7 +90,7 @@ export default function StudentWidget(props: Props): ReactElement {
                             {t('level.view.title')} ?
                         </BreadcrumbItem>
                         <BreadcrumbItem active href="/">
-                            {t('school_class.view.title')} ?
+                            {t('class.view.title')} ?
                         </BreadcrumbItem>
                         <BreadcrumbItem active href={'/students/' + student_id}>
                             {t('student.view.title')} ?
@@ -113,7 +113,7 @@ export default function StudentWidget(props: Props): ReactElement {
         belts,
         skill_domains,
         level,
-        school_class,
+        class: class_,
         student,
         evaluations,
     } = evaluationList;
@@ -135,9 +135,9 @@ export default function StudentWidget(props: Props): ReactElement {
                     </BreadcrumbItem>
                     <BreadcrumbItem
                         active
-                        href={'/school-classes/' + school_class.id}
+                        href={'/classes/' + class_.id}
                     >
-                        {t('school_class.view.title')} {school_class.suffix}
+                        {t('class.view.title')} {class_.suffix}
                     </BreadcrumbItem>
                     <BreadcrumbItem active href={'/students/' + student.id}>
                         {t('student.view.title')} {student.display_name}
@@ -147,10 +147,10 @@ export default function StudentWidget(props: Props): ReactElement {
             <h3>
                 {t('student.view.title')}: {student.display_name}
             </h3>
-            {t('student.view.school_class')}:{' '}
-            <Link to={'/school-classes/' + school_class.id}>
+            {t('student.view.class')}:{' '}
+            <Link to={'/classes/' + class_.id}>
                 {level.prefix}
-                {school_class.suffix}
+                {class_.suffix}
             </Link>
             <AdminOnly>
                 <br />
@@ -166,7 +166,7 @@ export default function StudentWidget(props: Props): ReactElement {
                 <StudentDeleteButton
                     student={student}
                     deletedCallback={() =>
-                        navigate('/school-classes/' + school_class.id)
+                        navigate('/classes/' + class_.id)
                     }
                 />
             </AdminOnly>

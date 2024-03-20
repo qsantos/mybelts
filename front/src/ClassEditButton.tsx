@@ -3,49 +3,49 @@ import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import Form from 'react-bootstrap/Form';
 
-import { Level, SchoolClass, SchoolClassesService } from './api';
+import { Level, Class, ClassesService } from './api';
 import ModalButton from './ModalButton';
 
 interface Props {
     level: Level;
-    school_class: SchoolClass;
-    changedCallback?: (changed_school_class: SchoolClass) => void;
+    class: Class;
+    changedCallback?: (changed_class: Class) => void;
 }
 
-export default function SchoolClassEditButton(props: Props): ReactElement {
-    const { level, school_class, changedCallback } = props;
+export default function ClassEditButton(props: Props): ReactElement {
+    const { level, class: class_, changedCallback } = props;
     const { t } = useTranslation();
 
     return (
         <ModalButton
-            i18nPrefix="school_class.edit"
-            i18nArgs={{ level, school_class }}
+            i18nPrefix="class.edit"
+            i18nArgs={{ level, class: class_ }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     suffix: { value: string };
                 };
-                return SchoolClassesService.putSchoolClassResource(
-                    school_class.id,
+                return ClassesService.putClassResource(
+                    class_.id,
                     {
                         suffix: typed_form.suffix.value,
                     }
                 );
             }}
-            onResponse={({ school_class: changed_school_class }) =>
-                changedCallback?.(changed_school_class)
+            onResponse={({ class: changed_class }) =>
+                changedCallback?.(changed_class)
             }
         >
             <Form.Group controlId="suffix">
                 <Form.Label>
-                    {t('school_class.add_edit.suffix.title')}
+                    {t('class.add_edit.suffix.title')}
                 </Form.Label>
                 <Form.Control
                     type="text"
-                    placeholder={t('school_class.add_edit.suffix.placeholder')}
-                    defaultValue={school_class.suffix}
+                    placeholder={t('class.add_edit.suffix.placeholder')}
+                    defaultValue={class_.suffix}
                 />
                 <Form.Text className="text-muted">
-                    {t('school_class.add_edit.suffix.help')}
+                    {t('class.add_edit.suffix.help')}
                 </Form.Text>
             </Form.Group>
         </ModalButton>

@@ -8,7 +8,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import {
     Belt,
     SkillDomain,
-    SchoolClassStudentBeltsStudentBelts,
+    ClassStudentBeltsStudentBelts,
     Student,
     User,
 } from './api';
@@ -145,7 +145,7 @@ interface Props {
     setStudents: Dispatch<(prevStudent: Student[]) => Student[]>;
     skill_domains: SkillDomain[];
     belts: Belt[];
-    student_belts: SchoolClassStudentBeltsStudentBelts[];
+    student_belts: ClassStudentBeltsStudentBelts[];
 }
 
 export default function EvaluationGrid(props: Props): ReactElement | null {

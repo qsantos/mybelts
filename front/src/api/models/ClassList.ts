@@ -3,15 +3,15 @@
 /* eslint-disable */
 
 import type { Belt } from './Belt';
+import type { Class } from './Class';
 import type { Exam } from './Exam';
 import type { Level } from './Level';
-import type { SchoolClass } from './SchoolClass';
 import type { SkillDomain } from './SkillDomain';
 
-export type SchoolClassList = {
+export type ClassList = {
     belts: Array<Belt>;
+    classes: Array<Class>;
     exams: Array<Exam>;
     level: Level;
-    school_classes: Array<SchoolClass>;
     skill_domains: Array<SkillDomain>;
 }

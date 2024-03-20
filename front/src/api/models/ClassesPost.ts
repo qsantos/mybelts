@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type SchoolClassPut = {
-    suffix?: string;
+export type ClassesPost = {
+    level_id: number;
+    suffix: string;
 }
