@@ -16,7 +16,7 @@ import { ColumnDef } from '@tanstack/react-table';
 
 import {
     Belt,
-    ClassLevel,
+    Level,
     SchoolClass,
     SchoolClassStudentBeltsStudentBelts,
     SkillDomain,
@@ -157,7 +157,7 @@ function WaitlistRow_(props: RowProps) {
 const WaitlistRow = React.memo(WaitlistRow_);
 
 interface Props {
-    class_level: ClassLevel;
+    level: Level;
     school_class: SchoolClass;
     students: Student[];
     skill_domains: SkillDomain[];
@@ -171,7 +171,7 @@ interface Props {
 
 export default function SchoolClassManageWaitlist(props: Props): ReactElement {
     const {
-        class_level,
+        level,
         school_class,
         students,
         skill_domains,
@@ -227,7 +227,7 @@ export default function SchoolClassManageWaitlist(props: Props): ReactElement {
 
     // similar to ModalButton, except no form or cancel/confirm buttons
     const i18nPrefix = 'waitlist.manage';
-    const i18nArgs = { class_level, school_class };
+    const i18nArgs = { level, school_class };
     const [show, setShow] = useState(false);
 
     const waitlist_entries_by_student_id = Object.fromEntries(

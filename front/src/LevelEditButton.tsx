@@ -3,48 +3,48 @@ import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import Form from 'react-bootstrap/Form';
 
-import { ClassLevel, ClassLevelsService } from './api';
+import { Level, LevelsService } from './api';
 import ModalButton from './ModalButton';
 
 interface Props {
-    class_level: ClassLevel;
-    changedCallback?: (changed_class_level: ClassLevel) => void;
+    level: Level;
+    changedCallback?: (changed_level: Level) => void;
 }
 
-export default function ClassLevelEditButton(props: Props): ReactElement {
-    const { class_level, changedCallback } = props;
+export default function LevelEditButton(props: Props): ReactElement {
+    const { level, changedCallback } = props;
     const { t } = useTranslation();
 
     return (
         <ModalButton
-            i18nPrefix="class_level.edit"
-            i18nArgs={{ class_level }}
+            i18nPrefix="level.edit"
+            i18nArgs={{ level }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     prefix: { value: string };
                 };
-                return ClassLevelsService.putClassLevelResource(
-                    class_level.id,
+                return LevelsService.putLevelResource(
+                    level.id,
                     {
                         prefix: typed_form.prefix.value,
                     }
                 );
             }}
-            onResponse={({ class_level: changed_class_level }) =>
-                changedCallback?.(changed_class_level)
+            onResponse={({ level: changed_level }) =>
+                changedCallback?.(changed_level)
             }
         >
             <Form.Group controlId="prefix">
                 <Form.Label>
-                    {t('class_level.add_edit.prefix.title')}
+                    {t('level.add_edit.prefix.title')}
                 </Form.Label>
                 <Form.Control
                     type="text"
-                    placeholder={t('class_level.add_edit.prefix.placeholder')}
-                    defaultValue={class_level.prefix}
+                    placeholder={t('level.add_edit.prefix.placeholder')}
+                    defaultValue={level.prefix}
                 />
                 <Form.Text className="text-muted">
-                    {t('class_level.add_edit.prefix.help')}
+                    {t('level.add_edit.prefix.help')}
                 </Form.Text>
             </Form.Group>
         </ModalButton>

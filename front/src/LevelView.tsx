@@ -4,19 +4,19 @@ import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Alert from 'react-bootstrap/Alert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
-import { Exam, SchoolClass, ClassLevelsService, SchoolClassList } from './api';
+import { Exam, SchoolClass, LevelsService, SchoolClassList } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly } from './auth';
-import ClassLevelDeleteButton from './ClassLevelDeleteButton';
-import ClassLevelEditButton from './ClassLevelEditButton';
+import LevelDeleteButton from './LevelDeleteButton';
+import LevelEditButton from './LevelEditButton';
 import SchoolClassListing from './SchoolClassListing';
 import SchoolClassCreateButton from './SchoolClassCreateButton';
 import { assert, BreadcrumbItem, Loader } from './index';
 import ExamsManager from './ExamsManager';
 
-export default function ClassLevelView(): ReactElement {
-    const { class_level_id } = useParams();
-    assert(class_level_id !== undefined);
+export default function LevelView(): ReactElement {
+    const { level_id } = useParams();
+    assert(level_id !== undefined);
 
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
@@ -61,29 +61,29 @@ export default function ClassLevelView(): ReactElement {
     );
 
     useEffect(() => {
-        ClassLevelsService.getClassLevelResource(parseInt(class_level_id))
+        LevelsService.getLevelResource(parseInt(level_id))
             .then(setSchoolClassList)
             .catch((error) => {
                 setErrorMessage(getAPIError(error));
             });
-    }, [class_level_id]);
+    }, [level_id]);
 
     if (schoolClassList === null) {
         return (
             <>
                 <Breadcrumb>
                     <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                    <BreadcrumbItem href="/class-levels">
-                        {t('class_level.list.title.primary')}
+                    <BreadcrumbItem href="/levels">
+                        {t('level.list.title.primary')}
                     </BreadcrumbItem>
                     <BreadcrumbItem
                         active
-                        href={'/class-levels/' + class_level_id}
+                        href={'/levels/' + level_id}
                     >
-                        {t('class_level.view.title')} ?
+                        {t('level.view.title')} ?
                     </BreadcrumbItem>
                 </Breadcrumb>
-                <h3>{t('class_level.view.title')}: ?</h3>
+                <h3>{t('level.view.title')}: ?</h3>
                 {errorMessage ? (
                     <Alert variant="danger">
                         {t('error')}: {errorMessage}
@@ -95,7 +95,7 @@ export default function ClassLevelView(): ReactElement {
         );
     }
 
-    const { belts, skill_domains, class_level, school_classes, exams } =
+    const { belts, skill_domains, level, school_classes, exams } =
         schoolClassList;
 
     const sorted_school_classes = school_classes.sort((a, b) =>
@@ -106,35 +106,35 @@ export default function ClassLevelView(): ReactElement {
         <>
             <Breadcrumb>
                 <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                <BreadcrumbItem href="/class-levels">
-                    {t('class_level.list.title.primary')}
+                <BreadcrumbItem href="/levels">
+                    {t('level.list.title.primary')}
                 </BreadcrumbItem>
-                <BreadcrumbItem active href={'/class-levels/' + class_level.id}>
-                    {t('class_level.view.title')} {class_level.prefix}
+                <BreadcrumbItem active href={'/levels/' + level.id}>
+                    {t('level.view.title')} {level.prefix}
                 </BreadcrumbItem>
             </Breadcrumb>
             <h3>
-                {t('class_level.view.title')}: {class_level.prefix}
+                {t('level.view.title')}: {level.prefix}
             </h3>
             <AdminOnly>
-                <ClassLevelEditButton
-                    class_level={class_level}
-                    changedCallback={(new_class_level) => {
+                <LevelEditButton
+                    level={level}
+                    changedCallback={(new_level) => {
                         setSchoolClassList({
                             ...schoolClassList,
-                            class_level: new_class_level,
+                            level: new_level,
                         });
                     }}
                 />{' '}
-                <ClassLevelDeleteButton
-                    class_level={class_level}
-                    deletedCallback={() => navigate('/class-levels')}
+                <LevelDeleteButton
+                    level={level}
+                    deletedCallback={() => navigate('/levels')}
                 />
             </AdminOnly>
             <h4>{t('school_class.list.title.secondary')}</h4>
             <AdminOnly>
                 <SchoolClassCreateButton
-                    class_level={class_level}
+                    level={level}
                     createdCallback={(new_school_class) => {
                         setSchoolClassList({
                             ...schoolClassList,
@@ -147,7 +147,7 @@ export default function ClassLevelView(): ReactElement {
                 />
             </AdminOnly>
             <SchoolClassListing
-                class_level={class_level}
+                level={level}
                 school_classes={sorted_school_classes}
                 setSchoolClasses={setSchoolClasses}
             />
@@ -156,7 +156,7 @@ export default function ClassLevelView(): ReactElement {
                 setExams={setExams}
                 belts={belts}
                 skill_domains={skill_domains}
-                class_level={class_level}
+                level={level}
             />
         </>
     );

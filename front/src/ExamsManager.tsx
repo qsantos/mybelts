@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dispatch, ReactElement, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Exam, Belt, SkillDomain, ClassLevel } from './api';
+import { Exam, Belt, SkillDomain, Level } from './api';
 import ExamBulkUpload from './ExamBulkUpload';
 import ExamGrid from './ExamGrid';
 
@@ -10,11 +10,11 @@ export interface Props {
     setExams: Dispatch<(prevExams: Exam[]) => Exam[]>;
     belts: Belt[];
     skill_domains: SkillDomain[];
-    class_level: ClassLevel;
+    level: Level;
 }
 
 function ExamsManager_(props: Props): ReactElement {
-    const { exams, setExams, belts, skill_domains, class_level } = props;
+    const { exams, setExams, belts, skill_domains, level } = props;
     const { t } = useTranslation();
 
     const createdCallback = useCallback(
@@ -60,7 +60,7 @@ function ExamsManager_(props: Props): ReactElement {
             <ExamGrid
                 belts={belts}
                 skill_domains={skill_domains}
-                class_level={class_level}
+                level={level}
                 exams={exams}
                 createdCallback={createdCallback}
                 changedCallback={changedCallback}
@@ -69,7 +69,7 @@ function ExamsManager_(props: Props): ReactElement {
             <ExamBulkUpload
                 belts={belts}
                 skill_domains={skill_domains}
-                class_level={class_level}
+                level={level}
                 createdCallback={createdCallback}
             />
         </>

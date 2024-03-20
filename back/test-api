@@ -423,10 +423,10 @@ def add_skill_domains() -> List[int]:
     return ids
 
 
-def add_class_levels() -> List[int]:
-    print('Testing /class-levels')
+def add_levels() -> List[int]:
+    print('Testing /levels')
 
-    class_level_prefixes = [
+    level_prefixes = [
         '3e',
         '4E',  # changed to '4e' later
         '5e',
@@ -434,64 +434,64 @@ def add_class_levels() -> List[int]:
         '7e',
     ]
 
-    # add class levels
+    # add levels
     ids = []
-    for class_level_prefix in class_level_prefixes:
-        res = requests.post(API_URL + '/class-levels', json={'prefix': class_level_prefix})
+    for level_prefix in level_prefixes:
+        res = requests.post(API_URL + '/levels', json={'prefix': level_prefix})
         res.raise_for_status()
         j = res.json()
         print(j)
-        assert j['class_level']['prefix'] == class_level_prefix
-        ids.append(j['class_level']['id'])
+        assert j['level']['prefix'] == level_prefix
+        ids.append(j['level']['id'])
 
-    # rename class level
-    class_level_prefixes[1] = '4e'
-    res = requests.put(API_URL + f'/class-levels/{ids[1]}', json={'prefix': class_level_prefixes[1]})
+    # rename level
+    level_prefixes[1] = '4e'
+    res = requests.put(API_URL + f'/levels/{ids[1]}', json={'prefix': level_prefixes[1]})
     res.raise_for_status()
     j = res.json()
     print(j)
-    assert j['class_level']['prefix'] == class_level_prefixes[1]
+    assert j['level']['prefix'] == level_prefixes[1]
 
-    # delete class level
-    res = requests.delete(API_URL + f'/class-levels/{ids[4]}')
+    # delete level
+    res = requests.delete(API_URL + f'/levels/{ids[4]}')
     res.raise_for_status()
-    res = requests.get(API_URL + f'/class-levels/{ids[4]}')
+    res = requests.get(API_URL + f'/levels/{ids[4]}')
     assert res.status_code == 404
     ids.pop()
-    class_level_prefixes.pop()
+    level_prefixes.pop()
 
     # check final state
-    for i, class_level_prefix in reversed(list(enumerate(class_level_prefixes))):
-        res = requests.get(API_URL + f'/class-levels/{ids[i]}')
+    for i, level_prefix in reversed(list(enumerate(level_prefixes))):
+        res = requests.get(API_URL + f'/levels/{ids[i]}')
         res.raise_for_status()
         j = res.json()
         print(j)
-        assert j['class_level']['prefix'] == class_level_prefix
+        assert j['level']['prefix'] == level_prefix
 
-    print('Tested /class-levels')
+    print('Tested /levels')
     return ids
 
 
-def add_school_classes(class_level_ids: List[int]) -> List[int]:
+def add_school_classes(level_ids: List[int]) -> List[int]:
     print('Testing /school-classes')
-    assert len(class_level_ids) == 4
-    l3, l4, l5, l6 = class_level_ids
+    assert len(level_ids) == 4
+    l3, l4, l5, l6 = level_ids
 
-    school_class_levels = [l3, l4, l6, l6, l6]
+    levels = [l3, l4, l6, l6, l6]
     school_class_suffixes = ['1', 'X', '3', '4', 'ZZZ']
-    assert len(school_class_levels) == len(school_class_suffixes)
+    assert len(levels) == len(school_class_suffixes)
 
     # add school classes
     ids = []
-    for class_level_id, school_class_suffix in zip(school_class_levels, school_class_suffixes):
+    for level_id, school_class_suffix in zip(levels, school_class_suffixes):
         res = requests.post(API_URL + '/school-classes', json={
-            'class_level_id': class_level_id,
+            'level_id': level_id,
             'suffix': school_class_suffix,
         })
         res.raise_for_status()
         j = res.json()
         print(j)
-        assert j['class_level']['id'] == class_level_id
+        assert j['level']['id'] == level_id
         assert j['school_class']['suffix'] == school_class_suffix
         ids.append(j['school_class']['id'])
 
@@ -501,7 +501,7 @@ def add_school_classes(class_level_ids: List[int]) -> List[int]:
     res.raise_for_status()
     j = res.json()
     print(j)
-    assert j['class_level']['id'] == school_class_levels[1]
+    assert j['level']['id'] == levels[1]
     assert j['school_class']['suffix'] == school_class_suffixes[1]
 
     # delete school class
@@ -510,7 +510,7 @@ def add_school_classes(class_level_ids: List[int]) -> List[int]:
     res = requests.get(API_URL + f'/school-classes/{ids[4]}')
     assert res.status_code == 404
     ids.pop()
-    school_class_levels.pop()
+    levels.pop()
     school_class_suffixes.pop()
 
     # check final state
@@ -735,7 +735,7 @@ def add_waitlist_entries(student_ids: List[int]) -> None:
         j = res.json()
         assert j['student']['id'] == student_id
         assert j['school_class']['id'] == j['student']['school_class_id']
-        assert j['class_level']['id'] == j['school_class']['class_level_id']
+        assert j['level']['id'] == j['school_class']['level_id']
 
         evaluations = j['evaluations']
         for skill_domain in skill_domains:
@@ -790,8 +790,8 @@ def main() -> None:
     add_users()
     add_belts()
     add_skill_domains()
-    class_level_ids = add_class_levels()
-    school_class_ids = add_school_classes(class_level_ids)
+    level_ids = add_levels()
+    school_class_ids = add_school_classes(level_ids)
     student_ids = add_students(school_class_ids)
     add_evaluations(student_ids)
     add_waitlist_entries(student_ids)

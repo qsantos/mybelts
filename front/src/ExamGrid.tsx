@@ -3,7 +3,7 @@ import { ReactElement, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import Table from 'react-bootstrap/Table';
 
-import { Belt, ClassLevel, Exam, SkillDomain } from './api';
+import { Belt, Level, Exam, SkillDomain } from './api';
 import BeltIcon from './BeltIcon';
 import ExamEditButton from './ExamEditButton';
 import ExamUploadButton from './ExamUploadButton';
@@ -16,7 +16,7 @@ interface Option {
 interface RowProps {
     sorted_belts: Belt[];
     skill_domain: SkillDomain;
-    class_level: ClassLevel;
+    level: Level;
     exams_by_belt: { [index: number]: Exam[] };
     createdCallback: (new_exam: Exam) => void;
     changedCallback?: (changed_exam: Exam) => void;
@@ -29,7 +29,7 @@ function ExamRow(props: RowProps) {
     const {
         sorted_belts,
         skill_domain,
-        class_level,
+        level,
         exams_by_belt,
         createdCallback,
         changedCallback,
@@ -63,7 +63,7 @@ function ExamRow(props: RowProps) {
                         <ExamUploadButton
                             belt={belt}
                             skill_domain={skill_domain}
-                            class_level={class_level}
+                            level={level}
                             createdCallback={createdCallback}
                         />
                     </td>
@@ -76,7 +76,7 @@ function ExamRow(props: RowProps) {
 interface Props {
     belts: Belt[];
     skill_domains: SkillDomain[];
-    class_level: ClassLevel;
+    level: Level;
     exams: Exam[];
     createdCallback: (new_exam: Exam) => void;
     changedCallback?: (changed_exam: Exam) => void;
@@ -87,7 +87,7 @@ export default function ExamGrid(props: Props): ReactElement {
     const {
         belts,
         skill_domains,
-        class_level,
+        level,
         exams,
         createdCallback,
         changedCallback,
@@ -153,7 +153,7 @@ export default function ExamGrid(props: Props): ReactElement {
                         key={skill_domain.id}
                         sorted_belts={sorted_belts}
                         skill_domain={skill_domain}
-                        class_level={class_level}
+                        level={level}
                         exams_by_belt={
                             exams_by_belt_by_domain[skill_domain.id] || []
                         }

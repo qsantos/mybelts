@@ -2,6 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type ClassLevelsPost = {
-    prefix: string;
+export type LevelPut = {
+    prefix?: string;
 }

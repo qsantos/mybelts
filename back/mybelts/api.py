@@ -20,9 +20,9 @@ from mybelts.config import SECRET
 from mybelts.exams2pdf import exams_to_print, print_exams_as_pdf
 from mybelts.schema import (
     Belt,
-    ClassLevel,
     Evaluation,
     Exam,
+    Level,
     MissingI18nKey,
     SchoolClass,
     SkillDomain,
@@ -72,7 +72,7 @@ api = Api(
 )
 
 users_ns = api.namespace('Users', path='/')
-class_level_ns = api.namespace('Class Levels', path='/')
+level_ns = api.namespace('Levels', path='/')
 school_class_ns = api.namespace('School Classes', path='/')
 students_ns = api.namespace('Students', path='/')
 skill_domains_ns = api.namespace('Skill Domains', path='/')
@@ -90,7 +90,7 @@ api_model_user = api.model('User', {
     'last_login': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
 })
 
-api_model_class_level = api.model('ClassLevel', {
+api_model_level = api.model('Level', {
     'id': fields.Integer(example=42, required=True),
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
     'prefix': fields.String(example='4e', required=True),
@@ -99,7 +99,7 @@ api_model_class_level = api.model('ClassLevel', {
 api_model_school_class = api.model('SchoolClass', {
     'id': fields.Integer(example=42, required=True),
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
-    'class_level_id': fields.Integer(example=42, required=True),
+    'level_id': fields.Integer(example=42, required=True),
     'suffix': fields.String(example='D', required=True),
 })
 
@@ -153,7 +153,7 @@ api_model_waitlist_entry = api.model('WaitlistEntry', {
 api_model_exam = api.model('Exam', {
     'id': fields.Integer(example=42, required=True),
     'created': fields.DateTime(example='2021-11-13T12:34:56Z', required=True),
-    'class_level_id': fields.Integer(example=42, required=True),
+    'level_id': fields.Integer(example=42, required=True),
     'skill_domain_id': fields.Integer(example=42, required=True),
     'belt_id': fields.Integer(example=42, required=True),
     'code': fields.String(example='B', required=True),
@@ -197,31 +197,31 @@ api_model_user_one = api.model('UserOne', {
     'user': fields.Nested(api_model_user, required=True),
 })
 
-api_model_class_level_list = api.model('ClassLevelList', {
-    'class_levels': fields.List(fields.Nested(api_model_class_level), required=True),
+api_model_level_list = api.model('LevelList', {
+    'levels': fields.List(fields.Nested(api_model_level), required=True),
 })
 
-api_model_class_level_one = api.model('ClassLevelOne', {
-    'class_level': fields.Nested(api_model_class_level, required=True),
+api_model_level_one = api.model('LevelOne', {
+    'level': fields.Nested(api_model_level, required=True),
 })
 
 api_model_school_class_list = api.model('SchoolClassList', {
     'belts': fields.List(fields.Nested(api_model_belt), required=True),
     'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
-    'class_level': fields.Nested(api_model_class_level, required=True),
+    'level': fields.Nested(api_model_level, required=True),
     'school_classes': fields.List(fields.Nested(api_model_school_class), required=True),
     'exams': fields.List(fields.Nested(api_model_exam), required=True),
 })
 
 api_model_school_class_one = api.model('SchoolClassOne', {
-    'class_level': fields.Nested(api_model_class_level, required=True),
+    'level': fields.Nested(api_model_level, required=True),
     'school_class': fields.Nested(api_model_school_class, required=True),
 })
 
 api_model_student_list = api.model('StudentList', {
     'belts': fields.List(fields.Nested(api_model_belt), required=True),
     'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
-    'class_level': fields.Nested(api_model_class_level, required=True),
+    'level': fields.Nested(api_model_level, required=True),
     'school_class': fields.Nested(api_model_school_class, required=True),
     'students': fields.List(fields.Nested(api_model_student), required=True),
     'student_belts': fields.List(fields.Nested(api.model('SchoolClassStudentBeltsStudentBelts', {
@@ -238,7 +238,7 @@ api_model_student_list_bare = api.model('StudentListBare', {
 })
 
 api_model_student_one = api.model('StudentOne', {
-    'class_level': fields.Nested(api_model_class_level, required=True),
+    'level': fields.Nested(api_model_level, required=True),
     'school_class': fields.Nested(api_model_school_class, required=True),
     'user': fields.Nested(api_model_user, required=True),
     'student': fields.Nested(api_model_student, required=True),
@@ -261,7 +261,7 @@ api_model_belt_one = api.model('BeltOne', {
 })
 
 api_model_evaluation_list = api.model('EvaluationList', {
-    'class_level': fields.Nested(api_model_class_level, required=True),
+    'level': fields.Nested(api_model_level, required=True),
     'school_class': fields.Nested(api_model_school_class, required=True),
     'student': fields.Nested(api_model_student, required=True),
     'skill_domains': fields.List(fields.Nested(api_model_skill_domain), required=True),
@@ -270,7 +270,7 @@ api_model_evaluation_list = api.model('EvaluationList', {
 })
 
 api_model_evaluation_one = api.model('EvaluationOne', {
-    'class_level': fields.Nested(api_model_class_level, required=True),
+    'level': fields.Nested(api_model_level, required=True),
     'school_class': fields.Nested(api_model_school_class, required=True),
     'student': fields.Nested(api_model_student, required=True),
     'skill_domain': fields.Nested(api_model_skill_domain, required=True),
@@ -534,100 +534,100 @@ class UserResource(Resource):
             return None, 204
 
 
-@class_level_ns.route('/class-levels')
-class ClassLevelsResource(Resource):
-    @api.marshal_with(api_model_class_level_list)
+@level_ns.route('/levels')
+class LevelsResource(Resource):
+    @api.marshal_with(api_model_level_list)
     def get(self) -> Any:
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
             return {
-                'class_levels': [
-                    class_level.json()
-                    for class_level in session.query(ClassLevel).all()
+                'levels': [
+                    level.json()
+                    for level in session.query(Level).all()
                 ],
             }
 
-    post_model = api.model('ClassLevelsPost', {
+    post_model = api.model('LevelsPost', {
         'prefix': fields.String(example='4e', required=True),
     })
 
     @api.expect(post_model, validate=True)
-    @api.marshal_with(api_model_class_level_one)
+    @api.marshal_with(api_model_level_one)
     def post(self) -> Any:
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
-            class_level = ClassLevel(prefix=request.json['prefix'])
-            session.add(class_level)
+            level = Level(prefix=request.json['prefix'])
+            session.add(level)
             session.commit()
             return {
-                'class_level': class_level.json(),
+                'level': level.json(),
             }
 
 
-@class_level_ns.route('/class-levels/<int:class_level_id>')
-class ClassLevelResource(Resource):
+@level_ns.route('/levels/<int:level_id>')
+class LevelResource(Resource):
     @api.marshal_with(api_model_school_class_list)
-    def get(self, class_level_id: int) -> Any:
+    def get(self, level_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
-            class_level = session.query(ClassLevel).get(class_level_id)
-            if class_level is None:
-                abort(404, f'Class level {class_level_id} not found')
+            level = session.query(Level).get(level_id)
+            if level is None:
+                abort(404, f'Level {level_id} not found')
             belts = session.query(Belt).all()
             skill_domains = session.query(SkillDomain).all()
             return {
                 'belts': [belt.json() for belt in belts],
                 'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
-                'class_level': class_level.json(),
+                'level': level.json(),
                 'school_classes': [
                     school_class.json()
-                    for school_class in class_level.school_classes
+                    for school_class in level.school_classes
                 ],
                 'exams': [
                     exam.json()
-                    for exam in class_level.exams
+                    for exam in level.exams
                 ],
             }
 
-    put_model = api.model('ClassLevelPut', {
+    put_model = api.model('LevelPut', {
         'prefix': fields.String(example='4e'),
     })
 
     @api.expect(put_model, validate=True)
-    @api.marshal_with(api_model_class_level_one)
-    def put(self, class_level_id: int) -> Any:
+    @api.marshal_with(api_model_level_one)
+    def put(self, level_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
-            class_level = session.query(ClassLevel).get(class_level_id)
-            if class_level is None:
-                abort(404, f'Class level {class_level_id} not found')
+            level = session.query(Level).get(level_id)
+            if level is None:
+                abort(404, f'Level {level_id} not found')
             prefix = request.json.get('prefix')
             if prefix is not None:
-                class_level.prefix = prefix
+                level.prefix = prefix
             session.commit()
             return {
-                'class_level': class_level.json(),
+                'level': level.json(),
             }
 
     @api.response(204, 'Success')
-    def delete(self, class_level_id: int) -> Any:
+    def delete(self, level_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
-            class_level = session.query(ClassLevel).get(class_level_id)
-            if class_level is None:
-                abort(404, f'Class level {class_level_id} not found')
-            session.query(ClassLevel).filter(ClassLevel.id == class_level.id).delete()
+            level = session.query(Level).get(level_id)
+            if level is None:
+                abort(404, f'Level {level_id} not found')
+            session.query(Level).filter(Level.id == level.id).delete()
             session.commit()
             return None, 204
 
 
-@class_level_ns.route('/class-levels/<int:class_level_id>/exams')
-class ClassLevelExamsResource(Resource):
+@level_ns.route('/levels/<int:level_id>/exams')
+class LevelExamsResource(Resource):
     parser = api.parser()
     parser.add_argument('skill_domain_id', type=int, location='form', required=True)
     parser.add_argument('belt_id', type=int, location='form', required=True)
@@ -637,13 +637,13 @@ class ClassLevelExamsResource(Resource):
 
     @api.marshal_with(api_model_exam_one)
     @api.expect(parser)
-    def post(self, class_level_id: int) -> Any:
+    def post(self, level_id: int) -> Any:
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
-            class_level = session.query(ClassLevel).get(class_level_id)
-            if class_level is None:
-                abort(404, f'Class level {class_level_id} not found')
+            level = session.query(Level).get(level_id)
+            if level is None:
+                abort(404, f'Level {level_id} not found')
 
             try:
                 belt_id = int(request.form['belt_id'])
@@ -666,7 +666,7 @@ class ClassLevelExamsResource(Resource):
                 abort(404, f'Skill domain {skill_domain_id} not found')
 
             exam = Exam(
-                class_level_id=class_level.id,
+                level_id=level.id,
                 belt_id=belt.id,
                 skill_domain_id=skill_domain.id,
                 code=request.form['code'],
@@ -683,7 +683,7 @@ class ClassLevelExamsResource(Resource):
 @school_class_ns.route('/school-classes')
 class SchoolClassesResource(Resource):
     post_model = api.model('SchoolClassesPost', {
-        'class_level_id': fields.Integer(example=42, required=True),
+        'level_id': fields.Integer(example=42, required=True),
         'suffix': fields.String(example='D', required=True),
     })
 
@@ -693,18 +693,18 @@ class SchoolClassesResource(Resource):
         with session_context() as session:
             me = authenticate(session)
             need_admin(me)
-            class_level_id = request.json['class_level_id']
-            class_level = session.query(ClassLevel).get(class_level_id)
-            if class_level is None:
-                abort(404, f'Class level {class_level_id} not found')
+            level_id = request.json['level_id']
+            level = session.query(Level).get(level_id)
+            if level is None:
+                abort(404, f'Level {level_id} not found')
             school_class = SchoolClass(
-                class_level=class_level,
+                level=level,
                 suffix=request.json['suffix'],
             )
             session.add(school_class)
             session.commit()
             return {
-                'class_level': class_level.json(),
+                'level': level.json(),
                 'school_class': school_class.json(),
             }
 
@@ -719,7 +719,7 @@ class SchoolClassResource(Resource):
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
-            class_level = school_class.class_level
+            level = school_class.level
 
             evaluations = (
                 session  # type: ignore
@@ -746,7 +746,7 @@ class SchoolClassResource(Resource):
                 'belts': [belt.json() for belt in belts],
                 'skill_domains': [skill_domain.json() for skill_domain in skill_domains],
                 'students': [student.json() for student in students],
-                'class_level': class_level.json(),
+                'level': level.json(),
                 'school_class': school_class.json(),
                 'student_belts': [
                     {
@@ -774,9 +774,9 @@ class SchoolClassResource(Resource):
             if suffix is not None:
                 school_class.suffix = suffix
             session.commit()
-            class_level = school_class.class_level
+            level = school_class.level
             return {
-                'class_level': class_level.json(),
+                'level': level.json(),
                 'school_class': school_class.json(),
             }
 
@@ -845,8 +845,8 @@ class SchoolClassExamPDFResource(Resource):
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
 
-            class_level = school_class.class_level
-            full_class_name = class_level.prefix + school_class.suffix
+            level = school_class.level
+            full_class_name = level.prefix + school_class.suffix
 
             waitlist_entry_ids = request.json['waitlist_entry_ids']
             exams_with_names, errors = exams_to_print(session, waitlist_entry_ids)
@@ -881,7 +881,7 @@ class StudentsResource(Resource):
             school_class = session.query(SchoolClass).get(school_class_id)
             if school_class is None:
                 abort(404, f'School class {school_class_id} not found')
-            class_level = school_class.class_level
+            level = school_class.level
             user = User(
                 username=request.json['username'],
                 password=request.json['password'],
@@ -901,7 +901,7 @@ class StudentsResource(Resource):
                 else:
                     raise
             return {
-                'class_level': class_level.json(),
+                'level': level.json(),
                 'school_class': school_class.json(),
                 'user': user.json(),
                 'student': student.json(),
@@ -952,9 +952,9 @@ class StudentResource(Resource):
             skill_domains = session.query(SkillDomain).all()
             evaluations = session.query(Evaluation).filter(Evaluation.student_id == student.id).all()
             school_class = student.school_class
-            class_level = school_class.class_level
+            level = school_class.level
             return {
-                'class_level': class_level.json(),
+                'level': level.json(),
                 'school_class': school_class.json(),
                 'student': student.json(),
                 'belts': [belt.json() for belt in belts],
@@ -997,9 +997,9 @@ class StudentResource(Resource):
                 student.rank = rank
             session.commit()
             school_class = student.school_class
-            class_level = school_class.class_level
+            level = school_class.level
             return {
-                'class_level': class_level.json(),
+                'level': level.json(),
                 'school_class': school_class.json(),
                 'user': user.json(),
                 'student': student.json(),
@@ -1395,9 +1395,9 @@ class EvaluationsResource(Resource):
             session.add(evaluation)
             session.commit()
             school_class = student.school_class
-            class_level = school_class.class_level
+            level = school_class.level
             return {
-                'class_level': class_level.json(),
+                'level': level.json(),
                 'school_class': school_class.json(),
                 'student': student.json(),
                 'belt': belt.json(),
@@ -1461,9 +1461,9 @@ class EvaluationResource(Resource):
                 evaluation.success = success
             session.commit()
             school_class = student.school_class
-            class_level = school_class.class_level
+            level = school_class.level
             return {
-                'class_level': class_level.json(),
+                'level': level.json(),
                 'school_class': school_class.json(),
                 'student': student.json(),
                 'skill_domain': skill_domain.json(),

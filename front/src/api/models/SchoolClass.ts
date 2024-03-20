@@ -3,8 +3,8 @@
 /* eslint-disable */
 
 export type SchoolClass = {
-    class_level_id: number;
     created: string;
     id: number;
+    level_id: number;
     suffix: string;
 }

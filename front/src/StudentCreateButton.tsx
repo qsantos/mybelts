@@ -3,23 +3,23 @@ import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import Form from 'react-bootstrap/Form';
 
-import { ClassLevel, SchoolClass, Student, StudentsService } from './api';
+import { Level, SchoolClass, Student, StudentsService } from './api';
 import ModalButton from './ModalButton';
 
 interface Props {
     school_class: SchoolClass;
-    class_level: ClassLevel;
+    level: Level;
     createdCallback?: (student: Student) => void;
 }
 
 export default function StudentCreateButton(props: Props): ReactElement {
-    const { school_class, class_level, createdCallback } = props;
+    const { school_class, level, createdCallback } = props;
     const { t } = useTranslation();
 
     return (
         <ModalButton
             i18nPrefix="student.add"
-            i18nArgs={{ class_level, school_class }}
+            i18nArgs={{ level, school_class }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     display_name: { value: string };

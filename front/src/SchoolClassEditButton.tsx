@@ -3,23 +3,23 @@ import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import Form from 'react-bootstrap/Form';
 
-import { ClassLevel, SchoolClass, SchoolClassesService } from './api';
+import { Level, SchoolClass, SchoolClassesService } from './api';
 import ModalButton from './ModalButton';
 
 interface Props {
-    class_level: ClassLevel;
+    level: Level;
     school_class: SchoolClass;
     changedCallback?: (changed_school_class: SchoolClass) => void;
 }
 
 export default function SchoolClassEditButton(props: Props): ReactElement {
-    const { class_level, school_class, changedCallback } = props;
+    const { level, school_class, changedCallback } = props;
     const { t } = useTranslation();
 
     return (
         <ModalButton
             i18nPrefix="school_class.edit"
-            i18nArgs={{ class_level, school_class }}
+            i18nArgs={{ level, school_class }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     suffix: { value: string };

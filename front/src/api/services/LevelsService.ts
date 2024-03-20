@@ -1,28 +1,28 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ClassLevelList } from '../models/ClassLevelList';
-import type { ClassLevelOne } from '../models/ClassLevelOne';
-import type { ClassLevelPut } from '../models/ClassLevelPut';
-import type { ClassLevelsPost } from '../models/ClassLevelsPost';
 import type { ExamOne } from '../models/ExamOne';
+import type { LevelList } from '../models/LevelList';
+import type { LevelOne } from '../models/LevelOne';
+import type { LevelPut } from '../models/LevelPut';
+import type { LevelsPost } from '../models/LevelsPost';
 import type { SchoolClassList } from '../models/SchoolClassList';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import { request as __request } from '../core/request';
 
-export class ClassLevelsService {
+export class LevelsService {
 
     /**
      * @param xFields An optional fields mask
-     * @returns ClassLevelList Success
+     * @returns LevelList Success
      * @throws ApiError
      */
-    public static getClassLevelsResource(
+    public static getLevelsResource(
         xFields?: string,
-    ): CancelablePromise<ClassLevelList> {
+    ): CancelablePromise<LevelList> {
         return __request({
             method: 'GET',
-            path: `/class-levels`,
+            path: `/levels`,
             headers: {
                 'X-Fields': xFields,
             },
@@ -32,16 +32,16 @@ export class ClassLevelsService {
     /**
      * @param payload
      * @param xFields An optional fields mask
-     * @returns ClassLevelOne Success
+     * @returns LevelOne Success
      * @throws ApiError
      */
-    public static postClassLevelsResource(
-        payload: ClassLevelsPost,
+    public static postLevelsResource(
+        payload: LevelsPost,
         xFields?: string,
-    ): CancelablePromise<ClassLevelOne> {
+    ): CancelablePromise<LevelOne> {
         return __request({
             method: 'POST',
-            path: `/class-levels`,
+            path: `/levels`,
             headers: {
                 'X-Fields': xFields,
             },
@@ -50,32 +50,32 @@ export class ClassLevelsService {
     }
 
     /**
-     * @param classLevelId
+     * @param levelId
      * @returns void
      * @throws ApiError
      */
-    public static deleteClassLevelResource(
-        classLevelId: number,
+    public static deleteLevelResource(
+        levelId: number,
     ): CancelablePromise<void> {
         return __request({
             method: 'DELETE',
-            path: `/class-levels/${classLevelId}`,
+            path: `/levels/${levelId}`,
         });
     }
 
     /**
-     * @param classLevelId
+     * @param levelId
      * @param xFields An optional fields mask
      * @returns SchoolClassList Success
      * @throws ApiError
      */
-    public static getClassLevelResource(
-        classLevelId: number,
+    public static getLevelResource(
+        levelId: number,
         xFields?: string,
     ): CancelablePromise<SchoolClassList> {
         return __request({
             method: 'GET',
-            path: `/class-levels/${classLevelId}`,
+            path: `/levels/${levelId}`,
             headers: {
                 'X-Fields': xFields,
             },
@@ -83,20 +83,20 @@ export class ClassLevelsService {
     }
 
     /**
-     * @param classLevelId
+     * @param levelId
      * @param payload
      * @param xFields An optional fields mask
-     * @returns ClassLevelOne Success
+     * @returns LevelOne Success
      * @throws ApiError
      */
-    public static putClassLevelResource(
-        classLevelId: number,
-        payload: ClassLevelPut,
+    public static putLevelResource(
+        levelId: number,
+        payload: LevelPut,
         xFields?: string,
-    ): CancelablePromise<ClassLevelOne> {
+    ): CancelablePromise<LevelOne> {
         return __request({
             method: 'PUT',
-            path: `/class-levels/${classLevelId}`,
+            path: `/levels/${levelId}`,
             headers: {
                 'X-Fields': xFields,
             },
@@ -105,7 +105,7 @@ export class ClassLevelsService {
     }
 
     /**
-     * @param classLevelId
+     * @param levelId
      * @param skillDomainId
      * @param beltId
      * @param code
@@ -115,8 +115,8 @@ export class ClassLevelsService {
      * @returns ExamOne Success
      * @throws ApiError
      */
-    public static postClassLevelExamsResource(
-        classLevelId: number,
+    public static postLevelExamsResource(
+        levelId: number,
         skillDomainId: number,
         beltId: number,
         code: string,
@@ -126,7 +126,7 @@ export class ClassLevelsService {
     ): CancelablePromise<ExamOne> {
         return __request({
             method: 'POST',
-            path: `/class-levels/${classLevelId}/exams`,
+            path: `/levels/${levelId}/exams`,
             headers: {
                 'X-Fields': xFields,
             },

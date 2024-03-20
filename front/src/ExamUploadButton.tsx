@@ -5,10 +5,10 @@ import Form from 'react-bootstrap/Form';
 
 import {
     Belt,
-    ClassLevel,
+    Level,
     Exam,
     SkillDomain,
-    ClassLevelsService,
+    LevelsService,
     ExamOne,
 } from './api';
 import ModalButton from './ModalButton';
@@ -16,17 +16,17 @@ import ModalButton from './ModalButton';
 interface Props {
     belt: Belt;
     skill_domain: SkillDomain;
-    class_level: ClassLevel;
+    level: Level;
     createdCallback: (new_exam: Exam) => void;
 }
 
 function ExamUploadButton_(props: Props): ReactElement {
-    const { belt, skill_domain, class_level, createdCallback } = props;
+    const { belt, skill_domain, level, createdCallback } = props;
     const { t } = useTranslation();
     return (
         <ModalButton
             i18nPrefix="exam.upload"
-            i18nArgs={{ belt, skill_domain, class_level }}
+            i18nArgs={{ belt, skill_domain, level }}
             onSubmit={(form: EventTarget) => {
                 const typed_form = form as typeof form & {
                     code: { value: string };
@@ -39,8 +39,8 @@ function ExamUploadButton_(props: Props): ReactElement {
                     }
                     file.arrayBuffer()
                         .then((data) =>
-                            ClassLevelsService.postClassLevelExamsResource(
-                                class_level.id,
+                            LevelsService.postLevelExamsResource(
+                                level.id,
                                 skill_domain.id,
                                 belt.id,
                                 typed_form.code.value,

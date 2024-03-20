@@ -102,11 +102,11 @@ export default function SchoolClassView(): ReactElement {
                         <BreadcrumbItem href="/">
                             {t('home_page')}
                         </BreadcrumbItem>
-                        <BreadcrumbItem href="/class-levels">
-                            {t('class_level.list.title.primary')}
+                        <BreadcrumbItem href="/levels">
+                            {t('level.list.title.primary')}
                         </BreadcrumbItem>
                         <BreadcrumbItem>
-                            {t('class_level.view.title')} ?
+                            {t('level.view.title')} ?
                         </BreadcrumbItem>
                         <BreadcrumbItem active href="/">
                             {t('school_class.view.title')} ?
@@ -128,7 +128,7 @@ export default function SchoolClassView(): ReactElement {
     const {
         belts,
         skill_domains,
-        class_level,
+        level,
         school_class,
         students,
         student_belts,
@@ -139,11 +139,11 @@ export default function SchoolClassView(): ReactElement {
             <AdminOnly>
                 <Breadcrumb>
                     <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                    <BreadcrumbItem href="/class-levels">
-                        {t('class_level.list.title.primary')}
+                    <BreadcrumbItem href="/levels">
+                        {t('level.list.title.primary')}
                     </BreadcrumbItem>
-                    <BreadcrumbItem href={'/class-levels/' + class_level.id}>
-                        {t('class_level.view.title')} {class_level.prefix}
+                    <BreadcrumbItem href={'/levels/' + level.id}>
+                        {t('level.view.title')} {level.prefix}
                     </BreadcrumbItem>
                     <BreadcrumbItem
                         active
@@ -154,7 +154,7 @@ export default function SchoolClassView(): ReactElement {
                 </Breadcrumb>
             </AdminOnly>
             <h3>
-                {t('school_class.view.title')}: {class_level.prefix}
+                {t('school_class.view.title')}: {level.prefix}
                 {school_class.suffix}
             </h3>
             <AdminOnly>
@@ -170,7 +170,7 @@ export default function SchoolClassView(): ReactElement {
                     />
                 )}
                 <SchoolClassEditButton
-                    class_level={class_level}
+                    level={level}
                     school_class={school_class}
                     changedCallback={(new_school_class) => {
                         setStudentList({
@@ -180,16 +180,16 @@ export default function SchoolClassView(): ReactElement {
                     }}
                 />{' '}
                 <SchoolClassDeleteButton
-                    class_level={class_level}
+                    level={level}
                     school_class={school_class}
                     deletedCallback={() =>
-                        navigate('/class-levels/' + class_level.id)
+                        navigate('/levels/' + level.id)
                     }
                 />
                 <h4>{t('student.list.title.secondary')}</h4>
                 <StudentCreateButton
                     school_class={school_class}
-                    class_level={class_level}
+                    level={level}
                     createdCallback={(new_student) => {
                         setStudentList({
                             ...studentList,
@@ -208,7 +208,7 @@ export default function SchoolClassView(): ReactElement {
                 />{' '}
                 {waitlistMappingList && (
                     <SchoolClassManageWaitlist
-                        class_level={class_level}
+                        level={level}
                         school_class={school_class}
                         students={students}
                         skill_domains={skill_domains}

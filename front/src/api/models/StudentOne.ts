@@ -2,13 +2,13 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { ClassLevel } from './ClassLevel';
+import type { Level } from './Level';
 import type { SchoolClass } from './SchoolClass';
 import type { Student } from './Student';
 import type { User } from './User';
 
 export type StudentOne = {
-    class_level: ClassLevel;
+    level: Level;
     school_class: SchoolClass;
     student: Student;
     user: User;

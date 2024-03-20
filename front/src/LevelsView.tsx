@@ -3,40 +3,40 @@ import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Alert from 'react-bootstrap/Alert';
 import Breadcrumb from 'react-bootstrap/Breadcrumb';
-import { ClassLevel, ClassLevelList, ClassLevelsService } from './api';
+import { Level, LevelList, LevelsService } from './api';
 import { getAPIError } from './lib';
 import { AdminOnly } from './auth';
-import ClassLevelListing from './ClassLevelListing';
-import ClassLevelCreateButton from './ClassLevelCreateButton';
+import LevelListing from './LevelListing';
+import LevelCreateButton from './LevelCreateButton';
 import { BreadcrumbItem, Loader } from './index';
 
-export default function ClassLevelsView(): ReactElement {
+export default function LevelsView(): ReactElement {
     const { t } = useTranslation();
     const [errorMessage, setErrorMessage] = useState('');
-    const [classLevelList, setClassLevelList] = useState<null | ClassLevelList>(
+    const [classLevelList, setLevelList] = useState<null | LevelList>(
         null
     );
 
-    const setClassLevels = useCallback(
-        (setStateAction: (prevClassLevels: ClassLevel[]) => ClassLevel[]) => {
-            setClassLevelList((prevClassLevelList) => {
-                if (prevClassLevelList === null) {
+    const setLevels = useCallback(
+        (setStateAction: (prevLevels: Level[]) => Level[]) => {
+            setLevelList((prevLevelList) => {
+                if (prevLevelList === null) {
                     return null;
                 }
-                const prevClassLevels = prevClassLevelList.class_levels;
-                const nextClassLevels = setStateAction(prevClassLevels);
+                const prevLevels = prevLevelList.levels;
+                const nextLevels = setStateAction(prevLevels);
                 return {
-                    ...prevClassLevelList,
-                    class_levels: nextClassLevels,
+                    ...prevLevelList,
+                    levels: nextLevels,
                 };
             });
         },
-        [setClassLevelList]
+        [setLevelList]
     );
 
     useEffect(() => {
-        ClassLevelsService.getClassLevelsResource()
-            .then(setClassLevelList)
+        LevelsService.getLevelsResource()
+            .then(setLevelList)
             .catch((error) => {
                 setErrorMessage(getAPIError(error));
             });
@@ -48,10 +48,10 @@ export default function ClassLevelsView(): ReactElement {
                 <Breadcrumb>
                     <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
                     <BreadcrumbItem active href="/class-levels">
-                        {t('class_level.list.title.primary')}
+                        {t('level.list.title.primary')}
                     </BreadcrumbItem>
                 </Breadcrumb>
-                <h3>{t('class_level.list.title.primary')}</h3>
+                <h3>{t('level.list.title.primary')}</h3>
                 {errorMessage ? (
                     <Alert variant="danger">
                         {t('error')}: {errorMessage}
@@ -63,8 +63,8 @@ export default function ClassLevelsView(): ReactElement {
         );
     }
 
-    const { class_levels } = classLevelList;
-    const sorted_class_levels = class_levels.sort((a, b) =>
+    const { levels } = classLevelList;
+    const sorted_levels = levels.sort((a, b) =>
         a.prefix.localeCompare(b.prefix)
     );
 
@@ -73,24 +73,24 @@ export default function ClassLevelsView(): ReactElement {
             <Breadcrumb>
                 <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
                 <BreadcrumbItem active href="/class-levels">
-                    {t('class_level.list.title.primary')}
+                    {t('level.list.title.primary')}
                 </BreadcrumbItem>
             </Breadcrumb>
-            <h3>{t('class_level.list.title.primary')}</h3>
+            <h3>{t('level.list.title.primary')}</h3>
             <AdminOnly>
-                <ClassLevelCreateButton
-                    createdCallback={(new_class_level) => {
-                        setClassLevelList({
+                <LevelCreateButton
+                    createdCallback={(new_level) => {
+                        setLevelList({
                             ...classLevelList,
-                            class_levels: [...class_levels, new_class_level],
+                            levels: [...levels, new_level],
                         });
                     }}
                 />
             </AdminOnly>
-            <h4>{t('class_level.list.title.secondary')}</h4>
-            <ClassLevelListing
-                class_levels={sorted_class_levels}
-                setClassLevels={setClassLevels}
+            <h4>{t('level.list.title.secondary')}</h4>
+            <LevelListing
+                levels={sorted_levels}
+                setLevels={setLevels}
             />
         </>
     );

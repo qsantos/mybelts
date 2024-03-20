@@ -5,13 +5,13 @@ import { Link } from 'react-router-dom';
 import Nav from 'react-bootstrap/Nav';
 import Table from 'react-bootstrap/Table';
 
-import { ClassLevel, SchoolClass } from './api';
+import { Level, SchoolClass } from './api';
 import { AdminOnly } from './auth';
 import SchoolClassEditButton from './SchoolClassEditButton';
 import SchoolClassDeleteButton from './SchoolClassDeleteButton';
 
 interface RowProps {
-    class_level: ClassLevel;
+    level: Level;
     school_class: SchoolClass;
     setSchoolClasses: Dispatch<
         (prevSchoolClasses: SchoolClass[]) => SchoolClass[]
@@ -19,7 +19,7 @@ interface RowProps {
 }
 
 function SchoolClassRow_(props: RowProps) {
-    const { class_level, school_class, setSchoolClasses } = props;
+    const { level, school_class, setSchoolClasses } = props;
 
     const changedCallback = (nextSchoolClass: SchoolClass) =>
         setSchoolClasses((prevSchoolClasses) => {
@@ -57,12 +57,12 @@ function SchoolClassRow_(props: RowProps) {
             <AdminOnly>
                 <td>
                     <SchoolClassEditButton
-                        class_level={class_level}
+                        level={level}
                         school_class={school_class}
                         changedCallback={changedCallback}
                     />{' '}
                     <SchoolClassDeleteButton
-                        class_level={class_level}
+                        level={level}
                         school_class={school_class}
                         deletedCallback={deletedCallback}
                     />
@@ -75,7 +75,7 @@ function SchoolClassRow_(props: RowProps) {
 const SchoolClassRow = React.memo(SchoolClassRow_);
 
 interface Props {
-    class_level: ClassLevel;
+    level: Level;
     school_classes: SchoolClass[];
     setSchoolClasses: Dispatch<
         (prevSchoolClasses: SchoolClass[]) => SchoolClass[]
@@ -83,7 +83,7 @@ interface Props {
 }
 
 export default function SchoolClassListing(props: Props): ReactElement {
-    const { class_level, school_classes, setSchoolClasses } = props;
+    const { level, school_classes, setSchoolClasses } = props;
     const { t } = useTranslation();
     return (
         <>
@@ -100,7 +100,7 @@ export default function SchoolClassListing(props: Props): ReactElement {
                     {school_classes.map((school_class) => (
                         <SchoolClassRow
                             key={school_class.id}
-                            class_level={class_level}
+                            level={level}
                             school_class={school_class}
                             setSchoolClasses={setSchoolClasses}
                         />

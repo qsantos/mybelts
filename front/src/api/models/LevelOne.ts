@@ -3,9 +3,7 @@
 /* eslint-disable */
 
 import type { Level } from './Level';
-import type { SchoolClass } from './SchoolClass';
 
-export type SchoolClassOne = {
+export type LevelOne = {
     level: Level;
-    school_class: SchoolClass;
 }

@@ -83,11 +83,11 @@ export default function StudentWidget(props: Props): ReactElement {
                         <BreadcrumbItem href="/">
                             {t('home_page')}
                         </BreadcrumbItem>
-                        <BreadcrumbItem href="/class-levels">
-                            {t('class_level.list.title.primary')}
+                        <BreadcrumbItem href="/levels">
+                            {t('level.list.title.primary')}
                         </BreadcrumbItem>
                         <BreadcrumbItem>
-                            {t('class_level.view.title')} ?
+                            {t('level.view.title')} ?
                         </BreadcrumbItem>
                         <BreadcrumbItem active href="/">
                             {t('school_class.view.title')} ?
@@ -112,7 +112,7 @@ export default function StudentWidget(props: Props): ReactElement {
     const {
         belts,
         skill_domains,
-        class_level,
+        level,
         school_class,
         student,
         evaluations,
@@ -127,11 +127,11 @@ export default function StudentWidget(props: Props): ReactElement {
             <AdminOnly>
                 <Breadcrumb>
                     <BreadcrumbItem href="/">{t('home_page')}</BreadcrumbItem>
-                    <BreadcrumbItem href="/class-levels">
-                        {t('class_level.list.title.primary')}
+                    <BreadcrumbItem href="/levels">
+                        {t('level.list.title.primary')}
                     </BreadcrumbItem>
-                    <BreadcrumbItem href={'/class-levels/' + class_level.id}>
-                        {t('class_level.view.title')} {class_level.prefix}
+                    <BreadcrumbItem href={'/levels/' + level.id}>
+                        {t('level.view.title')} {level.prefix}
                     </BreadcrumbItem>
                     <BreadcrumbItem
                         active
@@ -149,7 +149,7 @@ export default function StudentWidget(props: Props): ReactElement {
             </h3>
             {t('student.view.school_class')}:{' '}
             <Link to={'/school-classes/' + school_class.id}>
-                {class_level.prefix}
+                {level.prefix}
                 {school_class.suffix}
             </Link>
             <AdminOnly>

@@ -108,22 +108,22 @@ class User(Base):
         }
 
 
-class ClassLevel(Base):
-    __tablename__ = 'class_level'
+class Level(Base):
+    __tablename__ = 'level'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     prefix = Column(String, nullable=False, index=True)
 
     school_classes: list[SchoolClass] = relationship(  # type: ignore
         'SchoolClass',
-        foreign_keys='SchoolClass.class_level_id',
-        back_populates='class_level',
+        foreign_keys='SchoolClass.level_id',
+        back_populates='level',
     )
 
     exams: list[Exam] = relationship(  # type: ignore
         'Exam',
-        foreign_keys='Exam.class_level_id',
-        back_populates='class_level',
+        foreign_keys='Exam.level_id',
+        back_populates='level',
     )
 
     def json(self) -> dict:
@@ -138,12 +138,12 @@ class SchoolClass(Base):
     __tablename__ = 'school_class'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
-    class_level_id = Column(Integer, ForeignKey(ClassLevel.id, ondelete='CASCADE'), nullable=False)
+    level_id = Column(Integer, ForeignKey(Level.id, ondelete='CASCADE'), nullable=False)
     suffix = Column(String, nullable=False, index=True)
 
-    class_level = relationship(
-        'ClassLevel',
-        foreign_keys=class_level_id,
+    level = relationship(
+        'Level',
+        foreign_keys=level_id,
         back_populates='school_classes',
     )
 
@@ -157,7 +157,7 @@ class SchoolClass(Base):
         return {
             'id': self.id,
             'created': self.created.isoformat(),
-            'class_level_id': self.class_level_id,
+            'level_id': self.level_id,
             'suffix': self.suffix,
         }
 
@@ -306,16 +306,16 @@ class Exam(Base):
     __tablename__ = 'exam'
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
-    class_level_id = Column(Integer, ForeignKey('class_level.id', ondelete='CASCADE'), nullable=False)
+    level_id = Column(Integer, ForeignKey('level.id', ondelete='CASCADE'), nullable=False)
     belt_id = Column(Integer, ForeignKey('belt.id', ondelete='CASCADE'), nullable=False)
     skill_domain_id = Column(Integer, ForeignKey('skill_domain.id', ondelete='CASCADE'), nullable=False)
     filename = Column(String, nullable=False, index=True)
     code = Column(String, nullable=False, index=True, server_default='')
     file = deferred(Column(LargeBinary, nullable=False))
 
-    class_level = relationship(
-        'ClassLevel',
-        foreign_keys=class_level_id,
+    level = relationship(
+        'Level',
+        foreign_keys=level_id,
         back_populates='exams',
     )
     skill_domain = relationship('SkillDomain', foreign_keys=skill_domain_id)
@@ -325,7 +325,7 @@ class Exam(Base):
         return {
             'id': self.id,
             'created': self.created.isoformat(),
-            'class_level_id': self.class_level_id,
+            'level_id': self.level_id,
             'skill_domain_id': self.skill_domain_id,
             'belt_id': self.belt_id,
             'code': self.code,

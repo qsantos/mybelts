@@ -68,7 +68,7 @@ def exams_to_print(
         exams = (
             session
             .query(Exam)
-            # TODO: filter by class level id
+            # TODO: filter by level id
             .filter(Exam.skill_domain_id == waitlist_entry.skill_domain_id)
             .filter(Exam.belt_id == waitlist_entry.belt_id)
             .order_by(Exam.code)

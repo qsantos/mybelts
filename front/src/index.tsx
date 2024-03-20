@@ -25,8 +25,8 @@ import I18nView from './I18nView';
 import UsersView from './UsersView';
 import BeltsView from './BeltsView';
 import SkillDomainsView from './SkillDomainsView';
-import ClassLevelsView from './ClassLevelsView';
-import ClassLevelView from './ClassLevelView';
+import LevelsView from './LevelsView';
+import LevelView from './LevelView';
 import RelativeTime from './RelativeTime';
 import SchoolClassView from './SchoolClassView';
 import StudentWidget from './StudentWidget';
@@ -190,8 +190,8 @@ function Layout() {
                     </Nav.Item>
                     <AdminOnly>
                         <Nav.Item>
-                            <Nav.Link as={Link} to="/class-levels">
-                                {t('class_level.list.title.primary')}
+                            <Nav.Link as={Link} to="/levels">
+                                {t('level.list.title.primary')}
                             </Nav.Link>
                         </Nav.Item>
                         <Nav.Item>
@@ -256,20 +256,20 @@ function App() {
                 />
                 <Route path="belts" element={<BeltsView />} />
                 <Route path="skill-domains" element={<SkillDomainsView />} />
-                <Route path="class-levels">
+                <Route path="levels">
                     <Route
                         index
                         element={
                             <AdminOnly>
-                                <ClassLevelsView />
+                                <LevelsView />
                             </AdminOnly>
                         }
                     />
                     <Route
-                        path=":class_level_id"
+                        path=":level_id"
                         element={
                             <AdminOnly>
-                                <ClassLevelView />
+                                <LevelView />
                             </AdminOnly>
                         }
                     />

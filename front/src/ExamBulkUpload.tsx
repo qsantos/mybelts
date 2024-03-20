@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import Table from 'react-bootstrap/Table';
 
-import { Belt, ClassLevel, Exam, SkillDomain, ClassLevelsService } from './api';
+import { Belt, Level, Exam, SkillDomain, LevelsService } from './api';
 import { getAPIError } from './lib';
 
 function FileDrag({ onDrop }: { onDrop: (event: React.DragEvent<HTMLDivElement>)  => void }) {
@@ -57,12 +57,12 @@ function FileDrag({ onDrop }: { onDrop: (event: React.DragEvent<HTMLDivElement>)
 interface Props {
     belts: Belt[];
     skill_domains: SkillDomain[];
-    class_level: ClassLevel;
+    level: Level;
     createdCallback: (new_exam: Exam) => void;
 }
 
 export default function ExamBulkUpload(props: Props): ReactElement {
-    const { belts, skill_domains, class_level, createdCallback } = props;
+    const { belts, skill_domains, level, createdCallback } = props;
     const { t } = useTranslation();
 
     const [files, setFiles] = useState<{ file: File; uploading: boolean }[]>(
@@ -127,8 +127,8 @@ export default function ExamBulkUpload(props: Props): ReactElement {
         }
         file.arrayBuffer()
             .then((data) =>
-                ClassLevelsService.postClassLevelExamsResource(
-                    class_level.id,
+                LevelsService.postLevelExamsResource(
+                    level.id,
                     parseInt(skill_domain_id),
                     parseInt(belt_id),
                     exam_code,
