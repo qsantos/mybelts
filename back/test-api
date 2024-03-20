@@ -478,31 +478,31 @@ def add_classes(level_ids: List[int]) -> List[int]:
     l3, l4, l5, l6 = level_ids
 
     levels = [l3, l4, l6, l6, l6]
-    class_suffixes = ['1', 'X', '3', '4', 'ZZZ']
-    assert len(levels) == len(class_suffixes)
+    class_names = ['1', 'X', '3', '4', 'ZZZ']
+    assert len(levels) == len(class_names)
 
     # add classes
     ids = []
-    for level_id, class_suffix in zip(levels, class_suffixes):
+    for level_id, class_name in zip(levels, class_names):
         res = requests.post(API_URL + '/classes', json={
             'level_id': level_id,
-            'suffix': class_suffix,
+            'name': class_name,
         })
         res.raise_for_status()
         j = res.json()
         print(j)
         assert j['level']['id'] == level_id
-        assert j['class']['suffix'] == class_suffix
+        assert j['class']['name'] == class_name
         ids.append(j['class']['id'])
 
     # rename class
-    class_suffixes[1] = '5'
-    res = requests.put(API_URL + f'/classes/{ids[1]}', json={'suffix': class_suffixes[1]})
+    class_names[1] = '5'
+    res = requests.put(API_URL + f'/classes/{ids[1]}', json={'name': class_names[1]})
     res.raise_for_status()
     j = res.json()
     print(j)
     assert j['level']['id'] == levels[1]
-    assert j['class']['suffix'] == class_suffixes[1]
+    assert j['class']['name'] == class_names[1]
 
     # delete class
     res = requests.delete(API_URL + f'/classes/{ids[4]}')
@@ -511,15 +511,15 @@ def add_classes(level_ids: List[int]) -> List[int]:
     assert res.status_code == 404
     ids.pop()
     levels.pop()
-    class_suffixes.pop()
+    class_names.pop()
 
     # check final state
-    for i, class_suffix in reversed(list(enumerate(class_suffixes))):
+    for i, class_name in reversed(list(enumerate(class_names))):
         res = requests.get(API_URL + f'/classes/{ids[i]}')
         res.raise_for_status()
         j = res.json()
         print(j)
-        assert j['class']['suffix'] == class_suffix
+        assert j['class']['name'] == class_name
 
     print('Tested /classes')
     return ids

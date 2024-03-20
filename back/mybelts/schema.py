@@ -139,7 +139,7 @@ class Class(Base):
     id = Column(Integer, primary_key=True)
     created = Column(DateTime(timezone=True), nullable=False, index=True, server_default=func.now())
     level_id = Column(Integer, ForeignKey(Level.id, ondelete='CASCADE'), nullable=False)
-    suffix = Column(String, nullable=False, index=True)
+    name = Column(String, nullable=False, index=True)
 
     level = relationship(
         'Level',
@@ -158,7 +158,7 @@ class Class(Base):
             'id': self.id,
             'created': self.created.isoformat(),
             'level_id': self.level_id,
-            'suffix': self.suffix,
+            'name': self.name,
         }
 
 

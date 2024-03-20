@@ -22,29 +22,29 @@ export default function ClassCreateButton(props: Props): ReactElement {
                 i18nArgs={{ level }}
                 onSubmit={(form: EventTarget) => {
                     const typed_form = form as typeof form & {
-                        suffix: { value: string };
+                        name: { value: string };
                     };
                     return ClassesService.postClassesResource({
                         level_id: level.id,
-                        suffix: typed_form.suffix.value,
+                        name: typed_form.name.value,
                     });
                 }}
                 onResponse={({ class: class_ }) =>
                     createdCallback?.(class_)
                 }
             >
-                <Form.Group controlId="suffix">
+                <Form.Group controlId="name">
                     <Form.Label>
-                        {t('class.add_edit.suffix.title')}
+                        {t('class.add_edit.name.title')}
                     </Form.Label>
                     <Form.Control
                         type="text"
                         placeholder={t(
-                            'class.add_edit.suffix.placeholder'
+                            'class.add_edit.name.placeholder'
                         )}
                     />
                     <Form.Text className="text-muted">
-                        {t('class.add_edit.suffix.help')}
+                        {t('class.add_edit.name.help')}
                     </Form.Text>
                 </Form.Group>
             </ModalButton>

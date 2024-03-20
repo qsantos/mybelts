@@ -149,13 +149,13 @@ export default function ClassView(): ReactElement {
                         active
                         href={'/classes/' + class_.id}
                     >
-                        {t('class.view.title')} {class_.suffix}
+                        {t('class.view.title')} {class_.name}
                     </BreadcrumbItem>
                 </Breadcrumb>
             </AdminOnly>
             <h3>
                 {t('class.view.title')}: {level.prefix}
-                {class_.suffix}
+                {class_.name}
             </h3>
             <AdminOnly>
                 {waitlistMappingList && (
