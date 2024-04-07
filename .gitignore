@@ -1,2 +1,3 @@
-/deploy-info/
+/dev.env
+/prod.env
 /evals/

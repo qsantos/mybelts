@@ -10,9 +10,9 @@ if [ "$#" -ne 1 ]; then
 fi
 ENV=$1
 
-# shellcheck source=deploy-info/dev.env
-# shellcheck source=deploy-info/prod.env
-source "deploy-info/${ENV}.env"
+# shellcheck source=dev.env
+# shellcheck source=prod.env
+source "${ENV}.env"
 
 set -x
 
@@ -24,11 +24,11 @@ mkdir tmp
 trap 'rm -Rf tmp' EXIT ERR SIGINT SIGTERM
 rsync -PHav --exclude=__pycache__ --exclude=.mypy_cache --exclude=.ruff_cache back tmp
 rsync -PHav front/build tmp/front/
-rsync -PHav --delete --exclude=env --rsh="ssh -i 'deploy-info/${ENV}.key' -p '${PORT}'" tmp/ "${USER}@${HOSTNAME}:${WORKDIR}"
+rsync -PHav --delete --exclude=env tmp/ "${HOST}:${WORKDIR}"
 
 # migrate database and deploy back-end
 # shellcheck disable=SC2087
-ssh -i "deploy-info/${ENV}.key" -p "${PORT}" "${USER}@${HOSTNAME}" <<EOF
+ssh "${HOST}" <<EOF
 set -x
 cd ${WORKDIR}
 cd back
